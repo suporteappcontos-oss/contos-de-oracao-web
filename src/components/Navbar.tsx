@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Link from 'next/link';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,9 +25,9 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-[30px]">
         <a href="#home" className="text-text-main no-underline font-normal text-base transition-colors duration-300 hover:text-text-muted">Início</a>
         <a href="#planos" className="text-text-main no-underline font-normal text-base transition-colors duration-300 hover:text-text-muted">Planos</a>
-        <button className="bg-[#e50914] text-white border-none py-2 px-5 rounded font-semibold text-base cursor-pointer transition-all duration-300 hover:bg-[#f40612] hover:scale-105">
+        <Link href="/login" className="bg-[#e50914] text-white border-none py-2 px-5 rounded font-semibold text-base cursor-pointer transition-all duration-300 hover:bg-[#f40612] hover:scale-105 no-underline">
           Entrar
-        </button>
+        </Link>
       </div>
     </header>
   );
