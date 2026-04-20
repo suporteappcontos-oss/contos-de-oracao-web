@@ -6,66 +6,70 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
 
   return (
     <div className="min-h-screen flex items-center justify-center relative bg-[url('https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center">
-      {/* Overlay escuro */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm z-10"></div>
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm z-10"></div>
       
-      {/* Navegação Topo */}
+      {/* Logo no topo */}
       <header className="absolute top-0 w-full py-5 px-[4%] z-30">
-        <Link href="/" className="text-[2.2rem] font-extrabold text-[#FFD700] uppercase tracking-[1px] cursor-pointer drop-shadow-md no-underline">
+        <Link href="/" className="text-[2rem] font-extrabold text-[#FFD700] uppercase tracking-[1px] cursor-pointer drop-shadow-md no-underline">
           Contos de Oração
         </Link>
       </header>
 
-      {/* Caixa de Login */}
-      <div className="relative z-20 w-full max-w-[450px] p-[60px] bg-black/80 rounded-md shadow-2xl border border-white/5">
-        <h2 className="text-white text-3xl font-bold mb-8">Entrar</h2>
+      {/* Card de Login */}
+      <div className="relative z-20 w-full max-w-[440px] mx-4 p-10 bg-black/85 rounded-2xl shadow-2xl border border-white/10">
+        <h2 className="text-white text-[2rem] font-extrabold mb-2">Entrar</h2>
+        <p className="text-white/40 text-sm mb-8">Acesse sua conta para assistir ao conteúdo.</p>
         
-        <form className="flex flex-col gap-5">
-          <input 
-            type="email" 
-            name="email"
-            placeholder="Email da Kiwify" 
-            required
-            className="w-full p-4 bg-[#333] border border-transparent rounded text-white focus:border-[#FFD700] focus:bg-[#444] outline-none transition-colors"
-          />
+        <form className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-white/50 text-xs uppercase tracking-widest">E-mail</label>
+            <input 
+              type="email" 
+              name="email"
+              placeholder="seu@email.com" 
+              required
+              className="w-full p-4 bg-white/5 border border-white/10 rounded-lg text-white focus:border-[#FFD700] focus:bg-white/10 outline-none transition-all"
+            />
+          </div>
           
-          <input 
-            type="password" 
-            name="password"
-            placeholder="Sua Senha" 
-            required
-            className="w-full p-4 bg-[#333] border border-transparent rounded text-white focus:border-[#FFD700] focus:bg-[#444] outline-none transition-colors"
-          />
-          
-          {/* Mensagem de erro */}
+          <div className="flex flex-col gap-1">
+            <label className="text-white/50 text-xs uppercase tracking-widest">Senha</label>
+            <input 
+              type="password" 
+              name="password"
+              placeholder="••••••••" 
+              required
+              className="w-full p-4 bg-white/5 border border-white/10 rounded-lg text-white focus:border-[#FFD700] focus:bg-white/10 outline-none transition-all"
+            />
+          </div>
+
           {erro && (
-            <div className="bg-red-500/20 border border-red-500/40 text-red-300 px-4 py-3 rounded text-sm text-center">
-              {erro === 'credenciais_invalidas' ? '❌ Email ou senha incorretos. Tente novamente.' : '❌ Ocorreu um erro. Tente novamente.'}
+            <div className="bg-red-500/15 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg text-sm text-center">
+              {erro === 'credenciais_invalidas' ? '❌ E-mail ou senha incorretos.' : '❌ Ocorreu um erro. Tente novamente.'}
             </div>
           )}
 
           <button 
             formAction={login}
-            className="w-full mt-6 py-4 bg-[#e50914] text-white font-bold rounded text-[1.1rem] transition-all hover:bg-[#f40612] hover:scale-[1.02] cursor-pointer"
+            className="w-full mt-4 py-4 bg-[#FFD700] text-black font-extrabold rounded-lg text-[1.1rem] transition-all hover:brightness-110 hover:scale-[1.02] cursor-pointer"
           >
             Acessar Plataforma
           </button>
           
-          {/* Apenas para facilitar seus testes. Crie sua conta usando esse botão */}
           <button 
             formAction={signup}
-            className="w-full mt-2 py-4 bg-transparent border border-white/20 text-white font-bold rounded text-[1.1rem] transition-all hover:bg-white/10 cursor-pointer"
+            className="w-full py-3 bg-transparent border border-white/15 text-white/60 font-medium rounded-lg text-sm transition-all hover:bg-white/5 hover:text-white cursor-pointer"
           >
-            Apenas Testes: Criar Senha
+            Criar conta
           </button>
         </form>
 
-        <div className="mt-10 text-white/50 text-[0.95rem]">
-          <p>
-            Novo por aqui? <Link href="/#planos" className="text-white hover:underline">Assine um plano na Kiwify.</Link>
-          </p>
-          <p className="mt-4 text-[0.8rem]">
-            Esta página é protegida pelo sistema corporativo Supabase para garantir segurança de dados.
+        <div className="mt-8 text-center">
+          <p className="text-white/30 text-sm">
+            Não tem uma conta?{' '}
+            <Link href="/#planos" className="text-[#FFD700] hover:underline">
+              Escolha um plano
+            </Link>
           </p>
         </div>
       </div>
