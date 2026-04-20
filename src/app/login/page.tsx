@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { login, signup } from './actions';
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
+  const erro = searchParams?.error
+
   return (
     <div className="min-h-screen flex items-center justify-center relative bg-[url('https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center">
       {/* Overlay escuro */}
@@ -35,6 +37,13 @@ export default function LoginPage() {
             className="w-full p-4 bg-[#333] border border-transparent rounded text-white focus:border-[#FFD700] focus:bg-[#444] outline-none transition-colors"
           />
           
+          {/* Mensagem de erro */}
+          {erro && (
+            <div className="bg-red-500/20 border border-red-500/40 text-red-300 px-4 py-3 rounded text-sm text-center">
+              {erro === 'credenciais_invalidas' ? '❌ Email ou senha incorretos. Tente novamente.' : '❌ Ocorreu um erro. Tente novamente.'}
+            </div>
+          )}
+
           <button 
             formAction={login}
             className="w-full mt-6 py-4 bg-[#e50914] text-white font-bold rounded text-[1.1rem] transition-all hover:bg-[#f40612] hover:scale-[1.02] cursor-pointer"
