@@ -10,6 +10,15 @@ const supabaseAdmin = createClient(
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar o token secreto da Kiwify
+    const tokenRecebido = request.headers.get('x-kiwify-token') || request.nextUrl.searchParams.get('token') || ''
+    const tokenEsperado = process.env.KIWIFY_WEBHOOK_TOKEN || ''
+
+    if (tokenEsperado && tokenRecebido !== tokenEsperado) {
+      console.warn('⛔ Token inválido recebido:', tokenRecebido)
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
+
     const body = await request.json()
 
     console.log('🔔 Webhook Kiwify recebido:', JSON.stringify(body, null, 2))
