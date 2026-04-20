@@ -18,8 +18,8 @@ export default function Pricing() {
             <li className="mb-4 pb-4 border-b border-white/5 text-[1.1rem] flex items-center text-text-main"><span className="text-primary font-bold text-[1.2rem] mr-4">✓</span> 1 tela</li>
             <li className="mb-4 pb-4 border-none text-[1.1rem] flex items-center text-text-main"><span className="text-primary font-bold text-[1.2rem] mr-4">✓</span> Acesso completo</li>
           </ul>
-          <a href="#" className="flex items-center justify-center w-full p-[15px] rounded-lg border-none bg-white/10 text-white font-semibold text-[1.2rem] cursor-pointer transition-all hover:bg-primary hover:text-black no-underline active:scale-95">
-            Testar Pagamento
+          <a href="https://pay.kiwify.com.br/YApXtLr" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-full p-[15px] rounded-lg border-none bg-white/10 text-white font-semibold text-[1.2rem] cursor-pointer transition-all hover:bg-primary hover:text-black no-underline active:scale-95">
+            Testar Pagamento →
           </a>
         </div>
 
