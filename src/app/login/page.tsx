@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { login, signup } from './actions';
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
-  const erro = searchParams?.error
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error: erro } = await searchParams
 
   return (
     <div className="min-h-screen flex items-center justify-center relative bg-[url('https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center">
