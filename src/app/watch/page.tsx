@@ -28,7 +28,7 @@ export default async function WatchPage() {
   const { data: perfil } = await supabase
     .from('perfis').select('role, plano').eq('id', user.id).single()
 
-  const isAdmin = perfil?.role === 'admin'
+  const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
 
   // Label do plano baseado no plano real do usuário
   const PLANO_LABEL: Record<string, string> = {

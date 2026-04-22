@@ -39,7 +39,7 @@ export default async function AdminPage() {
   if (!user) redirect('/')
 
   const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
-  if (perfil?.role !== 'admin') redirect('/')
+  if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') redirect('/')
 
   const { data: videos } = await supabase
     .from('videos')
