@@ -1,10 +1,11 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
-import { Home, Film, Tv2, Baby, LogOut, Settings } from 'lucide-react'
+import { LogOut, Settings } from 'lucide-react'
 
 type Video = {
   id: string
@@ -22,24 +23,17 @@ type Video = {
 export default async function WatchPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) redirect('/')
 
   const { data: perfil } = await supabase
-    .from('perfis')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+    .from('perfis').select('role').eq('id', user.id).single()
 
   const isAdmin = perfil?.role === 'admin'
 
   const { data: videos } = await supabase
-    .from('videos')
-    .select('*')
-    .eq('ativo', true)
+    .from('videos').select('*').eq('ativo', true)
     .order('criado_em', { ascending: false })
 
-  // Agrupar por categoria
   const categorias = [...new Set((videos ?? []).map((v: Video) => v.categoria))]
   const videosPorCategoria: Record<string, Video[]> = {}
   categorias.forEach(cat => {
@@ -54,101 +48,86 @@ export default async function WatchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f171e] text-white overflow-x-hidden">
+    <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
 
-      {/* ── NAVBAR PRIME VIDEO ── */}
-      <header className="fixed top-0 w-full z-50">
-        {/* Navbar Principal */}
-        <div className="bg-[#1a242f] border-b border-[#1e3040] flex items-center justify-between px-4 md:px-6 lg:px-8 py-0 h-14 md:h-[60px]">
+      {/* ── NAVBAR OFICIAL (identidade do App) ── */}
+      <header
+        className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 lg:px-12 h-[60px] md:h-[68px] glass-dark border-b"
+        style={{ borderColor: 'rgba(255,255,255,0.05)' }}
+      >
+        {/* Logo + Nome */}
+        <Link href="/watch" className="flex items-center gap-3">
+          <Image
+            src="/logo.png"
+            alt="Contos de Oração"
+            width={42}
+            height={42}
+            className="object-contain drop-shadow-lg"
+          />
+          <div className="hidden sm:block">
+            <div className="text-white font-black text-lg leading-tight tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              Contos de Oração
+            </div>
+            <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest -mt-0.5">
+              Premium
+            </div>
+          </div>
+        </Link>
+
+        {/* Direita */}
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="text-[#94A3B8] text-xs hidden lg:inline truncate max-w-[200px]">{user.email}</span>
           
-          {/* Logo */}
-          <div className="flex items-center gap-6">
-            <Link href="/watch" className="flex items-center gap-2 text-white">
-              <div className="bg-[#00a8e1] text-white text-[0.6rem] font-black px-2 py-1 rounded tracking-widest uppercase">
-                Prime
-              </div>
-              <span className="text-white font-semibold text-sm hidden sm:inline opacity-80">
-                Video
-              </span>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+              style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)' }}
+            >
+              <Settings size={13} />
+              <span className="hidden sm:inline">Admin</span>
             </Link>
+          )}
 
-            {/* Navegação Desktop */}
-            <nav className="hidden md:flex items-center gap-0.5">
-              {[
-                { icon: Home, label: 'Início', active: true },
-                { icon: Film, label: 'Filmes' },
-                { icon: Tv2, label: 'Séries' },
-                { icon: Baby, label: 'Infantil' },
-              ].map(item => (
-                <button key={item.label} className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-colors ${item.active ? 'text-white' : 'text-[#8197a4] hover:text-white'}`}>
-                  <item.icon size={14} />
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          {/* Direita */}
-          <div className="flex items-center gap-2 md:gap-3">
-            <span className="text-[#8197a4] text-[0.7rem] hidden lg:inline truncate max-w-[180px]">
-              {user.email}
-            </span>
-
-            {isAdmin && (
-              <Link
-                href="/admin"
-                className="flex items-center gap-1.5 bg-[#00a8e1]/10 hover:bg-[#00a8e1]/20 text-[#00a8e1] border border-[#00a8e1]/20 px-2.5 py-1.5 rounded text-[0.7rem] font-bold transition-colors"
-              >
-                <Settings size={12} />
-                <span className="hidden sm:inline">Admin</span>
-              </Link>
-            )}
-
-            <form action={logout} className="inline">
-              <button type="submit" className="flex items-center gap-1.5 text-[#8197a4] hover:text-white text-[0.7rem] border border-[#1e3040] hover:border-[#2a4050] px-2.5 py-1.5 rounded transition-colors">
-                <LogOut size={12} />
-                <span className="hidden sm:inline">Sair</span>
-              </button>
-            </form>
-          </div>
-        </div>
-
-        {/* Sub-Navbar Mobile (categorias) */}
-        <div className="md:hidden bg-[#0f171e]/95 border-b border-[#1e3040] flex overflow-x-auto no-scrollbar px-4 py-2 gap-2">
-          {['Início', 'Filmes', 'Séries', 'Infantil'].map(item => (
-            <button key={item} className="flex-shrink-0 text-[#8197a4] text-xs px-3 py-1 rounded-full border border-[#1e3040] whitespace-nowrap">
-              {item}
+          <form action={logout}>
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all"
+              style={{ background: 'rgba(255,255,255,0.05)', color: '#94A3B8', border: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              <LogOut size={13} />
+              <span className="hidden sm:inline">Sair</span>
             </button>
-          ))}
+          </form>
         </div>
       </header>
 
       {/* ── CONTEÚDO ── */}
-      <main className="pt-14 md:pt-[60px]">
+      <main className="pt-[60px] md:pt-[68px]">
 
-        {/* Vazio */}
+        {/* Estado vazio */}
         {(!videos || videos.length === 0) && (
           <div className="flex flex-col items-center justify-center pt-32 px-4 text-center gap-4">
-            <span className="text-6xl">🎬</span>
+            <Image src="/logo.png" alt="Logo" width={80} height={80} className="opacity-40 object-contain" />
             <h2 className="text-xl text-white font-bold">Nenhum conteúdo disponível ainda.</h2>
-            <p className="text-[#8197a4]">Em breve o catálogo será atualizado.</p>
+            <p className="text-[#94A3B8]">Em breve o catálogo será atualizado.</p>
           </div>
         )}
 
         {videos && videos.length > 0 && (
           <>
-            {/* Banner Principal */}
+            {/* HeroBanner */}
             <HeroBanner video={videos[0] as Video} />
 
-            {/* Separador estilo Prime (badge azul reto) */}
-            <div className="flex items-center gap-4 px-6 md:px-12 lg:px-16 mt-10 mb-6">
-              <div className="h-px bg-[#1e3040] flex-1" />
-              <span className="text-[#8197a4] text-xs tracking-widest uppercase">Catálogo</span>
-              <div className="h-px bg-[#1e3040] flex-1" />
+            {/* Separador com estilo ouro */}
+            <div className="flex items-center gap-4 px-5 md:px-10 lg:px-16 mt-10 mb-8">
+              <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              <span className="text-[#D4AF37] text-[0.6rem] font-extrabold tracking-[0.2em] uppercase">Catálogo</span>
+              <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
             </div>
 
-            {/* Carrosséis por categoria */}
-            <div className="space-y-2">
+            {/* Carrosséis */}
+            <div className="space-y-4">
               {categorias.map(cat => (
                 <CategoryCarousel key={cat} title={cat} count={videosPorCategoria[cat].length}>
                   {videosPorCategoria[cat].map((video: Video) => (
@@ -158,11 +137,14 @@ export default async function WatchPage() {
               ))}
             </div>
 
-            {/* Footer Prime */}
-            <footer className="mt-20 pb-10 border-t border-[#1e3040] px-6 md:px-12 lg:px-16 pt-8">
-              <div className="flex items-center gap-2 text-[#8197a4] text-xs">
-                <div className="bg-[#00a8e1] text-white text-[0.5rem] font-black px-1.5 py-0.5 rounded tracking-widest">Prime</div>
-                <span>Contos de Oração · Todos os direitos reservados</span>
+            {/* Rodapé */}
+            <footer className="mt-20 pb-10 pt-8 px-5 md:px-10 lg:px-16"
+              style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <div className="flex items-center gap-3">
+                <Image src="/logo.png" alt="Logo" width={28} height={28} className="opacity-50 object-contain" />
+                <span style={{ color: '#94A3B8', fontSize: '0.75rem' }}>
+                  Contos de Oração · Todos os direitos reservados
+                </span>
               </div>
             </footer>
           </>

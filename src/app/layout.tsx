@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Contos de Oração - Streaming",
-  description: "Filmes, séries e muito mais. Assista onde quiser.",
+  title: "Contos de Oração – Streaming Católico",
+  description: "A plataforma de streaming de orações, novenas e retiros espirituais. Assista onde quiser.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    title: "Contos de Oração",
+    description: "A plataforma de streaming de orações, novenas e retiros espirituais.",
+    images: "/logo.png",
+    type: "website",
+  }
 };
 
 export default function RootLayout({
@@ -18,11 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${inter.variable} antialiased class`}
-    >
-      <body className="min-h-full flex flex-col scroll-smooth">{children}</body>
+    <html lang="pt-BR" className="antialiased">
+      <body className="min-h-full flex flex-col scroll-smooth" style={{ background: '#090B10' }}>
+        {children}
+      </body>
     </html>
   );
 }

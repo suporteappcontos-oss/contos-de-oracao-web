@@ -1,23 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --color-prime-bg: #0f171e;
-  --color-prime-nav: #1a242f;
-  --color-prime-card: #1a2733;
-  --color-prime-card-hover: #243040;
-  --color-prime-blue: #00a8e1;
-  --color-prime-blue-dark: #0083b0;
-  --color-prime-text: #ffffff;
-  --color-prime-muted: #8197a4;
-  --color-prime-dimmed: #4a6373;
-  --color-prime-border: #1e3040;
-  --color-prime-badge: #00a8e1;
+  /* ── Paleta oficial do App (colors.js) ── */
+  --color-bg-root:    #02040A;
+  --color-bg-app:     #090B10;
+  --color-bg-card:    #15243E;
+  --color-bg-hover:   #1E3354;
+
+  /* Destaques */
+  --color-primary:    #D4AF37;   /* Ouro Premium */
+  --color-primary-glow: rgba(212, 175, 55, 0.4);
+  --color-fire:       #FF4500;
+  --color-success:    #10B981;
+  --color-blue:       #3B82F6;
+
+  /* Textos */
+  --color-text-main:  #F8FAFC;
+  --color-text-muted: #94A3B8;
+
+  /* Bordas */
+  --color-border-light: rgba(255,255,255,0.05);
+  --color-border-strong: rgba(255,255,255,0.10);
 }
 
 :root {
-  --background: #0f171e;
-  --foreground: #ffffff;
+  --background: #090B10;
+  --foreground: #F8FAFC;
 }
 
 * {
@@ -29,41 +38,36 @@ html {
 }
 
 body {
-  background: #0f171e;
-  color: #ffffff;
-  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  background: #090B10;
+  color: #F8FAFC;
+  font-family: 'Outfit', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Scrollbar Oculta (para carrosséis) ── */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+/* ── Scrollbar oculta para carrosséis ── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* ── Scrollbar Global Estilizada ── */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0f171e;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e3040;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #2a4050;
-}
+/* ── Scrollbar global ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #02040A; }
+::-webkit-scrollbar-thumb { background: #15243E; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #1E3354; }
 
-/* ── Animações de Fade/Slide ── */
+/* ── Select options ── */
+select option { background: #090B10; color: #F8FAFC; }
+
+/* ── Focus Acessível ── */
+:focus-visible { outline: 2px solid #D4AF37; outline-offset: 2px; }
+
+/* ── Animações CSS ── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeIn {
@@ -71,63 +75,49 @@ body {
   to   { opacity: 1; }
 }
 @keyframes kenBurns {
-  0%   { transform: scale(1); }
-  100% { transform: scale(1.08); }
+  0%   { transform: scale(1) translateX(0); }
+  100% { transform: scale(1.08) translateX(-1%); }
+}
+@keyframes goldPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.5); }
+  50%       { box-shadow: 0 0 0 10px rgba(212,175,55,0); }
 }
 @keyframes shimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 168, 225, 0.4); }
-  50%       { box-shadow: 0 0 0 8px rgba(0, 168, 225, 0); }
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease forwards;
-  opacity: 0;
-}
-.animate-fade-in {
-  animation: fadeIn 0.6s ease forwards;
-  opacity: 0;
-}
+.animate-fade-in-up { animation: fadeInUp 0.8s ease forwards; opacity: 0; }
+.animate-fade-in    { animation: fadeIn 0.6s ease forwards; opacity: 0; }
 .delay-100  { animation-delay: 0.1s; }
 .delay-200  { animation-delay: 0.2s; }
-.delay-300  { animation-delay: 0.3s; }
+.delay-350  { animation-delay: 0.35s; }
 .delay-500  { animation-delay: 0.5s; }
-.delay-700  { animation-delay: 0.7s; }
 
-.ken-burns {
-  animation: kenBurns 20s ease-in-out infinite alternate;
+.ken-burns  { animation: kenBurns 20s ease-in-out infinite alternate; }
+.gold-pulse { animation: goldPulse 2.2s infinite; }
+
+/* ── Glassmorphism do App ── */
+.glass {
+  background: rgba(20, 24, 36, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
-
-.pulse-glow {
-  animation: pulseGlow 2s infinite;
+.glass-dark {
+  background: rgba(14, 18, 27, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 /* ── Skeleton Loading ── */
 .skeleton {
-  background: linear-gradient(90deg, #1a2733 25%, #223040 50%, #1a2733 75%);
-  background-size: 400px 100%;
-  animation: shimmer 1.4s infinite;
+  background: linear-gradient(90deg, #15243E 25%, #1E3354 50%, #15243E 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.5s infinite;
   border-radius: 8px;
 }
 
-/* ── Glassmorphism ── */
-.glass {
-  background: rgba(26, 36, 47, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
-/* ── Focus visible acessível ── */
-:focus-visible {
-  outline: 2px solid #00a8e1;
-  outline-offset: 2px;
-}
-
-/* ── Select estilizado ── */
-select option {
-  background: #1a242f;
-  color: #ffffff;
+/* ── Glow Dourado do App ── */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212,175,55,0.25), 0 0 60px rgba(212,175,55,0.1);
 }
