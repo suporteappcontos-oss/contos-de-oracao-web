@@ -184,7 +184,7 @@ export default function AssinarPage() {
                     <div className="text-white/50 text-sm mt-0.5">Cobrado todo mês</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>R$ 29,90</div>
+                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>R$ 7,90</div>
                     <div className="text-white/40 text-xs">/mês</div>
                   </div>
                 </div>
@@ -214,7 +214,7 @@ export default function AssinarPage() {
                     <div className="text-white/50 text-sm mt-0.5">Cobrado uma vez por ano</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>R$ 19,90</div>
+                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>R$ 5,90</div>
                     <div className="text-white/40 text-xs">/mês</div>
                   </div>
                 </div>
@@ -281,13 +281,13 @@ export default function AssinarPage() {
               <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <span className="text-white/60 text-sm">Plano</span>
                 <span className="font-bold text-sm" style={{ color: '#D4AF37' }}>
-                  {planoSelecionado === 'mensal' ? 'Mensal — R$ 29,90/mês' : 'Anual — R$ 19,90/mês'}
+                  {planoSelecionado === 'mensal' ? 'Mensal — R$ 7,90/mês' : 'Anual — R$ 5,90/mês'}
                 </span>
               </div>
               <div className="flex justify-between pt-3 mt-1">
                 <span className="text-white font-black text-sm">Total hoje</span>
                 <span className="font-black text-lg" style={{ color: '#D4AF37' }}>
-                  {planoSelecionado === 'mensal' ? 'R$ 29,90' : 'R$ 238,80'}
+                  {planoSelecionado === 'mensal' ? 'R$ 7,90' : 'R$ 70,80'}
                 </span>
               </div>
             </div>
