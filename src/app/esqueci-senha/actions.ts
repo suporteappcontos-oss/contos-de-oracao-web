@@ -43,7 +43,7 @@ export async function enviarResetSenha(formData: FormData) {
       mensagemErro = 'E-mail inválido ou URL de redirecionamento não autorizada no Supabase.'
     } else if (error.status === 429) {
       mensagemErro = 'Muitas tentativas de envio. Aguarde alguns minutos.'
-    } else if (error.status >= 500) {
+    } else if (error.status && error.status >= 500) {
       mensagemErro = 'Erro no servidor de e-mail (SMTP). Pode ser um problema com a Senha de App do Gmail.'
     }
 
