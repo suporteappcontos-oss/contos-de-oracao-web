@@ -79,7 +79,7 @@ export default async function EsqueciSenhaPage({ searchParams }: Props) {
                 E-mail
               </label>
               <input
-                type="email"
+                type="text"
                 name="email"
                 required
                 placeholder="seu@email.com"

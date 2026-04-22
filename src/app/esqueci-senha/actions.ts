@@ -5,7 +5,10 @@ import { redirect } from 'next/navigation'
 
 // Envia e-mail de recuperação de senha
 export async function enviarResetSenha(formData: FormData) {
-  const email = formData.get('email') as string
+  let emailRaw = formData.get('email') as string
+  const email = emailRaw ? emailRaw.trim() : ''
+
+  console.log('🟢 [Server Action] Disparou enviarResetSenha para:', email)
 
   if (!email) {
     redirect('/esqueci-senha?erro=email_vazio')
@@ -14,11 +17,13 @@ export async function enviarResetSenha(formData: FormData) {
   const supabase = await createClient()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contos-de-oracao-web.vercel.app'
 
-  // O usuário vai receber um e-mail com um link que aponta para /api/auth/callback
-  // que vai trocar o code por sessão e redirecionar para /atualizar-senha
+  console.log('🟢 [Server Action] Enviando requisição para o Supabase...')
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/api/auth/callback?next=/atualizar-senha`,
   })
+
+  console.log('🟢 [Server Action] Resposta do Supabase, erro:', error)
 
   if (error) {
     console.error('🔴 ERRO DO SUPABASE SMTP:', error)
