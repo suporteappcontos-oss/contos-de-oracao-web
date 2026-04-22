@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Play, Plus, ThumbsUp, Clock } from 'lucide-react'
+import { Play, ThumbsUp, Clock, Heart } from 'lucide-react'
+import { toggleFavorito } from '@/app/perfil/actions'
 
 // Fallback com imagens de oração/espiritualidade
 const FALLBACK_IMAGES = [
@@ -29,9 +30,22 @@ type VideoData = {
   thumbnail_url: string | null
 }
 
-export default function VideoCard({ video }: { video: VideoData }) {
+export default function VideoCard({ video, isFavoritado = false }: { video: VideoData, isFavoritado?: boolean }) {
   const [hovered, setHovered] = useState(false)
   const [imgError, setImgError] = useState(false)
+  const [favoritado, setFavoritado] = useState(isFavoritado)
+  const [loadingFav, setLoadingFav] = useState(false)
+
+  async function handleFavorito(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (loadingFav) return
+    setLoadingFav(true)
+    setFavoritado(prev => !prev) // otimista
+    const result = await toggleFavorito(video.id)
+    if (result.error) setFavoritado(prev => !prev) // reverte se erro
+    setLoadingFav(false)
+  }
   
   const imageUrl = (!imgError && video.thumbnail_url) 
     ? video.thumbnail_url 
@@ -128,10 +142,20 @@ export default function VideoCard({ video }: { video: VideoData }) {
             <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
               <Play fill="#090B10" size={12} className="ml-0.5" />
             </div>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center"
-              style={{ border: '1.5px solid rgba(255,255,255,0.2)' }}>
-              <Plus size={14} className="text-white" />
-            </div>
+            <button
+              onClick={handleFavorito}
+              disabled={loadingFav}
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
+              style={{ border: '1.5px solid rgba(255,255,255,0.2)' }}
+              title={favoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            >
+              <Heart
+                size={12}
+                className="transition-all"
+                fill={favoritado ? '#ef4444' : 'none'}
+                style={{ color: favoritado ? '#ef4444' : 'white' }}
+              />
+            </button>
             <div className="w-7 h-7 rounded-full flex items-center justify-center"
               style={{ border: '1.5px solid rgba(255,255,255,0.2)' }}>
               <ThumbsUp size={11} className="text-white" />

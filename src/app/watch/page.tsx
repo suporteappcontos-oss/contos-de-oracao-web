@@ -5,7 +5,7 @@ import Image from 'next/image'
 import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
-import { LogOut, Settings } from 'lucide-react'
+import { LogOut, Settings, User } from 'lucide-react'
 
 type Video = {
   id: string
@@ -49,6 +49,11 @@ export default async function WatchPage() {
   const { data: videos } = await supabase
     .from('videos').select('*').eq('ativo', true)
     .order('criado_em', { ascending: false })
+
+  // Busca IDs dos favoritos do usuário para destacar nos cards
+  const { data: favoritosData } = await supabase
+    .from('favoritos').select('video_id').eq('user_id', user!.id)
+  const favoritosSet = new Set((favoritosData ?? []).map(f => f.video_id))
 
   const categorias = [...new Set((videos ?? []).map((v: Video) => v.categoria))]
   const videosPorCategoria: Record<string, Video[]> = {}
@@ -105,6 +110,14 @@ export default async function WatchPage() {
             </Link>
           )}
 
+          <Link
+            href="/perfil"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/5 border border-white/10 hover:bg-white/10"
+          >
+            <User size={13} className="text-white" />
+            <span className="hidden sm:inline text-white">Perfil</span>
+          </Link>
+
           <form action={logout} className="m-0 p-0 flex items-center">
             <button
               type="submit"
@@ -146,7 +159,7 @@ export default async function WatchPage() {
               {categorias.map(cat => (
                 <CategoryCarousel key={cat} title={cat} count={videosPorCategoria[cat].length}>
                   {videosPorCategoria[cat].map((video: Video) => (
-                    <VideoCard key={video.id} video={video} />
+                    <VideoCard key={video.id} video={video} isFavoritado={favoritosSet.has(video.id)} />
                   ))}
                 </CategoryCarousel>
               ))}
