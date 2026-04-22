@@ -31,13 +31,13 @@ export async function toggleFavorito(videoId: string) {
 }
 
 // Salva o nome do usuário no perfil
-export async function salvarNome(formData: FormData) {
+export async function salvarNome(formData: FormData): Promise<void> {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Não autenticado' }
+  if (!user) return
 
   const nome = (formData.get('nome') as string)?.trim()
-  if (!nome) return { error: 'Nome inválido' }
+  if (!nome) return
 
   await supabase.auth.updateUser({ data: { nome } })
 
