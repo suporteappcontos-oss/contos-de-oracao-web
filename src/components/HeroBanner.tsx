@@ -7,7 +7,6 @@ import Image from 'next/image'
 
 const FALLBACK_IMAGES = [
   'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1600&q=80',
-  'https://images.unsplash.com/photo-1512070679279-8988d32161be?w=1600&q=80',
   'https://images.unsplash.com/photo-1476725994324-6f6833cfb205?w=1600&q=80',
   'https://images.unsplash.com/photo-1507036066871-b7e8032b3dea?w=1600&q=80',
   'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=1600&q=80',

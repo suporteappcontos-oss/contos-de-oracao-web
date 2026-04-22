@@ -8,7 +8,6 @@ import { Play, Plus, ThumbsUp, Clock } from 'lucide-react'
 // Fallback com imagens de oração/espiritualidade
 const FALLBACK_IMAGES = [
   'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80', // vela/luz
-  'https://images.unsplash.com/photo-1512070679279-8988d32161be?w=800&q=80', // cruz
   'https://images.unsplash.com/photo-1476725994324-6f6833cfb205?w=800&q=80', // amanhecer
   'https://images.unsplash.com/photo-1507036066871-b7e8032b3dea?w=800&q=80', // catedral
   'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=800&q=80', // mãos rezando

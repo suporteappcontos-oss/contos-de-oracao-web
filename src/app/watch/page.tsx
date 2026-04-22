@@ -100,8 +100,7 @@ export default async function WatchPage() {
           <form action={logout} className="m-0 p-0 flex items-center">
             <button
               type="submit"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all h-full"
-              style={{ background: 'rgba(255,255,255,0.05)', color: '#94A3B8', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all h-full bg-white/5 text-slate-400 border border-white/10 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30"
             >
               <LogOut size={13} />
               <span className="hidden sm:inline">Sair</span>

@@ -23,7 +23,6 @@ const CATEGORIAS = ['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'S
 // Imagens de fallback
 const FALLBACK_IMAGES = [
   'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=70',
-  'https://images.unsplash.com/photo-1512070679279-8988d32161be?w=400&q=70',
   'https://images.unsplash.com/photo-1476725994324-6f6833cfb205?w=400&q=70',
   'https://images.unsplash.com/photo-1507036066871-b7e8032b3dea?w=400&q=70',
   'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=400&q=70',
