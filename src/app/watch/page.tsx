@@ -16,6 +16,7 @@ type Video = {
 }
 
 export default async function WatchPage() {
+  try {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -142,6 +143,18 @@ export default async function WatchPage() {
       </main>
     </div>
   )
+  } catch (err: any) {
+    if (err?.message === 'NEXT_REDIRECT' || err?.digest?.startsWith('NEXT_REDIRECT')) throw err;
+    return (
+      <div style={{ background: '#0C121D', color: '#ff6b6b', padding: '2rem', minHeight: '100vh', fontFamily: 'monospace' }}>
+        <h1>Erro no Servidor:</h1>
+        <p>{err?.message || 'Erro Desconhecido'}</p>
+        <pre style={{ background: 'rgba(255,0,0,0.1)', padding: '1rem', overflowX: 'auto', borderRadius: '8px' }}>
+          {err?.stack}
+        </pre>
+      </div>
+    )
+  }
 }
 
 // ── Card de Vídeo ──
