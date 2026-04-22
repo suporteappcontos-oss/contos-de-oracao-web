@@ -249,7 +249,6 @@ export default async function AdminPage() {
 
                     <form action={deletarVideo.bind(null, video.id)} style={{ display: 'inline' }}>
                       <button type="submit"
-                        onClick={() => {}}
                         style={{ ...btnStyle, background: 'rgba(255,0,0,0.1)', color: '#ff4444' }}
                       >
                         🗑 Deletar

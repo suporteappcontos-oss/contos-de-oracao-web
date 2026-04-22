@@ -170,8 +170,6 @@ function VideoCard({ video }: { video: Video }) {
         transition: 'all 0.25s', cursor: 'pointer',
         background: 'rgba(255,255,255,0.03)',
       }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,215,0,0.4)'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; }}
       >
         {/* Thumbnail */}
         <div style={{
