@@ -18,32 +18,27 @@ export default function Navbar() {
         scrolled ? "bg-[#090B10]/95 shadow-lg shadow-black/70 backdrop-blur-md border-b border-white/5" : "bg-transparent"
       }`}
     >
-      {/* Logo + Nome (idêntico à navbar interna) */}
-      <Link href="/" className="flex items-center gap-3">
+      {/* Logo + Nome (sem badge de plano — landing page é pública) */}
+      <Link href="/" className="flex items-center gap-3 no-underline">
         <Image
           src="/logo.png"
           alt="Contos de Oração"
-          width={46}
-          height={46}
+          width={44}
+          height={44}
           className="object-contain drop-shadow-lg"
         />
-        <div>
-          <div className="text-white font-black text-lg leading-tight tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Contos de Oração
-          </div>
-          <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest -mt-0.5">
-            Premium
-          </div>
-        </div>
+        <span className="text-white font-black text-lg hidden sm:inline" style={{ fontFamily: 'Outfit, sans-serif' }}>
+          Contos de Oração
+        </span>
       </Link>
 
       {/* Links */}
       <div className="flex items-center gap-5">
-        <a href="#home" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Início</a>
-        <a href="#planos" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors">Planos</a>
+        <a href="#home" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors no-underline">Início</a>
+        <a href="#planos" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors no-underline">Planos</a>
         <Link
           href="/login"
-          className="text-white text-sm font-bold px-5 py-2 rounded-xl transition-all hover:scale-105"
+          className="text-sm font-bold px-5 py-2 rounded-xl transition-all hover:scale-105 no-underline"
           style={{ background: '#D4AF37', color: '#090B10' }}
         >
           Entrar

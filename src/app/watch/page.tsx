@@ -26,9 +26,17 @@ export default async function WatchPage() {
   if (!user) redirect('/')
 
   const { data: perfil } = await supabase
-    .from('perfis').select('role').eq('id', user.id).single()
+    .from('perfis').select('role, plano').eq('id', user.id).single()
 
   const isAdmin = perfil?.role === 'admin'
+
+  // Label do plano baseado no plano real do usuário
+  const PLANO_LABEL: Record<string, string> = {
+    basico: 'Básico',
+    familia: 'Família',
+    premium: 'Premium',
+  }
+  const planoLabel = PLANO_LABEL[perfil?.plano ?? ''] ?? 'Plataforma'
 
   const { data: videos } = await supabase
     .from('videos').select('*').eq('ativo', true)
@@ -69,7 +77,7 @@ export default async function WatchPage() {
               Contos de Oração
             </div>
             <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest -mt-0.5">
-              Premium
+              {planoLabel}
             </div>
           </div>
         </Link>
