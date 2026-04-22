@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { adicionarVideo, toggleVideoAtivo, deletarVideo } from './actions'
 import { LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink, Plus, ChevronLeft } from 'lucide-react'
 
@@ -49,30 +50,34 @@ export default async function AdminPage() {
   const ativos = videos?.filter(v => v.ativo).length ?? 0
 
   return (
-    <div className="min-h-screen bg-[#0f171e] text-white font-sans pb-20">
+    <div className="min-h-screen text-white pb-20" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* ── NAVBAR ADMIN ── */}
-      <header className="fixed top-0 w-full z-50 bg-[#1a242f] border-b border-[#1e3040] flex items-center justify-between px-4 md:px-8 h-14 md:h-[60px]">
-        <div className="flex items-center gap-3 md:gap-5">
-          {/* Logo */}
-          <Link href="/watch" className="flex items-center gap-2">
-            <div className="bg-[#00a8e1] text-white text-[0.55rem] font-black px-1.5 py-0.5 rounded tracking-widest uppercase">Prime</div>
-            <span className="text-white font-semibold text-sm hidden sm:inline opacity-70">Video</span>
+      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-14 md:h-[60px]" style={{ background: '#090B10', borderBottom: '1px solid rgba(255,255,255,0.05)', fontFamily: 'Outfit, sans-serif' }}>
+        <div className="flex items-center gap-3 md:gap-4">
+          {/* Logo real do App */}
+          <Link href="/watch" className="flex items-center gap-2.5">
+            <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-contain" />
+            <div className="hidden sm:block">
+              <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
+              <div className="text-[0.5rem] font-extrabold uppercase tracking-widest -mt-0.5" style={{ color: '#D4AF37' }}>Premium</div>
+            </div>
           </Link>
-          
-          <div className="h-5 w-px bg-[#1e3040] hidden sm:block" />
-          
+
+          <div className="h-5 w-px hidden sm:block" style={{ background: 'rgba(255,255,255,0.08)' }} />
+
           <div className="flex items-center gap-1.5">
-            <LayoutDashboard size={14} className="text-[#00a8e1]" />
+            <LayoutDashboard size={13} style={{ color: '#D4AF37' }} />
             <span className="text-white font-bold text-sm">Painel Admin</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 md:gap-3">
-          <span className="text-[#8197a4] text-xs hidden md:inline truncate max-w-[200px]">{user.email}</span>
-          <Link 
-            href="/watch" 
-            className="flex items-center gap-1.5 text-[#8197a4] hover:text-white text-xs border border-[#1e3040] hover:border-[#2a4050] px-3 py-1.5 rounded transition-colors"
+          <span className="text-[#94A3B8] text-xs hidden md:inline truncate max-w-[200px]">{user.email}</span>
+          <Link
+            href="/watch"
+            className="flex items-center gap-1.5 text-[#94A3B8] hover:text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
+            style={{ border: '1px solid rgba(255,255,255,0.08)' }}
           >
             <ChevronLeft size={12} />
             Voltar
