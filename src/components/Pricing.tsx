@@ -50,7 +50,7 @@ const planos = [
 
 export default function Pricing() {
   return (
-    <section id="planos" className="py-[80px] px-[4%] text-center bg-[#111]">
+    <section id="planos" className="py-[80px] px-[4%] text-center" style={{ background: '#090B10', borderTop: '1px solid rgba(212,175,55,0.1)', fontFamily: 'Outfit, sans-serif' }}>
       <p className="text-[#FFD700] uppercase tracking-widest text-sm font-semibold mb-4">Planos e Preços</p>
       <h2 className="text-3xl md:text-[2.8rem] mb-4 font-extrabold text-white">
         Escolha o plano ideal para você

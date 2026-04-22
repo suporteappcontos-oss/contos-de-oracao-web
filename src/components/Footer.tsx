@@ -1,16 +1,23 @@
 import React from 'react';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="pt-[70px] pb-[30px] px-[4%] text-text-muted border-t-[8px] border-[#222] bg-black">
-      <p className="text-[1rem]">Dúvidas? Ligue 0800 000 0000</p>
-      <div className="flex flex-wrap gap-[30px] my-5 mb-10">
-        <a href="#" className="text-text-muted no-underline text-[0.95rem] hover:underline">Perguntas frequentes</a>
-        <a href="#" className="text-text-muted no-underline text-[0.95rem] hover:underline">Centro de ajuda</a>
-        <a href="#" className="text-text-muted no-underline text-[0.95rem] hover:underline">Termos de uso</a>
-        <a href="#" className="text-text-muted no-underline text-[0.95rem] hover:underline">Privacidade</a>
+    <footer className="pt-16 pb-8 px-[4%]" style={{ background: '#090B10', borderTop: '1px solid rgba(255,255,255,0.06)', fontFamily: 'Outfit, sans-serif' }}>
+      <div className="flex items-center gap-3 mb-8">
+        <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-contain opacity-70" />
+        <div>
+          <div className="text-white font-bold text-sm">Contos de Oração</div>
+          <div className="text-[0.55rem] font-extrabold uppercase tracking-widest" style={{ color: '#D4AF37' }}>Premium</div>
+        </div>
       </div>
-      <p className="mt-5 text-[0.9rem]">© 2026 Contos de Oração Brasil</p>
+      <div className="flex flex-wrap gap-6 mb-8">
+        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Perguntas frequentes</a>
+        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Suporte</a>
+        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Termos de uso</a>
+        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Privacidade</a>
+      </div>
+      <p className="text-[#94A3B8] text-xs">© 2026 Contos de Oração Brasil. Todos os direitos reservados.</p>
     </footer>
   );
 }

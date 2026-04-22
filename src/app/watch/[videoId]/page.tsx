@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ChevronLeft, CheckCircle, Clock, Tag } from 'lucide-react'
 
 type Props = {
@@ -39,27 +40,31 @@ export default async function VideoPlayerPage({ params }: Props) {
   const embedUrl = `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000`
 
   return (
-    <div className="min-h-screen bg-[#0f171e] text-white font-sans">
+    <div className="min-h-screen text-white font-sans" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* ── NAVBAR ── */}
-      <header className="fixed top-0 w-full z-50 bg-[#1a242f]/95 backdrop-blur-xl border-b border-[#1e3040] flex items-center gap-4 px-4 md:px-8 h-14 md:h-[60px]">
-        <Link 
-          href="/watch" 
-          className="flex items-center gap-2 text-[#8197a4] hover:text-white transition-colors text-sm"
+      <header className="fixed top-0 w-full z-50 bg-[#090B10]/95 backdrop-blur-xl border-b border-white/5 flex items-center gap-4 px-4 md:px-8 h-14 md:h-[60px]">
+        <Link
+          href="/watch"
+          className="flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm"
         >
           <ChevronLeft size={18} />
           <span className="hidden sm:inline">Voltar</span>
         </Link>
 
-        <div className="h-4 w-px bg-[#1e3040]" />
+        <div className="h-4 w-px bg-white/10" />
 
-        <div className="flex items-center gap-2">
-          <div className="bg-[#00a8e1] text-white text-[0.55rem] font-black px-1.5 py-0.5 rounded tracking-widest uppercase">Prime</div>
-          <span className="text-white font-semibold text-sm hidden sm:inline opacity-70">Video</span>
-        </div>
+        {/* Logo do App */}
+        <Link href="/watch" className="flex items-center gap-2.5">
+          <Image src="/logo.png" alt="Contos de Oração" width={34} height={34} className="object-contain" />
+          <div className="hidden sm:block">
+            <div className="text-white font-black text-sm leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>Contos de Oração</div>
+            <div className="text-[#D4AF37] text-[0.5rem] font-bold uppercase tracking-widest -mt-0.5">Premium</div>
+          </div>
+        </Link>
 
         <div className="flex-1 text-center hidden md:block">
-          <span className="text-white/60 text-sm truncate">{video.titulo}</span>
+          <span className="text-white/40 text-sm truncate">{video.titulo}</span>
         </div>
       </header>
 
