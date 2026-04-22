@@ -32,7 +32,7 @@ export default async function AdminPage() {
 
   if (perfil?.role !== 'admin') redirect('/')
 
-  // Buscar todos os vídeos (admin vê todos, inclusive inativos)
+  // Buscar todos os vídeos
   const { data: videos } = await supabase
     .from('videos')
     .select('*')
@@ -42,22 +42,23 @@ export default async function AdminPage() {
   const ativos = videos?.filter(v => v.ativo).length ?? 0
 
   return (
-    <div className="min-h-screen bg-[#0C121D] font-sans text-white pb-20">
+    <div className="min-h-screen bg-[#0f171e] font-sans text-white pb-20">
 
       {/* ── Navbar ── */}
-      <header className="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-md border-b border-[#FFD700]/15 flex items-center justify-between px-4 md:px-8 py-4">
-        <div className="flex items-center gap-3">
-          <Link href="/watch" className="text-[#FFD700] text-xl md:text-2xl font-black drop-shadow-md">
-            Contos de Oração
+      <header className="fixed top-0 w-full z-50 bg-[#1a242f] shadow-md flex items-center justify-between px-4 md:px-8 py-3 h-[72px]">
+        <div className="flex items-center gap-4">
+          <Link href="/watch" className="flex items-center leading-none shrink-0 group gap-1">
+             <span className="text-white text-xl font-black italic tracking-tighter shadow-sm">prime</span>
+             <span className="text-[#0f79af] text-sm font-bold tracking-widest mt-0.5">video</span>
           </Link>
-          <span className="bg-[#FFD700] text-black text-[0.6rem] font-extrabold px-2 py-0.5 rounded tracking-widest hidden sm:inline-block">
+          <span className="bg-[#0f79af] text-white text-[0.6rem] font-extrabold px-2 py-0.5 rounded tracking-widest hidden sm:inline-block outline outline-2 outline-offset-2 outline-[#0f79af]/30">
             ADMIN
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-white/40 text-xs hidden sm:inline">{user.email}</span>
-          <Link href="/watch" className="text-white/70 text-xs md:text-sm border border-white/20 px-3 md:px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-            ← Voltar ao Site
+          <span className="text-[#8197a4] text-sm font-bold hidden md:inline">{user.email}</span>
+          <Link href="/watch" className="text-white/70 text-xs md:text-sm border border-white/20 hover:border-white/40 px-3 md:px-4 py-2 rounded font-bold hover:bg-white/5 transition-colors">
+            ← Sair do Admin
           </Link>
         </div>
       </header>
@@ -66,139 +67,129 @@ export default async function AdminPage() {
 
         {/* ── Título ── */}
         <div className="mb-8">
-          <h1 className="text-white text-2xl md:text-3xl font-black mb-1">
-            🎬 Painel Administrativo
+          <h1 className="text-white text-2xl md:text-3xl font-black mb-1 drop-shadow-md">
+            Gerenciamento do Catálogo
           </h1>
-          <p className="text-white/40 text-sm md:text-base">
-            Gerencie o catálogo de vídeos da plataforma.
+          <p className="text-[#8197a4] text-sm md:text-base font-medium">
+            Adicione e modifique vídeos disponíveis no plano Prime.
           </p>
         </div>
 
         {/* ── Cards de Estatísticas ── */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-10">
           {[
-            { label: 'Total de Vídeos', value: total, icon: '🎬' },
-            { label: 'Vídeos Ativos', value: ativos, icon: '✅' },
-            { label: 'Vídeos Ocultos', value: total - ativos, icon: '👁️' },
+            { label: 'Total Prime', value: total, icon: '🎬' },
+            { label: 'Visíveis no Catálogo', value: ativos, icon: '✅' },
+            { label: 'Ocultos', value: total - ativos, icon: '👁️' },
           ].map(stat => (
-            <div key={stat.label} className="bg-white/5 border border-white/5 rounded-2xl p-4 md:p-6 text-center">
-              <div className="text-2xl md:text-3xl mb-1">{stat.icon}</div>
-              <div className="text-[#FFD700] text-2xl md:text-4xl font-black">{stat.value}</div>
-              <div className="text-white/40 text-xs md:text-sm mt-1">{stat.label}</div>
+            <div key={stat.label} className="bg-[#1b2530] border border-white/5 rounded-xl p-4 md:p-6 text-center shadow-lg hover:bg-[#202c38] transition-colors">
+              <div className="text-2xl md:text-3xl mb-1 opacity-80">{stat.icon}</div>
+              <div className="text-[#0f79af] text-2xl md:text-4xl font-black">{stat.value}</div>
+              <div className="text-[#8197a4] text-xs md:text-sm mt-1 font-bold tracking-wide uppercase">{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* ── Formulário: Adicionar Vídeo ── */}
-        <div className="bg-[#FFD700]/5 border border-[#FFD700]/20 rounded-2xl p-5 md:p-8 mb-10">
-          <h2 className="text-[#FFD700] text-lg md:text-xl font-extrabold mb-6 flex items-center gap-2">
-            ➕ Adicionar Novo Vídeo
+        <div className="bg-[#1b2530] border border-white/5 rounded-xl p-5 md:p-8 mb-10 shadow-lg">
+          <h2 className="text-[#0f79af] text-lg md:text-xl font-extrabold mb-6 flex items-center gap-2">
+            Adicionar Novo Título ao Prime
           </h2>
 
           <form action={adicionarVideo} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
 
-              {/* Título */}
               <div className="md:col-span-2">
-                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Título do Vídeo *</label>
-                <input name="titulo" required placeholder="Ex: A Oração que Move Montanhas" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
+                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Título Oficial *</label>
+                <input name="titulo" required placeholder="A Oração..." className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all" />
               </div>
 
-              {/* Descrição */}
               <div className="md:col-span-2">
-                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Descrição</label>
-                <textarea name="descricao" rows={3} placeholder="Descrição do vídeo..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors resize-y" />
+                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Sinopse</label>
+                <textarea name="descricao" rows={3} placeholder="Sinopse detalhada estilo Prime..." className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all resize-y" />
               </div>
 
-              {/* Categoria */}
               <div>
-                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Categoria</label>
-                {/* CSS Inline apenas para sumir com background branco do option no dropdown */}
-                <select name="categoria" className="w-full bg-[#18212C] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors cursor-pointer appearance-none">
+                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Gênero Primário</label>
+                <select name="categoria" className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all cursor-pointer appearance-none">
                   {CATEGORIAS.map(cat => (
-                    <option key={cat} value={cat} className="bg-[#0C121D]">{cat}</option>
+                    <option key={cat} value={cat} className="bg-[#1a242f] py-2">{cat}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Duração */}
               <div>
-                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Duração (ex: 12:34)</label>
-                <input name="duracao" placeholder="00:00" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
+                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Duração Oficial (ex: 1 h 24 min)</label>
+                <input name="duracao" placeholder="Ex: 1 h 30 min" className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all" />
               </div>
 
-              {/* Bunny.net Video ID */}
               <div>
-                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Video ID do Bunny.net *</label>
-                <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
-                <p className="text-white/30 text-[0.65rem] md:text-xs mt-1.5">No Bunny.net: clique no vídeo → "Copy Video ID"</p>
+                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Bunny.net Video ID *</label>
+                <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-..." className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all font-mono text-sm" />
               </div>
 
-              {/* Thumbnail URL */}
               <div>
-                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">URL da Thumbnail (opcional)</label>
-                <input name="thumbnail_url" placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
+                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Pôster/Thumbnail URL</label>
+                <input name="thumbnail_url" placeholder="(Opcional) URL da imagem HD" className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all" />
               </div>
 
             </div>
 
-            <button type="submit" className="w-full md:w-auto mt-4 bg-[#FFD700] hover:bg-[#ffe14d] text-black px-8 py-3.5 rounded-xl font-extrabold text-sm md:text-base transition-colors shadow-[0_4px_15px_rgba(255,215,0,0.2)]">
-              ✅ Adicionar Vídeo
+            <button type="submit" className="w-full md:w-auto mt-6 bg-[#0f79af] hover:bg-[#0b5e89] text-white px-8 py-3 rounded-md font-bold text-sm md:text-base transition-colors shadow-sm">
+              Publicar no Catálogo Prime
             </button>
           </form>
         </div>
 
         {/* ── Lista de Vídeos ── */}
         <div>
-          <h2 className="text-white text-lg md:text-xl font-extrabold mb-4">
-            📽️ Catálogo Gerenciado ({total})
+          <h2 className="text-white text-lg md:text-xl font-bold mb-4">
+            Títulos Adicionados
           </h2>
 
           {!videos || videos.length === 0 ? (
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-10 text-center">
-              <div className="text-5xl mb-4">📭</div>
-              <p className="text-white/40">Nenhum vídeo cadastrado.</p>
+            <div className="bg-[#1b2530] border border-white/5 rounded-xl p-10 text-center">
+              <p className="text-[#8197a4] font-semibold">Catálogo vazio. Adicione um título acima.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
               {videos.map(video => (
-                <div key={video.id} className={`bg-white/5 border rounded-2xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 transition-all ${video.ativo ? 'border-white/10' : 'border-red-500/20 opacity-60'}`}>
+                <div key={video.id} className={`bg-[#1b2530] border rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 transition-all ${video.ativo ? 'border-white/5 shadow-md' : 'border-red-500/20 opacity-75'}`}>
                   
                   {/* Informações Principais */}
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <div className="flex items-center gap-5 flex-1 min-w-0">
                     <div 
-                      className="w-20 h-14 md:w-24 md:h-16 rounded-lg shrink-0 flex items-center justify-center border border-white/10 bg-cover bg-center"
-                      style={{ backgroundImage: video.thumbnail_url ? `url(${video.thumbnail_url})` : 'none', backgroundColor: 'rgba(255,215,0,0.05)' }}
+                      className="w-24 h-[54px] md:w-28 md:h-[63px] rounded bg-cover bg-center shrink-0 border border-white/10"
+                      style={{ backgroundImage: video.thumbnail_url ? `url(${video.thumbnail_url})` : 'none', backgroundColor: '#0f171e' }}
                     >
-                      {!video.thumbnail_url && <span className="text-2xl">🎬</span>}
+                      {!video.thumbnail_url && <span className="flex items-center justify-center w-full h-full text-xs text-[#8197a4] font-bold">SEM CAPA</span>}
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="text-white font-bold text-sm md:text-base truncate">{video.titulo}</div>
                       <div className="flex flex-wrap items-center gap-2 mt-1.5 line-clamp-1">
-                        <span className="text-[#FFD700] text-[0.65rem] md:text-xs bg-[#FFD700]/10 px-2 py-0.5 rounded font-medium">{video.categoria}</span>
-                        {video.duracao && <span className="text-white/40 text-[0.65rem] md:text-xs shrink-0">⏱ {video.duracao}</span>}
-                        <span className="text-white/30 text-[0.65rem] md:text-xs shrink-0">{new Date(video.criado_em).toLocaleDateString('pt-BR')}</span>
-                        {!video.ativo && <span className="text-red-400 text-[0.65rem] md:text-xs font-bold tracking-wider shrink-0">OCULTO</span>}
+                        <span className="text-[#8197a4] text-[0.65rem] md:text-[0.7rem] font-bold bg-[#0f171e] px-2 py-0.5 rounded border border-white/10">{video.categoria}</span>
+                        {video.duracao && <span className="text-white/50 text-[0.65rem] md:text-xs">⏱ {video.duracao}</span>}
+                        <span className="text-white/30 text-[0.65rem] md:text-xs">{new Date(video.criado_em).toLocaleDateString('pt-BR')}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Ações */}
-                  <div className="flex items-center gap-2 w-full md:w-auto shrink-0 mt-2 md:mt-0">
-                    <Link href={`/watch/${video.id}`} target="_blank" className="flex-1 md:flex-none text-center bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors">
-                      ▶ Ver
+                  <div className="flex items-center gap-2 w-full md:w-auto shrink-0 mt-3 md:mt-0">
+                    <Link href={`/watch/${video.id}`} target="_blank" className="flex-1 md:flex-none text-center bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-md text-xs font-bold transition-colors">
+                      Testar
                     </Link>
                     
                     <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)} className="flex-1 md:flex-none">
-                      <button type="submit" className={`w-full md:w-auto px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors ${video.ativo ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20' : 'bg-green-500/10 text-green-400 hover:bg-green-500/20'}`}>
-                        {video.ativo ? '👁 Ocultar' : '✅ Ativar'}
+                      <button type="submit" className={`w-full px-3 py-2 rounded-md text-xs font-bold transition-colors ${video.ativo ? 'text-white border border-[#0f79af] hover:bg-[#0f79af]/20' : 'bg-green-500 hover:bg-green-600 text-white'}`}>
+                        {video.ativo ? 'Ocultar' : 'Habilitar'}
                       </button>
                     </form>
 
                     <form action={deletarVideo.bind(null, video.id)} className="flex-1 md:flex-none">
-                      <button type="submit" className="w-full md:w-auto bg-red-500/10 hover:bg-red-500/20 text-red-500 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors">
-                        🗑 Deletar
+                      <button type="submit" className="w-full text-red-500 hover:text-white hover:bg-red-600 border border-red-500/20 px-3 py-2 rounded-md text-xs font-bold transition-colors">
+                        Deletar
                       </button>
                     </form>
                   </div>

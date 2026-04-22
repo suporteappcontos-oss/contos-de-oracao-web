@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Play, Clock } from 'lucide-react'
+import { Play, Plus, Check } from 'lucide-react'
+import { useState } from 'react'
 
-// Adaptação da tipagem
 type VideoData = {
   id: string
   titulo: string
@@ -15,54 +15,86 @@ type VideoData = {
   thumbnail_url: string | null
 }
 
+const FALLBACK_BANNERS = [
+  'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=600&auto=format&fit=crop', // Cinema Escuro
+  'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=600&auto=format&fit=crop', // Filme antigo
+  'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop', // Claquete
+]
+
+function getFallback(id: string) {
+  const code = id.charCodeAt(0) + id.charCodeAt(id.length - 1)
+  return FALLBACK_BANNERS[code % FALLBACK_BANNERS.length]
+}
+
 export default function VideoCard({ video }: { video: VideoData }) {
-  const thumbnailUrl = video.thumbnail_url || 
+  const [imgError, setImgError] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+
+  const initialThumbnail = video.thumbnail_url || 
     `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}/thumbnail.jpg`
 
+  const finalImage = imgError ? getFallback(video.id) : initialThumbnail
+
   return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.05 }}
-      whileTap={{ scale: 0.98 }}
-      className="group relative flex-shrink-0 w-[180px] md:w-[240px] cursor-pointer"
+    <div 
+      className="relative flex-shrink-0 w-[240px] md:w-[300px] h-[135px] md:h-[168px] z-10 hover:z-50"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <Link href={`/watch/${video.id}`} className="block outline-none">
-        <div className="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden bg-[#1E2E3E] border border-white/5 transition-all duration-300 shadow-lg group-hover:shadow-[0_10px_35px_rgba(255,215,0,0.15)] group-hover:border-[#FFD700]/50">
-          
-          {/* Imagem de Capa */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-            style={{ backgroundImage: `url(${thumbnailUrl})` }}
-          />
-          
-          {/* Overlay escuro */}
-          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-300" />
-          
-          {/* Botão Play invisível que aparece no Hover */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center border-2 border-[#FFD700]">
-              <Play fill="#FFD700" size={24} className="text-[#FFD700] ml-1" />
-            </div>
+      <motion.div
+        animate={isHovered ? {
+          scale: 1.15,
+          y: -10,
+          boxShadow: '0 20px 40px rgba(0,0,0,0.8)'
+        } : {
+          scale: 1,
+          y: 0,
+          boxShadow: 'none'
+        }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="absolute inset-0 bg-[#1b2530] rounded-md overflow-hidden origin-bottom cursor-pointer border border-transparent group"
+        style={{ borderColor: isHovered ? 'rgba(255,255,255,0.2)' : 'transparent' }}
+      >
+        <Link href={`/watch/${video.id}`} className="block outline-none text-white h-full w-full">
+          {/* Thumb */}
+          <div className={`${isHovered ? 'h-[60%]' : 'h-full'} w-full relative transition-all duration-300`}>
+             <img
+              src={finalImage}
+              onError={() => setImgError(true)}
+              alt={video.titulo}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {isHovered && <div className="absolute inset-0 bg-gradient-to-t from-[#1b2530] to-transparent" />}
           </div>
 
-          {/* Tag de Duração */}
-          {video.duracao && (
-            <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm px-2 py-1 rounded text-white text-[0.6rem] md:text-xs font-semibold flex items-center gap-1">
-              <Clock size={10} />
-              {video.duracao}
+          {/* Painel Inferior (Mostra ao Passar o Mouse) */}
+          <div className="absolute bottom-0 left-0 w-full p-3 opacity-0 transition-opacity duration-300" style={{ opacity: isHovered ? 1 : 0 }}>
+            {/* Ações */}
+            <div className="flex items-center gap-2 mb-2">
+               <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-gray-200 transition-colors">
+                 <Play fill="black" size={16} className="ml-0.5 text-black" />
+               </button>
+               <button className="w-8 h-8 rounded-full bg-[#33373d] flex items-center justify-center border border-white/20 hover:border-white transition-colors">
+                 <Plus size={16} />
+               </button>
             </div>
-          )}
-        </div>
-
-        {/* Informações abaixo do card */}
-        <div className="mt-3 px-1">
-          <h3 className="text-white font-bold text-xs md:text-sm truncate" title={video.titulo}>
-            {video.titulo}
-          </h3>
-          <p className="text-[#FFD700] text-[0.65rem] md:text-xs mt-1 font-medium">
-            {video.categoria}
-          </p>
-        </div>
-      </Link>
-    </motion.div>
+            
+            {/* Texto */}
+            <h3 className="font-bold text-sm truncate mb-0.5">
+              {video.titulo}
+            </h3>
+            <div className="flex items-center gap-2 text-[0.65rem] text-text-muted">
+              <span className="font-bold text-white bg-white/10 px-1 rounded border border-white/20">
+                {video.categoria}
+              </span>
+              {video.duracao && <span>{video.duracao}</span>}
+              <span className="text-[#0f79af] font-semibold flex items-center gap-1">
+                ✓ Prime
+              </span>
+            </div>
+          </div>
+        </Link>
+      </motion.div>
+    </div>
   )
 }
