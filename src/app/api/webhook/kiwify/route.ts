@@ -4,20 +4,20 @@ import { createClient } from '@supabase/supabase-js'
 // Cliente Admin do Supabase (com poderes totais para criar usuários)
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // Chave secreta de Admin
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
-// ✅ HELPER: Busca um usuário pelo e-mail de forma eficiente (sem trazer todos)
+// ✅ Busca usuário por email — com limite de 1000 para evitar timeout
 async function buscarUsuarioPorEmail(email: string) {
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers()
+  const { data, error } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
   if (error || !data) return null
   return data.users.find(u => u.email === email) ?? null
 }
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar o token secreto da Kiwify
+    // Verifica token secreto da Kiwify (opcional mas recomendado)
     const tokenRecebido = request.headers.get('x-kiwify-token') || request.nextUrl.searchParams.get('token') || ''
     const tokenEsperado = process.env.KIWIFY_WEBHOOK_TOKEN || ''
 
@@ -27,84 +27,84 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-
     console.log('🔔 Webhook Kiwify recebido:', JSON.stringify(body, null, 2))
 
-    // Identificar tipo de evento da Kiwify
-    const evento = body?.data?.status || body?.event || ''
-    const email = body?.data?.customer?.email || body?.customer?.email || ''
-    const nome = body?.data?.customer?.name || body?.customer?.name || 'Cliente'
-    const produto = body?.data?.product?.name || 'Contos de Oração'
+    // Kiwify envia o evento em diferentes formatos dependendo da versão
+    const evento = body?.event || body?.data?.status || body?.order_status || ''
+    const email = body?.Customer?.email || body?.data?.customer?.email || body?.customer?.email || ''
+    const nome = body?.Customer?.full_name || body?.data?.customer?.name || body?.customer?.name || 'Cliente'
+    const produto = body?.Product?.name || body?.data?.product?.name || 'Contos de Oração'
 
-    // Se não tem email, ignorar
+    console.log(`📌 Evento: "${evento}" | Email: ${email} | Nome: ${nome}`)
+
     if (!email) {
+      console.warn('⚠️ Email não encontrado no payload, ignorando.')
       return NextResponse.json({ message: 'Email não encontrado, ignorado.' }, { status: 200 })
     }
 
-    // Evento de compra aprovada (paid) ou assinatura ativa
-    if (evento === 'paid' || evento === 'active' || evento === 'order_approved') {
+    // ── COMPRA APROVADA / ASSINATURA ATIVA ──
+    const eventosAprovados = ['paid', 'active', 'order_approved', 'subscription_active', 'approved']
+    if (eventosAprovados.includes(evento)) {
       console.log(`✅ Compra aprovada para: ${email}`)
 
       const jaExiste = await buscarUsuarioPorEmail(email)
 
       if (!jaExiste) {
-        // ✅ CORRIGIDO: Criar usuário SEM senha (o cliente vai criar a própria senha)
-        // email_confirm: true = e-mail já confirmado automaticamente (não precisa clicar em link)
+        // Cria o usuário sem senha — cliente vai definir a própria senha pelo e-mail
         const { error: erroCreate } = await supabaseAdmin.auth.admin.createUser({
           email,
           email_confirm: true,
-          user_metadata: {
-            nome,
-            produto,
-            plano_ativo: true,
-          }
+          user_metadata: { nome, produto, plano_ativo: true },
         })
 
         if (erroCreate) {
           console.error('❌ Erro ao criar usuário:', erroCreate.message)
-        } else {
-          console.log(`🎉 Usuário criado com sucesso: ${email}`)
-
-          // ✅ CORRIGIDO: Enviar e-mail de "Configurar sua senha" para o cliente
-          // O cliente recebe um link, clica, cria a própria senha e já acessa a plataforma
-          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contos-de-oracao-web.vercel.app'
-          const { error: erroReset } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
-            redirectTo: `${siteUrl}/login`,
-          })
-
-          if (erroReset) {
-            console.warn('⚠️ Erro ao enviar e-mail de configuração de senha:', erroReset.message)
-          } else {
-            console.log(`📧 E-mail de "Configurar senha" enviado para: ${email}`)
-          }
+          return NextResponse.json({ error: erroCreate.message }, { status: 500 })
         }
-      } else {
-        // Usuário já existe — reativar assinatura
-        await supabaseAdmin.auth.admin.updateUserById(jaExiste.id, {
-          user_metadata: { plano_ativo: true }
+
+        console.log(`🎉 Usuário criado: ${email}`)
+
+        // Envia link de "Definir sua senha" para o novo assinante
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.online'
+        const { error: erroReset } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
+          redirectTo: `${siteUrl}/login`,
         })
-        console.log(`🔄 Assinatura reativada para: ${email}`)
+
+        if (erroReset) {
+          console.warn('⚠️ Erro ao enviar e-mail de senha:', erroReset.message)
+        } else {
+          console.log(`📧 E-mail de "Definir senha" enviado para: ${email}`)
+        }
+
+      } else {
+        // Usuário já existe — reativa o plano
+        await supabaseAdmin.auth.admin.updateUserById(jaExiste.id, {
+          user_metadata: { plano_ativo: true, nome, produto },
+        })
+        console.log(`🔄 Plano reativado para: ${email}`)
       }
     }
 
-    // Evento de cancelamento ou reembolso
-    if (evento === 'refunded' || evento === 'canceled' || evento === 'subscription_canceled') {
-      console.log(`🚫 Cancelamento para: ${email}`)
+    // ── CANCELAMENTO / REEMBOLSO ──
+    const eventosCancelamento = ['refunded', 'canceled', 'subscription_canceled', 'chargeback', 'subscription_overdue']
+    if (eventosCancelamento.includes(evento)) {
+      console.log(`🚫 Cancelamento/Reembolso para: ${email}`)
 
       const usuario = await buscarUsuarioPorEmail(email)
-
       if (usuario) {
         await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
-          user_metadata: { plano_ativo: false }
+          user_metadata: { plano_ativo: false },
         })
         console.log(`🔒 Acesso bloqueado para: ${email}`)
+      } else {
+        console.warn(`⚠️ Usuário não encontrado para cancelamento: ${email}`)
       }
     }
 
-    return NextResponse.json({ received: true, status: 'ok' }, { status: 200 })
+    return NextResponse.json({ received: true, evento, email, status: 'ok' }, { status: 200 })
 
   } catch (error) {
-    console.error('❌ Erro no webhook:', error)
+    console.error('❌ Erro crítico no webhook:', error)
     return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
   }
 }
