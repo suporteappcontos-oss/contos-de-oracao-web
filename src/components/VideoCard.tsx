@@ -1,9 +1,25 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Play, Plus, Check } from 'lucide-react'
-import { useState } from 'react'
+import { Play, Plus, ThumbsUp, Clock } from 'lucide-react'
+
+// Imagens de fallback (cinematic)
+const FALLBACK_IMAGES = [
+  'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80',
+  'https://images.unsplash.com/photo-1512070679279-8988d32161be?w=800&q=80',
+  'https://images.unsplash.com/photo-1476725994324-6f6833cfb205?w=800&q=80',
+  'https://images.unsplash.com/photo-1507036066871-b7e8032b3dea?w=800&q=80',
+  'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=800&q=80',
+  'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&q=80',
+  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+]
+
+function getRandomFallback(id: string): string {
+  const code = (id.charCodeAt(0) || 0) + (id.charCodeAt(id.length - 1) || 0)
+  return FALLBACK_IMAGES[code % FALLBACK_IMAGES.length]
+}
 
 type VideoData = {
   id: string
@@ -15,86 +31,105 @@ type VideoData = {
   thumbnail_url: string | null
 }
 
-const FALLBACK_BANNERS = [
-  'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=600&auto=format&fit=crop', // Cinema Escuro
-  'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=600&auto=format&fit=crop', // Filme antigo
-  'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop', // Claquete
-]
-
-function getFallback(id: string) {
-  const code = id.charCodeAt(0) + id.charCodeAt(id.length - 1)
-  return FALLBACK_BANNERS[code % FALLBACK_BANNERS.length]
-}
-
 export default function VideoCard({ video }: { video: VideoData }) {
+  const [hovered, setHovered] = useState(false)
   const [imgError, setImgError] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
-
-  const initialThumbnail = video.thumbnail_url || 
-    `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}/thumbnail.jpg`
-
-  const finalImage = imgError ? getFallback(video.id) : initialThumbnail
+  
+  const imageUrl = (!imgError && video.thumbnail_url) 
+    ? video.thumbnail_url 
+    : getRandomFallback(video.id)
 
   return (
-    <div 
-      className="relative flex-shrink-0 w-[240px] md:w-[300px] h-[135px] md:h-[168px] z-10 hover:z-50"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <motion.div
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      className="group relative flex-shrink-0 cursor-pointer"
+      style={{ width: 'clamp(160px, 22vw, 260px)' }}
     >
-      <motion.div
-        animate={isHovered ? {
-          scale: 1.15,
-          y: -10,
-          boxShadow: '0 20px 40px rgba(0,0,0,0.8)'
-        } : {
-          scale: 1,
-          y: 0,
-          boxShadow: 'none'
-        }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="absolute inset-0 bg-[#1b2530] rounded-md overflow-hidden origin-bottom cursor-pointer border border-transparent group"
-        style={{ borderColor: isHovered ? 'rgba(255,255,255,0.2)' : 'transparent' }}
-      >
-        <Link href={`/watch/${video.id}`} className="block outline-none text-white h-full w-full">
-          {/* Thumb */}
-          <div className={`${isHovered ? 'h-[60%]' : 'h-full'} w-full relative transition-all duration-300`}>
-             <img
-              src={finalImage}
-              onError={() => setImgError(true)}
-              alt={video.titulo}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            {isHovered && <div className="absolute inset-0 bg-gradient-to-t from-[#1b2530] to-transparent" />}
+      <Link href={`/watch/${video.id}`} className="block outline-none">
+        
+        {/* Container do Thumbnail */}
+        <motion.div
+          animate={{ 
+            scale: hovered ? 1.06 : 1,
+            zIndex: hovered ? 10 : 1,
+          }}
+          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="relative aspect-video rounded-lg overflow-hidden bg-[#1a2733] border border-[#1e3040]"
+          style={{
+            boxShadow: hovered ? '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,168,225,0.3)' : '0 4px 20px rgba(0,0,0,0.3)',
+          }}
+        >
+          {/* Imagem */}
+          <img
+            src={imageUrl}
+            alt={video.titulo}
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            loading="lazy"
+          />
+
+          {/* Overlay escuro */}
+          <div className={`absolute inset-0 bg-black transition-opacity duration-300 ${hovered ? 'opacity-30' : 'opacity-0'}`} />
+
+          {/* Badge Prime na thumbnail */}
+          <div className="absolute top-2 left-2">
+            <div className="bg-[#00a8e1] text-white text-[0.5rem] font-extrabold px-1.5 py-0.5 rounded tracking-wider uppercase">
+              Prime
+            </div>
           </div>
 
-          {/* Painel Inferior (Mostra ao Passar o Mouse) */}
-          <div className="absolute bottom-0 left-0 w-full p-3 opacity-0 transition-opacity duration-300" style={{ opacity: isHovered ? 1 : 0 }}>
-            {/* Ações */}
-            <div className="flex items-center gap-2 mb-2">
-               <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center hover:bg-gray-200 transition-colors">
-                 <Play fill="black" size={16} className="ml-0.5 text-black" />
-               </button>
-               <button className="w-8 h-8 rounded-full bg-[#33373d] flex items-center justify-center border border-white/20 hover:border-white transition-colors">
-                 <Plus size={16} />
-               </button>
+          {/* Duração */}
+          {video.duracao && (
+            <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm px-1.5 py-0.5 rounded text-white text-[0.6rem] font-semibold">
+              <Clock size={9} />
+              {video.duracao}
             </div>
-            
-            {/* Texto */}
-            <h3 className="font-bold text-sm truncate mb-0.5">
-              {video.titulo}
-            </h3>
-            <div className="flex items-center gap-2 text-[0.65rem] text-text-muted">
-              <span className="font-bold text-white bg-white/10 px-1 rounded border border-white/20">
-                {video.categoria}
-              </span>
-              {video.duracao && <span>{video.duracao}</span>}
-              <span className="text-[#0f79af] font-semibold flex items-center gap-1">
-                ✓ Prime
-              </span>
+          )}
+
+          {/* Botão Play central (aparece no hover) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.7 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-2xl">
+              <Play fill="#0f171e" size={22} className="ml-0.5 text-[#0f171e]" />
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Mini Painel Hover (Expandido) */}
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : -4 }}
+          transition={{ duration: 0.25, delay: hovered ? 0.1 : 0 }}
+          className="overflow-hidden rounded-b-lg bg-[#1a2733] border-x border-b border-[#1e3040] px-3 pb-3 pt-2"
+          style={{ boxShadow: hovered ? '0 20px 40px rgba(0,0,0,0.6)' : 'none' }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex gap-2">
+              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
+                <Play fill="#0f171e" size={12} className="ml-0.5 text-[#0f171e]" />
+              </div>
+              <div className="w-7 h-7 rounded-full border border-[#8197a4] flex items-center justify-center">
+                <Plus size={14} className="text-white" />
+              </div>
+              <div className="w-7 h-7 rounded-full border border-[#8197a4] flex items-center justify-center">
+                <ThumbsUp size={12} className="text-white" />
+              </div>
             </div>
           </div>
-        </Link>
-      </motion.div>
-    </div>
+          <h3 className="text-white font-bold text-xs leading-tight mb-1 truncate">
+            {video.titulo}
+          </h3>
+          <span className="text-[#00a8e1] text-[0.6rem] font-semibold uppercase tracking-wider">
+            {video.categoria}
+          </span>
+        </motion.div>
+
+      </Link>
+    </motion.div>
   )
 }

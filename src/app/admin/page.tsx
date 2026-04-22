@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { adicionarVideo, toggleVideoAtivo, deletarVideo } from './actions'
+import { LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink, Plus, ChevronLeft } from 'lucide-react'
 
 type Video = {
   id: string
@@ -18,21 +19,27 @@ type Video = {
 
 const CATEGORIAS = ['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho']
 
+// Imagens de fallback
+const FALLBACK_IMAGES = [
+  'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=70',
+  'https://images.unsplash.com/photo-1512070679279-8988d32161be?w=400&q=70',
+  'https://images.unsplash.com/photo-1476725994324-6f6833cfb205?w=400&q=70',
+  'https://images.unsplash.com/photo-1507036066871-b7e8032b3dea?w=400&q=70',
+  'https://images.unsplash.com/photo-1519491050282-cf00c82424b4?w=400&q=70',
+]
+function getFallback(id: string) {
+  const code = (id.charCodeAt(0) || 0) + (id.charCodeAt(id.length - 1) || 0)
+  return FALLBACK_IMAGES[code % FALLBACK_IMAGES.length]
+}
+
 export default async function AdminPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // Verificar se é admin
-  const { data: perfil } = await supabase
-    .from('perfis')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
+  const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
   if (perfil?.role !== 'admin') redirect('/')
 
-  // Buscar todos os vídeos
   const { data: videos } = await supabase
     .from('videos')
     .select('*')
@@ -42,158 +49,222 @@ export default async function AdminPage() {
   const ativos = videos?.filter(v => v.ativo).length ?? 0
 
   return (
-    <div className="min-h-screen bg-[#0f171e] font-sans text-white pb-20">
+    <div className="min-h-screen bg-[#0f171e] text-white font-sans pb-20">
 
-      {/* ── Navbar ── */}
-      <header className="fixed top-0 w-full z-50 bg-[#1a242f] shadow-md flex items-center justify-between px-4 md:px-8 py-3 h-[72px]">
-        <div className="flex items-center gap-4">
-          <Link href="/watch" className="flex items-center leading-none shrink-0 group gap-1">
-             <span className="text-white text-xl font-black italic tracking-tighter shadow-sm">prime</span>
-             <span className="text-[#0f79af] text-sm font-bold tracking-widest mt-0.5">video</span>
+      {/* ── NAVBAR ADMIN ── */}
+      <header className="fixed top-0 w-full z-50 bg-[#1a242f] border-b border-[#1e3040] flex items-center justify-between px-4 md:px-8 h-14 md:h-[60px]">
+        <div className="flex items-center gap-3 md:gap-5">
+          {/* Logo */}
+          <Link href="/watch" className="flex items-center gap-2">
+            <div className="bg-[#00a8e1] text-white text-[0.55rem] font-black px-1.5 py-0.5 rounded tracking-widest uppercase">Prime</div>
+            <span className="text-white font-semibold text-sm hidden sm:inline opacity-70">Video</span>
           </Link>
-          <span className="bg-[#0f79af] text-white text-[0.6rem] font-extrabold px-2 py-0.5 rounded tracking-widest hidden sm:inline-block outline outline-2 outline-offset-2 outline-[#0f79af]/30">
-            ADMIN
-          </span>
+          
+          <div className="h-5 w-px bg-[#1e3040] hidden sm:block" />
+          
+          <div className="flex items-center gap-1.5">
+            <LayoutDashboard size={14} className="text-[#00a8e1]" />
+            <span className="text-white font-bold text-sm">Painel Admin</span>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-[#8197a4] text-sm font-bold hidden md:inline">{user.email}</span>
-          <Link href="/watch" className="text-white/70 text-xs md:text-sm border border-white/20 hover:border-white/40 px-3 md:px-4 py-2 rounded font-bold hover:bg-white/5 transition-colors">
-            ← Sair do Admin
+
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="text-[#8197a4] text-xs hidden md:inline truncate max-w-[200px]">{user.email}</span>
+          <Link 
+            href="/watch" 
+            className="flex items-center gap-1.5 text-[#8197a4] hover:text-white text-xs border border-[#1e3040] hover:border-[#2a4050] px-3 py-1.5 rounded transition-colors"
+          >
+            <ChevronLeft size={12} />
+            Voltar
           </Link>
         </div>
       </header>
 
-      <main className="pt-[100px] px-4 md:px-8 max-w-6xl mx-auto">
+      <main className="pt-[80px] md:pt-[80px] px-4 md:px-8 max-w-6xl mx-auto">
 
         {/* ── Título ── */}
         <div className="mb-8">
-          <h1 className="text-white text-2xl md:text-3xl font-black mb-1 drop-shadow-md">
-            Gerenciamento do Catálogo
-          </h1>
-          <p className="text-[#8197a4] text-sm md:text-base font-medium">
-            Adicione e modifique vídeos disponíveis no plano Prime.
-          </p>
+          <h1 className="text-white text-2xl md:text-3xl font-bold mb-1">Gerenciamento de Conteúdo</h1>
+          <p className="text-[#8197a4] text-sm">Adicione, edite e gerencie os vídeos da plataforma.</p>
         </div>
 
-        {/* ── Cards de Estatísticas ── */}
+        {/* ── Stats ── */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-10">
           {[
-            { label: 'Total Prime', value: total, icon: '🎬' },
-            { label: 'Visíveis no Catálogo', value: ativos, icon: '✅' },
-            { label: 'Ocultos', value: total - ativos, icon: '👁️' },
+            { label: 'Total', value: total, icon: Video, color: '#00a8e1' },
+            { label: 'Publicados', value: ativos, icon: Eye, color: '#4caf82' },
+            { label: 'Ocultos', value: total - ativos, icon: EyeOff, color: '#8197a4' },
           ].map(stat => (
-            <div key={stat.label} className="bg-[#1b2530] border border-white/5 rounded-xl p-4 md:p-6 text-center shadow-lg hover:bg-[#202c38] transition-colors">
-              <div className="text-2xl md:text-3xl mb-1 opacity-80">{stat.icon}</div>
-              <div className="text-[#0f79af] text-2xl md:text-4xl font-black">{stat.value}</div>
-              <div className="text-[#8197a4] text-xs md:text-sm mt-1 font-bold tracking-wide uppercase">{stat.label}</div>
+            <div key={stat.label} className="bg-[#1a2733] border border-[#1e3040] rounded-xl p-4 md:p-5 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: stat.color + '20' }}>
+                <stat.icon size={20} style={{ color: stat.color }} />
+              </div>
+              <div>
+                <div className="text-white text-2xl md:text-3xl font-black leading-none">{stat.value}</div>
+                <div className="text-[#8197a4] text-xs mt-1">{stat.label}</div>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* ── Formulário: Adicionar Vídeo ── */}
-        <div className="bg-[#1b2530] border border-white/5 rounded-xl p-5 md:p-8 mb-10 shadow-lg">
-          <h2 className="text-[#0f79af] text-lg md:text-xl font-extrabold mb-6 flex items-center gap-2">
-            Adicionar Novo Título ao Prime
-          </h2>
+        {/* ── Formulário de Adição ── */}
+        <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-5 md:p-8 mb-10">
+          <div className="flex items-center gap-2 mb-6">
+            <Plus size={18} className="text-[#00a8e1]" />
+            <h2 className="text-white text-lg font-bold">Adicionar Novo Vídeo</h2>
+          </div>
 
-          <form action={adicionarVideo} className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+          <form action={adicionarVideo}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
 
               <div className="md:col-span-2">
-                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Título Oficial *</label>
-                <input name="titulo" required placeholder="A Oração..." className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all" />
+                <label className="block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold">Título *</label>
+                <input 
+                  name="titulo" required 
+                  placeholder="Ex: A Oração que Move Montanhas" 
+                  className="w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#00a8e1] rounded-xl px-4 py-3 text-white placeholder-[#4a6373] focus:outline-none transition-colors text-sm"
+                />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Sinopse</label>
-                <textarea name="descricao" rows={3} placeholder="Sinopse detalhada estilo Prime..." className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all resize-y" />
+                <label className="block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold">Descrição</label>
+                <textarea 
+                  name="descricao" rows={3}
+                  placeholder="Descreva o vídeo aqui..." 
+                  className="w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#00a8e1] rounded-xl px-4 py-3 text-white placeholder-[#4a6373] focus:outline-none transition-colors resize-y text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Gênero Primário</label>
-                <select name="categoria" className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all cursor-pointer appearance-none">
-                  {CATEGORIAS.map(cat => (
-                    <option key={cat} value={cat} className="bg-[#1a242f] py-2">{cat}</option>
-                  ))}
+                <label className="block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold">Categoria</label>
+                <select 
+                  name="categoria" 
+                  className="w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#00a8e1] rounded-xl px-4 py-3 text-white focus:outline-none transition-colors cursor-pointer text-sm appearance-none"
+                >
+                  {CATEGORIAS.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Duração Oficial (ex: 1 h 24 min)</label>
-                <input name="duracao" placeholder="Ex: 1 h 30 min" className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all" />
+                <label className="block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold">Duração (ex: 12:34)</label>
+                <input 
+                  name="duracao" placeholder="00:00"
+                  className="w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#00a8e1] rounded-xl px-4 py-3 text-white placeholder-[#4a6373] focus:outline-none transition-colors text-sm"
+                />
               </div>
 
               <div>
-                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Bunny.net Video ID *</label>
-                <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-..." className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all font-mono text-sm" />
+                <label className="block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold">Video ID do Bunny.net *</label>
+                <input 
+                  name="bunny_video_id" required
+                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  className="w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#00a8e1] rounded-xl px-4 py-3 text-white placeholder-[#4a6373] focus:outline-none transition-colors text-sm font-mono"
+                />
+                <p className="text-[#4a6373] text-[0.65rem] mt-1.5">No Bunny.net → clique no vídeo → "Copy Video ID"</p>
               </div>
 
               <div>
-                <label className="block text-[#8197a4] text-[0.65rem] font-bold uppercase tracking-widest mb-2">Pôster/Thumbnail URL</label>
-                <input name="thumbnail_url" placeholder="(Opcional) URL da imagem HD" className="w-full bg-[#0f171e] outline outline-1 outline-white/10 rounded-sm px-4 py-3 text-white focus:outline-2 focus:outline-[#0f79af] transition-all" />
+                <label className="block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold">URL da Thumbnail</label>
+                <input 
+                  name="thumbnail_url" placeholder="https://..."
+                  className="w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#00a8e1] rounded-xl px-4 py-3 text-white placeholder-[#4a6373] focus:outline-none transition-colors text-sm"
+                />
+                <p className="text-[#4a6373] text-[0.65rem] mt-1.5">Deixar vazio = imagem automática é usada</p>
               </div>
 
             </div>
 
-            <button type="submit" className="w-full md:w-auto mt-6 bg-[#0f79af] hover:bg-[#0b5e89] text-white px-8 py-3 rounded-md font-bold text-sm md:text-base transition-colors shadow-sm">
-              Publicar no Catálogo Prime
-            </button>
+            <div className="mt-6 flex gap-3">
+              <button 
+                type="submit" 
+                className="flex items-center gap-2 bg-[#00a8e1] hover:bg-[#0083b0] text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg"
+              >
+                <Plus size={16} />
+                Adicionar Vídeo
+              </button>
+            </div>
           </form>
         </div>
 
         {/* ── Lista de Vídeos ── */}
         <div>
-          <h2 className="text-white text-lg md:text-xl font-bold mb-4">
-            Títulos Adicionados
-          </h2>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-white text-lg font-bold">Catálogo ({total})</h2>
+          </div>
 
           {!videos || videos.length === 0 ? (
-            <div className="bg-[#1b2530] border border-white/5 rounded-xl p-10 text-center">
-              <p className="text-[#8197a4] font-semibold">Catálogo vazio. Adicione um título acima.</p>
+            <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-12 text-center">
+              <Video size={48} className="text-[#4a6373] mx-auto mb-4" />
+              <p className="text-[#8197a4]">Nenhum vídeo cadastrado ainda.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {videos.map(video => (
-                <div key={video.id} className={`bg-[#1b2530] border rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 transition-all ${video.ativo ? 'border-white/5 shadow-md' : 'border-red-500/20 opacity-75'}`}>
-                  
-                  {/* Informações Principais */}
-                  <div className="flex items-center gap-5 flex-1 min-w-0">
-                    <div 
-                      className="w-24 h-[54px] md:w-28 md:h-[63px] rounded bg-cover bg-center shrink-0 border border-white/10"
-                      style={{ backgroundImage: video.thumbnail_url ? `url(${video.thumbnail_url})` : 'none', backgroundColor: '#0f171e' }}
-                    >
-                      {!video.thumbnail_url && <span className="flex items-center justify-center w-full h-full text-xs text-[#8197a4] font-bold">SEM CAPA</span>}
-                    </div>
+              {(videos as Video[]).map(video => (
+                <div 
+                  key={video.id}
+                  className={`bg-[#1a2733] border rounded-2xl p-4 md:p-5 flex flex-col sm:flex-row sm:items-center gap-4 transition-all ${video.ativo ? 'border-[#1e3040]' : 'border-red-500/20 opacity-60'}`}
+                >
+                  {/* Thumbnail */}
+                  <div 
+                    className="w-full sm:w-28 md:w-32 aspect-video rounded-xl shrink-0 bg-[#0f171e] border border-[#1e3040] bg-cover bg-center overflow-hidden flex items-center justify-center"
+                    style={{ backgroundImage: (video.thumbnail_url || getFallback(video.id)) ? `url(${video.thumbnail_url || getFallback(video.id)})` : 'none' }}
+                  >
+                    {!video.thumbnail_url && !getFallback(video.id) && <Video size={24} className="text-[#4a6373]" />}
+                  </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="text-white font-bold text-sm md:text-base truncate">{video.titulo}</div>
-                      <div className="flex flex-wrap items-center gap-2 mt-1.5 line-clamp-1">
-                        <span className="text-[#8197a4] text-[0.65rem] md:text-[0.7rem] font-bold bg-[#0f171e] px-2 py-0.5 rounded border border-white/10">{video.categoria}</span>
-                        {video.duracao && <span className="text-white/50 text-[0.65rem] md:text-xs">⏱ {video.duracao}</span>}
-                        <span className="text-white/30 text-[0.65rem] md:text-xs">{new Date(video.criado_em).toLocaleDateString('pt-BR')}</span>
-                      </div>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-white font-bold text-sm md:text-base truncate mb-2">{video.titulo}</div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-[#00a8e1] text-[0.65rem] bg-[#00a8e1]/10 border border-[#00a8e1]/20 px-2 py-0.5 rounded font-semibold uppercase tracking-wider">
+                        {video.categoria}
+                      </span>
+                      {video.duracao && (
+                        <span className="text-[#8197a4] text-[0.65rem] flex items-center gap-1">⏱ {video.duracao}</span>
+                      )}
+                      <span className="text-[#4a6373] text-[0.65rem]">
+                        {new Date(video.criado_em).toLocaleDateString('pt-BR')}
+                      </span>
+                      {!video.ativo && (
+                        <span className="text-red-400 text-[0.65rem] font-bold uppercase tracking-wider">● Oculto</span>
+                      )}
                     </div>
                   </div>
 
                   {/* Ações */}
-                  <div className="flex items-center gap-2 w-full md:w-auto shrink-0 mt-3 md:mt-0">
-                    <Link href={`/watch/${video.id}`} target="_blank" className="flex-1 md:flex-none text-center bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-md text-xs font-bold transition-colors">
-                      Testar
+                  <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
+                    <Link 
+                      href={`/watch/${video.id}`} target="_blank"
+                      className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors border border-[#1e3040]"
+                    >
+                      <ExternalLink size={12} />
+                      Ver
                     </Link>
-                    
-                    <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)} className="flex-1 md:flex-none">
-                      <button type="submit" className={`w-full px-3 py-2 rounded-md text-xs font-bold transition-colors ${video.ativo ? 'text-white border border-[#0f79af] hover:bg-[#0f79af]/20' : 'bg-green-500 hover:bg-green-600 text-white'}`}>
-                        {video.ativo ? 'Ocultar' : 'Habilitar'}
+
+                    <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)}>
+                      <button 
+                        type="submit"
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors border ${
+                          video.ativo 
+                            ? 'text-[#8197a4] border-[#1e3040] hover:bg-white/5' 
+                            : 'text-[#4caf82] border-[#4caf82]/20 hover:bg-[#4caf82]/10'
+                        }`}
+                      >
+                        {video.ativo ? <EyeOff size={12} /> : <Eye size={12} />}
+                        {video.ativo ? 'Ocultar' : 'Publicar'}
                       </button>
                     </form>
 
-                    <form action={deletarVideo.bind(null, video.id)} className="flex-1 md:flex-none">
-                      <button type="submit" className="w-full text-red-500 hover:text-white hover:bg-red-600 border border-red-500/20 px-3 py-2 rounded-md text-xs font-bold transition-colors">
+                    <form action={deletarVideo.bind(null, video.id)}>
+                      <button 
+                        type="submit"
+                        className="flex items-center gap-1.5 bg-red-500/5 hover:bg-red-500/15 text-red-400 px-3 py-2 rounded-lg text-xs font-semibold transition-colors border border-red-500/10"
+                      >
+                        <Trash2 size={12} />
                         Deletar
                       </button>
                     </form>
                   </div>
-
                 </div>
               ))}
             </div>

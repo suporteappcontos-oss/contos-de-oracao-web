@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function CategoryCarousel({ 
@@ -13,77 +12,89 @@ export default function CategoryCarousel({
   count: number
   children: React.ReactNode 
 }) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [showLeftArr, setShowLeftArr] = useState(false)
-  const [showRightArr, setShowRightArr] = useState(true)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [showLeft, setShowLeft] = useState(false)
+  const [showRight, setShowRight] = useState(false)
 
   const checkScroll = () => {
-    if (!scrollContainerRef.current) return
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
-    setShowLeftArr(scrollLeft > 0)
-    // Se ainda puder rolar para a direita
-    setShowRightArr(scrollLeft < scrollWidth - clientWidth - 5)
+    if (!scrollRef.current) return
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
+    setShowLeft(scrollLeft > 10)
+    setShowRight(scrollLeft < scrollWidth - clientWidth - 10)
   }
 
-  // Verificar caso no primeiro render o conteúdo não ocupe tela toda
   useEffect(() => {
-    checkScroll()
-    window.addEventListener('resize', checkScroll)
-    return () => window.removeEventListener('resize', checkScroll)
+    const el = scrollRef.current
+    if (el) {
+      setTimeout(checkScroll, 100)
+      el.addEventListener('scroll', checkScroll, { passive: true })
+      window.addEventListener('resize', checkScroll)
+      return () => {
+        el.removeEventListener('scroll', checkScroll)
+        window.removeEventListener('resize', checkScroll)
+      }
+    }
   }, [])
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return
-    const scroller = scrollContainerRef.current
-    const scrollAmount = direction === 'left' ? -scroller.clientWidth * 0.75 : scroller.clientWidth * 0.75
-    
-    scroller.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-    setTimeout(checkScroll, 400) // Recheca o botão após a rolagem suave
+  const scroll = (dir: 'left' | 'right') => {
+    if (!scrollRef.current) return
+    const amount = scrollRef.current.clientWidth * 0.75
+    scrollRef.current.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' })
+    setTimeout(checkScroll, 500)
   }
 
   return (
-    <section className="mb-10 pl-4 md:pl-8 overflow-hidden group">
-      {/* Título da Categoria */}
-      <h2 className="text-white text-lg md:text-2xl font-bold mb-4 flex items-baseline gap-3">
-        {title} 
-        <span className="text-white/30 text-xs md:text-sm font-normal">
-          {count} {count === 1 ? 'vídeo' : 'vídeos'}
-        </span>
-      </h2>
+    <section className="mb-8 md:mb-12 relative">
 
-      {/* Container com Botões de Navegação */}
-      <div className="relative">
-        
-        {/* Setas Esquerda */}
-        {showLeftArr && (
-          <button 
+      {/* Título da Categoria */}
+      <div className="flex items-baseline gap-3 mb-4 md:mb-5 px-6 md:px-12 lg:px-16">
+        <h2 className="text-white text-base md:text-xl font-bold tracking-tight">
+          {title}
+        </h2>
+        <span className="text-[#00a8e1] text-xs md:text-sm font-semibold hidden md:inline">
+          Ver tudo
+        </span>
+        <span className="text-[#8197a4] text-[0.7rem] font-normal ml-auto">
+          {count} {count === 1 ? 'título' : 'títulos'}
+        </span>
+      </div>
+
+      {/* Wrapper com setas */}
+      <div className="relative group">
+
+        {/* Seta Esquerda */}
+        {showLeft && (
+          <button
             onClick={() => scroll('left')}
-            className="hidden md:flex absolute -left-8 top-1/2 -translate-y-1/2 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-[#0C121D] to-transparent opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#FFD700] text-white"
+            className="absolute left-0 top-0 bottom-6 z-10 w-12 md:w-14 flex items-center justify-center bg-gradient-to-r from-[#0f171e] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:text-[#00a8e1] text-white"
           >
-            <ChevronLeft size={40} className="drop-shadow-lg" />
+            <div className="w-9 h-9 rounded-full bg-[#1a2733]/90 border border-[#1e3040] flex items-center justify-center hover:bg-[#00a8e1] hover:border-[#00a8e1] transition-all duration-200 shadow-xl">
+              <ChevronLeft size={18} />
+            </div>
           </button>
         )}
 
-        {/* Lista Arrastável */}
-        <motion.div 
-          ref={scrollContainerRef}
-          onScroll={checkScroll}
-          className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory pb-6 pr-4"
+        {/* Container scrollável */}
+        <div
+          ref={scrollRef}
+          className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-8 px-6 md:px-12 lg:px-16"
         >
           {React.Children.map(children, child => (
-            <div className="snap-start snap-always">
+            <div className="flex-shrink-0">
               {child}
             </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Seta Direita */}
-        {showRightArr && (
-          <button 
+        {showRight && (
+          <button
             onClick={() => scroll('right')}
-            className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 w-16 h-full items-center justify-center bg-gradient-to-l from-[#0C121D] to-transparent opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#FFD700] text-white"
+            className="absolute right-0 top-0 bottom-6 z-10 w-12 md:w-14 flex items-center justify-center bg-gradient-to-l from-[#0f171e] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:text-[#00a8e1] text-white"
           >
-            <ChevronRight size={40} className="drop-shadow-lg" />
+            <div className="w-9 h-9 rounded-full bg-[#1a2733]/90 border border-[#1e3040] flex items-center justify-center hover:bg-[#00a8e1] hover:border-[#00a8e1] transition-all duration-200 shadow-xl">
+              <ChevronRight size={18} />
+            </div>
           </button>
         )}
       </div>

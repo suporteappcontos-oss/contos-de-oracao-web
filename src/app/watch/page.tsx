@@ -4,6 +4,7 @@ import Link from 'next/link'
 import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
+import { Home, Film, Tv2, Baby, LogOut, Settings } from 'lucide-react'
 
 type Video = {
   id: string
@@ -24,7 +25,6 @@ export default async function WatchPage() {
 
   if (!user) redirect('/')
 
-  // Verificar se é admin (para mostrar botão de admin)
   const { data: perfil } = await supabase
     .from('perfis')
     .select('role')
@@ -33,7 +33,6 @@ export default async function WatchPage() {
 
   const isAdmin = perfil?.role === 'admin'
 
-  // Buscar vídeos ativos
   const { data: videos } = await supabase
     .from('videos')
     .select('*')
@@ -44,125 +43,131 @@ export default async function WatchPage() {
   const categorias = [...new Set((videos ?? []).map((v: Video) => v.categoria))]
   const videosPorCategoria: Record<string, Video[]> = {}
   categorias.forEach(cat => {
-    videosPorCategoria[cat] = (videos ?? []).filter(v => v.categoria === cat)
+    videosPorCategoria[cat] = (videos ?? []).filter((v: Video) => v.categoria === cat)
   })
 
   async function logout() {
     'use server'
-    const supabase = await createClient()
-    await supabase.auth.signOut()
+    const supab = await createClient()
+    await supab.auth.signOut()
     redirect('/')
   }
 
   return (
-    <div className="min-h-screen bg-[#0f171e] text-white font-sans overflow-x-hidden">
-      
-      {/* ── Navbar (Estilo Prime Video) ── */}
-      <header className="fixed top-0 w-full z-50 bg-[#1a242f] shadow-[0_4px_12px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-2 md:py-0 md:h-[72px]">
-        
-        {/* Lado Esquerdo (Logo e Menu Inicial) */}
-        <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-start">
-          <Link href="/watch" className="flex flex-col items-start leading-none shrink-0 group">
-             <span className="text-white text-xl md:text-2xl font-black italic tracking-tighter">
-               prime
-             </span>
-             <span className="text-[#0f79af] text-sm md:text-md font-bold tracking-widest mt-0.5 group-hover:text-white transition-colors">
-               video
-             </span>
-          </Link>
+    <div className="min-h-screen bg-[#0f171e] text-white overflow-x-hidden">
 
-          {/* Links de Navbar Secundários no PC */}
-          <nav className="hidden md:flex items-center gap-6 text-[15px] font-bold text-white/70">
-            <Link href="/watch" className="hover:text-white pb-[23px] pt-8 border-b-2 border-[#fff] text-white transition-all">Página Inicial</Link>
-            <Link href="/watch" className="hover:text-white transition-all">Loja</Link>
-            <Link href="/watch" className="hover:text-white transition-all">Séries</Link>
-            <Link href="/watch" className="hover:text-white transition-all">Filmes</Link>
-            <Link href="/watch" className="hover:text-white transition-all">Infantil</Link>
-          </nav>
-        </div>
-        
-        {/* Lado Direito (Perfil / Admin) */}
-        <div className="flex items-center gap-4 mt-2 md:mt-0">
+      {/* ── NAVBAR PRIME VIDEO ── */}
+      <header className="fixed top-0 w-full z-50">
+        {/* Navbar Principal */}
+        <div className="bg-[#1a242f] border-b border-[#1e3040] flex items-center justify-between px-4 md:px-6 lg:px-8 py-0 h-14 md:h-[60px]">
           
-          <div className="hidden lg:flex items-center gap-2 bg-[#ffffff1a] px-3 py-1.5 rounded-md hover:bg-[#ffffff2a] transition-colors cursor-pointer border border-[#ffffff2a]">
-             <span className="opacity-70 text-sm">🔍</span>
-             <span className="text-white/70 text-sm font-semibold">Pesquisar</span>
+          {/* Logo */}
+          <div className="flex items-center gap-6">
+            <Link href="/watch" className="flex items-center gap-2 text-white">
+              <div className="bg-[#00a8e1] text-white text-[0.6rem] font-black px-2 py-1 rounded tracking-widest uppercase">
+                Prime
+              </div>
+              <span className="text-white font-semibold text-sm hidden sm:inline opacity-80">
+                Video
+              </span>
+            </Link>
+
+            {/* Navegação Desktop */}
+            <nav className="hidden md:flex items-center gap-0.5">
+              {[
+                { icon: Home, label: 'Início', active: true },
+                { icon: Film, label: 'Filmes' },
+                { icon: Tv2, label: 'Séries' },
+                { icon: Baby, label: 'Infantil' },
+              ].map(item => (
+                <button key={item.label} className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-colors ${item.active ? 'text-white' : 'text-[#8197a4] hover:text-white'}`}>
+                  <item.icon size={14} />
+                  {item.label}
+                </button>
+              ))}
+            </nav>
           </div>
 
-          <span className="hidden sm:inline text-white/50 text-sm font-semibold">
-            {user.email?.split('@')[0]}
-          </span>
-          
-          {isAdmin && (
-            <Link 
-              href="/admin" 
-              className="bg-[#0f79af] text-white border border-transparent px-3 py-1.5 rounded text-xs md:text-sm font-bold hover:bg-[#0b5e89] transition-colors"
-            >
-              ⚙ Admin
-            </Link>
-          )}
+          {/* Direita */}
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="text-[#8197a4] text-[0.7rem] hidden lg:inline truncate max-w-[180px]">
+              {user.email}
+            </span>
 
-          <form action={logout}>
-            <button 
-              type="submit" 
-              className="text-white/60 hover:text-white text-sm font-bold p-2 transition-colors flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-full h-9 w-9"
-              title="Sair"
-            >
-              ✕
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 bg-[#00a8e1]/10 hover:bg-[#00a8e1]/20 text-[#00a8e1] border border-[#00a8e1]/20 px-2.5 py-1.5 rounded text-[0.7rem] font-bold transition-colors"
+              >
+                <Settings size={12} />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
+
+            <form action={logout} className="inline">
+              <button type="submit" className="flex items-center gap-1.5 text-[#8197a4] hover:text-white text-[0.7rem] border border-[#1e3040] hover:border-[#2a4050] px-2.5 py-1.5 rounded transition-colors">
+                <LogOut size={12} />
+                <span className="hidden sm:inline">Sair</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Sub-Navbar Mobile (categorias) */}
+        <div className="md:hidden bg-[#0f171e]/95 border-b border-[#1e3040] flex overflow-x-auto no-scrollbar px-4 py-2 gap-2">
+          {['Início', 'Filmes', 'Séries', 'Infantil'].map(item => (
+            <button key={item} className="flex-shrink-0 text-[#8197a4] text-xs px-3 py-1 rounded-full border border-[#1e3040] whitespace-nowrap">
+              {item}
             </button>
-          </form>
-          
-          <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-[#0f79af] to-[#041a26] border-2 border-transparent hover:border-white transition-colors cursor-pointer" />
+          ))}
         </div>
       </header>
 
-      {/* ── Main Content ── */}
-      <main className="pb-[100px] mt-[60px] md:mt-0">
+      {/* ── CONTEÚDO ── */}
+      <main className="pt-14 md:pt-[60px]">
+
+        {/* Vazio */}
         {(!videos || videos.length === 0) && (
-          <div className="flex flex-col items-center justify-center pt-32 px-4 text-center h-[70vh]">
-            <span className="text-6xl md:text-8xl mb-6">🎫</span>
-            <h2 className="text-2xl md:text-3xl text-white font-bold mb-3">Seu catálogo está vazio.</h2>
-            <p className="text-[#8197a4] max-w-md text-lg">Os vídeos serão adicionados em breve pelo administrador.</p>
+          <div className="flex flex-col items-center justify-center pt-32 px-4 text-center gap-4">
+            <span className="text-6xl">🎬</span>
+            <h2 className="text-xl text-white font-bold">Nenhum conteúdo disponível ainda.</h2>
+            <p className="text-[#8197a4]">Em breve o catálogo será atualizado.</p>
           </div>
         )}
 
         {videos && videos.length > 0 && (
           <>
-            {/* Hero Principal Exato Prime Video */}
+            {/* Banner Principal */}
             <HeroBanner video={videos[0] as Video} />
 
-            {/* Trilhos de Catálogo (com margem negativa para sobrepor o Hero no estilo clássico) */}
-            <div className="relative z-30 -mt-8 md:-mt-16 space-y-2 md:space-y-4">
-              {categorias.map((cat, index) => (
-                <div key={cat} className={index === 0 ? "relative" : ""}>
-                   <CategoryCarousel 
-                    title={cat === 'Geral' ? 'Recomendados para você' : cat} 
-                    count={videosPorCategoria[cat].length}
-                  >
-                    {videosPorCategoria[cat].map(video => (
-                      <VideoCard key={video.id} video={video as Video} />
-                    ))}
-                  </CategoryCarousel>
-                </div>
+            {/* Separador estilo Prime (badge azul reto) */}
+            <div className="flex items-center gap-4 px-6 md:px-12 lg:px-16 mt-10 mb-6">
+              <div className="h-px bg-[#1e3040] flex-1" />
+              <span className="text-[#8197a4] text-xs tracking-widest uppercase">Catálogo</span>
+              <div className="h-px bg-[#1e3040] flex-1" />
+            </div>
+
+            {/* Carrosséis por categoria */}
+            <div className="space-y-2">
+              {categorias.map(cat => (
+                <CategoryCarousel key={cat} title={cat} count={videosPorCategoria[cat].length}>
+                  {videosPorCategoria[cat].map((video: Video) => (
+                    <VideoCard key={video.id} video={video} />
+                  ))}
+                </CategoryCarousel>
               ))}
             </div>
+
+            {/* Footer Prime */}
+            <footer className="mt-20 pb-10 border-t border-[#1e3040] px-6 md:px-12 lg:px-16 pt-8">
+              <div className="flex items-center gap-2 text-[#8197a4] text-xs">
+                <div className="bg-[#00a8e1] text-white text-[0.5rem] font-black px-1.5 py-0.5 rounded tracking-widest">Prime</div>
+                <span>Contos de Oração · Todos os direitos reservados</span>
+              </div>
+            </footer>
           </>
         )}
       </main>
-
-      {/* Footer Estilo Amazon */}
-      <footer className="mt-12 border-t border-white/10 pt-8 pb-12 text-center text-sm font-semibold text-[#8197a4] flex flex-col gap-4">
-         <div className="flex items-center justify-center gap-2">
-             <span className="text-white text-lg font-black italic tracking-tighter shadow-sm">prime</span>
-             <span className="text-[#0f79af] text-sm font-bold tracking-widest shadow-sm mt-0.5">video</span>
-         </div>
-         <div className="flex justify-center gap-6">
-            <span className="hover:underline cursor-pointer">Termos de uso e Política de Privacidade</span>
-            <span className="hover:underline cursor-pointer">Enviar feedback</span>
-            <span className="hover:underline cursor-pointer">Ajuda</span>
-         </div>
-         <p>© 1996-2026, Amazon.com, Inc. ou suas afiliadas (Design Clone)</p>
-      </footer>
     </div>
   )
 }
