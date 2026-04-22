@@ -8,6 +8,13 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
+// ✅ HELPER: Busca um usuário pelo e-mail de forma eficiente (sem trazer todos)
+async function buscarUsuarioPorEmail(email: string) {
+  const { data, error } = await supabaseAdmin.auth.admin.listUsers()
+  if (error || !data) return null
+  return data.users.find(u => u.email === email) ?? null
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Verificar o token secreto da Kiwify
@@ -38,18 +45,14 @@ export async function POST(request: NextRequest) {
     if (evento === 'paid' || evento === 'active' || evento === 'order_approved') {
       console.log(`✅ Compra aprovada para: ${email}`)
 
-      // Tentar criar o usuário no Supabase Auth
-      const { data: usuarioExistente } = await supabaseAdmin.auth.admin.listUsers()
-      const jaExiste = usuarioExistente?.users?.find(u => u.email === email)
+      const jaExiste = await buscarUsuarioPorEmail(email)
 
       if (!jaExiste) {
-        // Criar usuário novo com senha temporária
-        const senhaTemporal = `Contos@${Math.random().toString(36).slice(2, 10)}`
-        
-        const { error } = await supabaseAdmin.auth.admin.createUser({
+        // ✅ CORRIGIDO: Criar usuário SEM senha (o cliente vai criar a própria senha)
+        // email_confirm: true = e-mail já confirmado automaticamente (não precisa clicar em link)
+        const { error: erroCreate } = await supabaseAdmin.auth.admin.createUser({
           email,
-          password: senhaTemporal,
-          email_confirm: true, // Confirmar email automaticamente
+          email_confirm: true,
           user_metadata: {
             nome,
             produto,
@@ -57,13 +60,26 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        if (error) {
-          console.error('❌ Erro ao criar usuário:', error.message)
+        if (erroCreate) {
+          console.error('❌ Erro ao criar usuário:', erroCreate.message)
         } else {
           console.log(`🎉 Usuário criado com sucesso: ${email}`)
+
+          // ✅ CORRIGIDO: Enviar e-mail de "Configurar sua senha" para o cliente
+          // O cliente recebe um link, clica, cria a própria senha e já acessa a plataforma
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contos-de-oracao-web.vercel.app'
+          const { error: erroReset } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
+            redirectTo: `${siteUrl}/login`,
+          })
+
+          if (erroReset) {
+            console.warn('⚠️ Erro ao enviar e-mail de configuração de senha:', erroReset.message)
+          } else {
+            console.log(`📧 E-mail de "Configurar senha" enviado para: ${email}`)
+          }
         }
       } else {
-        // Usuário já existe — atualizar metadados de assinatura ativa
+        // Usuário já existe — reativar assinatura
         await supabaseAdmin.auth.admin.updateUserById(jaExiste.id, {
           user_metadata: { plano_ativo: true }
         })
@@ -75,8 +91,7 @@ export async function POST(request: NextRequest) {
     if (evento === 'refunded' || evento === 'canceled' || evento === 'subscription_canceled') {
       console.log(`🚫 Cancelamento para: ${email}`)
 
-      const { data: usuarioExistente } = await supabaseAdmin.auth.admin.listUsers()
-      const usuario = usuarioExistente?.users?.find(u => u.email === email)
+      const usuario = await buscarUsuarioPorEmail(email)
 
       if (usuario) {
         await supabaseAdmin.auth.admin.updateUserById(usuario.id, {

@@ -2,12 +2,46 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
+type Video = {
+  id: string
+  titulo: string
+  descricao: string | null
+  categoria: string
+  thumbnail_url: string | null
+  bunny_video_id: string
+  bunny_library_id: string
+  duracao: string | null
+  criado_em: string
+  ativo: boolean
+}
+
 export default async function WatchPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/')
+  if (!user) redirect('/')
+
+  // Verificar se é admin (para mostrar botão de admin)
+  const { data: perfil } = await supabase
+    .from('perfis')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const isAdmin = perfil?.role === 'admin'
+
+  // Buscar vídeos ativos
+  const { data: videos } = await supabase
+    .from('videos')
+    .select('*')
+    .eq('ativo', true)
+    .order('criado_em', { ascending: false })
+
+  // Agrupar por categoria
+  const categorias = [...new Set((videos ?? []).map((v: Video) => v.categoria))]
+  const videosPorCategoria: Record<string, Video[]> = {}
+  for (const cat of categorias) {
+    videosPorCategoria[cat] = (videos ?? []).filter((v: Video) => v.categoria === cat)
   }
 
   async function logout() {
@@ -18,64 +52,196 @@ export default async function WatchPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #0C121D 0%, #1E2E3E 50%, #2D4653 100%)' }}>
-      {/* Navbar */}
-      <header className="fixed top-0 w-full flex justify-between items-center py-4 px-[4%] bg-black/80 backdrop-blur-md z-50 border-b border-white/5">
-        <div className="text-[1.8rem] font-extrabold text-[#FFD700] uppercase tracking-[1px]">
+    <div style={{ background: '#0C121D', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+
+      {/* ── Navbar ── */}
+      <header style={{
+        position: 'fixed', top: 0, width: '100%', zIndex: 50,
+        background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '1rem 4%'
+      }}>
+        <div style={{ color: '#FFD700', fontSize: '1.5rem', fontWeight: 900, letterSpacing: '1px' }}>
           Contos de Oração
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-white/60 text-sm hidden md:block">{user.email}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>{user.email}</span>
+          {isAdmin && (
+            <Link href="/admin" style={{
+              color: '#FFD700', textDecoration: 'none', fontSize: '0.8rem',
+              border: '1px solid rgba(255,215,0,0.3)', padding: '6px 14px', borderRadius: '8px',
+              fontWeight: 700
+            }}>
+              ⚙️ Admin
+            </Link>
+          )}
           <form action={logout}>
-            <button type="submit" className="bg-transparent border border-white/20 text-white py-2 px-4 rounded text-sm hover:bg-white/10 transition-all cursor-pointer">
+            <button type="submit" style={{
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.15)',
+              color: 'rgba(255,255,255,0.6)', padding: '6px 14px',
+              borderRadius: '8px', fontSize: '0.85rem', cursor: 'pointer'
+            }}>
               Sair
             </button>
           </form>
         </div>
       </header>
 
-      {/* Conteúdo Principal */}
-      <main className="pt-[100px] px-[4%] pb-20">
-        {/* Boas vindas */}
-        <div className="mb-10">
-          <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-2">
-            Bem-vindo à plataforma! 🎉
-          </h1>
-          <p className="text-white/50 text-lg">
-            Sua assinatura está ativa. Aproveite o conteúdo!
-          </p>
-        </div>
+      <main style={{ paddingTop: '80px' }}>
 
-        {/* Em Breve */}
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="text-[5rem] mb-6">🎬</div>
-          <h2 className="text-white text-2xl font-bold mb-4">
-            Catálogo em construção
-          </h2>
-          <p className="text-white/50 text-lg max-w-[500px] mb-8">
-            Estamos carregando todos os episódios e filmes religiosos para você. 
-            Em breve o catálogo completo estará disponível aqui!
-          </p>
-          <div className="w-full max-w-[400px] h-2 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full w-3/4 bg-[#FFD700] rounded-full animate-pulse"></div>
+        {/* ── Sem vídeos ainda ── */}
+        {(!videos || videos.length === 0) && (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', minHeight: '70vh', textAlign: 'center', padding: '2rem'
+          }}>
+            <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>🎬</div>
+            <h1 style={{ color: '#fff', fontSize: '2rem', fontWeight: 800, marginBottom: '1rem' }}>
+              Catálogo em construção
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', maxWidth: '500px', marginBottom: '2rem' }}>
+              Estamos preparando um catálogo incrível com conteúdos religiosos exclusivos. Em breve tudo estará disponível!
+            </p>
+            <div style={{ width: '300px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '999px', overflow: 'hidden' }}>
+              <div style={{ width: '75%', height: '100%', background: '#FFD700', borderRadius: '999px' }} />
+            </div>
+            <p style={{ color: '#FFD700', marginTop: '0.75rem', fontWeight: 700 }}>75% concluído...</p>
           </div>
-          <p className="text-[#FFD700] mt-4 font-semibold">75% concluído...</p>
-        </div>
+        )}
 
-        {/* Card de status */}
-        <div className="mt-10 max-w-[500px] mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
-          <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-green-400 text-2xl">✓</span>
-          </div>
-          <h3 className="text-white font-bold text-xl mb-2">Assinatura Ativa</h3>
-          <p className="text-white/50 text-sm">{user.email}</p>
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <Link href="/" className="text-[#FFD700] text-sm hover:underline no-underline">
-              Voltar para a página inicial
-            </Link>
-          </div>
-        </div>
+        {/* ── Catálogo com vídeos ── */}
+        {videos && videos.length > 0 && (
+          <>
+            {/* Hero: primeiro vídeo em destaque */}
+            <HeroBanner video={videos[0] as Video} />
+
+            {/* Carrosséis por categoria */}
+            <div style={{ padding: '2rem 4%', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+              {categorias.map(cat => (
+                <section key={cat}>
+                  <h2 style={{ color: '#fff', fontSize: '1.3rem', fontWeight: 800, marginBottom: '1.25rem' }}>
+                    {cat}
+                    <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.9rem', fontWeight: 400, marginLeft: '0.75rem' }}>
+                      {videosPorCategoria[cat].length} vídeos
+                    </span>
+                  </h2>
+                  <div style={{
+                    display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem',
+                    scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,215,0,0.3) transparent'
+                  }}>
+                    {videosPorCategoria[cat].map((video: Video) => (
+                      <VideoCard key={video.id} video={video} />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </>
+        )}
       </main>
+    </div>
+  )
+}
+
+// ── Card de Vídeo ──
+function VideoCard({ video }: { video: Video }) {
+  const thumbnailUrl = video.thumbnail_url ||
+    `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}/thumbnail.jpg`
+
+  return (
+    <Link href={`/watch/${video.id}`} style={{ textDecoration: 'none', flexShrink: 0, width: '220px' }}>
+      <div style={{
+        borderRadius: '12px', overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.08)',
+        transition: 'all 0.25s', cursor: 'pointer',
+        background: 'rgba(255,255,255,0.03)',
+      }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.04)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,215,0,0.4)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; }}
+      >
+        {/* Thumbnail */}
+        <div style={{
+          width: '220px', height: '130px',
+          background: `url(${thumbnailUrl}) center/cover, rgba(255,215,0,0.08)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative'
+        }}>
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '50%',
+            background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: '2px solid rgba(255,215,0,0.6)'
+          }}>
+            <span style={{ fontSize: '1.1rem', marginLeft: '3px' }}>▶</span>
+          </div>
+          {video.duracao && (
+            <span style={{
+              position: 'absolute', bottom: '6px', right: '8px',
+              background: 'rgba(0,0,0,0.8)', color: '#fff',
+              fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px'
+            }}>
+              {video.duracao}
+            </span>
+          )}
+        </div>
+
+        {/* Info */}
+        <div style={{ padding: '0.75rem' }}>
+          <div style={{
+            color: '#fff', fontWeight: 700, fontSize: '0.9rem',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+          }}>
+            {video.titulo}
+          </div>
+          <div style={{ color: '#FFD700', fontSize: '0.75rem', marginTop: '4px' }}>
+            {video.categoria}
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// ── Banner Hero (primeiro vídeo em destaque) ──
+function HeroBanner({ video }: { video: Video }) {
+  return (
+    <div style={{
+      position: 'relative', height: '420px', overflow: 'hidden',
+      background: 'linear-gradient(135deg, #1a2a3a 0%, #0C121D 100%)',
+      display: 'flex', alignItems: 'flex-end',
+    }}>
+      {/* Gradiente de fundo */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(to right, rgba(12,18,29,0.95) 40%, rgba(12,18,29,0.3))',
+      }} />
+
+      {/* Conteúdo */}
+      <div style={{ position: 'relative', zIndex: 2, padding: '3rem 4%', maxWidth: '600px' }}>
+        <span style={{
+          background: '#FFD700', color: '#000', fontSize: '0.7rem',
+          fontWeight: 800, padding: '4px 10px', borderRadius: '4px', letterSpacing: '1px',
+          display: 'inline-block', marginBottom: '1rem'
+        }}>
+          EM DESTAQUE
+        </span>
+        <h1 style={{ color: '#fff', fontSize: '2.2rem', fontWeight: 900, margin: '0 0 0.75rem', lineHeight: 1.2 }}>
+          {video.titulo}
+        </h1>
+        {video.descricao && (
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+            {video.descricao.length > 120 ? video.descricao.slice(0, 120) + '...' : video.descricao}
+          </p>
+        )}
+        <Link href={`/watch/${video.id}`} style={{
+          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+          background: '#FFD700', color: '#000', textDecoration: 'none',
+          padding: '12px 28px', borderRadius: '10px', fontWeight: 800, fontSize: '1rem'
+        }}>
+          ▶ Assistir Agora
+        </Link>
+      </div>
     </div>
   )
 }
