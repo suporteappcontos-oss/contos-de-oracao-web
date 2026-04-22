@@ -1,7 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { atualizarSenha } from './actions'
+import PasswordField from '@/components/PasswordField'
 
 type Props = {
   searchParams: Promise<{ erro?: string }>
@@ -17,7 +19,6 @@ const MSGS_ERRO: Record<string, string> = {
 export default async function AtualizarSenhaPage({ searchParams }: Props) {
   const { erro } = await searchParams
 
-  // Verifica se o usuário está logado (sessão estabelecida pelo callback)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -28,97 +29,74 @@ export default async function AtualizarSenhaPage({ searchParams }: Props) {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: `linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.82)),
-        url('https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&w=1920&q=80')`,
-      backgroundSize: 'cover', backgroundPosition: 'center',
-      fontFamily: 'Inter, sans-serif'
+      background: '#090B10', fontFamily: 'Outfit, sans-serif', position: 'relative'
     }}>
 
-      {/* Logo */}
-      <header style={{ position: 'absolute', top: 0, width: '100%', padding: '1.5rem 4%', zIndex: 10 }}>
-        <Link href="/" style={{ color: '#FFD700', textDecoration: 'none', fontSize: '1.8rem', fontWeight: 900, letterSpacing: '1px' }}>
-          Contos de Oração
+      {/* Fundo com blur suave */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: "url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1920&q=60')",
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        opacity: 0.12
+      }} />
+
+      {/* Navbar com logo */}
+      <header style={{ position: 'absolute', top: 0, width: '100%', padding: '1rem 4%', zIndex: 10, display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+          <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} style={{ objectFit: 'contain' }} />
+          <div>
+            <div style={{ color: '#fff', fontWeight: 900, fontSize: '1rem', lineHeight: 1.2 }}>Contos de Oração</div>
+            <div style={{ color: '#D4AF37', fontSize: '0.5rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Premium</div>
+          </div>
         </Link>
       </header>
 
       {/* Card */}
       <div style={{
-        width: '100%', maxWidth: '420px', margin: '0 1rem',
-        background: 'rgba(0,0,0,0.88)', borderRadius: '20px',
-        padding: '2.5rem', border: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '0 25px 60px rgba(0,0,0,0.5)'
+        width: '100%', maxWidth: '420px', margin: '0 1rem', position: 'relative', zIndex: 1,
+        background: 'rgba(21,36,62,0.85)', borderRadius: '24px',
+        padding: '2.5rem', border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 1px rgba(212,175,55,0.2)'
       }}>
 
         {/* Ícone */}
         <div style={{
           width: '56px', height: '56px', borderRadius: '50%',
-          background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.3)',
+          background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '1.5rem', marginBottom: '1.5rem'
         }}>
           🔒
         </div>
 
-        <h1 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: 900, margin: '0 0 0.5rem' }}>
+        <h1 style={{ color: '#fff', fontSize: '1.7rem', fontWeight: 900, margin: '0 0 0.5rem' }}>
           Criar nova senha
         </h1>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.95rem', marginBottom: '2rem' }}>
-          Bem-vindo! Defina uma senha para acessar a plataforma.
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+          Bem-vindo! Defina uma senha forte para acessar a plataforma.
         </p>
 
         <form action={atualizarSenha} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
-          {/* Nova Senha */}
-          <div>
-            <label style={{
-              display: 'block', color: 'rgba(255,255,255,0.5)',
-              fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px'
-            }}>
-              Nova Senha
-            </label>
-            <input
-              type="password"
-              name="senha"
-              required
-              minLength={6}
-              placeholder="Mínimo 6 caracteres"
-              style={{
-                width: '100%', padding: '14px', boxSizing: 'border-box',
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '10px', color: '#fff', fontSize: '1rem', outline: 'none',
-                fontFamily: 'Inter, sans-serif'
-              }}
-            />
-          </div>
+          {/* Campo com olhinho (Client Component) */}
+          <PasswordField
+            name="senha"
+            label="Nova Senha"
+            placeholder="Mínimo 6 caracteres"
+          />
 
-          {/* Confirmar Senha */}
-          <div>
-            <label style={{
-              display: 'block', color: 'rgba(255,255,255,0.5)',
-              fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px'
-            }}>
-              Confirmar Senha
-            </label>
-            <input
-              type="password"
-              name="confirmar"
-              required
-              minLength={6}
-              placeholder="Repita a senha"
-              style={{
-                width: '100%', padding: '14px', boxSizing: 'border-box',
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: '10px', color: '#fff', fontSize: '1rem', outline: 'none',
-                fontFamily: 'Inter, sans-serif'
-              }}
-            />
-          </div>
+          <PasswordField
+            name="confirmar"
+            label="Confirmar Senha"
+            placeholder="Repita a senha"
+          />
 
           {/* Erro */}
           {erro && (
             <div style={{
-              background: 'rgba(255,80,80,0.12)', border: '1px solid rgba(255,80,80,0.3)',
-              borderRadius: '10px', padding: '12px 16px', color: '#ff8080', fontSize: '0.875rem', textAlign: 'center'
+              background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.25)',
+              borderRadius: '12px', padding: '12px 16px', color: '#ff8080',
+              fontSize: '0.875rem', textAlign: 'center'
             }}>
               {MSGS_ERRO[erro] ?? '❌ Ocorreu um erro. Tente novamente.'}
             </div>
@@ -126,11 +104,12 @@ export default async function AtualizarSenhaPage({ searchParams }: Props) {
 
           <button type="submit" style={{
             marginTop: '0.5rem',
-            background: '#FFD700', color: '#000', border: 'none',
-            padding: '14px', borderRadius: '10px', fontWeight: 800,
-            fontSize: '1rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif'
+            background: '#D4AF37', color: '#090B10', border: 'none',
+            padding: '14px', borderRadius: '12px', fontWeight: 800,
+            fontSize: '1rem', cursor: 'pointer', fontFamily: 'Outfit, sans-serif',
+            transition: 'all 0.2s'
           }}>
-            ✅ Salvar nova senha e entrar
+            Salvar nova senha e entrar →
           </button>
         </form>
       </div>
