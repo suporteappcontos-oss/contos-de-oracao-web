@@ -112,10 +112,20 @@ export default async function WatchPage() {
 
           <Link
             href="/perfil"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white/5 border border-white/10 hover:bg-white/10"
+            className="group flex items-center gap-2 px-2 py-1 rounded-xl transition-all hover:bg-white/5"
+            title="Meu perfil"
           >
-            <User size={13} className="text-white" />
-            <span className="hidden sm:inline text-white">Perfil</span>
+            <div className="relative w-8 h-8 rounded-xl overflow-hidden border-2 transition-all group-hover:border-[#D4AF37] shrink-0"
+              style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
+              <img
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.email || '')}&backgroundColor=transparent`}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="hidden sm:inline text-[#94A3B8] text-xs group-hover:text-white transition-colors font-semibold max-w-[80px] truncate">
+              {user.user_metadata?.nome || user.email?.split('@')[0]}
+            </span>
           </Link>
 
           <form action={logout} className="m-0 p-0 flex items-center">
