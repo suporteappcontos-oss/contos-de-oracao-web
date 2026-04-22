@@ -42,219 +42,167 @@ export default async function AdminPage() {
   const ativos = videos?.filter(v => v.ativo).length ?? 0
 
   return (
-    <div style={{ background: '#0C121D', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+    <div className="min-h-screen bg-[#0C121D] font-sans text-white pb-20">
 
       {/* ── Navbar ── */}
-      <header style={{
-        position: 'fixed', top: 0, width: '100%', zIndex: 50,
-        background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(255,215,0,0.15)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '1rem 4%'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link href="/watch" style={{ color: '#FFD700', textDecoration: 'none', fontSize: '1.5rem', fontWeight: 900 }}>
+      <header className="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-md border-b border-[#FFD700]/15 flex items-center justify-between px-4 md:px-8 py-4">
+        <div className="flex items-center gap-3">
+          <Link href="/watch" className="text-[#FFD700] text-xl md:text-2xl font-black drop-shadow-md">
             Contos de Oração
           </Link>
-          <span style={{
-            background: '#FFD700', color: '#000', fontSize: '0.65rem',
-            fontWeight: 800, padding: '2px 8px', borderRadius: '4px', letterSpacing: '1px'
-          }}>ADMIN</span>
+          <span className="bg-[#FFD700] text-black text-[0.6rem] font-extrabold px-2 py-0.5 rounded tracking-widest hidden sm:inline-block">
+            ADMIN
+          </span>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>{user.email}</span>
-          <Link href="/watch" style={{
-            color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '0.85rem',
-            border: '1px solid rgba(255,255,255,0.2)', padding: '6px 14px', borderRadius: '8px'
-          }}>
+        <div className="flex items-center gap-4">
+          <span className="text-white/40 text-xs hidden sm:inline">{user.email}</span>
+          <Link href="/watch" className="text-white/70 text-xs md:text-sm border border-white/20 px-3 md:px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
             ← Voltar ao Site
           </Link>
         </div>
       </header>
 
-      <main style={{ paddingTop: '100px', padding: '100px 4% 60px' }}>
+      <main className="pt-[100px] px-4 md:px-8 max-w-6xl mx-auto">
 
         {/* ── Título ── */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, margin: 0 }}>
+        <div className="mb-8">
+          <h1 className="text-white text-2xl md:text-3xl font-black mb-1">
             🎬 Painel Administrativo
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>
-            Gerencie o catálogo de vídeos da plataforma
+          <p className="text-white/40 text-sm md:text-base">
+            Gerencie o catálogo de vídeos da plataforma.
           </p>
         </div>
 
         {/* ── Cards de Estatísticas ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-10">
           {[
             { label: 'Total de Vídeos', value: total, icon: '🎬' },
             { label: 'Vídeos Ativos', value: ativos, icon: '✅' },
             { label: 'Vídeos Ocultos', value: total - ativos, icon: '👁️' },
           ].map(stat => (
-            <div key={stat.label} style={{
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '16px', padding: '1.25rem', textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{stat.icon}</div>
-              <div style={{ color: '#FFD700', fontSize: '2rem', fontWeight: 900 }}>{stat.value}</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginTop: '4px' }}>{stat.label}</div>
+            <div key={stat.label} className="bg-white/5 border border-white/5 rounded-2xl p-4 md:p-6 text-center">
+              <div className="text-2xl md:text-3xl mb-1">{stat.icon}</div>
+              <div className="text-[#FFD700] text-2xl md:text-4xl font-black">{stat.value}</div>
+              <div className="text-white/40 text-xs md:text-sm mt-1">{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* ── Formulário: Adicionar Vídeo ── */}
-        <div style={{
-          background: 'rgba(255,215,0,0.04)', border: '1px solid rgba(255,215,0,0.2)',
-          borderRadius: '20px', padding: '2rem', marginBottom: '2.5rem'
-        }}>
-          <h2 style={{ color: '#FFD700', fontSize: '1.2rem', fontWeight: 800, marginTop: 0, marginBottom: '1.5rem' }}>
+        <div className="bg-[#FFD700]/5 border border-[#FFD700]/20 rounded-2xl p-5 md:p-8 mb-10">
+          <h2 className="text-[#FFD700] text-lg md:text-xl font-extrabold mb-6 flex items-center gap-2">
             ➕ Adicionar Novo Vídeo
           </h2>
 
-          <form action={adicionarVideo}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <form action={adicionarVideo} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
 
               {/* Título */}
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Título do Vídeo *</label>
-                <input name="titulo" required placeholder="Ex: A Oração que Move Montanhas" style={inputStyle} />
+              <div className="md:col-span-2">
+                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Título do Vídeo *</label>
+                <input name="titulo" required placeholder="Ex: A Oração que Move Montanhas" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
               </div>
 
               {/* Descrição */}
-              <div style={{ gridColumn: '1 / -1' }}>
-                <label style={labelStyle}>Descrição</label>
-                <textarea name="descricao" rows={3} placeholder="Descrição do vídeo..." style={{ ...inputStyle, resize: 'vertical' }} />
+              <div className="md:col-span-2">
+                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Descrição</label>
+                <textarea name="descricao" rows={3} placeholder="Descrição do vídeo..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors resize-y" />
               </div>
 
               {/* Categoria */}
               <div>
-                <label style={labelStyle}>Categoria</label>
-                <select name="categoria" style={{ ...inputStyle, cursor: 'pointer' }}>
+                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Categoria</label>
+                {/* CSS Inline apenas para sumir com background branco do option no dropdown */}
+                <select name="categoria" className="w-full bg-[#18212C] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors cursor-pointer appearance-none">
                   {CATEGORIAS.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat} value={cat} className="bg-[#0C121D]">{cat}</option>
                   ))}
                 </select>
               </div>
 
               {/* Duração */}
               <div>
-                <label style={labelStyle}>Duração (ex: 12:34)</label>
-                <input name="duracao" placeholder="00:00" style={inputStyle} />
+                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Duração (ex: 12:34)</label>
+                <input name="duracao" placeholder="00:00" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
               </div>
 
               {/* Bunny.net Video ID */}
               <div>
-                <label style={labelStyle}>Video ID do Bunny.net *</label>
-                <input
-                  name="bunny_video_id"
-                  required
-                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                  style={inputStyle}
-                />
-                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', marginTop: '4px' }}>
-                  No Bunny.net: clique no vídeo → "Copy Video ID"
-                </p>
+                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">Video ID do Bunny.net *</label>
+                <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
+                <p className="text-white/30 text-[0.65rem] md:text-xs mt-1.5">No Bunny.net: clique no vídeo → "Copy Video ID"</p>
               </div>
 
               {/* Thumbnail URL */}
               <div>
-                <label style={labelStyle}>URL da Thumbnail (opcional)</label>
-                <input name="thumbnail_url" placeholder="https://..." style={inputStyle} />
+                <label className="block text-white/50 text-xs uppercase tracking-widest mb-2">URL da Thumbnail (opcional)</label>
+                <input name="thumbnail_url" placeholder="https://..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#FFD700]/50 transition-colors" />
               </div>
 
             </div>
 
-            <button type="submit" style={{
-              marginTop: '1.5rem',
-              background: '#FFD700', color: '#000', border: 'none',
-              padding: '14px 32px', borderRadius: '10px', fontWeight: 800,
-              fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s'
-            }}>
-              ✅ Adicionar Vídeo ao Catálogo
+            <button type="submit" className="w-full md:w-auto mt-4 bg-[#FFD700] hover:bg-[#ffe14d] text-black px-8 py-3.5 rounded-xl font-extrabold text-sm md:text-base transition-colors shadow-[0_4px_15px_rgba(255,215,0,0.2)]">
+              ✅ Adicionar Vídeo
             </button>
           </form>
         </div>
 
         {/* ── Lista de Vídeos ── */}
         <div>
-          <h2 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 800, marginBottom: '1rem' }}>
-            📽️ Vídeos no Catálogo ({total})
+          <h2 className="text-white text-lg md:text-xl font-extrabold mb-4">
+            📽️ Catálogo Gerenciado ({total})
           </h2>
 
           {!videos || videos.length === 0 ? (
-            <div style={{
-              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '16px', padding: '3rem', textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-              <p style={{ color: 'rgba(255,255,255,0.4)' }}>Nenhum vídeo cadastrado ainda.</p>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-10 text-center">
+              <div className="text-5xl mb-4">📭</div>
+              <p className="text-white/40">Nenhum vídeo cadastrado.</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {(videos as Video[]).map(video => (
-                <div key={video.id} style={{
-                  background: 'rgba(255,255,255,0.03)', border: `1px solid ${video.ativo ? 'rgba(255,255,255,0.08)' : 'rgba(255,0,0,0.15)'}`,
-                  borderRadius: '14px', padding: '1.25rem',
-                  display: 'flex', alignItems: 'center', gap: '1rem',
-                  opacity: video.ativo ? 1 : 0.5
-                }}>
-                  {/* Thumbnail / Ícone */}
-                  <div style={{
-                    width: '80px', height: '50px', borderRadius: '8px', flexShrink: 0,
-                    background: video.thumbnail_url ? `url(${video.thumbnail_url}) center/cover` : 'rgba(255,215,0,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '1px solid rgba(255,255,255,0.1)'
-                  }}>
-                    {!video.thumbnail_url && <span style={{ fontSize: '1.5rem' }}>🎬</span>}
-                  </div>
-
-                  {/* Infos */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: '#fff', fontWeight: 700, fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {video.titulo}
+            <div className="flex flex-col gap-3">
+              {videos.map(video => (
+                <div key={video.id} className={`bg-white/5 border rounded-2xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 transition-all ${video.ativo ? 'border-white/10' : 'border-red-500/20 opacity-60'}`}>
+                  
+                  {/* Informações Principais */}
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div 
+                      className="w-20 h-14 md:w-24 md:h-16 rounded-lg shrink-0 flex items-center justify-center border border-white/10 bg-cover bg-center"
+                      style={{ backgroundImage: video.thumbnail_url ? `url(${video.thumbnail_url})` : 'none', backgroundColor: 'rgba(255,215,0,0.05)' }}
+                    >
+                      {!video.thumbnail_url && <span className="text-2xl">🎬</span>}
                     </div>
-                    <div style={{ display: 'flex', gap: '0.75rem', marginTop: '4px', flexWrap: 'wrap' }}>
-                      <span style={{ color: '#FFD700', fontSize: '0.75rem', background: 'rgba(255,215,0,0.1)', padding: '2px 8px', borderRadius: '4px' }}>
-                        {video.categoria}
-                      </span>
-                      {video.duracao && (
-                        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>⏱ {video.duracao}</span>
-                      )}
-                      <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>
-                        {new Date(video.criado_em).toLocaleDateString('pt-BR')}
-                      </span>
-                      {!video.ativo && <span style={{ color: '#ff6b6b', fontSize: '0.75rem' }}>OCULTO</span>}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white font-bold text-sm md:text-base truncate">{video.titulo}</div>
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5 line-clamp-1">
+                        <span className="text-[#FFD700] text-[0.65rem] md:text-xs bg-[#FFD700]/10 px-2 py-0.5 rounded font-medium">{video.categoria}</span>
+                        {video.duracao && <span className="text-white/40 text-[0.65rem] md:text-xs shrink-0">⏱ {video.duracao}</span>}
+                        <span className="text-white/30 text-[0.65rem] md:text-xs shrink-0">{new Date(video.criado_em).toLocaleDateString('pt-BR')}</span>
+                        {!video.ativo && <span className="text-red-400 text-[0.65rem] md:text-xs font-bold tracking-wider shrink-0">OCULTO</span>}
+                      </div>
                     </div>
                   </div>
 
                   {/* Ações */}
-                  <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
-                    <Link
-                      href={`/watch/${video.id}`}
-                      target="_blank"
-                      style={{ ...btnStyle, background: 'rgba(255,255,255,0.08)', color: '#fff', textDecoration: 'none' }}
-                    >
+                  <div className="flex items-center gap-2 w-full md:w-auto shrink-0 mt-2 md:mt-0">
+                    <Link href={`/watch/${video.id}`} target="_blank" className="flex-1 md:flex-none text-center bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors">
                       ▶ Ver
                     </Link>
-
-                    <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)} style={{ display: 'inline' }}>
-                      <button type="submit" style={{
-                        ...btnStyle,
-                        background: video.ativo ? 'rgba(255,107,107,0.15)' : 'rgba(100,220,100,0.15)',
-                        color: video.ativo ? '#ff6b6b' : '#6ddc6d',
-                      }}>
+                    
+                    <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)} className="flex-1 md:flex-none">
+                      <button type="submit" className={`w-full md:w-auto px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors ${video.ativo ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20' : 'bg-green-500/10 text-green-400 hover:bg-green-500/20'}`}>
                         {video.ativo ? '👁 Ocultar' : '✅ Ativar'}
                       </button>
                     </form>
 
-                    <form action={deletarVideo.bind(null, video.id)} style={{ display: 'inline' }}>
-                      <button type="submit"
-                        style={{ ...btnStyle, background: 'rgba(255,0,0,0.1)', color: '#ff4444' }}
-                      >
+                    <form action={deletarVideo.bind(null, video.id)} className="flex-1 md:flex-none">
+                      <button type="submit" className="w-full md:w-auto bg-red-500/10 hover:bg-red-500/20 text-red-500 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors">
                         🗑 Deletar
                       </button>
                     </form>
                   </div>
+
                 </div>
               ))}
             </div>
@@ -263,26 +211,4 @@ export default async function AdminPage() {
       </main>
     </div>
   )
-}
-
-// ── Estilos reutilizáveis ──
-const labelStyle: React.CSSProperties = {
-  display: 'block', color: 'rgba(255,255,255,0.5)',
-  fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em',
-  marginBottom: '6px'
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '12px 14px',
-  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '10px', color: '#fff', fontSize: '0.95rem',
-  outline: 'none', boxSizing: 'border-box',
-  fontFamily: 'Inter, sans-serif'
-}
-
-const btnStyle: React.CSSProperties = {
-  padding: '6px 14px', borderRadius: '8px',
-  fontSize: '0.8rem', fontWeight: 600,
-  border: 'none', cursor: 'pointer',
-  fontFamily: 'Inter, sans-serif'
 }
