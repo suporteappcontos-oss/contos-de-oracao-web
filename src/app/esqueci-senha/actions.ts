@@ -16,10 +16,15 @@ export async function enviarResetSenha(formData: FormData) {
 
   // O usuário vai receber um e-mail com um link que aponta para /api/auth/callback
   // que vai trocar o code por sessão e redirecionar para /atualizar-senha
-  await supabase.auth.resetPasswordForEmail(email, {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/api/auth/callback?next=/atualizar-senha`,
   })
 
-  // Sempre redireciona para "enviado=true" (não revela se o e-mail existe por segurança)
+  if (error) {
+    console.error('🔴 ERRO DO SUPABASE SMTP:', error)
+    redirect('/esqueci-senha?erro=' + encodeURIComponent(error.message))
+  }
+
+  // Sempre redireciona para "enviado=true" se o envio SMTP for bem sucedido
   redirect('/esqueci-senha?enviado=true')
 }

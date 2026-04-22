@@ -97,7 +97,7 @@ export default async function EsqueciSenhaPage({ searchParams }: Props) {
             {erro && (
               <div className="rounded-xl px-4 py-3 text-sm text-center"
                 style={{ background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.25)', color: '#ff8080' }}>
-                ❌ E-mail inválido. Tente novamente.
+                ❌ {decodeURIComponent(erro)}
               </div>
             )}
 
