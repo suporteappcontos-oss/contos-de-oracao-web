@@ -7,7 +7,8 @@ import {
   Crown, XCircle, CheckCircle2, Play, Mail,
   Pencil, AlertTriangle, Shield
 } from 'lucide-react'
-import { salvarNome, cancelarPlano } from './actions'
+import { salvarNome } from './actions'
+import CancelarPlanoBtn from '@/components/CancelarPlanoBtn'
 
 type VideoFavorito = {
   id: string
@@ -43,11 +44,19 @@ export default async function PerfilPage() {
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
   const planoAtivo = user.user_metadata?.plano_ativo === true || isAdmin
 
-  const { data: favoritos } = await supabase
-    .from('favoritos')
-    .select('id, video_id, videos(id, titulo, categoria, thumbnail_url, duracao)')
-    .eq('user_id', user.id)
-    .order('criado_em', { ascending: false })
+  // Busca favoritos — protegido com try/catch caso a tabela ainda não exista
+  let favoritos: unknown[] = []
+  try {
+    const { data } = await supabase
+      .from('favoritos')
+      .select('id, video_id, videos(id, titulo, categoria, thumbnail_url, duracao)')
+      .eq('user_id', user!.id)
+      .order('criado_em', { ascending: false })
+    favoritos = data ?? []
+  } catch {
+    // Tabela ainda não existe no banco — ignore o erro
+    favoritos = []
+  }
 
   async function logout() {
     'use server'
@@ -180,19 +189,7 @@ export default async function PerfilPage() {
               </p>
             </div>
             {planoAtivo && !isAdmin ? (
-              <form action={cancelarPlano}>
-                <button type="submit"
-                  className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition-all hover:brightness-110 border border-red-500/30 text-red-400 hover:bg-red-500/10 cursor-pointer"
-                  style={{ background: 'rgba(239,68,68,0.05)' }}
-                  onClick={(e) => {
-                    if (!confirm('Tem certeza que deseja cancelar seu plano? Você perderá o acesso ao conteúdo.')) {
-                      e.preventDefault()
-                    }
-                  }}
-                >
-                  Cancelar Plano
-                </button>
-              </form>
+              <CancelarPlanoBtn />
             ) : !planoAtivo && (
               <a href="https://pay.kiwify.com.br/YApXtLr" target="_blank" rel="noreferrer"
                 className="shrink-0 px-5 py-2.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110"
@@ -248,7 +245,7 @@ export default async function PerfilPage() {
             <span className="text-[#64748B] text-sm">({favoritos?.length ?? 0})</span>
           </div>
 
-          {!favoritos || favoritos.length === 0 ? (
+          {favoritos.length === 0 ? (
             <div className="rounded-2xl p-10 text-center"
               style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
               <Heart size={36} className="mx-auto mb-3 opacity-20" />
