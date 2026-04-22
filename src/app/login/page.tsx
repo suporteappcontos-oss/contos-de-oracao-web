@@ -45,7 +45,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
           {erro && (
             <div className="bg-red-500/15 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg text-sm text-center">
-              {erro === 'credenciais_invalidas' ? '❌ E-mail ou senha incorretos.' : '❌ Ocorreu um erro. Tente novamente.'}
+              {erro === 'credenciais_invalidas' ? '❌ E-mail ou senha incorretos.' :
+               erro === 'link_invalido' ? '❌ Link expirado ou inválido. Solicite um novo abaixo.' :
+               '❌ Ocorreu um erro. Tente novamente.'}
             </div>
           )}
 
@@ -55,6 +57,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           >
             Acessar Plataforma
           </button>
+
+          <div className="text-center">
+            <Link href="/esqueci-senha" className="text-white/40 text-sm hover:text-[#FFD700] transition-colors no-underline">
+              Esqueci minha senha
+            </Link>
+          </div>
           
           <button 
             formAction={signup}
