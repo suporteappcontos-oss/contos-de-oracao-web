@@ -8,6 +8,24 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
+// ✅ Formata nome para primeiras 2 palavras significativas
+// "João Pires de Freitas Neto" → "João Pires"
+// "Delmy de Oliveira Junior"   → "Delmy de Oliveira"
+function formatarNomeCurto(nomeCompleto: string): string {
+  const preposicoes = ['de', 'do', 'da', 'dos', 'das', 'e', 'di', 'del', 'van', 'von']
+  const palavras = nomeCompleto.trim().split(/\s+/).filter(Boolean)
+  if (palavras.length <= 2) {
+    return palavras.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ')
+  }
+  const resultado: string[] = [palavras[0]]
+  resultado.push(palavras[1])
+  // Se a 2ª palavra é preposição (de, da, do...), inclui a 3ª também
+  if (preposicoes.includes(palavras[1].toLowerCase()) && palavras[2]) {
+    resultado.push(palavras[2])
+  }
+  return resultado.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ')
+}
+
 // ✅ Busca usuário por email — com limite de 1000 para evitar timeout
 async function buscarUsuarioPorEmail(email: string) {
   const { data, error } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
@@ -32,7 +50,7 @@ export async function POST(request: NextRequest) {
     // Kiwify envia o evento em diferentes formatos dependendo da versão
     const evento = body?.event || body?.data?.status || body?.order_status || ''
     const email = body?.Customer?.email || body?.data?.customer?.email || body?.customer?.email || ''
-    const nome = body?.Customer?.full_name || body?.data?.customer?.name || body?.customer?.name || 'Cliente'
+    const nome = formatarNomeCurto(body?.Customer?.full_name || body?.data?.customer?.name || body?.customer?.name || 'Cliente')
     const produto = body?.Product?.name || body?.data?.product?.name || 'Contos de Oração'
 
     console.log(`📌 Evento: "${evento}" | Email: ${email} | Nome: ${nome}`)
@@ -64,10 +82,10 @@ export async function POST(request: NextRequest) {
 
         console.log(`🎉 Usuário criado: ${email}`)
 
-        // Envia link de "Definir sua senha" para o novo assinante
+        // Envia link de "Definir sua senha" → redireciona para /atualizar-senha
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.online'
         const { error: erroReset } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
-          redirectTo: `${siteUrl}/login`,
+          redirectTo: `${siteUrl}/atualizar-senha`,
         })
 
         if (erroReset) {

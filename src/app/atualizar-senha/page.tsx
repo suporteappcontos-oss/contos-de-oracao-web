@@ -70,10 +70,10 @@ export default async function AtualizarSenhaPage({ searchParams }: Props) {
         </div>
 
         <h1 style={{ color: '#fff', fontSize: '1.7rem', fontWeight: 900, margin: '0 0 0.5rem' }}>
-          Criar nova senha
+          Bem-vindo! Crie sua senha 🙏
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-          Bem-vindo! Defina uma senha forte para acessar a plataforma.
+          Sua compra foi aprovada! Defina uma senha para acessar todo o conteúdo.
         </p>
 
         <form action={atualizarSenha} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
