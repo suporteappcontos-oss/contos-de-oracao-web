@@ -92,11 +92,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           ))}
         </div>
 
-        <a href="https://pay.kiwify.com.br/YApXtLr" target="_blank" rel="noreferrer"
-          className="block w-full text-center py-3.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110 hover:scale-[1.02]"
-          style={{ background: '#D4AF37', color: '#090B10' }}>
+        <Link
+          href="/assinar"
+          className="block w-full text-center py-3.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110 hover:scale-[1.02] no-underline"
+          style={{ background: '#D4AF37', color: '#090B10' }}
+        >
           Assinar Agora →
-        </a>
+        </Link>
       </div>
     </div>
   );
