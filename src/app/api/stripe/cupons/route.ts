@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/utils/supabase/server'
 
+export const dynamic = 'force-dynamic'
+
 async function verificarAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

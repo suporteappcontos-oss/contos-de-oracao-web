@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const prices = await stripe.prices.list({ active: true, limit: 10, expand: ['data.product'] })
