@@ -67,9 +67,13 @@ export async function POST(request: NextRequest) {
   let promoCodigo = null
   if (codigo) {
     promoCodigo = await stripe.promotionCodes.create({
-      coupon: cupom.id,
+      // A versão da API 2026-03-25.dahlia usa promotion.coupon
+      promotion: {
+        type: 'coupon',
+        coupon: cupom.id,
+      },
       code: codigo.toUpperCase(),
-    })
+    } as any)
   }
 
   return NextResponse.json({
