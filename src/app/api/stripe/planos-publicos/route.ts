@@ -16,6 +16,9 @@ export async function GET() {
       }
     }))
 
+    // Ordenar do maior para o menor valor (Premium primeiro)
+    planos.sort((a, b) => (b.valor || 0) - (a.valor || 0))
+
     return NextResponse.json({ planos })
   } catch (error) {
     return NextResponse.json({ error: 'Erro ao buscar planos' }, { status: 500 })

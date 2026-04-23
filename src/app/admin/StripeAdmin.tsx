@@ -187,6 +187,9 @@ export function StripeAdmin() {
                 <div>
                   <label className={labelCls}>Valor (R$)</label>
                   <input type="text" required value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
+                  <p className="text-[#8197a4] text-[0.65rem] mt-1 italic">
+                    *Mantenha valores reais para evitar bloqueio por suspeita de fraude na Stripe. (Ex: Max R$ 9.999,00)
+                  </p>
                 </div>
               </div>
 
