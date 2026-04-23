@@ -22,6 +22,7 @@ export async function GET() {
     id: p.id,
     nome: p.name,
     descricao: p.description,
+    beneficios: p.metadata.beneficios || '',
     ativo: p.active,
     precos: prices.data
       .filter(pr => pr.product === p.id)
@@ -85,5 +86,21 @@ export async function DELETE(request: NextRequest) {
   if (!id) return NextResponse.json({ error: 'ID do produto obrigatório' }, { status: 400 })
 
   await stripe.products.update(id, { active: false })
+  return NextResponse.json({ success: true })
+}
+
+// ── PUT — Editar produto ──
+export async function PUT(request: NextRequest) {
+  if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const { id, nome, beneficios } = await request.json()
+  
+  if (!id || !nome) return NextResponse.json({ error: 'ID e Nome são obrigatórios' }, { status: 400 })
+
+  await stripe.products.update(id, { 
+    name: nome,
+    metadata: {
+      beneficios: beneficios || ''
+    }
+  })
   return NextResponse.json({ success: true })
 }
