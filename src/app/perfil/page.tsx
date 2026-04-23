@@ -191,11 +191,11 @@ export default async function PerfilPage() {
             {planoAtivo && !isAdmin ? (
               <CancelarPlanoBtn />
             ) : !planoAtivo && (
-              <a href="https://pay.kiwify.com.br/YApXtLr" target="_blank" rel="noreferrer"
+              <Link href="/#planos"
                 className="shrink-0 px-5 py-2.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110"
                 style={{ background: '#D4AF37', color: '#090B10' }}>
                 Renovar →
-              </a>
+              </Link>
             )}
           </div>
         </div>
