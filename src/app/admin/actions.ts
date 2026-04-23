@@ -58,9 +58,11 @@ export async function editarVideo(videoId: string, formData: FormData) {
 // ─── Ativar / Desativar vídeo ───
 export async function toggleVideoAtivo(videoId: string, ativoAtual: boolean) {
   const { supabase } = await verificarAdmin()
-  await supabase.from('videos').update({ ativo: !ativoAtual }).eq('id', videoId)
+  const { error } = await supabase.from('videos').update({ ativo: !ativoAtual }).eq('id', videoId)
+  if (error) console.error('❌ Erro ao atualizar vídeo:', error.message)
   revalidatePath('/admin')
   revalidatePath('/watch')
+  redirect('/admin?tab=videos')
 }
 
 // ─── Deletar vídeo ───
