@@ -40,9 +40,7 @@ export default function Hero() {
           >
             Contos de Oração
           </h1>
-          <div className="text-[#D4AF37] text-xs font-extrabold uppercase tracking-[0.3em] mt-1">
-            ✦ Premium ✦
-          </div>
+          <div className="w-16 h-1 bg-[#D4AF37] mx-auto rounded-full mt-3 opacity-80 shadow-[0_0_10px_rgba(212,175,55,0.5)]"></div>
         </div>
 
         {/* Subtítulo */}

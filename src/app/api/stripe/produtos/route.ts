@@ -53,7 +53,7 @@ try {
   // Cria o produto
   const produto = await stripe.products.create({
     name: nome,
-    description: descricao || '',
+    ...(descricao ? { description: descricao } : {}),
   })
 
   // Cria preço mensal
