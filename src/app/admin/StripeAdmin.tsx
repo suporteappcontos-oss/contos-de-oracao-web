@@ -12,7 +12,7 @@ export function StripeAdmin() {
   const [cupons, setCupons] = useState<Cupom[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura Premium', preco_mensal: '29,90', preco_anual: '299,90' })
+  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', preco: '29,90', intervalo: 'month', beneficios: 'Acesso ilimitado ao catálogo, Resolução Full HD, Suporte prioritário' })
   const [novoCupom, setNovoCupom] = useState({ nome: '', codigo: '', tipo: 'percentual', valor: '', usos_max: '' })
   const [loadingAction, setLoadingAction] = useState(false)
 
@@ -38,13 +38,13 @@ export function StripeAdmin() {
   const criarProduto = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoadingAction(true)
-    // Formata o preco_mensal e preco_anual trocando virgula por ponto
+    // Formata o preco trocando virgula por ponto
     const parsePreco = (val: string) => Number(val.replace(',', '.'))
     
     const payload = {
       ...novoProduto,
-      preco_mensal: parsePreco(novoProduto.preco_mensal),
-      preco_anual: parsePreco(novoProduto.preco_anual)
+      preco: parsePreco(novoProduto.preco),
+      beneficios: novoProduto.beneficios
     }
 
     try {
@@ -111,17 +111,24 @@ export function StripeAdmin() {
           <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-6">
             <h3 className="text-white font-bold mb-4">Criar Produto de Assinatura</h3>
             <form onSubmit={criarProduto} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className={labelCls}>Nome</label>
-                <input required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
+              <div className="sm:col-span-2">
+                <label className={labelCls}>Nome do Plano</label>
+                <input type="text" required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
               </div>
               <div>
-                <label className={labelCls}>Valor Mensal (R$)</label>
-                <input type="text" required value={novoProduto.preco_mensal} onChange={e => setNovoProduto({...novoProduto, preco_mensal: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
+                <label className={labelCls}>Intervalo de Cobrança</label>
+                <select value={novoProduto.intervalo} onChange={e => setNovoProduto({...novoProduto, intervalo: e.target.value})} className={inputCls}>
+                  <option value="month">Mensal</option>
+                  <option value="year">Anual</option>
+                </select>
               </div>
               <div>
-                <label className={labelCls}>Valor Anual (R$)</label>
-                <input type="text" required value={novoProduto.preco_anual} onChange={e => setNovoProduto({...novoProduto, preco_anual: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
+                <label className={labelCls}>Valor (R$)</label>
+                <input type="text" required value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
+              </div>
+              <div className="sm:col-span-2">
+                <label className={labelCls}>Vantagens / Benefícios (separe por vírgula)</label>
+                <input type="text" placeholder="Ex: Acesso ilimitado, Resolução Full HD" required value={novoProduto.beneficios} onChange={e => setNovoProduto({...novoProduto, beneficios: e.target.value})} className={inputCls} />
               </div>
               <div className="sm:col-span-3">
                 <button disabled={loadingAction} className="bg-[#D4AF37] text-[#090B10] px-6 py-3 rounded-xl font-bold flex items-center gap-2">
@@ -142,10 +149,11 @@ export function StripeAdmin() {
                 <div className="text-white font-black text-xl mb-2">📦 {p.nome}</div>
                 <div className="flex flex-wrap gap-3">
                   {p.precos.map(pr => (
-                    <div key={pr.id} className="bg-[#0f171e] border border-[#1e3040] px-4 py-2 rounded-lg">
-                      <span className="text-[#8197a4] text-xs uppercase block">{pr.intervalo === 'year' ? 'Plano Anual' : 'Plano Mensal'}</span>
-                      <span className="text-white font-bold">R$ {(pr.valor / 100).toFixed(2)}</span>
-                      <div className="text-[0.6rem] text-[#D4AF37] mt-1 select-all">{pr.id} <span className="text-[#4a6373]">(Price ID)</span></div>
+                    <div key={pr.id} className="bg-[#090B10] p-3 rounded-xl flex-1 min-w-[150px] border border-[#1e3040]">
+                      <div className="text-[10px] text-[#8197a4] font-bold uppercase mb-1">
+                        PLANO {pr.intervalo === 'month' ? 'MENSAL' : pr.intervalo === 'year' ? 'ANUAL' : 'PERSONALIZADO'}
+                      </div>
+                      <div className="text-white font-black">R$ {(pr.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     </div>
                   ))}
                 </div>
@@ -184,7 +192,11 @@ export function StripeAdmin() {
               <label className={labelCls}>Valor/Porcentagem</label>
               <input required type="number" placeholder="Ex: 50" value={novoCupom.valor} onChange={e => setNovoCupom({...novoCupom, valor: e.target.value})} className={inputCls} />
             </div>
-            <div className="md:col-span-5">
+            <div>
+              <label className={labelCls}>Limite de usos (Opcional)</label>
+              <input type="number" placeholder="Ex: 30" value={novoCupom.usos_max} onChange={e => setNovoCupom({...novoCupom, usos_max: e.target.value})} className={inputCls} />
+            </div>
+            <div className="md:col-span-6">
               <button disabled={loadingAction} className="bg-[#00a8e1] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 w-fit">
                 <Plus size={16} /> Criar Cupom
               </button>

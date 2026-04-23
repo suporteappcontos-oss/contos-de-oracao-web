@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import GlobalLoader from "@/components/GlobalLoader";
 
 export const metadata: Metadata = {
   title: "Contos de Oração – Streaming Católico",
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="antialiased">
       <body className="min-h-full flex flex-col scroll-smooth" style={{ background: '#090B10' }}>
+        <GlobalLoader />
         {children}
       </body>
     </html>

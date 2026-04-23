@@ -3,59 +3,51 @@ import { stripe } from '@/lib/stripe';
 
 export default async function Pricing() {
   // Busca produto e preços do Stripe dinamicamente
-  const products = await stripe.products.list({ active: true, limit: 1 })
-  const prices = await stripe.prices.list({ active: true, limit: 10 })
+  const prices = await stripe.prices.list({ active: true, limit: 10, expand: ['data.product'] })
 
-  const produto = products.data[0]
-  
-  // Se não tem produto configurado no Stripe, mostramos os planos placeholders
   let planosRenderizados = []
 
-  if (produto) {
-    const precosProduto = prices.data.filter(p => p.product === produto.id)
-    const precoMensal = precosProduto.find(p => p.recurring?.interval === 'month')
-    const precoAnual = precosProduto.find(p => p.recurring?.interval === 'year')
-
-    if (precoMensal) {
-      planosRenderizados.push({
-        nome: 'Mensal',
-        preco: `R$ ${(precoMensal.unit_amount! / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-        subpreco: '/mês',
-        descricao: produto.description || 'Assinatura mensal',
-        link: '/assinar',
-        destaque: false,
-        badge: null,
-        cor: 'text-[#8197a4]',
-        beneficios: [
-          'Acesso ilimitado ao catálogo',
-          'Resolução Full HD',
-          'Suporte prioritário',
-          'Cancele quando quiser',
-        ],
-      })
-    }
-
-    if (precoAnual) {
-      const valorAnual = precoAnual.unit_amount! / 100
-      const valorMensalEq = valorAnual / 12
+  if (prices.data.length > 0) {
+    planosRenderizados = prices.data.map((price, index) => {
+      const produto = price.product as any
+      const isAnual = price.recurring?.interval === 'year'
+      const valor = price.unit_amount! / 100
       
-      planosRenderizados.push({
-        nome: 'Anual',
-        preco: `R$ ${valorMensalEq.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-        subpreco: '/mês',
-        descricao: 'Cobrado anualmente',
-        link: '/assinar',
-        destaque: true,
-        badge: 'Economize 30%',
-        cor: 'text-[#D4AF37]',
-        beneficios: [
-          'Acesso ilimitado ao catálogo',
-          'Resolução Full HD',
-          'Suporte prioritário',
-          `Cobrança única de R$ ${valorAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-        ],
-      })
-    }
+      let precoDisplay = ''
+      let subpreco = ''
+      let beneficios = produto.metadata?.beneficios 
+        ? produto.metadata.beneficios.split(',').map((b: string) => b.trim())
+        : [
+            'Acesso ilimitado ao catálogo',
+            'Resolução Full HD',
+            'Suporte prioritário',
+            isAnual ? `Cobrança única de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'Cancele quando quiser'
+          ]
+      
+      if (isAnual) {
+        precoDisplay = `R$ ${(valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        subpreco = '/mês'
+      } else {
+        precoDisplay = `R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+        subpreco = '/mês'
+      }
+      
+      return {
+        id: price.id,
+        nome: produto.name,
+        preco: precoDisplay,
+        subpreco: subpreco,
+        descricao: produto.description || (isAnual ? 'Cobrado anualmente' : 'Assinatura mensal'),
+        link: `/assinar?plan=${price.id}`,
+        destaque: isAnual,
+        badge: isAnual ? 'Melhor Opção' : null,
+        cor: isAnual ? 'text-[#D4AF37]' : 'text-[#8197a4]',
+        beneficios: beneficios
+      }
+    })
+    
+    // Opcional: ordenar para que os anuais fiquem por último, ou pelo valor
+    planosRenderizados.sort((a, b) => a.destaque === b.destaque ? 0 : a.destaque ? 1 : -1)
   } else {
     // Fallback: se o Admin apagou todos os produtos
     planosRenderizados = [

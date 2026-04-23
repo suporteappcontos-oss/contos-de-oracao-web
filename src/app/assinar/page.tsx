@@ -11,25 +11,29 @@ export default function AssinarPage() {
   const [step, setStep] = useState<Step>(1)
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
-  const [planoSelecionado, setPlanoSelecionado] = useState<'mensal' | 'anual'>('mensal')
+  const [planoSelecionado, setPlanoSelecionado] = useState<string>('')
   const [erros, setErros] = useState<{ nome?: string; email?: string }>({})
   
   // Estados para carregamento dinâmico
-  const [precoMensal, setPrecoMensal] = useState(7.90)
-  const [precoAnual, setPrecoAnual] = useState(70.80)
+  const [planos, setPlanos] = useState<any[]>([])
   const [loadingCheckout, setLoadingCheckout] = useState(false)
 
   // Busca preços reais ativos na montagem
   useEffect(() => {
-    fetch('/api/stripe/produtos')
+    // Pega o parametro 'plan' da url se existir
+    const params = new URLSearchParams(window.location.search)
+    const planParam = params.get('plan')
+    
+    if (planParam) setPlanoSelecionado(planParam)
+
+    fetch('/api/stripe/planos-publicos')
       .then(r => r.json())
       .then(data => {
-        if (data.produtos && data.produtos.length > 0) {
-          const precos = data.produtos[0].precos
-          const pm = precos.find((p: any) => p.intervalo === 'month')
-          const pa = precos.find((p: any) => p.intervalo === 'year')
-          if (pm) setPrecoMensal(pm.valor / 100)
-          if (pa) setPrecoAnual(pa.valor / 100)
+        if (data.planos) {
+          setPlanos(data.planos)
+          if (!planParam && data.planos.length > 0) {
+            setPlanoSelecionado(data.planos[0].id)
+          }
         }
       })
       .catch(console.error)
@@ -79,6 +83,8 @@ export default function AssinarPage() {
       setLoadingCheckout(false)
     }
   }
+
+  const planoDetalhe = planos.find(p => p.id === planoSelecionado)
 
   return (
     <div className="min-h-screen relative overflow-hidden"
@@ -206,65 +212,45 @@ export default function AssinarPage() {
             <p className="text-white/40 text-sm mb-8 text-center">Cancele quando quiser</p>
 
             <div className="flex flex-col gap-4 mb-6">
-              {/* Plano Mensal */}
-              <button
-                onClick={() => setPlanoSelecionado('mensal')}
-                className="w-full text-left rounded-2xl p-5 transition-all cursor-pointer relative"
-                style={{
-                  background: planoSelecionado === 'mensal' ? 'rgba(212,175,55,0.08)' : 'rgba(21,36,62,0.7)',
-                  border: `2px solid ${planoSelecionado === 'mensal' ? '#D4AF37' : 'rgba(255,255,255,0.08)'}`,
-                }}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-white font-black text-lg">Mensal</div>
-                    <div className="text-white/50 text-sm mt-0.5">Cobrado todo mês</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>
-                      R$ {precoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              {planos.length === 0 && <p className="text-white/50 text-center">Carregando planos...</p>}
+              
+              {planos.map(plano => (
+                <button
+                  key={plano.id}
+                  onClick={() => setPlanoSelecionado(plano.id)}
+                  className="w-full text-left rounded-2xl p-5 transition-all cursor-pointer relative"
+                  style={{
+                    background: planoSelecionado === plano.id ? 'rgba(212,175,55,0.08)' : 'rgba(21,36,62,0.7)',
+                    border: `2px solid ${planoSelecionado === plano.id ? '#D4AF37' : 'rgba(255,255,255,0.08)'}`,
+                  }}>
+                  {plano.intervalo === 'year' && (
+                    <div className="absolute -top-3 left-5 px-3 py-0.5 rounded-full text-xs font-black"
+                      style={{ background: '#D4AF37', color: '#090B10' }}>
+                      Melhor Opção
                     </div>
-                    <div className="text-white/40 text-xs">/mês</div>
-                  </div>
-                </div>
-                {planoSelecionado === 'mensal' && (
-                  <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ background: '#D4AF37' }}>
-                    <Check size={12} className="text-[#090B10]" />
-                  </div>
-                )}
-              </button>
-
-              {/* Plano Anual */}
-              <button
-                onClick={() => setPlanoSelecionado('anual')}
-                className="w-full text-left rounded-2xl p-5 transition-all cursor-pointer relative"
-                style={{
-                  background: planoSelecionado === 'anual' ? 'rgba(212,175,55,0.08)' : 'rgba(21,36,62,0.7)',
-                  border: `2px solid ${planoSelecionado === 'anual' ? '#D4AF37' : 'rgba(255,255,255,0.08)'}`,
-                }}>
-                <div className="absolute -top-3 left-5 px-3 py-0.5 rounded-full text-xs font-black"
-                  style={{ background: '#D4AF37', color: '#090B10' }}>
-                  Economize 30%
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-white font-black text-lg">Anual</div>
-                    <div className="text-white/50 text-sm mt-0.5">Cobrado uma vez por ano</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>
-                      R$ {(precoAnual / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  )}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-white font-black text-lg">{plano.produto.nome}</div>
+                      <div className="text-white/50 text-sm mt-0.5">
+                        {plano.intervalo === 'month' ? 'Cobrado mensalmente' : plano.intervalo === 'year' ? 'Cobrado anualmente' : 'Cobrança personalizada'}
+                      </div>
                     </div>
-                    <div className="text-white/40 text-xs">/mês</div>
+                    <div className="text-right">
+                      <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>
+                        R$ {(plano.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </div>
+                      <div className="text-white/40 text-xs">/{plano.intervalo === 'month' ? 'mês' : plano.intervalo === 'year' ? 'ano' : 'ciclo'}</div>
+                    </div>
                   </div>
-                </div>
-                {planoSelecionado === 'anual' && (
-                  <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ background: '#D4AF37' }}>
-                    <Check size={12} className="text-[#090B10]" />
-                  </div>
-                )}
-              </button>
+                  {planoSelecionado === plano.id && (
+                    <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
+                      style={{ background: '#D4AF37' }}>
+                      <Check size={12} className="text-[#090B10]" />
+                    </div>
+                  )}
+                </button>
+              ))}
             </div>
 
             {/* Benefícios */}
@@ -321,17 +307,13 @@ export default function AssinarPage() {
               <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <span className="text-white/60 text-sm">Plano</span>
                 <span className="font-bold text-sm" style={{ color: '#D4AF37' }}>
-                  {planoSelecionado === 'mensal' 
-                    ? `Mensal — R$ ${precoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês` 
-                    : `Anual — R$ ${(precoAnual / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês`}
+                  {planoDetalhe ? `${planoDetalhe.produto.nome} — R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/${planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}` : 'Carregando...'}
                 </span>
               </div>
               <div className="flex justify-between pt-3 mt-1">
                 <span className="text-white font-black text-sm">Total hoje</span>
                 <span className="font-black text-lg" style={{ color: '#D4AF37' }}>
-                  {planoSelecionado === 'mensal' 
-                    ? `R$ ${precoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` 
-                    : `R$ ${precoAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                  {planoDetalhe ? `R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 0,00'}
                 </span>
               </div>
             </div>

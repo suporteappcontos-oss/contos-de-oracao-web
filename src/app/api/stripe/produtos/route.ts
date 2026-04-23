@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
   if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   const body = await request.json()
-  const { nome, descricao, preco_mensal, preco_anual } = body
+  const { nome, descricao, preco, intervalo, beneficios } = body
 
-  if (!nome || !preco_mensal || isNaN(preco_mensal)) {
-    return NextResponse.json({ error: 'Nome e preço mensal são obrigatórios e devem ser válidos' }, { status: 400 })
+  if (!nome || !preco || isNaN(preco)) {
+    return NextResponse.json({ error: 'Nome e preço são obrigatórios e devem ser válidos' }, { status: 400 })
   }
 
 try {
@@ -54,31 +54,22 @@ try {
   const produto = await stripe.products.create({
     name: nome,
     ...(descricao ? { description: descricao } : {}),
+    metadata: {
+      beneficios: beneficios || 'Acesso ilimitado ao catálogo, Resolução Full HD, Suporte prioritário'
+    }
   })
 
-  // Cria preço mensal
-  const precoMensal = await stripe.prices.create({
+  // Cria o preço
+  const price = await stripe.prices.create({
     product: produto.id,
-    unit_amount: Math.round(preco_mensal * 100), // converte R$ para centavos
+    unit_amount: Math.round(preco * 100),
     currency: 'brl',
-    recurring: { interval: 'month' },
+    recurring: { interval: intervalo || 'month' },
   })
-
-  // Cria preço anual (se informado)
-  let precoAnual = null
-  if (preco_anual) {
-    precoAnual = await stripe.prices.create({
-      product: produto.id,
-      unit_amount: Math.round(preco_anual * 100), // convertendo para centavos
-      currency: 'brl',
-      recurring: { interval: 'year' },
-    })
-  }
 
   return NextResponse.json({
     produto: { id: produto.id, nome: produto.name },
-    preco_mensal: { id: precoMensal.id, valor: preco_mensal },
-    preco_anual: precoAnual ? { id: precoAnual.id, valor: preco_anual } : null,
+    preco: { id: price.id, valor: preco, intervalo },
   })
 } catch (error: any) {
   console.error("Erro ao criar produto:", error)
