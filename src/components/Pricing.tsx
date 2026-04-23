@@ -100,8 +100,8 @@ export default async function Pricing() {
             </div>
 
             <ul className="list-none mb-8 text-left grow space-y-4">
-              {plano.beneficios.map((b) => (
-                <li key={b} className="flex items-start gap-3 text-white/80 text-[1rem]">
+              {plano.beneficios.map((b: string, i: number) => (
+                <li key={`${b}-${i}`} className="flex items-start gap-3 text-white/80 text-[1rem]">
                   <span className="text-[#FFD700] font-bold mt-0.5">✓</span>
                   {b}
                 </li>
