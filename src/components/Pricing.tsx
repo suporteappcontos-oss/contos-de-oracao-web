@@ -1,54 +1,78 @@
 import React from 'react';
+import { stripe } from '@/lib/stripe';
 
-const planos = [
-  {
-    nome: 'Básico',
-    preco: 'R$ 5,00',
-    descricao: 'Para quem quer começar',
-    link: 'https://pay.kiwify.com.br/YApXtLr',
-    destaque: false,
-    badge: null,
-    cor: 'text-text-muted',
-    beneficios: [
-      'Acesso ilimitado ao catálogo',
-      'Resolução HD (720p)',
-      '1 tela por vez',
-      'Suporte por e-mail',
-    ],
-  },
-  {
-    nome: 'Família',
-    preco: 'R$ 6,00',
-    descricao: 'O mais popular da plataforma',
-    link: '#',
-    destaque: true,
-    badge: 'Mais Popular',
-    cor: 'text-[#FFD700]',
-    beneficios: [
-      'Acesso ilimitado ao catálogo',
-      'Resolução Full HD (1080p)',
-      '2 telas simultâneas',
-      'Perfil infantil protegido por PIN',
-    ],
-  },
-  {
-    nome: 'Premium',
-    preco: 'R$ 7,00',
-    descricao: 'A experiência completa',
-    link: '#',
-    destaque: false,
-    badge: null,
-    cor: 'text-text-muted',
-    beneficios: [
-      'Acesso ilimitado ao catálogo',
-      'Resolução 4K + HDR',
-      '4 telas simultâneas',
-      'Áudio envolvente imersivo',
-    ],
-  },
-];
+export default async function Pricing() {
+  // Busca produto e preços do Stripe dinamicamente
+  const products = await stripe.products.list({ active: true, limit: 1 })
+  const prices = await stripe.prices.list({ active: true, limit: 10 })
 
-export default function Pricing() {
+  const produto = products.data[0]
+  
+  // Se não tem produto configurado no Stripe, mostramos os planos placeholders
+  let planosRenderizados = []
+
+  if (produto) {
+    const precosProduto = prices.data.filter(p => p.product === produto.id)
+    const precoMensal = precosProduto.find(p => p.recurring?.interval === 'month')
+    const precoAnual = precosProduto.find(p => p.recurring?.interval === 'year')
+
+    if (precoMensal) {
+      planosRenderizados.push({
+        nome: 'Mensal',
+        preco: `R$ ${(precoMensal.unit_amount! / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+        subpreco: '/mês',
+        descricao: produto.description || 'Assinatura mensal',
+        link: '/assinar',
+        destaque: false,
+        badge: null,
+        cor: 'text-[#8197a4]',
+        beneficios: [
+          'Acesso ilimitado ao catálogo',
+          'Resolução Full HD',
+          'Suporte prioritário',
+          'Cancele quando quiser',
+        ],
+      })
+    }
+
+    if (precoAnual) {
+      const valorAnual = precoAnual.unit_amount! / 100
+      const valorMensalEq = valorAnual / 12
+      
+      planosRenderizados.push({
+        nome: 'Anual',
+        preco: `R$ ${valorMensalEq.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+        subpreco: '/mês',
+        descricao: 'Cobrado anualmente',
+        link: '/assinar',
+        destaque: true,
+        badge: 'Economize 30%',
+        cor: 'text-[#D4AF37]',
+        beneficios: [
+          'Acesso ilimitado ao catálogo',
+          'Resolução Full HD',
+          'Suporte prioritário',
+          `Cobrança única de R$ ${valorAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+        ],
+      })
+    }
+  } else {
+    // Fallback: se o Admin apagou todos os produtos
+    planosRenderizados = [
+      {
+        nome: 'Plano Padrão',
+        preco: 'R$ --,--',
+        subpreco: '/mês',
+        descricao: 'Nenhum plano configurado no momento',
+        link: '#',
+        destaque: true,
+        badge: 'Em breve',
+        cor: 'text-[#D4AF37]',
+        beneficios: ['Aguardando configuração do administrador'],
+      }
+    ]
+  }
+
   return (
     <section id="planos" className="py-[80px] px-[4%] text-center" style={{ background: '#090B10', borderTop: '1px solid rgba(212,175,55,0.1)', fontFamily: 'Outfit, sans-serif' }}>
       <p className="text-[#FFD700] uppercase tracking-widest text-sm font-semibold mb-4">Planos e Preços</p>
@@ -58,7 +82,7 @@ export default function Pricing() {
       <p className="text-white/50 text-lg mb-[60px]">Cancele quando quiser. Sem taxas escondidas.</p>
 
       <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch flex-wrap gap-[30px]">
-        {planos.map((plano) => (
+        {planosRenderizados.map((plano) => (
           <div
             key={plano.nome}
             className={`relative flex flex-col p-[40px] rounded-[20px] w-full max-w-[320px] transition-all duration-300 border-2 hover:-translate-y-2 ${
@@ -80,7 +104,7 @@ export default function Pricing() {
 
             <div className="text-left mb-8">
               <span className="text-4xl font-extrabold text-white">{plano.preco}</span>
-              <span className="text-white/40 text-base ml-1">/mês</span>
+              <span className="text-white/40 text-base ml-1">{plano.subpreco}</span>
             </div>
 
             <ul className="list-none mb-8 text-left grow space-y-4">
@@ -94,8 +118,6 @@ export default function Pricing() {
 
             <a
               href={plano.link}
-              target="_blank"
-              rel="noopener noreferrer"
               className={`flex items-center justify-center w-full py-4 rounded-xl font-bold text-[1.1rem] no-underline transition-all active:scale-95 ${
                 plano.destaque
                   ? 'bg-[#FFD700] text-black hover:brightness-110'

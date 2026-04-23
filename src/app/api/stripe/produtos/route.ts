@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
   if (preco_anual) {
     precoAnual = await stripe.prices.create({
       product: produto.id,
-      unit_amount: Math.round(preco_anual * 100 * 12), // total anual
+      unit_amount: Math.round(preco_anual * 100), // convertendo para centavos
       currency: 'brl',
       recurring: { interval: 'year' },
     })
@@ -79,4 +79,15 @@ export async function POST(request: NextRequest) {
     preco_mensal: { id: precoMensal.id, valor: preco_mensal },
     preco_anual: precoAnual ? { id: precoAnual.id, valor: preco_anual } : null,
   })
+}
+
+// ── DELETE — Desativar (Arquivar) produto ──
+export async function DELETE(request: NextRequest) {
+  if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  const { id } = await request.json()
+  
+  if (!id) return NextResponse.json({ error: 'ID do produto obrigatório' }, { status: 400 })
+
+  await stripe.products.update(id, { active: false })
+  return NextResponse.json({ success: true })
 }

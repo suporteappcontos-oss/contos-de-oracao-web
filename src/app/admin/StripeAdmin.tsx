@@ -38,10 +38,28 @@ export function StripeAdmin() {
   const criarProduto = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoadingAction(true)
-    await fetch('/api/stripe/produtos', {
-      method: 'POST',
-      body: JSON.stringify(novoProduto)
-    })
+    try {
+      const response = await fetch('/api/stripe/produtos', {
+        method: 'POST',
+        body: JSON.stringify(novoProduto)
+      })
+      const data = await response.json()
+      if (data.error) {
+        alert('Erro ao criar produto: ' + data.error)
+      } else {
+        alert('Produto criado com sucesso no Stripe!')
+      }
+    } catch (e) {
+      alert('Falha na comunicação com o servidor.')
+    }
+    await fetchData()
+    setLoadingAction(false)
+  }
+
+  const arquivarProduto = async (id: string) => {
+    if (!confirm('Tem certeza que deseja APAGAR este produto? Isso fará ele sumir da página de planos.')) return
+    setLoadingAction(true)
+    await fetch('/api/stripe/produtos', { method: 'DELETE', body: JSON.stringify({ id }) })
     await fetchData()
     setLoadingAction(false)
   }
@@ -106,7 +124,12 @@ export function StripeAdmin() {
         ) : (
           <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl overflow-hidden p-6">
             {produtos.map(p => (
-              <div key={p.id}>
+              <div key={p.id} className="relative group">
+                <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => arquivarProduto(p.id)} className="text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold">
+                    <Trash2 size={14} /> Apagar Produto
+                  </button>
+                </div>
                 <div className="text-white font-black text-xl mb-2">📦 {p.nome}</div>
                 <div className="flex flex-wrap gap-3">
                   {p.precos.map(pr => (
@@ -117,9 +140,7 @@ export function StripeAdmin() {
                     </div>
                   ))}
                 </div>
-                <p className="text-[#8197a4] text-xs mt-4 bg-white/5 p-3 rounded-lg border border-white/5">
-                  ⚠️ <b>Importante:</b> Copie os &quot;Price ID&quot; acima e coloque nas variáveis <code className="text-[#D4AF37]">STRIPE_PRICE_MENSAL</code> e <code className="text-[#D4AF37]">STRIPE_PRICE_ANUAL</code> na Vercel!
-                </p>
+                <div className="mt-4 pt-4 border-t border-[#1e3040]" />
               </div>
             ))}
           </div>
