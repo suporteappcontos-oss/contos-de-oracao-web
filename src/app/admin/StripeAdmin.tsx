@@ -12,7 +12,7 @@ export function StripeAdmin() {
   const [cupons, setCupons] = useState<Cupom[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura Premium', preco_mensal: 29.9, preco_anual: 299.9 })
+  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura Premium', preco_mensal: '29,90', preco_anual: '299,90' })
   const [novoCupom, setNovoCupom] = useState({ nome: '', codigo: '', tipo: 'percentual', valor: '', usos_max: '' })
   const [loadingAction, setLoadingAction] = useState(false)
 
@@ -38,10 +38,19 @@ export function StripeAdmin() {
   const criarProduto = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoadingAction(true)
+    // Formata o preco_mensal e preco_anual trocando virgula por ponto
+    const parsePreco = (val: string) => Number(val.replace(',', '.'))
+    
+    const payload = {
+      ...novoProduto,
+      preco_mensal: parsePreco(novoProduto.preco_mensal),
+      preco_anual: parsePreco(novoProduto.preco_anual)
+    }
+
     try {
       const response = await fetch('/api/stripe/produtos', {
         method: 'POST',
-        body: JSON.stringify(novoProduto)
+        body: JSON.stringify(payload)
       })
       const data = await response.json()
       if (data.error) {
@@ -108,11 +117,11 @@ export function StripeAdmin() {
               </div>
               <div>
                 <label className={labelCls}>Valor Mensal (R$)</label>
-                <input type="number" step="0.01" required value={novoProduto.preco_mensal} onChange={e => setNovoProduto({...novoProduto, preco_mensal: Number(e.target.value)})} className={inputCls} />
+                <input type="text" required value={novoProduto.preco_mensal} onChange={e => setNovoProduto({...novoProduto, preco_mensal: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
               </div>
               <div>
                 <label className={labelCls}>Valor Anual (R$)</label>
-                <input type="number" step="0.01" required value={novoProduto.preco_anual} onChange={e => setNovoProduto({...novoProduto, preco_anual: Number(e.target.value)})} className={inputCls} />
+                <input type="text" required value={novoProduto.preco_anual} onChange={e => setNovoProduto({...novoProduto, preco_anual: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
               </div>
               <div className="sm:col-span-3">
                 <button disabled={loadingAction} className="bg-[#D4AF37] text-[#090B10] px-6 py-3 rounded-xl font-bold flex items-center gap-2">

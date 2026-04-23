@@ -45,10 +45,11 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const { nome, descricao, preco_mensal, preco_anual } = body
 
-  if (!nome || !preco_mensal) {
-    return NextResponse.json({ error: 'Nome e preço mensal são obrigatórios' }, { status: 400 })
+  if (!nome || !preco_mensal || isNaN(preco_mensal)) {
+    return NextResponse.json({ error: 'Nome e preço mensal são obrigatórios e devem ser válidos' }, { status: 400 })
   }
 
+try {
   // Cria o produto
   const produto = await stripe.products.create({
     name: nome,
@@ -79,6 +80,10 @@ export async function POST(request: NextRequest) {
     preco_mensal: { id: precoMensal.id, valor: preco_mensal },
     preco_anual: precoAnual ? { id: precoAnual.id, valor: preco_anual } : null,
   })
+} catch (error: any) {
+  console.error("Erro ao criar produto:", error)
+  return NextResponse.json({ error: error.message || 'Erro interno no Stripe' }, { status: 500 })
+}
 }
 
 // ── DELETE — Desativar (Arquivar) produto ──
