@@ -1,13 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, ChevronRight, Shield, Play, Heart, Download } from 'lucide-react'
+import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2 } from 'lucide-react'
 
 type Step = 1 | 2 | 3
-
-const PLANO_URL = 'https://pay.kiwify.com.br/YApXtLr'
 
 export default function AssinarPage() {
   const [step, setStep] = useState<Step>(1)
@@ -15,6 +13,27 @@ export default function AssinarPage() {
   const [email, setEmail] = useState('')
   const [planoSelecionado, setPlanoSelecionado] = useState<'mensal' | 'anual'>('mensal')
   const [erros, setErros] = useState<{ nome?: string; email?: string }>({})
+  
+  // Estados para carregamento dinâmico
+  const [precoMensal, setPrecoMensal] = useState(7.90)
+  const [precoAnual, setPrecoAnual] = useState(70.80)
+  const [loadingCheckout, setLoadingCheckout] = useState(false)
+
+  // Busca preços reais ativos na montagem
+  useEffect(() => {
+    fetch('/api/stripe/produtos')
+      .then(r => r.json())
+      .then(data => {
+        if (data.produtos && data.produtos.length > 0) {
+          const precos = data.produtos[0].precos
+          const pm = precos.find((p: any) => p.intervalo === 'month')
+          const pa = precos.find((p: any) => p.intervalo === 'year')
+          if (pm) setPrecoMensal(pm.valor / 100)
+          if (pa) setPrecoAnual(pa.valor / 100)
+        }
+      })
+      .catch(console.error)
+  }, [])
 
   function validarStep1() {
     const novosErros: { nome?: string; email?: string } = {}
@@ -36,12 +55,29 @@ export default function AssinarPage() {
     setStep(3)
   }
 
-  function finalizarPagamento() {
-    // Monta a URL do Kiwify com os dados pré-preenchidos
-    const url = new URL(PLANO_URL)
-    url.searchParams.set('name', nome)
-    url.searchParams.set('email', email)
-    window.location.href = url.toString()
+  async function finalizarPagamento() {
+    setLoadingCheckout(true)
+    try {
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome,
+          email,
+          plano: planoSelecionado
+        })
+      })
+      const data = await response.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        alert(data.error || 'Erro ao criar sessão de pagamento.')
+        setLoadingCheckout(false)
+      }
+    } catch (e) {
+      alert('Erro de conexão ao criar checkout.')
+      setLoadingCheckout(false)
+    }
   }
 
   return (
@@ -184,7 +220,9 @@ export default function AssinarPage() {
                     <div className="text-white/50 text-sm mt-0.5">Cobrado todo mês</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>R$ 7,90</div>
+                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>
+                      R$ {precoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </div>
                     <div className="text-white/40 text-xs">/mês</div>
                   </div>
                 </div>
@@ -214,7 +252,9 @@ export default function AssinarPage() {
                     <div className="text-white/50 text-sm mt-0.5">Cobrado uma vez por ano</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>R$ 5,90</div>
+                    <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>
+                      R$ {(precoAnual / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </div>
                     <div className="text-white/40 text-xs">/mês</div>
                   </div>
                 </div>
@@ -281,13 +321,17 @@ export default function AssinarPage() {
               <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <span className="text-white/60 text-sm">Plano</span>
                 <span className="font-bold text-sm" style={{ color: '#D4AF37' }}>
-                  {planoSelecionado === 'mensal' ? 'Mensal — R$ 7,90/mês' : 'Anual — R$ 5,90/mês'}
+                  {planoSelecionado === 'mensal' 
+                    ? `Mensal — R$ ${precoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês` 
+                    : `Anual — R$ ${(precoAnual / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês`}
                 </span>
               </div>
               <div className="flex justify-between pt-3 mt-1">
                 <span className="text-white font-black text-sm">Total hoje</span>
                 <span className="font-black text-lg" style={{ color: '#D4AF37' }}>
-                  {planoSelecionado === 'mensal' ? 'R$ 7,90' : 'R$ 70,80'}
+                  {planoSelecionado === 'mensal' 
+                    ? `R$ ${precoMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` 
+                    : `R$ ${precoAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                 </span>
               </div>
             </div>
@@ -299,16 +343,20 @@ export default function AssinarPage() {
               <div>
                 <p className="text-emerald-400 font-bold text-sm">Pagamento 100% seguro</p>
                 <p className="text-white/40 text-xs mt-0.5">
-                  Você será redirecionado para o checkout seguro da Kiwify.
-                  Após o pagamento, sua conta é criada automaticamente e você recebe o acesso por e-mail.
+                  Você será redirecionado para o checkout oficial do Stripe.
+                  Sua conta será criada e ativada instantaneamente após o pagamento.
                 </p>
               </div>
             </div>
 
-            <button onClick={finalizarPagamento}
-              className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
+            <button onClick={finalizarPagamento} disabled={loadingCheckout}
+              className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               style={{ background: '#D4AF37', color: '#090B10' }}>
-              Ir para o pagamento →
+              {loadingCheckout ? (
+                <><Loader2 className="animate-spin" size={18} /> Redirecionando...</>
+              ) : (
+                <>Ir para o pagamento segura <ChevronRight size={18} /></>
+              )}
             </button>
 
             <button onClick={() => setStep(2)}

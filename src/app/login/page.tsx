@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { login } from './actions';
 import PasswordField from '@/components/PasswordField';
+import SubmitButton from '@/components/SubmitButton';
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error: erro } = await searchParams
@@ -53,11 +54,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             </div>
           )}
 
-          <button formAction={login}
-            className="w-full mt-3 py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.02] cursor-pointer"
-            style={{ background: '#D4AF37', color: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
+          <SubmitButton formAction={login}>
             Acessar Plataforma →
-          </button>
+          </SubmitButton>
 
           <div className="text-center">
             <Link href="/esqueci-senha" className="text-white/35 text-sm hover:text-[#D4AF37] transition-colors no-underline">
