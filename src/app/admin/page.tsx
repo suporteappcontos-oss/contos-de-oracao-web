@@ -7,9 +7,12 @@ import {
   adicionarVideo, editarVideo, toggleVideoAtivo,
   deletarVideo, togglePlanoUsuario,
 } from './actions'
+import { getKiwifyVendas, getKiwifyStats } from '@/lib/kiwify'
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
+  ShoppingCart, TrendingUp, DollarSign, RefreshCw, Tag,
+  Settings, BarChart2, CreditCard, Link2,
 } from 'lucide-react'
 
 type VideoType = {
@@ -80,6 +83,10 @@ export default async function AdminPage({
       .sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
   } catch (e) { console.error('Erro ao buscar usuários:', e) }
 
+  // Kiwify — só carrega se estiver na aba kiwify
+  const kiwifyVendas = activeTab === 'kiwify' ? await getKiwifyVendas(15) : []
+  const kiwifyStats = activeTab === 'kiwify' ? await getKiwifyStats() : null
+
   // Stats
   const totalVideos = videos?.length ?? 0
   const videosAtivos = videos?.filter(v => v.ativo).length ?? 0
@@ -147,20 +154,23 @@ export default async function AdminPage({
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-8 bg-[#1a2733] border border-[#1e3040] rounded-xl p-1.5 w-fit">
+        <div className="flex flex-wrap gap-1 mb-8 bg-[#1a2733] border border-[#1e3040] rounded-xl p-1.5 w-fit">
           {[
             { id: 'videos', label: 'Vídeos', icon: Video, count: totalVideos },
             { id: 'usuarios', label: 'Usuários', icon: Users, count: totalMembros },
+            { id: 'kiwify', label: 'Kiwify', icon: ShoppingCart, count: null },
           ].map(tab => (
             <Link key={tab.id} href={`/admin?tab=${tab.id}`}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id ? 'text-white' : 'text-[#8197a4] hover:text-white'}`}
-              style={activeTab === tab.id ? { background: '#00a8e1' } : {}}>
+              style={activeTab === tab.id ? { background: tab.id === 'kiwify' ? '#D4AF37' : '#00a8e1', color: tab.id === 'kiwify' && activeTab === tab.id ? '#090B10' : 'white' } : {}}>
               <tab.icon size={14} />
               {tab.label}
-              <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-black"
-                style={{ background: activeTab === tab.id ? 'rgba(255,255,255,0.2)' : 'rgba(0,168,225,0.15)', color: activeTab === tab.id ? 'white' : '#00a8e1' }}>
-                {tab.count}
-              </span>
+              {tab.count !== null && (
+                <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-black"
+                  style={{ background: activeTab === tab.id ? 'rgba(255,255,255,0.2)' : 'rgba(0,168,225,0.15)', color: activeTab === tab.id ? 'white' : '#00a8e1' }}>
+                  {tab.count}
+                </span>
+              )}
             </Link>
           ))}
         </div>
@@ -398,6 +408,146 @@ export default async function AdminPage({
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ════════ ABA KIWIFY ════════ */}
+        {activeTab === 'kiwify' && (
+          <div>
+
+            {/* Links Rápidos */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Link2 size={16} style={{ color: '#D4AF37' }} />
+                <h2 className="text-white text-lg font-bold">Ações Rápidas</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {[
+                  {
+                    label: '📦 Ver meu Produto',
+                    desc: 'Acessar página do produto Contos de Oração',
+                    url: 'https://dashboard.kiwify.com.br/products',
+                    color: '#00a8e1',
+                  },
+                  {
+                    label: '💰 Alterar Preço',
+                    desc: 'Mudar o valor mensal ou anual do plano',
+                    url: 'https://dashboard.kiwify.com.br/products',
+                    color: '#4caf82',
+                  },
+                  {
+                    label: '🏷️ Criar Cupom',
+                    desc: 'Criar cupons de desconto para clientes',
+                    url: 'https://dashboard.kiwify.com.br/products',
+                    color: '#D4AF37',
+                  },
+                  {
+                    label: '📊 Ver Relatórios',
+                    desc: 'Relatórios completos de vendas e receita',
+                    url: 'https://dashboard.kiwify.com.br/reports',
+                    color: '#8b5cf6',
+                  },
+                  {
+                    label: '💳 Ver Assinaturas',
+                    desc: 'Gerenciar assinaturas ativas e canceladas',
+                    url: 'https://dashboard.kiwify.com.br/subscriptions',
+                    color: '#f59e0b',
+                  },
+                  {
+                    label: '💵 Financeiro / Saques',
+                    desc: 'Ver saldo e solicitar saque',
+                    url: 'https://dashboard.kiwify.com.br/financial',
+                    color: '#ec4899',
+                  },
+                ].map(item => (
+                  <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer"
+                    className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-5 flex flex-col gap-2 hover:border-white/10 transition-all group">
+                    <div className="text-white font-bold text-sm group-hover:text-white transition-colors">{item.label}</div>
+                    <div className="text-[#8197a4] text-xs leading-relaxed">{item.desc}</div>
+                    <div className="flex items-center gap-1 text-xs font-semibold mt-1" style={{ color: item.color }}>
+                      Abrir no Kiwify <ExternalLink size={11} />
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Stats de Vendas Kiwify */}
+            {kiwifyStats && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                {[
+                  { label: 'Receita Total', value: `R$ ${((kiwifyStats.total_revenue || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: '#4caf82' },
+                  { label: 'Total de Vendas', value: kiwifyStats.total_sales || 0, icon: ShoppingCart, color: '#00a8e1' },
+                  { label: 'Vendas Aprovadas', value: kiwifyStats.approved_sales || 0, icon: TrendingUp, color: '#D4AF37' },
+                  { label: 'Reembolsos', value: kiwifyStats.refunded_sales || 0, icon: RefreshCw, color: '#ef4444' },
+                ].map(s => (
+                  <div key={s.label} className="bg-[#1a2733] border border-[#1e3040] rounded-xl p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: s.color + '20' }}>
+                      <s.icon size={18} style={{ color: s.color }} />
+                    </div>
+                    <div>
+                      <div className="text-white text-xl font-black leading-none">{s.value}</div>
+                      <div className="text-[#8197a4] text-[0.62rem] mt-0.5 leading-tight">{s.label}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Últimas Vendas */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart2 size={16} style={{ color: '#00a8e1' }} />
+                <h2 className="text-white text-lg font-bold">Últimas Vendas</h2>
+              </div>
+
+              {kiwifyVendas.length === 0 ? (
+                <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-10 text-center">
+                  <ShoppingCart size={40} className="text-[#4a6373] mx-auto mb-3" />
+                  <p className="text-[#8197a4] text-sm">Nenhuma venda encontrada ou API ainda configurando.</p>
+                  <p className="text-[#4a6373] text-xs mt-1">Verifique se o webhook está ativo na Kiwify.</p>
+                </div>
+              ) : (
+                <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl overflow-hidden">
+                  <div className="grid grid-cols-12 gap-3 px-5 py-3 border-b border-[#1e3040]" style={{ background: 'rgba(0,0,0,0.2)' }}>
+                    <div className="col-span-4 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold">Cliente</div>
+                    <div className="col-span-3 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold hidden md:block">Data</div>
+                    <div className="col-span-3 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold">Valor</div>
+                    <div className="col-span-2 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold">Status</div>
+                  </div>
+                  {kiwifyVendas.map((venda, i) => (
+                    <div key={venda.id}
+                      className={`grid grid-cols-12 gap-3 px-5 py-4 items-center hover:bg-white/[0.02] transition-colors ${i !== kiwifyVendas.length - 1 ? 'border-b border-[#1e3040]' : ''}`}>
+                      <div className="col-span-4 min-w-0">
+                        <div className="text-white text-sm font-semibold truncate">{venda.customer?.name || '—'}</div>
+                        <div className="text-[#8197a4] text-[0.65rem] truncate">{venda.customer?.email || ''}</div>
+                      </div>
+                      <div className="col-span-3 text-[#8197a4] text-xs hidden md:block">
+                        {new Date(venda.created_at).toLocaleDateString('pt-BR')}
+                      </div>
+                      <div className="col-span-3">
+                        <span className="text-[#4caf82] text-sm font-bold">
+                          R$ {((venda.total || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className={`text-[0.62rem] px-2 py-0.5 rounded-full font-bold uppercase ${
+                          venda.status === 'paid' || venda.status === 'approved'
+                            ? 'text-[#4caf82] bg-[#4caf82]/10 border border-[#4caf82]/20'
+                            : venda.status === 'refunded'
+                            ? 'text-red-400 bg-red-500/10 border border-red-500/20'
+                            : 'text-[#f59e0b] bg-[#f59e0b]/10 border border-[#f59e0b]/20'
+                        }`}>
+                          {venda.status === 'paid' || venda.status === 'approved' ? '✓ Pago'
+                            : venda.status === 'refunded' ? '↩ Reemb.'
+                            : venda.status || '—'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </main>
