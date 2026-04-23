@@ -41,7 +41,6 @@ async function criarOuAtivarUsuario(email: string, nome: string) {
 }
 
 // Importante: o Stripe envia o body como raw text para validar a assinatura HMAC
-export const config = { api: { bodyParser: false } }
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
