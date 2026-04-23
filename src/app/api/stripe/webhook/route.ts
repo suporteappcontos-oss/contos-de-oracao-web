@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
+import { supabaseAdmin, buscarUsuarioPorEmail } from '@/lib/supabase-admin'
 
 function formatarNomeCurto(nomeCompleto: string): string {
   const preposicoes = ['de', 'do', 'da', 'dos', 'das', 'e', 'di', 'del']
@@ -18,19 +12,16 @@ function formatarNomeCurto(nomeCompleto: string): string {
 }
 
 async function criarOuAtivarUsuario(email: string, nome: string) {
-  // Verifica se já existe
-  const { data: existente } = await supabaseAdmin.auth.admin.getUserByEmail(email)
+  const existente = await buscarUsuarioPorEmail(email)
 
-  if (existente?.user) {
-    // Reativa plano existente
-    await supabaseAdmin.auth.admin.updateUserById(existente.user.id, {
+  if (existente) {
+    await supabaseAdmin.auth.admin.updateUserById(existente.id, {
       user_metadata: { plano_ativo: true, nome },
     })
     console.log(`🔄 Plano Stripe reativado: ${email}`)
     return
   }
 
-  // Cria novo usuário
   const { error } = await supabaseAdmin.auth.admin.createUser({
     email,
     email_confirm: true,
@@ -38,25 +29,26 @@ async function criarOuAtivarUsuario(email: string, nome: string) {
   })
 
   if (error) {
-    console.error('❌ Erro ao criar usuário:', error.message)
+    console.error('❌ Erro ao criar usuário Stripe:', error.message)
     return
   }
 
-  // Envia e-mail para criar senha
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.online'
   await supabaseAdmin.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/atualizar-senha`,
   })
-
   console.log(`🎉 Usuário Stripe criado: ${email}`)
 }
 
+// Importante: o Stripe envia o body como raw text para validar a assinatura HMAC
+export const config = { api: { bodyParser: false } }
+
 export async function POST(request: NextRequest) {
   const body = await request.text()
-  const sig = request.headers.get('stripe-signature')!
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+  const sig = request.headers.get('stripe-signature') ?? ''
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET ?? ''
 
-  let event
+  let event: import('stripe').Stripe.Event
 
   try {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
@@ -67,47 +59,42 @@ export async function POST(request: NextRequest) {
 
   console.log(`🔔 Evento Stripe: ${event.type}`)
 
-  // ── PAGAMENTO APROVADO / ASSINATURA CRIADA ──
+  // ── CHECKOUT CONCLUÍDO (primeira compra) ──
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as import('stripe').Stripe.Checkout.Session
     const email = session.customer_email || session.metadata?.email || ''
     const nomeRaw = session.metadata?.nome || session.customer_details?.name || 'Cliente'
-    const nome = formatarNomeCurto(nomeRaw)
-
-    if (email) await criarOuAtivarUsuario(email, nome)
+    if (email) await criarOuAtivarUsuario(email, formatarNomeCurto(nomeRaw))
   }
 
-  // ── PAGAMENTO RENOVADO ──
+  // ── RENOVAÇÃO DE ASSINATURA ──
   if (event.type === 'invoice.payment_succeeded') {
-    const invoice = event.data.object as import('stripe').Stripe.Invoice
-    const email = (invoice as { customer_email?: string }).customer_email || ''
+    const invoice = event.data.object as import('stripe').Stripe.Invoice & { customer_email?: string }
+    const email = invoice.customer_email ?? ''
     if (email) {
-      const { data } = await supabaseAdmin.auth.admin.getUserByEmail(email)
-      if (data?.user) {
-        await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
+      const usuario = await buscarUsuarioPorEmail(email)
+      if (usuario) {
+        await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
           user_metadata: { plano_ativo: true },
         })
-        console.log(`✅ Renovação confirmada: ${email}`)
+        console.log(`✅ Renovação Stripe confirmada: ${email}`)
       }
     }
   }
 
-  // ── ASSINATURA CANCELADA / PAGAMENTO FALHOU ──
-  if (
-    event.type === 'customer.subscription.deleted' ||
-    event.type === 'invoice.payment_failed'
-  ) {
+  // ── CANCELAMENTO / PAGAMENTO FALHOU ──
+  if (event.type === 'customer.subscription.deleted' || event.type === 'invoice.payment_failed') {
     const obj = event.data.object as { customer?: string }
     if (obj.customer) {
       const customer = await stripe.customers.retrieve(obj.customer as string) as import('stripe').Stripe.Customer
-      const email = customer.email || ''
+      const email = customer.email ?? ''
       if (email) {
-        const { data } = await supabaseAdmin.auth.admin.getUserByEmail(email)
-        if (data?.user) {
-          await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
+        const usuario = await buscarUsuarioPorEmail(email)
+        if (usuario) {
+          await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
             user_metadata: { plano_ativo: false },
           })
-          console.log(`🔒 Acesso bloqueado (Stripe): ${email}`)
+          console.log(`🔒 Acesso Stripe bloqueado: ${email}`)
         }
       }
     }
