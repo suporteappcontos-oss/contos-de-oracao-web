@@ -50,9 +50,7 @@ export default async function Home({ searchParams }: Props) {
             <span>Seu acesso expirou ou foi cancelado. Para continuar assistindo, renove sua assinatura.</span>
           </div>
           <a
-            href="https://pay.kiwify.com.br/YApXtLr"
-            target="_blank"
-            rel="noreferrer"
+            href="/#planos"
             className="shrink-0 px-4 py-1.5 rounded-lg font-bold text-xs transition-all hover:brightness-110"
             style={{ background: '#D4AF37', color: '#090B10' }}
           >
