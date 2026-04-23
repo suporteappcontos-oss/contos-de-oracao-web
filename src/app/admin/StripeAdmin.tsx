@@ -107,57 +107,59 @@ export function StripeAdmin() {
           <h2 className="text-white text-lg font-bold">Produto Principal (Assinatura)</h2>
         </div>
 
-        {produtos.length === 0 ? (
-          <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-6">
-            <h3 className="text-white font-bold mb-4">Criar Produto de Assinatura</h3>
-            <form onSubmit={criarProduto} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="sm:col-span-2">
-                <label className={labelCls}>Nome do Plano</label>
-                <input type="text" required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Intervalo de Cobrança</label>
-                <select value={novoProduto.intervalo} onChange={e => setNovoProduto({...novoProduto, intervalo: e.target.value})} className={inputCls}>
-                  <option value="month">Mensal</option>
-                  <option value="year">Anual</option>
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Valor (R$)</label>
-                <input type="text" required value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
-              </div>
-              <div className="sm:col-span-2">
-                <label className={labelCls}>Vantagens / Benefícios (separe por vírgula)</label>
-                <input type="text" placeholder="Ex: Acesso ilimitado, Resolução Full HD" required value={novoProduto.beneficios} onChange={e => setNovoProduto({...novoProduto, beneficios: e.target.value})} className={inputCls} />
-              </div>
-              <div className="sm:col-span-3">
-                <button disabled={loadingAction} className="bg-[#D4AF37] text-[#090B10] px-6 py-3 rounded-xl font-bold flex items-center gap-2">
-                  <Plus size={16} /> Criar Produto e Preços
-                </button>
-              </div>
-            </form>
-          </div>
-        ) : (
+        {/* FORMULÁRIO DE CRIAÇÃO */}
+        <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-6 mb-6">
+          <h3 className="text-white font-bold mb-4">Criar Novo Plano/Produto</h3>
+          <form onSubmit={criarProduto} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="sm:col-span-2">
+              <label className={labelCls}>Nome do Plano</label>
+              <input type="text" required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
+            </div>
+            <div>
+              <label className={labelCls}>Intervalo de Cobrança</label>
+              <select value={novoProduto.intervalo} onChange={e => setNovoProduto({...novoProduto, intervalo: e.target.value})} className={inputCls}>
+                <option value="month">Mensal</option>
+                <option value="year">Anual</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>Valor (R$)</label>
+              <input type="text" required value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelCls}>Vantagens / Benefícios (separe por vírgula)</label>
+              <input type="text" placeholder="Ex: Acesso ilimitado, Resolução Full HD" required value={novoProduto.beneficios} onChange={e => setNovoProduto({...novoProduto, beneficios: e.target.value})} className={inputCls} />
+            </div>
+            <div className="sm:col-span-3">
+              <button disabled={loadingAction} className="bg-[#D4AF37] text-[#090B10] px-6 py-3 rounded-xl font-bold flex items-center gap-2">
+                <Plus size={16} /> Criar Plano e Preço
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* LISTAGEM DOS PRODUTOS */}
+        {produtos.length > 0 && (
           <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl overflow-hidden p-6">
-            {produtos.map(p => (
-              <div key={p.id} className="relative group">
+            <h3 className="text-white font-bold mb-4">Planos Ativos</h3>
+            {produtos.map((p, i) => (
+              <div key={p.id} className={`relative group ${i !== produtos.length - 1 ? 'border-b border-[#1e3040] pb-6 mb-6' : ''}`}>
                 <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => arquivarProduto(p.id)} className="text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold">
-                    <Trash2 size={14} /> Apagar Produto
+                    <Trash2 size={14} /> Apagar Produto e Preços
                   </button>
                 </div>
-                <div className="text-white font-black text-xl mb-2">📦 {p.nome}</div>
+                <div className="text-white font-black text-xl mb-3">📦 {p.nome}</div>
                 <div className="flex flex-wrap gap-3">
                   {p.precos.map(pr => (
                     <div key={pr.id} className="bg-[#090B10] p-3 rounded-xl flex-1 min-w-[150px] border border-[#1e3040]">
                       <div className="text-[10px] text-[#8197a4] font-bold uppercase mb-1">
                         PLANO {pr.intervalo === 'month' ? 'MENSAL' : pr.intervalo === 'year' ? 'ANUAL' : 'PERSONALIZADO'}
                       </div>
-                      <div className="text-white font-black">R$ {(pr.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      <div className="text-[#D4AF37] font-black">R$ {(pr.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 pt-4 border-t border-[#1e3040]" />
               </div>
             ))}
           </div>
