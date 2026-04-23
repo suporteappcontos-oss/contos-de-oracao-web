@@ -1,0 +1,82 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { stripe } from '@/lib/stripe'
+import { createClient } from '@/utils/supabase/server'
+
+// Verifica se é admin
+async function verificarAdmin() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return false
+  const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
+  return perfil?.role === 'admin'
+}
+
+// ── GET — Listar produtos e preços ──
+export async function GET() {
+  if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+
+  const products = await stripe.products.list({ active: true, limit: 20 })
+  const prices = await stripe.prices.list({ active: true, limit: 50 })
+
+  const resultado = products.data.map(p => ({
+    id: p.id,
+    nome: p.name,
+    descricao: p.description,
+    ativo: p.active,
+    precos: prices.data
+      .filter(pr => pr.product === p.id)
+      .map(pr => ({
+        id: pr.id,
+        valor: pr.unit_amount,
+        moeda: pr.currency,
+        intervalo: pr.recurring?.interval,
+        intervalo_count: pr.recurring?.interval_count,
+        ativo: pr.active,
+      }))
+  }))
+
+  return NextResponse.json({ produtos: resultado })
+}
+
+// ── POST — Criar produto com preços ──
+export async function POST(request: NextRequest) {
+  if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+
+  const body = await request.json()
+  const { nome, descricao, preco_mensal, preco_anual } = body
+
+  if (!nome || !preco_mensal) {
+    return NextResponse.json({ error: 'Nome e preço mensal são obrigatórios' }, { status: 400 })
+  }
+
+  // Cria o produto
+  const produto = await stripe.products.create({
+    name: nome,
+    description: descricao || '',
+  })
+
+  // Cria preço mensal
+  const precoMensal = await stripe.prices.create({
+    product: produto.id,
+    unit_amount: Math.round(preco_mensal * 100), // converte R$ para centavos
+    currency: 'brl',
+    recurring: { interval: 'month' },
+  })
+
+  // Cria preço anual (se informado)
+  let precoAnual = null
+  if (preco_anual) {
+    precoAnual = await stripe.prices.create({
+      product: produto.id,
+      unit_amount: Math.round(preco_anual * 100 * 12), // total anual
+      currency: 'brl',
+      recurring: { interval: 'year' },
+    })
+  }
+
+  return NextResponse.json({
+    produto: { id: produto.id, nome: produto.name },
+    preco_mensal: { id: precoMensal.id, valor: preco_mensal },
+    preco_anual: precoAnual ? { id: precoAnual.id, valor: preco_anual } : null,
+  })
+}
