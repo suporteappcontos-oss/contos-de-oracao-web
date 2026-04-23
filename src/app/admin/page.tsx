@@ -14,6 +14,7 @@ import {
   ShoppingCart, TrendingUp, DollarSign, RefreshCw, Tag,
   Settings, BarChart2, CreditCard, Link2,
 } from 'lucide-react'
+import { StripeAdmin } from './StripeAdmin'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -158,7 +159,8 @@ export default async function AdminPage({
           {[
             { id: 'videos', label: 'Vídeos', icon: Video, count: totalVideos },
             { id: 'usuarios', label: 'Usuários', icon: Users, count: totalMembros },
-            { id: 'kiwify', label: 'Kiwify', icon: ShoppingCart, count: null },
+            { id: 'stripe', label: 'Stripe', icon: CreditCard, count: null },
+            { id: 'kiwify', label: 'Kiwify (Antigo)', icon: ShoppingCart, count: null },
           ].map(tab => (
             <Link key={tab.id} href={`/admin?tab=${tab.id}`}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id ? 'text-white' : 'text-[#8197a4] hover:text-white'}`}
@@ -409,6 +411,11 @@ export default async function AdminPage({
               </div>
             )}
           </div>
+        )}
+
+        {/* ════════ ABA STRIPE ════════ */}
+        {activeTab === 'stripe' && (
+          <StripeAdmin />
         )}
 
         {/* ════════ ABA KIWIFY ════════ */}
