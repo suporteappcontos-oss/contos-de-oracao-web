@@ -26,12 +26,13 @@ function formatarNomeCurto(nomeCompleto: string): string {
   return resultado.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ')
 }
 
-// ✅ Busca usuário por email — com limite de 1000 para evitar timeout
+// ✅ Busca usuário por email — query direta, eficiente em qualquer escala
 async function buscarUsuarioPorEmail(email: string) {
-  const { data, error } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
-  if (error || !data) return null
-  return data.users.find(u => u.email === email) ?? null
+  const { data, error } = await supabaseAdmin.auth.admin.getUserByEmail(email)
+  if (error || !data?.user) return null
+  return data.user
 }
+
 
 export async function POST(request: NextRequest) {
   try {
