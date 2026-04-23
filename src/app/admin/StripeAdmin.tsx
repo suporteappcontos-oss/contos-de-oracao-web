@@ -207,7 +207,7 @@ export function StripeAdmin() {
                   ))}
                 </div>
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Adicionar outro benefício..." value={beneficioCustom} onChange={e => setBeneficioCustom(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addBeneficioCustom())} className={inputCls} style={{ py: '0.5rem' }} />
+                  <input type="text" placeholder="Adicionar outro benefício..." value={beneficioCustom} onChange={e => setBeneficioCustom(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addBeneficioCustom())} className={`${inputCls} py-2`} />
                   <button type="button" onClick={addBeneficioCustom} className="bg-[#1e3040] text-white px-3 rounded-xl hover:bg-[#D4AF37] hover:text-black transition-colors"><Plus size={16}/></button>
                 </div>
               </div>
