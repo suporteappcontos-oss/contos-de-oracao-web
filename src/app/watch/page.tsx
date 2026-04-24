@@ -31,7 +31,7 @@ export default async function WatchPage() {
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
 
   // 🔒 PROTEÇÃO DE PLANO: verifica se o assinante tem acesso ativo
-  // plano_ativo vem do user_metadata (definido pelo webhook da Kiwify)
+  // plano_ativo vem do user_metadata (definido pelo webhook da Stripe)
   // Admin sempre tem acesso. Demais usuários precisam de plano_ativo = true
   const planoAtivo = user.user_metadata?.plano_ativo === true
   if (!isAdmin && !planoAtivo) {

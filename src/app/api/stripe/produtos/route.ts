@@ -25,6 +25,7 @@ export async function GET() {
     nome: p.name,
     descricao: p.description,
     beneficios: p.metadata.beneficios || '',
+    max_telas: Number(p.metadata.max_telas || 1),
     ativo: p.active,
     precos: prices.data
       .filter(pr => pr.product === p.id)
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
   if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   const body = await request.json()
-  const { nome, descricao, preco, intervalo, beneficios } = body
+  const { nome, descricao, preco, intervalo, beneficios, max_telas } = body
 
   if (!nome || !preco || isNaN(preco)) {
     return NextResponse.json({ error: 'Nome e preço são obrigatórios e devem ser válidos' }, { status: 400 })
@@ -58,7 +59,8 @@ try {
     name: nome,
     ...(descricao ? { description: descricao } : {}),
     metadata: {
-      beneficios: beneficios || 'Acesso ilimitado ao catálogo, Resolução Full HD, Suporte prioritário'
+      beneficios: beneficios || 'Acesso ilimitado ao catálogo, Resolução Full HD, Suporte prioritário',
+      max_telas: String(max_telas || 1),
     }
   })
 
@@ -94,14 +96,15 @@ export async function DELETE(request: NextRequest) {
 // ── PUT — Editar produto ──
 export async function PUT(request: NextRequest) {
   if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-  const { id, nome, beneficios } = await request.json()
+  const { id, nome, beneficios, max_telas } = await request.json()
   
   if (!id || !nome) return NextResponse.json({ error: 'ID e Nome são obrigatórios' }, { status: 400 })
 
   await stripe.products.update(id, { 
     name: nome,
     metadata: {
-      beneficios: beneficios || ''
+      beneficios: beneficios || '',
+      max_telas: String(max_telas || 1),
     }
   })
   return NextResponse.json({ success: true })

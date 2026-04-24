@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       subscription_data: {
         metadata: { nome, email, plano },
       },
-      success_url: `${siteUrl}/atualizar-senha?checkout=sucesso&email=${encodeURIComponent(email)}`,
+      success_url: `${siteUrl}/sucesso`,
       cancel_url: `${siteUrl}/assinar?cancelado=true`,
       allow_promotion_codes: true, // Permite cupons de desconto
     })

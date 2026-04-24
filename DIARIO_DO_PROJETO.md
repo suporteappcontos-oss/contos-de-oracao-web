@@ -1,6 +1,6 @@
 # 📘 CONTOS DE ORAÇÃO — Diário de Desenvolvimento da Plataforma
 
-> **Última atualização:** 22 de Abril de 2026  
+> **Última atualização:** 23 de Abril de 2026  
 > **Desenvolvedor:** IA Antigravity (Google DeepMind)  
 > **Proprietário:** João Pires de Freitas Neto  
 > **E-mail do dono (admin):** suporte.appcontos@gmail.com  
@@ -10,52 +10,58 @@
 ## 🗺️ Visão Geral do Projeto
 Estamos transformando o app "Contos de Oração" numa **plataforma de streaming completa na web**, com:
 - Site premium estilo Netflix (Fundo `#090B10` e Destaques `#D4AF37`)
-- Sistema de assinatura pago (via Kiwify)
+- Sistema de assinatura pago com **Checkout Dinâmico via Stripe**
 - Banco de dados e Autenticação (via Supabase)
 - Hospedagem profissional de vídeos (via Bunny.net)
-- Painel administrativo on-site para o dono gerenciar conteúdo
+- Painel administrativo on-site para o dono gerenciar conteúdo e planos
 
 ---
 
-## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Até 22/04/2026)
+## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Até 23/04/2026)
 
 ### 1. Site Web e Design (Next.js 16 + Tailwind CSS)
 - **Framework:** Next.js 16 com App Router, TypeScript e Tailwind CSS v4.
 - Componentes modulares fluídos, incluindo Navbars, Hero Banners, VideoCards com animações de hover e interfaces de vidro (Glassmorphism).
-- **Remoção de Falsos Positivos Visuais:** Os placeholders da Netflix foram completamente apagados para o site ter identidade própria.
+- **Remoção de Falsos Positivos Visuais:** Os placeholders da Netflix foram apagados.
 
-### 2. Painel Administrativo (`/admin`)
-- Tela de `Gerenciamento de Conteúdo` totalmente funcional, restrita exclusivamente ao acesso de `suporte.appcontos@gmail.com`.
-- **Formulário de Cadastro:** Integração direta de novos vídeos informando (Título, Descrição, Bunny Video ID, Thumbnail, Categoria).
-- **Ações Imediatas:** Botões para Publicar/Ocultar, e Deletar vídeo do catálogo do cliente.
+### 2. Painel Administrativo de Conteúdo (`/admin`)
+- Tela de `Gerenciamento de Conteúdo` totalmente funcional, restrita ao acesso admin.
+- Integração direta de novos vídeos informando (Título, Descrição, Bunny Video ID, Thumbnail, Categoria).
+- Ações imediatas de Publicar/Ocultar, e Deletar vídeos.
 
-### 3. Tela de Assinante (`/watch`)
-- Renderização dinâmica do banco de dados (Supabase).
-- Componente `HeroBanner` gerado automaticamente a partir do último lançamento Ativo.
-- Carrosseis de vídeo segmentados automaticamente por categorias (`Geral`, `Testemunho`, `Infantil`, etc).
-- Tela dedicada ao Player (`/watch/[videoId]`) com o player do Bunny.net imbutido e responsivo, forçando o idioma e layout padrão da plataforma.
+### 3. Gestão de Planos Financeiros (`/admin` + Stripe)
+- **Painel Dinâmico:** O administrador pode criar, editar (nome, preço, benefícios, cor do card) e apagar planos diretamente do site, refletindo em tempo real no banco de dados da Stripe.
+- **Cupons:** Integração com a API da Stripe para listar cupons ativos automaticamente.
 
-### 4. Sistema de Autenticação e E-mail (Supabase)
-- **SMTP Personalizado:** Configurado via Gmail (Senha de App de 16 dígitos) ao invés do serviço base do Supabase limite.
-- **Recuperação de Senha:** Ajustado formulário `/esqueci-senha` contornando bloqueios do HTML5 e tratando erros de rede/mensagens diretamente da API.
-- **Rotação de Chaves (Segurança):** O Projeto passou por uma revisão de chaves em 22/04, rotacionando o `JWT Secret` e configurando as chaves modernas (`sb_publishable_` e `sb_secret_`) para prevenir invasões após varreduras do GitGuardian.
+### 4. Tela de Assinante (`/watch`)
+- Carrosseis de vídeo segmentados por categorias e HeroBanner dinâmico.
+- Tela dedicada ao Player (`/watch/[videoId]`) com o player do Bunny.net imbutido.
 
-### 5. Sistema de Cobranças (Kiwify)
-- **Webhook Funcionando:** Rota criada `api/webhook/kiwify`. Quando alguém compra pelo checkout `https://pay.kiwify.com.br/YApXtLr`, o banco de dados Supabase forja a conta do usuário instantaneamente e manda e-mail.
+### 5. Sistema de Autenticação (Supabase)
+- **SMTP Personalizado:** Configurado via Gmail (Senha de App de 16 dígitos).
+- Recurso de "Esqueci minha senha" ajustado.
+
+### 6. Sistema de Cobranças (Migração Total para Stripe)
+- **Kiwify Removida:** Todo o fluxo do projeto foi desvinculado da Kiwify.
+- **Checkout Automático:** O botão de compra gera sessões únicas no Stripe já habilitadas com Cartão, Pix e Boleto de acordo com o painel da Stripe.
+- **Webhook Stripe (`api/stripe/webhook`):** Robô criado para escutar eventos. Se a compra aprova, ele cria o acesso no Supabase, marca `plano_ativo: true` e envia o e-mail pro cliente criar a senha. Se o cliente cancelar, corta o acesso.
+- **Página de Sucesso:** Fluxo aprimorado para `/sucesso` para não confundir o cliente durante o processo de setar senha de primeiro acesso.
 
 ---
 
-## 🔴 O QUE AINDA FALTA FAZER (Próximos Passos)
+## 🔴 O QUE AINDA FALTA FAZER (Próximos Passos de Amanhã)
 
-### Prioridade 1: Testes em Produção do Webhook Kiwify
-- Monitorar se o webhook na rota Kiwify está gerando os registros corretamente (`role` = membro, `plano` = premium) nas tabelas do Supabase (`auth.users` e public `perfis`) no fluxo de compra real com a nova chave da Vercel.
+### Prioridade 1: Ativação da Conta de Produção (Stripe)
+- O dono (patrão) precisa logar na Stripe e clicar em **"Alternar para conta de produção"**, preenchendo os dados bancários e CNPJ/CPF.
+- Apenas na produção o PIX e Boletos vão aparecer para os clientes finais de fato.
 
-### Prioridade 2: Domínio Próprio e Melhoria de SMTP
-- **Domínio Próprio:** Comprar um `.com.br` para conectar à Vercel.
-- **SMTP Profissional:** Parar de usar o Gmail comum (`suporte.appcontos@gmail.com`) e integrar com a "Endereço Profissional" (ex: Resend ou Brevo) para reduzir taxas de spam e limitação de envio de 100 emails/hora do Gmail.
+### Prioridade 2: Domínio Customizado para o Checkout
+- Configurar na Stripe (no Modo de Produção) o domínio `pagamento.contosdeoracao.online`.
+- Pegar os DNS CNAME gerados pela Stripe e injetar no painel da **Hostinger**.
 
-### Prioridade 3: Gestão de Planos
-- O sistema visual tem botões diferentes de "Premium", mas a mecânica para identificar que um usuário foi "Cancelado" na Kiwify e deve ter o acesso bloqueado ao site ainda precisa ser automatizada (outro endpoint de Webhook).
+### Prioridade 3: Configurar o Webhook de Produção
+- Entrar no painel de Webhooks da Stripe e adicionar a URL: `https://contosdeoracao.online/api/stripe/webhook`.
+- Pegar a "Assinatura do Webhook" (`STRIPE_WEBHOOK_SECRET`) gerada pela Stripe e colocar nas variáveis de ambiente na Vercel para o site conseguir entender os pagamentos aprovados em produção.
 
 ---
 
@@ -65,7 +71,7 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 | Vercel (site) | **Grátis** | Rodando liso. |
 | Supabase (banco) | **Grátis** | Limites gratuitos. |
 | Bunny.net (vídeos) | **R$ ~30 a 50/mês** | Necessário botar crédito para os vídeos rodarem. |
-| Kiwify (cobranças) | **7% por venda** | Apenas por conversão. |
+| Stripe (cobranças) | **% por venda** | Paga apenas a taxa por transação aprovada. |
 
 ---
 
@@ -74,16 +80,15 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 d:\Projeto\web\
 ├── src\
 │   ├── app\
-│   │   ├── admin\            ← Painel do Dono (Controle de Catalogo)
+│   │   ├── admin\            ← Painel do Dono (Vídeos e Planos Stripe)
 │   │   ├── watch\            ← Plataforma do Assinante
-│   │   │   └── [videoId]     ← Tela do Player do Video Ativo
-│   │   ├── esqueci-senha\    ← Tratamento de Recuperação por Email
-│   │   ├── login\            ← Login
-│   │   └── api\webhook\      ← Robô da Kiwify
+│   │   ├── atualizar-senha\  ← Criação de senha (Novo Assinante)
+│   │   ├── sucesso\          ← Tela pós-pagamento aprovado
+│   │   └── api\stripe\       ← APIs do Checkout, Planos e Webhooks
 │   ├── components\           ← Banners, Cards, Navbar, etc.
 │   └── utils\supabase\       ← Clientes de Conexão com DB
-├── .env.local                ← Chaves de Acesso e Banco (Rotacionados)
+├── .env.local                ← Chaves do Supabase e da Stripe
 └── DIARIO_DO_PROJETO.md      ← Este diário de documentação da Plataforma!
 ```
 
-*Arquivo atualizado automaticamente pelo sistema Antigravity em 22/04/2026 após o ciclo de implementação do Bunny.net e Resolução de Segurança Auth/SMTP.*
+*Arquivo atualizado em 23/04/2026 após a migração monumental para o ecossistema Stripe.*

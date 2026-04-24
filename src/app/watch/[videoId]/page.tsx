@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import FavoritoButton from '@/components/FavoritoButton'
+import VideoPlayerGuard from '@/components/VideoPlayerGuard'
 import { ChevronLeft, Clock, Tag, Share2, ChevronRight } from 'lucide-react'
 
 type Props = {
@@ -83,17 +84,8 @@ export default async function VideoPlayerPage({ params }: Props) {
 
       <main className="pt-14 md:pt-[60px]">
 
-        {/* ── PLAYER ── */}
-        <div className="bg-black w-full">
-          <div className="relative w-full aspect-video mx-auto" style={{ maxWidth: '1600px' }}>
-            <iframe
-              src={embedUrl}
-              className="absolute inset-0 w-full h-full border-none"
-              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
-              allowFullScreen
-            />
-          </div>
-        </div>
+        {/* ── PLAYER (protegido pelo guarda de sessões) ── */}
+        <VideoPlayerGuard videoId={videoId} embedUrl={embedUrl} />
 
         {/* ── INFO + RELACIONADOS ── */}
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-8 flex flex-col lg:flex-row gap-8">

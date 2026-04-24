@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Tag, Settings, CreditCard, Trash2, X, RefreshCw, Check, Edit3, Save } from 'lucide-react'
 
 type Preco = { id: string; valor: number; moeda: string; intervalo: string }
-type Produto = { id: string; nome: string; ativo: boolean; precos: Preco[]; beneficios?: string }
+type Produto = { id: string; nome: string; ativo: boolean; precos: Preco[]; beneficios?: string; max_telas?: number }
 type Cupom = { id: string; nome: string; desconto: string; usos_max: number | null; usos_atual: number; ativo: boolean; expira: string | null }
 
 const BENEFICIOS_PADRAO = [
@@ -21,7 +21,7 @@ export function StripeAdmin() {
   const [cupons, setCupons] = useState<Cupom[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', preco: '29,90', intervalo: 'month' })
+  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', preco: '29,90', intervalo: 'month', max_telas: 1 })
   const [beneficiosCheck, setBeneficiosCheck] = useState<string[]>(['Acesso ilimitado ao catálogo', 'Resolução Full HD'])
   const [beneficioCustom, setBeneficioCustom] = useState('')
 
@@ -30,7 +30,7 @@ export function StripeAdmin() {
 
   // Edit states
   const [editandoId, setEditandoId] = useState<string | null>(null)
-  const [produtoEdit, setProdutoEdit] = useState({ nome: '', beneficios: '' })
+  const [produtoEdit, setProdutoEdit] = useState({ nome: '', beneficios: '', max_telas: 1 })
 
   const fetchData = async () => {
     setLoading(true)
@@ -79,7 +79,8 @@ export function StripeAdmin() {
     const payload = {
       ...novoProduto,
       preco: parsePreco(novoProduto.preco),
-      beneficios: beneficiosCheck.join(', ')
+      beneficios: beneficiosCheck.join(', '),
+      max_telas: novoProduto.max_telas,
     }
 
     try {
@@ -110,7 +111,7 @@ export function StripeAdmin() {
 
   const iniciarEdicao = (p: Produto) => {
     setEditandoId(p.id)
-    setProdutoEdit({ nome: p.nome, beneficios: p.beneficios || '' })
+    setProdutoEdit({ nome: p.nome, beneficios: p.beneficios || '', max_telas: p.max_telas || 1 })
   }
 
   const salvarEdicao = async (id: string) => {
@@ -118,7 +119,7 @@ export function StripeAdmin() {
     try {
       const response = await fetch('/api/stripe/produtos', {
         method: 'PUT',
-        body: JSON.stringify({ id, nome: produtoEdit.nome, beneficios: produtoEdit.beneficios })
+        body: JSON.stringify({ id, nome: produtoEdit.nome, beneficios: produtoEdit.beneficios, max_telas: produtoEdit.max_telas })
       })
       const data = await response.json()
       if (data.error) {
@@ -191,6 +192,18 @@ export function StripeAdmin() {
                     *Mantenha valores reais para evitar bloqueio por suspeita de fraude na Stripe. (Ex: Max R$ 9.999,00)
                   </p>
                 </div>
+              </div>
+
+              {/* Campo max_telas */}
+              <div>
+                <label className={labelCls}>🖥️ Limite de Telas Simultâneas</label>
+                <input
+                  type="number" min={1} max={10}
+                  value={novoProduto.max_telas}
+                  onChange={e => setNovoProduto({...novoProduto, max_telas: Number(e.target.value)})}
+                  className={inputCls}
+                />
+                <p className="text-[#4a6373] text-[0.65rem] mt-1">Quantos dispositivos podem assistir ao mesmo tempo com este plano.</p>
               </div>
 
               <div>
@@ -287,6 +300,16 @@ export function StripeAdmin() {
                         <label className={labelCls}>Benefícios (separe por vírgula)</label>
                         <input className={inputCls} placeholder="Benefício 1, Benefício 2" value={produtoEdit.beneficios} onChange={e => setProdutoEdit({...produtoEdit, beneficios: e.target.value})} />
                       </div>
+                      <div>
+                        <label className={labelCls}>🖥️ Limite de Telas Simultâneas</label>
+                        <input
+                          type="number" min={1} max={10}
+                          className={inputCls}
+                          value={produtoEdit.max_telas}
+                          onChange={e => setProdutoEdit({...produtoEdit, max_telas: Number(e.target.value)})}
+                        />
+                        <p className="text-[#4a6373] text-[0.65rem] mt-1">Quantos dispositivos podem assistir ao mesmo tempo.</p>
+                      </div>
                       <div className="flex gap-2">
                         <button onClick={() => salvarEdicao(p.id)} disabled={loadingAction} className="bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2"><Save size={14}/> Salvar</button>
                         <button onClick={() => setEditandoId(null)} className="bg-transparent border border-[#1e3040] text-white px-4 py-2 rounded-lg font-bold text-sm">Cancelar</button>
@@ -296,6 +319,14 @@ export function StripeAdmin() {
                 ) : (
                   <>
                     <div className="text-white font-black text-xl mb-3">📦 {p.nome}</div>
+                    <div className="flex flex-wrap gap-3 items-center mb-2">
+                      <span
+                        className="text-xs font-bold px-2.5 py-1 rounded-lg"
+                        style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)' }}
+                      >
+                        🖥️ {p.max_telas || 1} tela{(p.max_telas || 1) > 1 ? 's' : ''}
+                      </span>
+                    </div>
                     <div className="flex flex-wrap gap-3">
                       {p.precos.map(pr => (
                         <div key={pr.id} className="bg-[#090B10] p-3 rounded-xl flex-1 min-w-[150px] border border-[#1e3040]">
