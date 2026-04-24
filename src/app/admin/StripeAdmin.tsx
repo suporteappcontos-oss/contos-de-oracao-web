@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Tag, Settings, CreditCard, Trash2, X, RefreshCw, Check, Edit3, Save } from 'lucide-react'
+import { Plus, Tag, Settings, CreditCard, Trash2, X, RefreshCw, Check, Edit3, Save, Eye } from 'lucide-react'
 
 type Preco = { id: string; valor: number; moeda: string; intervalo: string }
 type Produto = { id: string; nome: string; ativo: boolean; precos: Preco[]; beneficios?: string; max_telas?: number }

@@ -11,8 +11,9 @@ export default function AssinarPage() {
   const [step, setStep] = useState<Step>(1)
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
   const [planoSelecionado, setPlanoSelecionado] = useState<string>('')
-  const [erros, setErros] = useState<{ nome?: string; email?: string }>({})
+  const [erros, setErros] = useState<{ nome?: string; email?: string; senha?: string }>({})
   
   // Estados para carregamento dinâmico
   const [planos, setPlanos] = useState<any[]>([])
@@ -40,12 +41,15 @@ export default function AssinarPage() {
   }, [])
 
   function validarStep1() {
-    const novosErros: { nome?: string; email?: string } = {}
+    const novosErros: { nome?: string; email?: string; senha?: string } = {}
     if (!nome.trim() || nome.trim().split(' ').length < 2) {
       novosErros.nome = 'Digite seu nome completo (nome e sobrenome)'
     }
     if (!email.trim() || !email.includes('@') || !email.includes('.')) {
       novosErros.email = 'Digite um e-mail válido'
+    }
+    if (!senha || senha.length < 6) {
+      novosErros.senha = 'A senha deve ter no mínimo 6 caracteres'
     }
     setErros(novosErros)
     return Object.keys(novosErros).length === 0
@@ -68,6 +72,7 @@ export default function AssinarPage() {
         body: JSON.stringify({
           nome,
           email,
+          senha,
           plano: planoSelecionado
         })
       })
@@ -184,8 +189,29 @@ export default function AssinarPage() {
                   onKeyDown={e => e.key === 'Enter' && irParaStep2()}
                 />
                 {erros.email && <p className="text-red-400 text-xs mt-1.5">{erros.email}</p>}
+              </div>
+
+              {/* Senha */}
+              <div>
+                <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold block mb-1.5">
+                  Crie uma senha de acesso
+                </label>
+                <input
+                  type="password"
+                  value={senha}
+                  onChange={e => { setSenha(e.target.value); setErros(p => ({ ...p, senha: undefined })) }}
+                  placeholder="Mínimo de 6 caracteres"
+                  className="w-full px-4 py-3.5 rounded-xl text-white text-sm outline-none transition-all"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: `1px solid ${erros.senha ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    fontFamily: 'Outfit, sans-serif'
+                  }}
+                  onKeyDown={e => e.key === 'Enter' && irParaStep2()}
+                />
+                {erros.senha && <p className="text-red-400 text-xs mt-1.5">{erros.senha}</p>}
                 <p className="text-white/25 text-xs mt-1.5">
-                  📧 Você vai receber o acesso neste e-mail após o pagamento
+                  🔒 Você usará esta senha para entrar na plataforma
                 </p>
               </div>
 
