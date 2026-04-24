@@ -156,7 +156,7 @@ export default async function AdminPage({
           {[
             { id: 'videos', label: 'Vídeos', icon: Video, count: totalVideos },
             { id: 'usuarios', label: 'Usuários', icon: Users, count: totalMembros },
-            { id: 'stripe', label: 'Stripe', icon: CreditCard, count: null },
+            { id: 'stripe', label: 'Gerenciador de Planos', icon: Settings, count: null },
 
           ].map(tab => (
             <Link key={tab.id} href={`/admin?tab=${tab.id}`}
