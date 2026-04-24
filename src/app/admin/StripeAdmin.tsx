@@ -177,7 +177,7 @@ export function StripeAdmin() {
                 <label className={labelCls}>Nome do Plano</label>
                 <input type="text" required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className={labelCls}>Intervalo</label>
                   <select value={novoProduto.intervalo} onChange={e => setNovoProduto({...novoProduto, intervalo: e.target.value})} className={inputCls}>
@@ -188,23 +188,18 @@ export function StripeAdmin() {
                 <div>
                   <label className={labelCls}>Valor (R$)</label>
                   <input type="text" required value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
-                  <p className="text-[#8197a4] text-[0.65rem] mt-1 italic">
-                    *Mantenha valores reais para evitar bloqueio por suspeita de fraude na Stripe. (Ex: Max R$ 9.999,00)
-                  </p>
+                </div>
+                <div>
+                  <label className={labelCls}>🖥️ Telas</label>
+                  <input
+                    type="number" min={1} max={10}
+                    value={novoProduto.max_telas}
+                    onChange={e => setNovoProduto({...novoProduto, max_telas: Number(e.target.value)})}
+                    className={inputCls}
+                  />
                 </div>
               </div>
-
-              {/* Campo max_telas */}
-              <div>
-                <label className={labelCls}>🖥️ Limite de Telas Simultâneas</label>
-                <input
-                  type="number" min={1} max={10}
-                  value={novoProduto.max_telas}
-                  onChange={e => setNovoProduto({...novoProduto, max_telas: Number(e.target.value)})}
-                  className={inputCls}
-                />
-                <p className="text-[#4a6373] text-[0.65rem] mt-1">Quantos dispositivos podem assistir ao mesmo tempo com este plano.</p>
-              </div>
+              <p className="text-[#4a6373] text-[0.65rem] -mt-2">💡 Telas = quantos dispositivos podem assistir ao mesmo tempo com este plano.</p>
 
               <div>
                 <label className={labelCls}>Vantagens / Benefícios</label>
@@ -247,7 +242,12 @@ export function StripeAdmin() {
               </div>
               
               <h3 className="text-xl font-bold text-white mb-1">{novoProduto.nome}</h3>
-              <p className="text-white/50 text-sm mb-4">Assinatura {novoProduto.intervalo === 'month' ? 'mensal' : 'anual'}</p>
+              <p className="text-white/50 text-sm mb-2">Assinatura {novoProduto.intervalo === 'month' ? 'mensal' : 'anual'}</p>
+              <div className="flex items-center gap-1.5 mb-4">
+                <span className="text-[0.65rem] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.3)' }}>
+                  🖥️ {novoProduto.max_telas} tela{novoProduto.max_telas > 1 ? 's' : ''} simultânea{novoProduto.max_telas > 1 ? 's' : ''}
+                </span>
+              </div>
               
               <div className="flex items-end gap-1 mb-6">
                 <span className="text-3xl font-black text-white">R$ {novoProduto.preco || '0,00'}</span>
