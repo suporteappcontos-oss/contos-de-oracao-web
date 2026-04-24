@@ -39,12 +39,7 @@ export function StripeAdmin() {
         fetch('/api/stripe/produtos').then(r => r.json()),
         fetch('/api/stripe/cupons').then(r => r.json())
       ])
-      // Adicionar os beneficios que vem do metadata nos produtos
-      if (resProd.produtos) {
-        // Precisamos garantir que a rota GET produtos retorne os beneficios também!
-        // Como o GET atual nao retorna beneficios diretamente do metadata sem expansao, vamos deixar isso como bonus ou editar pelo metadata qdo for buscar
-        setProdutos(resProd.produtos)
-      }
+      if (resProd.produtos) setProdutos(resProd.produtos)
       if (resCupom.cupons) setCupons(resCupom.cupons)
     } catch (e) {
       console.error(e)
@@ -153,31 +148,46 @@ export function StripeAdmin() {
     setLoadingAction(false)
   }
 
-  const inputCls = 'w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-[#4a6373] focus:outline-none transition-colors text-sm'
-  const labelCls = 'block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold'
+  const inputCls = 'w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm'
+  const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold'
 
-  if (loading) return <div className="p-8 text-center text-[#8197a4]">Carregando dados do Stripe...</div>
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center p-20 opacity-50">
+      <RefreshCw size={32} className="animate-spin text-[#D4AF37] mb-4" />
+      <div className="text-white font-medium">Sincronizando com a Stripe...</div>
+    </div>
+  )
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* PRODUTOS */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Settings size={18} style={{ color: '#D4AF37' }} />
-          <h2 className="text-white text-lg font-bold">Produto Principal (Assinatura)</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
+            <Settings size={20} className="text-[#D4AF37]" />
+          </div>
+          <div>
+            <h2 className="text-white text-2xl font-black tracking-tight">Assinaturas e Planos</h2>
+            <p className="text-white/40 text-xs mt-0.5">Gerencie os planos cobrados via Stripe.</p>
+          </div>
         </div>
 
         {/* FORMULÁRIO DE CRIAÇÃO E PREVIEW CARD */}
-        <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl overflow-hidden mb-6 flex flex-col md:flex-row">
+        <div className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden mb-8 flex flex-col xl:flex-row shadow-2xl">
           {/* Lado Esquerdo: Formulário */}
-          <div className="p-6 flex-1 border-b md:border-b-0 md:border-r border-[#1e3040]">
-            <h3 className="text-white font-bold mb-4">Criar Novo Plano/Produto</h3>
-            <form onSubmit={criarProduto} className="space-y-4">
+          <div className="p-8 flex-1 border-b xl:border-b-0 xl:border-r border-white/5 relative">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#D4AF37] to-transparent opacity-50" />
+            
+            <h3 className="text-white font-extrabold text-lg mb-6 flex items-center gap-2">
+              <Plus size={18} className="text-[#D4AF37]" /> Criar Novo Plano
+            </h3>
+            
+            <form onSubmit={criarProduto} className="space-y-5">
               <div>
                 <label className={labelCls}>Nome do Plano</label>
                 <input type="text" required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className={labelCls}>Intervalo</label>
                   <select value={novoProduto.intervalo} onChange={e => setNovoProduto({...novoProduto, intervalo: e.target.value})} className={inputCls}>
@@ -190,7 +200,7 @@ export function StripeAdmin() {
                   <input type="text" required value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
                 </div>
                 <div>
-                  <label className={labelCls}>🖥️ Telas</label>
+                  <label className={labelCls}>🖥️ Limite de Telas</label>
                   <input
                     type="number" min={1} max={10}
                     value={novoProduto.max_telas}
@@ -199,74 +209,78 @@ export function StripeAdmin() {
                   />
                 </div>
               </div>
-              <p className="text-[#4a6373] text-[0.65rem] -mt-2">💡 Telas = quantos dispositivos podem assistir ao mesmo tempo com este plano.</p>
 
               <div>
-                <label className={labelCls}>Vantagens / Benefícios</label>
-                <div className="bg-[#090B10] border border-[#1e3040] rounded-xl p-3 space-y-2 max-h-48 overflow-y-auto mb-2">
+                <label className={labelCls}>Benefícios do Plano</label>
+                <div className="bg-[#090B10] border border-white/5 rounded-2xl p-4 space-y-3 max-h-48 overflow-y-auto mb-3 shadow-inner">
                   {BENEFICIOS_PADRAO.map(b => (
-                    <label key={b} className="flex items-center gap-2 text-sm text-white/80 cursor-pointer hover:text-white transition-colors">
-                      <input type="checkbox" checked={beneficiosCheck.includes(b)} onChange={() => toggleBeneficio(b)} className="accent-[#D4AF37] w-4 h-4" />
+                    <label key={b} className="flex items-center gap-3 text-sm text-white/70 cursor-pointer hover:text-white transition-colors">
+                      <input type="checkbox" checked={beneficiosCheck.includes(b)} onChange={() => toggleBeneficio(b)} className="accent-[#D4AF37] w-4 h-4 rounded" />
                       {b}
                     </label>
                   ))}
                   {beneficiosCheck.filter(b => !BENEFICIOS_PADRAO.includes(b)).map(b => (
-                    <label key={b} className="flex items-center gap-2 text-sm text-[#D4AF37] cursor-pointer">
-                      <input type="checkbox" checked={true} onChange={() => toggleBeneficio(b)} className="accent-[#D4AF37] w-4 h-4" />
+                    <label key={b} className="flex items-center gap-3 text-sm text-[#D4AF37] font-medium cursor-pointer">
+                      <input type="checkbox" checked={true} onChange={() => toggleBeneficio(b)} className="accent-[#D4AF37] w-4 h-4 rounded" />
                       {b}
                     </label>
                   ))}
                 </div>
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Adicionar outro benefício..." value={beneficioCustom} onChange={e => setBeneficioCustom(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addBeneficioCustom())} className={`${inputCls} py-2`} />
-                  <button type="button" onClick={addBeneficioCustom} className="bg-[#1e3040] text-white px-3 rounded-xl hover:bg-[#D4AF37] hover:text-black transition-colors"><Plus size={16}/></button>
+                  <input type="text" placeholder="Adicionar outro benefício..." value={beneficioCustom} onChange={e => setBeneficioCustom(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addBeneficioCustom())} className={inputCls} />
+                  <button type="button" onClick={addBeneficioCustom} className="bg-white/5 border border-white/10 text-white/70 px-4 rounded-xl hover:bg-[#D4AF37] hover:text-black hover:border-transparent transition-all font-bold"><Plus size={18}/></button>
                 </div>
               </div>
 
-              <div className="pt-2">
-                <button disabled={loadingAction} className="w-full bg-[#D4AF37] text-[#090B10] px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#b08d28] transition-colors">
-                  <Plus size={16} /> Criar Plano e Preço
+              <div className="pt-4">
+                <button disabled={loadingAction} className="w-full bg-[#D4AF37] text-black px-6 py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:brightness-110 transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                  <Plus size={18} strokeWidth={3} /> Publicar no Stripe
                 </button>
               </div>
             </form>
           </div>
 
           {/* Lado Direito: Preview */}
-          <div className="p-6 md:w-[400px] bg-[#090B10] flex flex-col items-center justify-center relative overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-1 bg-[#D4AF37]"></div>
-            <div className="text-[#8197a4] text-xs font-bold uppercase tracking-widest mb-4">Preview em Tempo Real</div>
+          <div className="p-8 xl:w-[450px] bg-[#090B10] flex flex-col items-center justify-center relative">
+            <div className="text-[#D4AF37] text-xs font-black uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+               <Eye size={14} /> Preview
+            </div>
             
-            <div className="w-full max-w-[320px] bg-[#1a2733] border border-[#D4AF37] rounded-3xl p-6 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#D4AF37] text-black text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
-                Mais popular
+            <div className="w-full max-w-[340px] bg-[#111827] border-2 border-[#D4AF37] rounded-[2rem] p-8 relative shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-500">
+              <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 bg-[#22c55e] text-white text-[0.7rem] font-black px-4 py-1.5 rounded-full whitespace-nowrap shadow-md tracking-wider">
+                ✦ Mais Popular
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-1">{novoProduto.nome}</h3>
-              <p className="text-white/50 text-sm mb-2">Assinatura {novoProduto.intervalo === 'month' ? 'mensal' : 'anual'}</p>
-              <div className="flex items-center gap-1.5 mb-4">
-                <span className="text-[0.65rem] font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.3)' }}>
-                  🖥️ {novoProduto.max_telas} tela{novoProduto.max_telas > 1 ? 's' : ''} simultânea{novoProduto.max_telas > 1 ? 's' : ''}
-                </span>
-              </div>
+              <h3 className="text-2xl font-black text-[#D4AF37] mb-1">{novoProduto.nome}</h3>
+              <p className="text-white/40 text-xs font-medium mb-4 uppercase tracking-widest">Assinatura {novoProduto.intervalo === 'month' ? 'Mensal' : 'Anual'}</p>
               
               <div className="flex items-end gap-1 mb-6">
-                <span className="text-3xl font-black text-white">R$ {novoProduto.preco || '0,00'}</span>
-                <span className="text-white/50 text-sm mb-1">/{novoProduto.intervalo === 'month' ? 'mês' : 'mês'}</span>
+                <span className="text-4xl font-black text-white">R$ {novoProduto.preco || '0,00'}</span>
+                <span className="text-white/40 text-sm mb-1 font-medium">/mês</span>
+              </div>
+
+              <div className="flex items-center gap-2 mb-6">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37]">
+                  <Settings size={13} />
+                  <span className="text-[0.75rem] font-bold">
+                    {novoProduto.max_telas} tela{novoProduto.max_telas > 1 ? 's' : ''} simultânea{novoProduto.max_telas > 1 ? 's' : ''}
+                  </span>
+                </div>
               </div>
               
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-4 mb-8">
                 {beneficiosCheck.map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-white/80 text-sm">
-                    <Check size={16} className="text-[#D4AF37] mt-0.5 shrink-0" />
+                  <li key={i} className="flex items-start gap-3 text-white/80 text-[0.9rem] font-medium">
+                    <Check size={16} className="text-[#D4AF37] mt-0.5 shrink-0" strokeWidth={3} />
                     <span className="leading-tight">{b}</span>
                   </li>
                 ))}
                 {beneficiosCheck.length === 0 && (
-                  <li className="text-white/40 text-sm italic">Nenhum benefício selecionado</li>
+                  <li className="text-white/30 text-sm italic">Nenhum benefício selecionado</li>
                 )}
               </ul>
               
-              <div className="w-full bg-[#D4AF37] text-black py-3 rounded-xl font-bold text-center">
+              <div className="w-full bg-[#D4AF37] text-black py-4 rounded-xl font-black text-center shadow-lg hover:brightness-110 cursor-pointer">
                 Assinar agora →
               </div>
             </div>
@@ -275,85 +289,86 @@ export function StripeAdmin() {
 
         {/* LISTAGEM DOS PRODUTOS ATIVOS */}
         {produtos.length > 0 && (
-          <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl overflow-hidden p-6">
-            <h3 className="text-white font-bold mb-4">Planos Ativos</h3>
-            {produtos.map((p, i) => (
-              <div key={p.id} className={`relative group ${i !== produtos.length - 1 ? 'border-b border-[#1e3040] pb-6 mb-6' : ''}`}>
-                <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                  <button onClick={() => iniciarEdicao(p)} className="text-[#00a8e1] hover:bg-[#00a8e1]/10 p-2 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold">
-                    <Edit3 size={14} /> Editar
-                  </button>
-                  <button onClick={() => arquivarProduto(p.id)} className="text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold">
-                    <Trash2 size={14} /> Apagar Produto e Preços
-                  </button>
-                </div>
-                
-                {editandoId === p.id ? (
-                  <div className="bg-[#090B10] p-4 rounded-xl border border-[#D4AF37] mb-4">
-                    <div className="font-bold text-[#D4AF37] text-sm uppercase mb-3 flex items-center gap-2"><Edit3 size={16}/> Modo de Edição</div>
-                    <div className="space-y-4">
-                      <div>
-                        <label className={labelCls}>Nome do Produto</label>
-                        <input className={inputCls} value={produtoEdit.nome} onChange={e => setProdutoEdit({...produtoEdit, nome: e.target.value})} />
+          <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
+            <h3 className="text-white font-extrabold text-xl mb-6">Planos Ativos</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {produtos.map((p) => (
+                <div key={p.id} className="relative group bg-[#090B10] border border-white/5 rounded-2xl p-6 hover:border-white/20 transition-all">
+                  
+                  {editandoId === p.id ? (
+                    <div className="absolute inset-0 bg-[#111827] z-20 rounded-2xl border-2 border-[#D4AF37] p-6 shadow-2xl overflow-y-auto">
+                      <div className="font-black text-[#D4AF37] text-sm uppercase tracking-wider mb-5 flex items-center justify-between">
+                         <div className="flex items-center gap-2"><Edit3 size={16}/> Editar Plano</div>
+                         <button onClick={() => setEditandoId(null)} className="text-white/40 hover:text-white p-1"><X size={18}/></button>
                       </div>
-                      <div>
-                        <label className={labelCls}>Benefícios (separe por vírgula)</label>
-                        <input className={inputCls} placeholder="Benefício 1, Benefício 2" value={produtoEdit.beneficios} onChange={e => setProdutoEdit({...produtoEdit, beneficios: e.target.value})} />
-                      </div>
-                      <div>
-                        <label className={labelCls}>🖥️ Limite de Telas Simultâneas</label>
-                        <input
-                          type="number" min={1} max={10}
-                          className={inputCls}
-                          value={produtoEdit.max_telas}
-                          onChange={e => setProdutoEdit({...produtoEdit, max_telas: Number(e.target.value)})}
-                        />
-                        <p className="text-[#4a6373] text-[0.65rem] mt-1">Quantos dispositivos podem assistir ao mesmo tempo.</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => salvarEdicao(p.id)} disabled={loadingAction} className="bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2"><Save size={14}/> Salvar</button>
-                        <button onClick={() => setEditandoId(null)} className="bg-transparent border border-[#1e3040] text-white px-4 py-2 rounded-lg font-bold text-sm">Cancelar</button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="text-white font-black text-xl mb-3">📦 {p.nome}</div>
-                    <div className="flex flex-wrap gap-3 items-center mb-2">
-                      <span
-                        className="text-xs font-bold px-2.5 py-1 rounded-lg"
-                        style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)' }}
-                      >
-                        🖥️ {p.max_telas || 1} tela{(p.max_telas || 1) > 1 ? 's' : ''}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      {p.precos.map(pr => (
-                        <div key={pr.id} className="bg-[#090B10] p-3 rounded-xl flex-1 min-w-[150px] border border-[#1e3040]">
-                          <div className="text-[10px] text-[#8197a4] font-bold uppercase mb-1">
-                            PLANO {pr.intervalo === 'month' ? 'MENSAL' : pr.intervalo === 'year' ? 'ANUAL' : 'PERSONALIZADO'}
-                          </div>
-                          <div className="text-[#D4AF37] font-black">R$ {(pr.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <label className={labelCls}>Nome</label>
+                          <input className={inputCls} value={produtoEdit.nome} onChange={e => setProdutoEdit({...produtoEdit, nome: e.target.value})} />
                         </div>
-                      ))}
+                        <div>
+                          <label className={labelCls}>Benefícios (separe por vírgula)</label>
+                          <input className={inputCls} value={produtoEdit.beneficios} onChange={e => setProdutoEdit({...produtoEdit, beneficios: e.target.value})} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>🖥️ Telas Simultâneas</label>
+                          <input type="number" min={1} max={10} className={inputCls} value={produtoEdit.max_telas} onChange={e => setProdutoEdit({...produtoEdit, max_telas: Number(e.target.value)})} />
+                        </div>
+                        <button onClick={() => salvarEdicao(p.id)} disabled={loadingAction} className="w-full bg-[#D4AF37] text-black py-3 rounded-xl font-black mt-2 hover:brightness-110">Salvar Alterações</button>
+                      </div>
                     </div>
-                  </>
-                )}
-              </div>
-            ))}
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between mb-4">
+                         <div>
+                            <div className="text-white font-extrabold text-xl mb-1">{p.nome}</div>
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-[0.65rem] font-bold uppercase tracking-wider">
+                               Telas Simultâneas: {p.max_telas || 1}
+                            </div>
+                         </div>
+                         <div className="flex gap-1">
+                            <button onClick={() => iniciarEdicao(p)} className="p-2 text-white/40 hover:text-[#D4AF37] hover:bg-white/5 rounded-lg transition-colors"><Edit3 size={16} /></button>
+                            <button onClick={() => arquivarProduto(p.id)} className="p-2 text-white/40 hover:text-red-400 hover:bg-white/5 rounded-lg transition-colors"><Trash2 size={16} /></button>
+                         </div>
+                      </div>
+                      
+                      <div className="flex gap-3 mt-6 pt-6 border-t border-white/5">
+                        {p.precos.map(pr => (
+                          <div key={pr.id} className="flex-1 bg-[#111827] p-4 rounded-xl border border-white/5">
+                            <div className="text-[0.65rem] text-white/40 font-bold uppercase tracking-widest mb-1">
+                              {pr.intervalo === 'month' ? 'Mensal' : pr.intervalo === 'year' ? 'Anual' : 'Personalizado'}
+                            </div>
+                            <div className="text-[#D4AF37] font-black text-lg">R$ {(pr.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
+      <hr className="border-white/5 my-10" />
+
       {/* CUPONS */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Tag size={18} style={{ color: '#00a8e1' }} />
-          <h2 className="text-white text-lg font-bold">Cupons de Desconto</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-[#00a8e1]/10 border border-[#00a8e1]/20 flex items-center justify-center">
+            <Tag size={20} className="text-[#00a8e1]" />
+          </div>
+          <div>
+            <h2 className="text-white text-2xl font-black tracking-tight">Cupons de Desconto</h2>
+            <p className="text-white/40 text-xs mt-0.5">Crie promoções e ofertas especiais.</p>
+          </div>
         </div>
 
-        <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-6 mb-6">
-          <form onSubmit={criarCupom} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
+        <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 mb-8 shadow-xl">
+          <form onSubmit={criarCupom} className="grid grid-cols-1 md:grid-cols-5 gap-5 items-end">
             <div className="md:col-span-2">
               <label className={labelCls}>Nome Interno</label>
               <input required placeholder="Ex: Black Friday" value={novoCupom.nome} onChange={e => setNovoCupom({...novoCupom, nome: e.target.value})} className={inputCls} />
@@ -370,42 +385,44 @@ export function StripeAdmin() {
               </select>
             </div>
             <div>
-              <label className={labelCls}>Valor/Porcentagem</label>
+              <label className={labelCls}>Desconto</label>
               <input required type="number" placeholder="Ex: 50" value={novoCupom.valor} onChange={e => setNovoCupom({...novoCupom, valor: e.target.value})} className={inputCls} />
             </div>
-            <div>
+            <div className="md:col-span-2">
               <label className={labelCls}>Limite de usos (Opcional)</label>
-              <input type="number" placeholder="Ex: 30" value={novoCupom.usos_max} onChange={e => setNovoCupom({...novoCupom, usos_max: e.target.value})} className={inputCls} />
+              <input type="number" placeholder="Ex: 100" value={novoCupom.usos_max} onChange={e => setNovoCupom({...novoCupom, usos_max: e.target.value})} className={inputCls} />
             </div>
-            <div className="md:col-span-6">
-              <button disabled={loadingAction} className="bg-[#00a8e1] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 w-fit">
-                <Plus size={16} /> Criar Cupom
+            <div className="md:col-span-3 flex justify-end">
+              <button disabled={loadingAction} className="bg-[#00a8e1] text-white px-8 py-3.5 rounded-xl font-black flex items-center gap-2 hover:bg-[#008dbd] transition-colors w-full md:w-auto justify-center">
+                <Plus size={18} strokeWidth={3} /> Gerar Cupom
               </button>
             </div>
           </form>
         </div>
 
         {cupons.length > 0 && (
-          <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl overflow-hidden">
-            <div className="grid grid-cols-4 gap-3 px-5 py-3 border-b border-[#1e3040] bg-black/20">
-              <div className="col-span-2 text-[#8197a4] text-[0.65rem] uppercase font-semibold">Cupom</div>
-              <div className="text-[#8197a4] text-[0.65rem] uppercase font-semibold">Desconto</div>
-              <div className="text-[#8197a4] text-[0.65rem] uppercase font-semibold text-right">Ação</div>
+          <div className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
+            <div className="grid grid-cols-4 gap-4 px-8 py-4 border-b border-white/5 bg-[#090B10]/50">
+              <div className="col-span-2 text-white/40 text-[0.65rem] uppercase font-bold tracking-widest">Cupom</div>
+              <div className="text-white/40 text-[0.65rem] uppercase font-bold tracking-widest">Desconto</div>
+              <div className="text-white/40 text-[0.65rem] uppercase font-bold tracking-widest text-right">Ação</div>
             </div>
-            {cupons.map((c, i) => (
-              <div key={c.id} className={`grid grid-cols-4 gap-3 px-5 py-4 items-center ${i !== cupons.length - 1 ? 'border-b border-[#1e3040]' : ''}`}>
-                <div className="col-span-2">
-                  <div className="text-white font-bold">{c.nome}</div>
-                  <div className="text-[#8197a4] text-xs">ID: {c.id}</div>
+            <div className="divide-y divide-white/5">
+              {cupons.map((c) => (
+                <div key={c.id} className="grid grid-cols-4 gap-4 px-8 py-5 items-center hover:bg-white/[0.02] transition-colors">
+                  <div className="col-span-2">
+                    <div className="text-white font-bold text-lg">{c.nome}</div>
+                    <div className="text-white/30 text-xs font-mono mt-0.5">{c.id}</div>
+                  </div>
+                  <div className="text-[#00a8e1] font-black text-xl">{c.desconto}</div>
+                  <div className="text-right flex justify-end">
+                    <button onClick={() => deletarCupom(c.id)} className="text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl transition-all">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
-                <div className="text-[#00a8e1] font-black">{c.desconto}</div>
-                <div className="text-right">
-                  <button onClick={() => deletarCupom(c.id)} className="text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>

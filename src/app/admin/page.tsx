@@ -11,8 +11,7 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  ShoppingCart, TrendingUp, DollarSign, RefreshCw, Tag,
-  Settings, BarChart2, CreditCard, Link2,
+  Settings, Clock
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 
@@ -39,8 +38,8 @@ function getFallback(id: string) {
   return FALLBACK[c % FALLBACK.length]
 }
 
-const inputCls = 'w-full bg-[#0f171e] border border-[#1e3040] focus:border-[#00a8e1] rounded-xl px-4 py-3 text-white placeholder-[#4a6373] focus:outline-none transition-colors text-sm'
-const labelCls = 'block text-[#8197a4] text-[0.7rem] uppercase tracking-widest mb-2 font-semibold'
+const inputCls = 'w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm'
+const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold'
 
 export default async function AdminPage({
   searchParams,
@@ -94,317 +93,340 @@ export default async function AdminPage({
   const editingVideo = editId ? (videos as VideoType[])?.find(v => v.id === editId) : null
 
   return (
-    <div className="min-h-screen text-white pb-20" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
+    <div className="min-h-screen text-white pb-20 selection:bg-[#D4AF37] selection:text-black" style={{ background: 'radial-gradient(circle at top, #111827 0%, #090B10 100%)', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* NAVBAR */}
-      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-14"
-        style={{ background: '#090B10', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <div className="flex items-center gap-3">
-          <Link href="/watch" className="flex items-center gap-2.5">
-            <Image src="/logo.png" alt="Contos de Oração" width={34} height={34} className="object-contain" />
+      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-16 bg-[#090B10]/80 backdrop-blur-md border-b border-white/5">
+        <div className="flex items-center gap-4">
+          <Link href="/watch" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] p-[1px]">
+              <div className="w-full h-full bg-[#090B10] rounded-[11px] flex items-center justify-center">
+                 <Image src="/logo.png" alt="Logo" width={20} height={20} className="object-contain" />
+              </div>
+            </div>
             <div className="hidden sm:block">
-              <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
-              <div className="text-[0.5rem] font-extrabold uppercase tracking-widest -mt-0.5" style={{ color: '#D4AF37' }}>Premium</div>
+              <div className="text-white font-black text-[0.95rem] tracking-tight leading-none">Contos de Oração</div>
+              <div className="text-[#D4AF37] text-[0.6rem] font-black uppercase tracking-[0.2em] mt-0.5">Workspace</div>
             </div>
           </Link>
-          <div className="h-5 w-px hidden sm:block" style={{ background: 'rgba(255,255,255,0.08)' }} />
-          <div className="flex items-center gap-1.5">
-            <LayoutDashboard size={13} style={{ color: '#D4AF37' }} />
-            <span className="text-white font-bold text-sm">Painel Admin</span>
+          <div className="h-6 w-px hidden sm:block bg-white/10" />
+          <div className="flex items-center gap-2">
+            <LayoutDashboard size={14} className="text-[#D4AF37]" />
+            <span className="text-white/90 font-bold text-sm tracking-wide">Painel Administrativo</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[#94A3B8] text-xs hidden md:inline truncate max-w-[200px]">{user.email}</span>
+        <div className="flex items-center gap-4">
+          <span className="text-white/40 text-xs hidden md:inline truncate max-w-[200px] font-medium">{user.email}</span>
           <Link href="/watch"
-            className="flex items-center gap-1.5 text-[#94A3B8] hover:text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
-            style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-            <ChevronLeft size={12} /> Voltar
+            className="flex items-center gap-2 text-white/60 hover:text-white hover:bg-white/5 text-xs px-4 py-2 rounded-xl transition-all border border-white/5">
+            <ChevronLeft size={14} /> Voltar ao App
           </Link>
         </div>
       </header>
 
-      <main className="pt-[72px] px-4 md:px-8 max-w-6xl mx-auto">
+      <main className="pt-[100px] px-4 md:px-8 max-w-7xl mx-auto">
 
-        {/* Título */}
-        <div className="mb-6 pt-6">
-          <h1 className="text-white text-2xl md:text-3xl font-black mb-1">Painel Administrativo</h1>
-          <p className="text-[#8197a4] text-sm">Gerencie vídeos, assinantes e conteúdo da plataforma.</p>
+        {/* Header Section */}
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-white text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Visão Geral</h1>
+            <p className="text-white/50 text-sm">Gerencie o catálogo, assinantes e integrações da plataforma.</p>
+          </div>
+
+          {/* Tabs - Estilo Pill Moderno */}
+          <div className="flex bg-[#111827] border border-white/5 rounded-2xl p-1.5 w-fit shadow-2xl">
+            {[
+              { id: 'videos', label: 'Catálogo', icon: Film, count: totalVideos },
+              { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
+              { id: 'stripe', label: 'Planos', icon: Settings, count: null },
+            ].map(tab => (
+              <Link key={tab.id} href={`/admin?tab=${tab.id}`}
+                className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                style={activeTab === tab.id ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' } : {}}>
+                <tab.icon size={15} />
+                {tab.label}
+                {tab.count !== null && (
+                  <span className={`text-[0.65rem] px-2 py-0.5 rounded-full font-black ml-1 ${activeTab === tab.id ? 'bg-black/20 text-black' : 'bg-white/10 text-white/70'}`}>
+                    {tab.count}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
         </div>
 
-        {/* Stats — 4 cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        {/* Stats — 4 cards premium */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
           {[
-            { label: 'Total de Vídeos', value: totalVideos, icon: Film, color: '#00a8e1' },
-            { label: 'Vídeos Ativos', value: videosAtivos, icon: Eye, color: '#4caf82' },
-            { label: 'Assinantes Ativos', value: membrosAtivos, icon: UserCheck, color: '#D4AF37' },
-            { label: 'Total de Membros', value: totalMembros, icon: Users, color: '#8b5cf6' },
+            { label: 'Total de Vídeos', value: totalVideos, icon: Film, color: 'from-[#00a8e1] to-[#007ba6]' },
+            { label: 'Vídeos Ativos', value: videosAtivos, icon: Eye, color: 'from-[#10b981] to-[#047857]' },
+            { label: 'Assinantes Ativos', value: membrosAtivos, icon: UserCheck, color: 'from-[#FFD700] to-[#D4AF37]', darkText: true },
+            { label: 'Total de Cadastros', value: totalMembros, icon: Users, color: 'from-[#8b5cf6] to-[#6d28d9]' },
           ].map(s => (
-            <div key={s.label} className="bg-[#1a2733] border border-[#1e3040] rounded-xl p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: s.color + '20' }}>
-                <s.icon size={18} style={{ color: s.color }} />
-              </div>
-              <div>
-                <div className="text-white text-2xl font-black leading-none">{s.value}</div>
-                <div className="text-[#8197a4] text-[0.62rem] mt-0.5 leading-tight">{s.label}</div>
+            <div key={s.label} className="relative overflow-hidden bg-[#111827] border border-white/5 rounded-3xl p-6 group hover:border-white/10 transition-colors shadow-xl">
+              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${s.color} opacity-5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110`} />
+              
+              <div className="flex items-start justify-between relative z-10">
+                <div>
+                  <div className="text-white/50 text-[0.7rem] uppercase tracking-widest font-bold mb-2">{s.label}</div>
+                  <div className="text-white text-4xl font-black tracking-tighter">{s.value}</div>
+                </div>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg transform -rotate-3 group-hover:rotate-0 transition-all`}>
+                  <s.icon size={20} className={s.darkText ? 'text-black' : 'text-white'} />
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-1 mb-8 bg-[#1a2733] border border-[#1e3040] rounded-xl p-1.5 w-fit">
-          {[
-            { id: 'videos', label: 'Vídeos', icon: Video, count: totalVideos },
-            { id: 'usuarios', label: 'Usuários', icon: Users, count: totalMembros },
-            { id: 'stripe', label: 'Gerenciador de Planos', icon: Settings, count: null },
-
-          ].map(tab => (
-            <Link key={tab.id} href={`/admin?tab=${tab.id}`}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id ? 'text-white' : 'text-[#8197a4] hover:text-white'}`}
-              style={activeTab === tab.id ? { background: '#00a8e1', color: 'white' } : {}}>
-              <tab.icon size={14} />
-              {tab.label}
-              {tab.count !== null && (
-                <span className="text-[0.6rem] px-1.5 py-0.5 rounded-full font-black"
-                  style={{ background: activeTab === tab.id ? 'rgba(255,255,255,0.2)' : 'rgba(0,168,225,0.15)', color: activeTab === tab.id ? 'white' : '#00a8e1' }}>
-                  {tab.count}
-                </span>
-              )}
-            </Link>
           ))}
         </div>
 
         {/* ══════════ ABA VÍDEOS ══════════ */}
         {activeTab === 'videos' && (
-          <div>
+          <div className="space-y-10">
             {/* Formulário adicionar */}
-            <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-5 md:p-8 mb-8">
-              <div className="flex items-center gap-2 mb-6">
-                <Plus size={18} className="text-[#00a8e1]" />
-                <h2 className="text-white text-lg font-bold">Adicionar Novo Vídeo</h2>
+            <div className="bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
+               
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
+                   <Plus size={20} className="text-[#D4AF37]" />
+                </div>
+                <div>
+                  <h2 className="text-white text-xl font-extrabold tracking-tight">Novo Vídeo</h2>
+                  <p className="text-white/40 text-xs">Adicione conteúdo ao catálogo da plataforma.</p>
+                </div>
               </div>
+
               <form action={adicionarVideo}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                  <div className="md:col-span-8">
                     <label className={labelCls}>Título *</label>
                     <input name="titulo" required placeholder="Ex: A Oração que Move Montanhas" className={inputCls} />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className={labelCls}>Descrição</label>
-                    <textarea name="descricao" rows={2} placeholder="Descreva o vídeo..." className={inputCls} style={{ resize: 'vertical' }} />
-                  </div>
-                  <div>
+                  <div className="md:col-span-4">
                     <label className={labelCls}>Categoria</label>
                     <select name="categoria" className={inputCls + ' cursor-pointer appearance-none'}>
                       {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
-                  <div>
-                    <label className={labelCls}>Duração (ex: 12:34)</label>
-                    <input name="duracao" placeholder="00:00" className={inputCls} />
+                  <div className="md:col-span-12">
+                    <label className={labelCls}>Descrição</label>
+                    <textarea name="descricao" rows={2} placeholder="Descreva sobre o que é o vídeo..." className={inputCls} style={{ resize: 'vertical' }} />
                   </div>
-                  <div>
-                    <label className={labelCls}>Video ID do Bunny.net *</label>
-                    <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className={inputCls + ' font-mono'} />
-                    <p className="text-[#4a6373] text-[0.65rem] mt-1.5">Bunny.net → clique no vídeo → &quot;Copy Video ID&quot;</p>
+                  <div className="md:col-span-4">
+                    <label className={labelCls}>Video ID (Bunny.net) *</label>
+                    <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx" className={inputCls + ' font-mono text-white/70'} />
                   </div>
-                  <div>
-                    <label className={labelCls}>URL da Thumbnail</label>
+                  <div className="md:col-span-5">
+                    <label className={labelCls}>URL da Thumbnail (Opcional)</label>
                     <input name="thumbnail_url" placeholder="https://..." className={inputCls} />
-                    <p className="text-[#4a6373] text-[0.65rem] mt-1.5">Deixar vazio = imagem automática</p>
+                  </div>
+                  <div className="md:col-span-3">
+                    <label className={labelCls}>Duração</label>
+                    <input name="duracao" placeholder="Ex: 12:34" className={inputCls} />
                   </div>
                 </div>
-                <div className="mt-6">
+                <div className="mt-8 flex justify-end">
                   <button type="submit"
-                    className="flex items-center gap-2 text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg"
-                    style={{ background: '#00a8e1' }}>
-                    <Plus size={16} /> Adicionar Vídeo
+                    className="flex items-center gap-2 text-black px-8 py-3.5 rounded-xl font-black text-sm transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_20px_rgba(212,175,55,0.3)]"
+                    style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' }}>
+                    <Plus size={18} strokeWidth={3} /> Publicar Vídeo
                   </button>
                 </div>
               </form>
             </div>
 
-            {/* Lista de vídeos */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-white text-lg font-bold">Catálogo ({totalVideos})</h2>
-            </div>
+            <hr className="border-white/5" />
 
-            {!videos || videos.length === 0 ? (
-              <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-12 text-center">
-                <Video size={48} className="text-[#4a6373] mx-auto mb-4" />
-                <p className="text-[#8197a4]">Nenhum vídeo cadastrado ainda.</p>
+            {/* Lista de vídeos (Grid Cards) */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-white text-2xl font-black tracking-tight">Acervo de Vídeos</h2>
               </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {(videos as VideoType[]).map(video => (
-                  <div key={video.id}>
-                    {/* Card do vídeo */}
-                    <div className={`bg-[#1a2733] border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4 transition-all ${video.ativo ? 'border-[#1e3040]' : 'border-red-500/20 opacity-60'} ${editId === video.id ? 'rounded-b-none border-b-0' : ''}`}>
-                      {/* Thumbnail */}
-                      <div className="w-full sm:w-28 aspect-video rounded-xl shrink-0 bg-[#0f171e] border border-[#1e3040] bg-cover bg-center"
-                        style={{ backgroundImage: `url(${video.thumbnail_url || getFallback(video.id)})` }} />
 
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-white font-bold text-sm truncate mb-2">{video.titulo}</div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="text-[#00a8e1] text-[0.62rem] bg-[#00a8e1]/10 border border-[#00a8e1]/20 px-2 py-0.5 rounded font-semibold uppercase tracking-wider">{video.categoria}</span>
-                          {video.duracao && <span className="text-[#8197a4] text-[0.62rem]">⏱ {video.duracao}</span>}
-                          <span className="text-[#4a6373] text-[0.62rem]">{new Date(video.criado_em).toLocaleDateString('pt-BR')}</span>
-                          {!video.ativo && <span className="text-red-400 text-[0.62rem] font-bold uppercase">● Oculto</span>}
-                        </div>
-                      </div>
-
-                      {/* Ações */}
-                      <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                        <Link href={`/watch/${video.id}`} target="_blank"
-                          className="flex items-center gap-1.5 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors border border-[#1e3040] bg-white/5 hover:bg-white/10">
-                          <ExternalLink size={12} /> Ver
-                        </Link>
-
-                        <Link href={editId === video.id ? '/admin?tab=videos' : `/admin?tab=videos&edit=${video.id}`}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors border"
-                          style={editId === video.id
-                            ? { color: '#D4AF37', borderColor: 'rgba(212,175,55,0.3)', background: 'rgba(212,175,55,0.08)' }
-                            : { color: '#8197a4', borderColor: '#1e3040' }}>
-                          {editId === video.id ? <><X size={12} /> Fechar</> : <><Edit3 size={12} /> Editar</>}
-                        </Link>
-
-                        <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)}>
-                          <button type="submit"
-                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-colors border ${video.ativo ? 'text-[#8197a4] border-[#1e3040] hover:bg-white/5' : 'text-[#4caf82] border-[#4caf82]/20 hover:bg-[#4caf82]/10'}`}>
-                            {video.ativo ? <><EyeOff size={12} /> Ocultar</> : <><Eye size={12} /> Publicar</>}
-                          </button>
-                        </form>
-
-                        <form action={deletarVideo.bind(null, video.id)}>
-                          <button type="submit"
-                            className="flex items-center gap-1.5 bg-red-500/5 hover:bg-red-500/15 text-red-400 px-3 py-2 rounded-lg text-xs font-semibold transition-colors border border-red-500/10">
-                            <Trash2 size={12} /> Deletar
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-
-                    {/* Formulário de edição inline */}
-                    {editId === video.id && editingVideo && (
-                      <div className="bg-[#111d27] border border-[#1e3040] border-t-0 rounded-b-2xl p-5 md:p-8"
-                        style={{ borderTop: '1px solid rgba(212,175,55,0.15)' }}>
-                        <div className="flex items-center gap-2 mb-5">
-                          <Edit3 size={16} style={{ color: '#D4AF37' }} />
-                          <span className="text-white font-bold text-sm">Editando: {editingVideo.titulo}</span>
-                        </div>
-                        <form action={editarVideo.bind(null, video.id)}>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="md:col-span-2">
-                              <label className={labelCls}>Título *</label>
+              {!videos || videos.length === 0 ? (
+                <div className="bg-[#111827] border border-white/5 rounded-3xl p-16 text-center">
+                  <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Video size={32} className="text-white/30" />
+                  </div>
+                  <p className="text-white/60 font-medium">O catálogo está vazio.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {(videos as VideoType[]).map(video => (
+                    <div key={video.id} className="group relative flex flex-col">
+                      
+                      {/* Formulário de edição por cima do card caso esteja editando */}
+                      {editId === video.id && editingVideo ? (
+                        <div className="bg-[#111827] border-2 border-[#D4AF37] rounded-3xl p-6 shadow-[0_0_30px_rgba(212,175,55,0.15)] z-20">
+                          <div className="flex items-center justify-between mb-5 border-b border-white/10 pb-4">
+                             <div className="flex items-center gap-2">
+                                <Edit3 size={18} className="text-[#D4AF37]" />
+                                <span className="text-white font-black">Editar Vídeo</span>
+                             </div>
+                             <Link href="/admin?tab=videos" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
+                          </div>
+                          
+                          <form action={editarVideo.bind(null, video.id)} className="space-y-4">
+                            <div>
+                              <label className={labelCls}>Título</label>
                               <input name="titulo" required defaultValue={editingVideo.titulo} className={inputCls} />
                             </div>
-                            <div className="md:col-span-2">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className={labelCls}>Categoria</label>
+                                <select name="categoria" defaultValue={editingVideo.categoria} className={inputCls}>
+                                  {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                              </div>
+                              <div>
+                                <label className={labelCls}>Duração</label>
+                                <input name="duracao" defaultValue={editingVideo.duracao || ''} className={inputCls} />
+                              </div>
+                            </div>
+                            <div>
                               <label className={labelCls}>Descrição</label>
-                              <textarea name="descricao" rows={2} defaultValue={editingVideo.descricao || ''} className={inputCls} style={{ resize: 'vertical' }} />
+                              <textarea name="descricao" rows={2} defaultValue={editingVideo.descricao || ''} className={inputCls} />
                             </div>
                             <div>
-                              <label className={labelCls}>Categoria</label>
-                              <select name="categoria" defaultValue={editingVideo.categoria} className={inputCls + ' cursor-pointer appearance-none'}>
-                                {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
-                              </select>
+                              <label className={labelCls}>Thumbnail</label>
+                              <input name="thumbnail_url" defaultValue={editingVideo.thumbnail_url || ''} className={inputCls} />
                             </div>
-                            <div>
-                              <label className={labelCls}>Duração</label>
-                              <input name="duracao" defaultValue={editingVideo.duracao || ''} placeholder="00:00" className={inputCls} />
-                            </div>
-                            <div className="md:col-span-2">
-                              <label className={labelCls}>URL da Thumbnail</label>
-                              <input name="thumbnail_url" defaultValue={editingVideo.thumbnail_url || ''} placeholder="https://..." className={inputCls} />
-                            </div>
-                          </div>
-                          <div className="flex gap-3 mt-5">
-                            <button type="submit"
-                              className="flex items-center gap-2 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg"
-                              style={{ background: '#D4AF37', color: '#090B10' }}>
-                              <Edit3 size={14} /> Salvar Alterações
+                            <button type="submit" className="w-full mt-2 bg-[#D4AF37] text-black font-black py-3 rounded-xl hover:brightness-110">
+                              Salvar
                             </button>
-                            <Link href="/admin?tab=videos"
-                              className="flex items-center gap-2 text-[#8197a4] hover:text-white px-5 py-3 rounded-xl font-bold text-sm border border-[#1e3040] transition-colors">
-                              <X size={14} /> Cancelar
-                            </Link>
+                          </form>
+                        </div>
+                      ) : (
+                        
+                        /* CARD DE VÍDEO NORMAL */
+                        <div className={`h-full flex flex-col bg-[#111827] border rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-lg group-hover:shadow-xl ${video.ativo ? 'border-white/5 hover:border-white/20' : 'border-red-500/20 opacity-75'}`}>
+                          {/* Thumbnail Header */}
+                          <div className="relative aspect-video w-full bg-[#090B10] border-b border-white/5 group-hover:border-white/10 transition-colors">
+                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
+                               style={{ backgroundImage: `url(${video.thumbnail_url || getFallback(video.id)})` }} />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
+                            
+                            {/* Badges Overlay */}
+                            <div className="absolute top-3 left-3 flex gap-2">
+                               <span className="bg-black/60 backdrop-blur-md text-white text-[0.65rem] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg border border-white/10">
+                                 {video.categoria}
+                               </span>
+                            </div>
+                            {video.duracao && (
+                               <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-md text-white/90 text-[0.65rem] font-bold px-2 py-1 rounded-lg border border-white/10">
+                                 <Clock size={10} /> {video.duracao}
+                               </div>
+                            )}
+                            {!video.ativo && (
+                               <div className="absolute top-3 right-3 bg-red-500 text-white text-[0.65rem] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-lg">
+                                 Oculto
+                               </div>
+                            )}
                           </div>
-                        </form>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+
+                          {/* Card Body */}
+                          <div className="p-5 flex flex-col flex-grow">
+                            <h3 className="text-white font-extrabold text-lg leading-tight mb-2 line-clamp-2">{video.titulo}</h3>
+                            <div className="text-white/40 text-xs font-medium mb-5">Adicionado em {new Date(video.criado_em).toLocaleDateString('pt-BR')}</div>
+                            
+                            {/* Botões Bottom */}
+                            <div className="mt-auto grid grid-cols-4 gap-2 pt-4 border-t border-white/5">
+                               <Link href={`/watch/${video.id}`} target="_blank" className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl py-2.5 transition-colors" title="Ver no site">
+                                 <ExternalLink size={16} />
+                               </Link>
+                               <Link href={`/admin?tab=videos&edit=${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-[#D4AF37]/20 text-[#D4AF37] rounded-xl py-2.5 transition-colors" title="Editar">
+                                 <Edit3 size={16} />
+                               </Link>
+                               <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)} className="col-span-1">
+                                 <button type="submit" className={`w-full flex items-center justify-center rounded-xl py-2.5 transition-colors ${video.ativo ? 'bg-white/5 hover:bg-white/10 text-white/70' : 'bg-[#10b981]/10 hover:bg-[#10b981]/20 text-[#10b981]'}`} title={video.ativo ? 'Ocultar' : 'Publicar'}>
+                                   {video.ativo ? <EyeOff size={16} /> : <Eye size={16} />}
+                                 </button>
+                               </form>
+                               <form action={deletarVideo.bind(null, video.id)} className="col-span-1">
+                                 <button type="submit" className="w-full flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl py-2.5 transition-colors" title="Deletar">
+                                   <Trash2 size={16} />
+                                 </button>
+                               </form>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         {/* ══════════ ABA USUÁRIOS ══════════ */}
         {activeTab === 'usuarios' && (
-          <div>
-            <div className="flex items-center justify-between mb-5">
+          <div className="space-y-6">
+            <div className="flex items-end justify-between">
               <div>
-                <h2 className="text-white text-lg font-bold">Assinantes ({totalMembros})</h2>
-                <p className="text-[#8197a4] text-xs mt-0.5">{membrosAtivos} ativos · {totalMembros - membrosAtivos} bloqueados</p>
+                <h2 className="text-white text-2xl font-black tracking-tight">Gestão de Assinantes</h2>
+                <p className="text-white/50 text-sm mt-1">{membrosAtivos} usuários com plano ativo no momento.</p>
               </div>
             </div>
 
             {usuarios.length === 0 ? (
-              <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl p-12 text-center">
-                <Users size={48} className="text-[#4a6373] mx-auto mb-4" />
-                <p className="text-[#8197a4]">Nenhum assinante encontrado.</p>
+              <div className="bg-[#111827] border border-white/5 rounded-3xl p-16 text-center">
+                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Users size={32} className="text-white/30" />
+                </div>
+                <p className="text-white/60 font-medium">Nenhum assinante encontrado.</p>
               </div>
             ) : (
-              <div className="bg-[#1a2733] border border-[#1e3040] rounded-2xl overflow-hidden">
+              <div className="bg-[#111827] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
                 {/* Header da tabela */}
-                <div className="grid grid-cols-12 gap-4 px-5 py-3 border-b border-[#1e3040]"
-                  style={{ background: 'rgba(0,0,0,0.2)' }}>
-                  <div className="col-span-5 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold">Membro</div>
-                  <div className="col-span-3 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold hidden md:block">Cadastro</div>
-                  <div className="col-span-2 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold">Status</div>
-                  <div className="col-span-2 text-[#8197a4] text-[0.65rem] uppercase tracking-widest font-semibold text-right">Ação</div>
+                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#090B10]/50">
+                  <div className="col-span-6 md:col-span-5 text-white/40 text-xs uppercase tracking-widest font-bold">Assinante</div>
+                  <div className="col-span-3 text-white/40 text-xs uppercase tracking-widest font-bold hidden md:block">Data de Ingresso</div>
+                  <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold">Status</div>
+                  <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold text-right">Controle</div>
                 </div>
 
                 {/* Linhas */}
-                {usuarios.map((u, i) => (
-                  <div key={u.id}
-                    className={`grid grid-cols-12 gap-4 px-5 py-4 items-center transition-colors hover:bg-white/[0.02] ${i !== usuarios.length - 1 ? 'border-b border-[#1e3040]' : ''}`}>
-                    {/* Info do usuário */}
-                    <div className="col-span-5 flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-sm font-black"
-                        style={{ background: u.plano_ativo ? 'rgba(212,175,55,0.15)' : 'rgba(148,163,184,0.1)', color: u.plano_ativo ? '#D4AF37' : '#8197a4' }}>
-                        {(u.nome !== '—' ? u.nome : u.email).charAt(0).toUpperCase()}
+                <div className="divide-y divide-white/5">
+                  {usuarios.map((u) => (
+                    <div key={u.id} className="grid grid-cols-12 gap-4 px-8 py-5 items-center transition-colors hover:bg-white/[0.02]">
+                      
+                      {/* Info do usuário */}
+                      <div className="col-span-6 md:col-span-5 flex items-center gap-4 min-w-0">
+                        <div className={`w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center text-lg font-black shadow-inner border ${u.plano_ativo ? 'bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/20' : 'bg-white/5 text-white/30 border-white/5'}`}>
+                          {(u.nome !== '—' ? u.nome : u.email).charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-white text-[0.95rem] font-bold truncate">{u.nome !== '—' ? u.nome : '—'}</div>
+                          <div className="text-white/40 text-xs truncate mt-0.5">{u.email}</div>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-white text-sm font-semibold truncate">{u.nome !== '—' ? u.nome : '—'}</div>
-                        <div className="text-[#8197a4] text-[0.65rem] truncate">{u.email}</div>
+
+                      {/* Data */}
+                      <div className="col-span-3 text-white/50 text-sm font-medium hidden md:block">
+                        {new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </div>
+
+                      {/* Status badge */}
+                      <div className="col-span-3 md:col-span-2">
+                        <span className={`inline-flex items-center gap-1.5 text-[0.65rem] px-3 py-1.5 rounded-xl font-bold uppercase tracking-widest border ${u.plano_ativo ? 'text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20' : 'text-red-400 bg-red-500/10 border-red-500/20'}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${u.plano_ativo ? 'bg-[#10b981]' : 'bg-red-400'}`} />
+                          {u.plano_ativo ? 'Ativo' : 'Bloqueado'}
+                        </span>
+                      </div>
+
+                      {/* Botão ação */}
+                      <div className="col-span-3 md:col-span-2 flex justify-end">
+                        <form action={togglePlanoUsuario.bind(null, u.id, u.plano_ativo)}>
+                          <button type="submit"
+                            className={`text-xs px-5 py-2.5 rounded-xl font-bold transition-all border shadow-sm hover:-translate-y-0.5 ${u.plano_ativo ? 'text-red-400 border-red-500/20 bg-red-500/5 hover:bg-red-500/10' : 'text-black border-transparent bg-[#D4AF37] hover:brightness-110'}`}>
+                            {u.plano_ativo ? 'Suspender' : 'Liberar Acesso'}
+                          </button>
+                        </form>
                       </div>
                     </div>
-
-                    {/* Data */}
-                    <div className="col-span-3 text-[#8197a4] text-xs hidden md:block">
-                      {new Date(u.criado_em).toLocaleDateString('pt-BR')}
-                    </div>
-
-                    {/* Status badge */}
-                    <div className="col-span-2">
-                      <span className={`text-[0.62rem] px-2.5 py-1 rounded-full font-bold uppercase tracking-wide ${u.plano_ativo ? 'text-[#4caf82] bg-[#4caf82]/10 border border-[#4caf82]/20' : 'text-red-400 bg-red-500/10 border border-red-500/20'}`}>
-                        {u.plano_ativo ? '● Ativo' : '● Bloqueado'}
-                      </span>
-                    </div>
-
-                    {/* Botão ação */}
-                    <div className="col-span-2 flex justify-end">
-                      <form action={togglePlanoUsuario.bind(null, u.id, u.plano_ativo)}>
-                        <button type="submit"
-                          className={`text-[0.65rem] px-3 py-1.5 rounded-lg font-bold transition-colors border ${u.plano_ativo ? 'text-red-400 border-red-500/20 hover:bg-red-500/10' : 'text-[#4caf82] border-[#4caf82]/20 hover:bg-[#4caf82]/10'}`}>
-                          {u.plano_ativo ? 'Bloquear' : 'Ativar'}
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -414,7 +436,6 @@ export default async function AdminPage({
         {activeTab === 'stripe' && (
           <StripeAdmin />
         )}
-
 
       </main>
     </div>
