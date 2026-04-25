@@ -13,8 +13,11 @@ export default function AssinarPage() {
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [confirmarSenha, setConfirmarSenha] = useState('')
   const [planoSelecionado, setPlanoSelecionado] = useState<string>('')
-  const [erros, setErros] = useState<{ nome?: string; email?: string; senha?: string }>({})
+  const [erros, setErros] = useState<{ nome?: string; email?: string; senha?: string; confirmarSenha?: string }>({})
+  const [mostrarSenha, setMostrarSenha] = useState(false)
+  const [mostrarConfirmar, setMostrarConfirmar] = useState(false)
 
   // Estados para carregamento dinâmico
   const [planos, setPlanos] = useState<any[]>([])
@@ -42,7 +45,7 @@ export default function AssinarPage() {
   }, [])
 
   function validarStep1() {
-    const novosErros: { nome?: string; email?: string; senha?: string } = {}
+    const novosErros: { nome?: string; email?: string; senha?: string; confirmarSenha?: string } = {}
     if (!nome.trim() || nome.trim().split(' ').length < 2) {
       novosErros.nome = 'Digite seu nome completo (nome e sobrenome)'
     }
@@ -51,6 +54,9 @@ export default function AssinarPage() {
     }
     if (!senha || senha.length < 6) {
       novosErros.senha = 'A senha deve ter no mínimo 6 caracteres'
+    }
+    if (!confirmarSenha || confirmarSenha !== senha) {
+      novosErros.confirmarSenha = 'As senhas não coincidem'
     }
     setErros(novosErros)
     return Object.keys(novosErros).length === 0
@@ -81,11 +87,11 @@ export default function AssinarPage() {
       if (data.url) {
         window.location.href = data.url
       } else {
-        alert(data.error || 'Erro ao criar sessão de pagamento.')
+        alert(data.error || 'Erro ao criar sessão de pagamento. Verifique se os planos estão configurados corretamente no Stripe.')
         setLoadingCheckout(false)
       }
     } catch (e) {
-      alert('Erro de conexão ao criar checkout.')
+      alert('Erro de conexão ao criar checkout. Tente novamente.')
       setLoadingCheckout(false)
     }
   }
@@ -196,20 +202,75 @@ export default function AssinarPage() {
                 <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold block mb-1.5">
                   Crie uma senha de acesso
                 </label>
-                <input
-                  type="password"
-                  value={senha}
-                  onChange={e => { setSenha(e.target.value); setErros(p => ({ ...p, senha: undefined })) }}
-                  placeholder="Mínimo de 6 caracteres"
-                  className="w-full px-4 py-3.5 rounded-xl text-white text-sm outline-none transition-all"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: `1px solid ${erros.senha ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
-                    fontFamily: 'Outfit, sans-serif'
-                  }}
-                  onKeyDown={e => e.key === 'Enter' && irParaStep2()}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={mostrarSenha ? 'text' : 'password'}
+                    value={senha}
+                    onChange={e => { setSenha(e.target.value); setErros(p => ({ ...p, senha: undefined, confirmarSenha: undefined })) }}
+                    placeholder="Mínimo de 6 caracteres"
+                    className="w-full px-4 py-3.5 pr-12 rounded-xl text-white text-sm outline-none transition-all"
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: `1px solid ${erros.senha ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      fontFamily: 'Outfit, sans-serif'
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && irParaStep2()}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarSenha(!mostrarSenha)}
+                    style={{
+                      position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'rgba(255,255,255,0.35)', padding: '4px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)' }}
+                  >
+                    {mostrarSenha ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
                 {erros.senha && <p className="text-red-400 text-xs mt-1.5">{erros.senha}</p>}
+              </div>
+
+              {/* Confirmar Senha */}
+              <div>
+                <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold block mb-1.5">
+                  Confirme sua senha
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={mostrarConfirmar ? 'text' : 'password'}
+                    value={confirmarSenha}
+                    onChange={e => { setConfirmarSenha(e.target.value); setErros(p => ({ ...p, confirmarSenha: undefined })) }}
+                    placeholder="Digite a senha novamente"
+                    className="w-full px-4 py-3.5 pr-12 rounded-xl text-white text-sm outline-none transition-all"
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: `1px solid ${erros.confirmarSenha ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      fontFamily: 'Outfit, sans-serif'
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && irParaStep2()}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarConfirmar(!mostrarConfirmar)}
+                    style={{
+                      position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'rgba(255,255,255,0.35)', padding: '4px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)' }}
+                  >
+                    {mostrarConfirmar ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
+                {erros.confirmarSenha && <p className="text-red-400 text-xs mt-1.5">{erros.confirmarSenha}</p>}
                 <p className="text-white/25 text-xs mt-1.5">
                   🔒 Você usará esta senha para entrar na plataforma
                 </p>
@@ -279,22 +340,53 @@ export default function AssinarPage() {
               ))}
             </div>
 
-            {/* Benefícios */}
+            {/* Benefícios Dinâmicos */}
             <div className="rounded-2xl p-5 mb-6"
               style={{ background: 'rgba(21,36,62,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">O que está incluído</p>
-              {[
-                [<Play size={14} />, 'Acesso a todo o conteúdo de Contos de Oração'],
-                [<Heart size={14} />, 'Salve seus favoritos e continue de onde parou'],
-                [<Download size={14} />, 'Assista em qualquer dispositivo'],
-                [<Shield size={14} />, 'Cancele quando quiser, sem taxas'],
-              ].map(([icon, text], i) => (
-                <div key={i} className="flex items-center gap-3 py-2"
-                  style={{ borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                  <span style={{ color: '#D4AF37' }}>{icon as React.ReactNode}</span>
-                  <span className="text-white/70 text-sm">{text as string}</span>
+              <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">
+                {planoDetalhe ? `Benefícios do plano ${planoDetalhe.produto.nome}` : 'O que está incluído'}
+              </p>
+              
+              {planoDetalhe && planoDetalhe.produto.metadata?.beneficios ? (
+                // Benefícios personalizados do plano selecionado
+                planoDetalhe.produto.metadata.beneficios.split(',').map((beneficio: string, i: number) => (
+                  <div key={i} className="flex items-center gap-3 py-2"
+                    style={{ borderBottom: i < planoDetalhe.produto.metadata.beneficios.split(',').length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                    <span style={{ color: '#D4AF37' }}>✓</span>
+                    <span className="text-white/70 text-sm">{beneficio.trim()}</span>
+                  </div>
+                ))
+              ) : (
+                // Benefícios padrão quando não há plano selecionado
+                [
+                  [<Play size={14} />, '📺 Acesso ilimitado a todos os vídeos e orações'],
+                  [<Heart size={14} />, '❤️ Salve seus favoritos e continue de onde parou'],
+                  [<Download size={14} />, '📱 Assista em qualquer dispositivo (computador, celular, tablet)'],
+                  [<Shield size={14} />, '🚀 Em breve: App exclusivo para iOS e Android'],
+                  [<Shield size={14} />, '🎥 Vídeos em Full HD (1080p)'],
+                  [<Shield size={14} />, '⭐ Suporte prioritário 24/7'],
+                ].map(([icon, text], i) => (
+                  <div key={i} className="flex items-center gap-3 py-2"
+                    style={{ borderBottom: i < 5 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                    <span style={{ color: '#D4AF37' }}>{text.toString().split(' ')[0]}</span>
+                    <span className="text-white/70 text-sm">{text.toString().substring(text.toString().indexOf(' ') + 1)}</span>
+                  </div>
+                ))
+              )}
+              
+              {planoDetalhe && (
+                <div className="mt-4 pt-3 border-t border-white/10">
+                  <div className="flex items-center gap-2">
+                    <Shield size={16} style={{ color: '#D4AF37' }} />
+                    <span className="text-white/50 text-xs">
+                      {planoDetalhe.intervalo === 'year' 
+                        ? '💰 Economia: 12 meses pelo preço de 10!' 
+                        : '🔄 Cancele quando quiser, sem multa'
+                      }
+                    </span>
+                  </div>
                 </div>
-              ))}
+              )}
             </div>
 
             <button onClick={irParaStep3}
