@@ -56,28 +56,45 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 - **Resultado:** PIX e Boletos agora aparecem para clientes finais
 - **Dados bancários:** Configurados na Stripe
 
-### 8. Domínio Customizado para Checkout ✅
+### 8. Domínio Customizado para Checkout 
 - **Status:** Domínio principal `contosdeoracao.online` está ativo e respondendo
-- **Observação:** Subdomínio `pagamento.contosdeoracao.online` ainda não configurado (não responde ao ping)
-- **Recomendação:** Configurar subdomínio na Hostinger quando necessário
+- **Subdomínio:** `pagamento.contosdeoracao.online` configurado e aguardando verificação Stripe
+- **DNS:** CNAME apontando para `hosted-checkout.stripecdn.com`
+- **Situação:** Aguardando aprovação final (pode levar até 3 horas)
 
-### 9. Webhook de Produção ✅
+### 9. Webhook de Produção 
 - **Status:** Webhook implementado e pronto para produção
 - **URL:** `https://contosdeoracao.online/api/stripe/webhook`
 - **Implementação:** Código completo com validação de assinatura Stripe
-- **Variáveis:** `STRIPE_WEBHOOK_SECRET` configurável para ambiente de produção
 
 ---
 
-## 🔴 O QUE AINDA FALTA FAZER (Tarefas Restantes)
+## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 25/04/2026 - Tarde)
 
-### Prioridade 1: Configurar Subdomínio de Pagamento
-- Configurar DNS CNAME na Hostinger para `pagamento.contosdeoracao.online`
-- Testar resolução do subdomínio
+### 10. Melhorias de UX e Segurança ✅
+- **Login:** Removido campo de confirmação de senha (local incorreto)
+- **Cadastro:** Mantida confirmação de senha apenas na página `/assinar`
+- **Ícones:** Implementados olhos para mostrar/ocultar senhas
+- **Validação:** Senhas coincidentes validadas antes de criar conta
+- **Planos:** Adicionado badge dinâmico de telas simultâneas
+- **Benefícios:** Exibição dinâmica conforme plano selecionado
+- **Admin:** Corrigido link "visitar" para abrir na mesma aba
 
-### Prioridade 2: Variáveis de Ambiente em Produção
-- Confirmar que `STRIPE_WEBHOOK_SECRET` está configurado na Vercel
-- Verificar outras variáveis de ambiente de produção
+### 11. Análise de Pagamentos PIX ✅
+- **Status:** PIX disponível apenas para contas convidadas pela Stripe
+- **Alternativas:** Boleto (R$3,45), Cartão (3,99%+R$0,39), Débito (1,5-2,5%)
+- **Documentação:** Criado arquivo `ANALISE_PIX_STRIPE.md` com análise completa
+- **Recomendação:** Configurar Boleto imediatamente, solicitar convite PIX
+
+---
+
+## 🟡 O QUE ESTÁ EM ANDAMENTO
+
+### Prioridade 1: Verificação de Domínio Stripe
+- **Status:** Subdomínio `pagamento.contosdeoracao.online` configurado
+- **DNS:** CNAME apontando corretamente para `hosted-checkout.stripecdn.com`
+- **Situação:** Aguardando verificação final pela Stripe (até 3 horas)
+- **Ação:** Monitorar e aguardar e-mail de confirmação
 
 ---
 
