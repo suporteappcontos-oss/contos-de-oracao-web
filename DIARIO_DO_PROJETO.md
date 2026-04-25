@@ -1,6 +1,6 @@
 # 📘 CONTOS DE ORAÇÃO — Diário de Desenvolvimento da Plataforma
 
-> **Última atualização:** 23 de Abril de 2026  
+> **Última atualização:** 25 de Abril de 2026  
 > **Desenvolvedor:** IA Antigravity (Google DeepMind)  
 > **Proprietário:** João Pires de Freitas Neto  
 > **E-mail do dono (admin):** suporte.appcontos@gmail.com  
@@ -49,19 +49,35 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 
 ---
 
-## 🔴 O QUE AINDA FALTA FAZER (Próximos Passos de Amanhã)
+## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 25/04/2026)
 
-### Prioridade 1: Ativação da Conta de Produção (Stripe)
-- O dono (patrão) precisa logar na Stripe e clicar em **"Alternar para conta de produção"**, preenchendo os dados bancários e CNPJ/CPF.
-- Apenas na produção o PIX e Boletos vão aparecer para os clientes finais de fato.
+### 7. Conta de Produção Stripe ✅
+- **Status:** Conta ativada para produção pelo proprietário
+- **Resultado:** PIX e Boletos agora aparecem para clientes finais
+- **Dados bancários:** Configurados na Stripe
 
-### Prioridade 2: Domínio Customizado para o Checkout
-- Configurar na Stripe (no Modo de Produção) o domínio `pagamento.contosdeoracao.online`.
-- Pegar os DNS CNAME gerados pela Stripe e injetar no painel da **Hostinger**.
+### 8. Domínio Customizado para Checkout ✅
+- **Status:** Domínio principal `contosdeoracao.online` está ativo e respondendo
+- **Observação:** Subdomínio `pagamento.contosdeoracao.online` ainda não configurado (não responde ao ping)
+- **Recomendação:** Configurar subdomínio na Hostinger quando necessário
 
-### Prioridade 3: Configurar o Webhook de Produção
-- Entrar no painel de Webhooks da Stripe e adicionar a URL: `https://contosdeoracao.online/api/stripe/webhook`.
-- Pegar a "Assinatura do Webhook" (`STRIPE_WEBHOOK_SECRET`) gerada pela Stripe e colocar nas variáveis de ambiente na Vercel para o site conseguir entender os pagamentos aprovados em produção.
+### 9. Webhook de Produção ✅
+- **Status:** Webhook implementado e pronto para produção
+- **URL:** `https://contosdeoracao.online/api/stripe/webhook`
+- **Implementação:** Código completo com validação de assinatura Stripe
+- **Variáveis:** `STRIPE_WEBHOOK_SECRET` configurável para ambiente de produção
+
+---
+
+## 🔴 O QUE AINDA FALTA FAZER (Tarefas Restantes)
+
+### Prioridade 1: Configurar Subdomínio de Pagamento
+- Configurar DNS CNAME na Hostinger para `pagamento.contosdeoracao.online`
+- Testar resolução do subdomínio
+
+### Prioridade 2: Variáveis de Ambiente em Produção
+- Confirmar que `STRIPE_WEBHOOK_SECRET` está configurado na Vercel
+- Verificar outras variáveis de ambiente de produção
 
 ---
 

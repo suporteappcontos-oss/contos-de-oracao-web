@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -14,7 +15,7 @@ export default function AssinarPage() {
   const [senha, setSenha] = useState('')
   const [planoSelecionado, setPlanoSelecionado] = useState<string>('')
   const [erros, setErros] = useState<{ nome?: string; email?: string; senha?: string }>({})
-  
+
   // Estados para carregamento dinâmico
   const [planos, setPlanos] = useState<any[]>([])
   const [loadingCheckout, setLoadingCheckout] = useState(false)
@@ -24,7 +25,7 @@ export default function AssinarPage() {
     // Pega o parametro 'plan' da url se existir
     const params = new URLSearchParams(window.location.search)
     const planParam = params.get('plan')
-    
+
     if (planParam) setPlanoSelecionado(planParam)
 
     fetch('/api/stripe/planos-publicos')
@@ -119,13 +120,12 @@ export default function AssinarPage() {
       <div className="relative z-10 flex items-center justify-center pt-8 pb-6 gap-3">
         {[1, 2, 3].map((s) => (
           <div key={s} className="flex items-center gap-3">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-all ${
-              step === s
-                ? 'text-[#090B10] scale-110'
-                : step > s
-                  ? 'text-[#090B10]'
-                  : 'text-white/30 border border-white/15'
-            }`}
+            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-all ${step === s
+              ? 'text-[#090B10] scale-110'
+              : step > s
+                ? 'text-[#090B10]'
+                : 'text-white/30 border border-white/15'
+              }`}
               style={step >= s ? { background: '#D4AF37' } : {}}>
               {step > s ? <Check size={14} /> : s}
             </div>
@@ -239,7 +239,7 @@ export default function AssinarPage() {
 
             <div className="flex flex-col gap-4 mb-6">
               {planos.length === 0 && <p className="text-white/50 text-center">Carregando planos...</p>}
-              
+
               {planos.map(plano => (
                 <button
                   key={plano.id}

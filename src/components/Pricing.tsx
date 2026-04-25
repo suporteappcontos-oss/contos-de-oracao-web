@@ -17,12 +17,15 @@ export default async function Pricing() {
       const beneficios = produto.metadata?.beneficios
         ? produto.metadata.beneficios.split(',').map((b: string) => b.trim())
         : [
-            'Acesso ilimitado ao catálogo',
-            'Resolução Full HD',
-            'Suporte prioritário',
+            '📺 Acesso ilimitado a todos os vídeos e orações',
+            '📱 Assista em qualquer dispositivo (computador, celular, tablet)',
+            '🚀 Em breve: App exclusivo para iOS e Android',
+            '🎥 Vídeos em Full HD (1080p)',
+            '⭐ Suporte prioritário 24/7',
+            '📥 Downloads para assistir offline (em breve no app)',
             isAnual
-              ? `Cobrança única de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-              : 'Cancele quando quiser',
+              ? `💰 Economia: 12 meses pelo preço de 10!`
+              : '🔄 Cancele quando quiser, sem multa',
           ]
 
       const precoDisplay = isAnual
