@@ -331,7 +331,7 @@ export default async function AdminPage({
                             
                             {/* Botões Bottom */}
                             <div className="mt-auto grid grid-cols-4 gap-2 pt-4 border-t border-white/5">
-                               <Link href={`/watch/${video.id}`} target="_blank" className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl py-2.5 transition-colors" title="Ver no site">
+                               <Link href={`/watch/${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl py-2.5 transition-colors" title="Ver no site">
                                  <ExternalLink size={16} />
                                </Link>
                                <Link href={`/admin?tab=videos&edit=${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-[#D4AF37]/20 text-[#D4AF37] rounded-xl py-2.5 transition-colors" title="Editar">
