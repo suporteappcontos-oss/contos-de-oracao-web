@@ -45,14 +45,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </div>
 
           <PasswordField name="password" label="Senha" placeholder="••••••••" />
-          
-          <PasswordField name="confirmPassword" label="Confirmar Senha" placeholder="••••••••" />
 
           {erro && (
             <div className="bg-red-500/10 border border-red-500/25 text-red-300 px-4 py-3 rounded-xl text-sm text-center">
               {erro === 'credenciais_invalidas' ? '❌ E-mail ou senha incorretos.' :
                erro === 'link_invalido' ? '❌ Link expirado. Solicite um novo abaixo.' :
-               erro === 'senhas_diferentes' ? '❌ As senhas não coincidem. Tente novamente.' :
                '❌ Ocorreu um erro. Tente novamente.'}
             </div>
           )}

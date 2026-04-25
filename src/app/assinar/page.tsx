@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2 } from 'lucide-react'
+import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2, Monitor } from 'lucide-react'
 
 type Step = 1 | 2 | 3
 
@@ -321,6 +321,18 @@ export default function AssinarPage() {
                       <div className="text-white font-black text-lg">{plano.produto.nome}</div>
                       <div className="text-white/50 text-sm mt-0.5">
                         {plano.intervalo === 'month' ? 'Cobrado mensalmente' : plano.intervalo === 'year' ? 'Cobrado anualmente' : 'Cobrança personalizada'}
+                      </div>
+                      {/* Badge de telas simultâneas */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <div
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
+                          style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)' }}
+                        >
+                          <Monitor size={13} style={{ color: '#D4AF37' }} />
+                          <span className="text-[0.75rem] font-bold" style={{ color: '#D4AF37' }}>
+                            {(plano.produto.metadata?.max_telas || 1)} tela{(plano.produto.metadata?.max_telas || 1) > 1 ? 's' : ''} simultânea{(plano.produto.metadata?.max_telas || 1) > 1 ? 's' : ''}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="text-right">
