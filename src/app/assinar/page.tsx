@@ -118,13 +118,14 @@ export default function AssinarPage() {
         style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <Link href="/" className="flex items-center gap-3 no-underline">
           <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-contain" />
-          <div>
-            <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
-            <div className="text-[0.5rem] font-extrabold uppercase tracking-widest" style={{ color: '#D4AF37' }}>Premium</div>
-          </div>
+          <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
         </Link>
-        <Link href="/login" className="text-white/40 text-sm hover:text-white transition-colors no-underline">
-          Já tenho conta
+        <Link 
+          href="/login" 
+          className="px-5 py-2 rounded-full font-bold text-xs md:text-sm transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_15px_rgba(212,175,55,0.2)] no-underline"
+          style={{ backgroundColor: '#D4AF37', color: '#090B10' }}
+        >
+          Entrar
         </Link>
       </header>
 

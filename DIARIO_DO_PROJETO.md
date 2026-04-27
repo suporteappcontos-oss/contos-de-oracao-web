@@ -1,6 +1,6 @@
 # 📘 CONTOS DE ORAÇÃO — Diário de Desenvolvimento da Plataforma
 
-> **Última atualização:** 25 de Abril de 2026  
+> **Última atualização:** 27 de Abril de 2026  
 > **Desenvolvedor:** IA Antigravity (Google DeepMind)  
 > **Proprietário:** João Pires de Freitas Neto  
 > **E-mail do dono (admin):** suporte.appcontos@gmail.com  
@@ -107,6 +107,24 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 
 ### Prioridade 1: Testar o fluxo de pagamento final em Produção
 - **Ação:** Fazer uma compra teste (pode gerar um boleto ou pix) direto pelo site para garantir que tudo (webhook, liberação de acesso, redirecionamento) está rodando perfeito no domínio oficial.
+
+---
+
+## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 27/04/2026)
+
+### 13. Checkout Embutido de Alta Conversão (Stripe Embedded Checkout) ✅
+- **Status:** Implementado em Produção.
+- A página `/assinar` não redireciona mais o cliente para uma página em branco da Stripe. Em vez disso, a página inteira da Stripe é carregada de forma invisível e 100% segura DENTRO do site (`ui_mode: 'embedded_page'`). 
+- Resolvido um edge case onde planos de teste/valores pequenos poderiam gerar objetos nulos (PaymentIntent = null). O Embedded Checkout assume toda essa lógica.
+
+### 14. Correção de Planos "Fantasmas" no Site ✅
+- **Status:** Implementado e Sincronizado.
+- A vitrine de preços do site (Página Inicial e Assinar) possuía um problema onde exibia "Preços Ativos" atrelados a "Produtos Arquivados".
+- Foi adicionado um filtro estrito na API (`price.product.active === true`) garantindo que apenas planos 100% ativos na Stripe apareçam para o usuário final.
+
+### 15. Ajuste no Texto de Sucesso do Cadastro ✅
+- **Status:** Ajustado.
+- Como a arquitetura de senha foi mudada (o usuário cria a senha no Passo 1, ANTES de pagar), a página `/sucesso` foi reescrita para remover instruções sobre "clicar no link do email", alertando apenas que ele já pode fazer o Login imediatamente.
 
 ---
 
