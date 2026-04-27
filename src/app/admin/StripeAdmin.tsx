@@ -306,7 +306,7 @@ export function StripeAdmin() {
                 <div key={p.id} className="relative group bg-[#090B10] border border-white/5 rounded-2xl p-6 hover:border-white/20 transition-all">
                   
                   {editandoId === p.id ? (
-                    <div className="bg-[#111827] z-20 rounded-2xl border-2 border-[#D4AF37] p-6 shadow-2xl">
+                    <div className="absolute inset-0 bg-[#111827] z-20 rounded-2xl border-2 border-[#D4AF37] p-6 shadow-2xl overflow-y-auto">
                       <div className="font-black text-[#D4AF37] text-sm uppercase tracking-wider mb-5 flex items-center justify-between">
                          <div className="flex items-center gap-2"><Edit3 size={16}/> Editar Plano</div>
                          <button onClick={() => setEditandoId(null)} className="text-white/40 hover:text-white p-1"><X size={18}/></button>

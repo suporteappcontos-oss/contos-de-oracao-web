@@ -1,5 +1,3 @@
-export const revalidate = 0;
-
 import { createClient } from '@/utils/supabase/server'
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'

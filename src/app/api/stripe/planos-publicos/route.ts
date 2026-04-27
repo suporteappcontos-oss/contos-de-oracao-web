@@ -6,9 +6,8 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   try {
     const prices = await stripe.prices.list({ active: true, limit: 10, expand: ['data.product'] })
-    const activePrices = prices.data.filter((price) => (price.product as any)?.active)
     
-    const planos = activePrices.map(price => ({
+    const planos = prices.data.map(price => ({
       id: price.id,
       valor: price.unit_amount,
       intervalo: price.recurring?.interval,
