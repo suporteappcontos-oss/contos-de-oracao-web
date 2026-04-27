@@ -100,9 +100,9 @@ export default async function AdminPage({
       <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-16 bg-[#090B10]/80 backdrop-blur-md border-b border-white/5">
         <div className="flex items-center gap-4">
           <Link href="/watch" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] p-[1px]">
-              <div className="w-full h-full bg-[#090B10] rounded-[11px] flex items-center justify-center">
-                 <Image src="/logo.png" alt="Logo" width={20} height={20} className="object-contain" />
+            <div className="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] p-[1px]">
+              <div className="w-full h-full bg-[#090B10] rounded-[11px] flex items-center justify-center p-1.5">
+                 <Image src="/logo.png" alt="Logo" width={40} height={40} className="w-full h-full object-contain" />
               </div>
             </div>
             <div className="hidden sm:block">

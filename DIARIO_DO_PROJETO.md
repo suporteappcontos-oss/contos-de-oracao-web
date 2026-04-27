@@ -91,15 +91,15 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 - **StripeAdmin:** Adicionada uma Textbox "Etiqueta (Badge)" na criação e edição de planos (ex: Premium, Básico, Família).
 - **Backend:** A API (`/api/stripe/produtos`) agora lê e salva a `etiqueta` diretamente no `metadata` do produto na Stripe, permitindo que a aplicação saiba exatamente qual selo mostrar no perfil de cada usuário.
 
-### 12. Captação Inteligente de Leads (Carrinho Abandonado) ✅
+### 12. Captação Inteligente de Leads e E-mail Marketing ✅
 - **Admin Panel:** O status de usuários não pagantes foi alterado de "Bloqueado" para "Lead (Pendente)".
-- **Exportação Rápida:** Criado o botão `CopyLeadsButton` na aba de assinantes para copiar instantaneamente todos os e-mails de usuários inativos. Isso permite colar em ferramentas de e-mail marketing oferecendo cupons e recuperando vendas.
-
-### 11. Análise de Pagamentos PIX ✅
-- **Status:** PIX disponível apenas para contas convidadas pela Stripe
-- **Alternativas:** Boleto (R$3,45), Cartão (3,99%+R$0,39), Débito (1,5-2,5%)
-- **Documentação:** Criado arquivo `ANALISE_PIX_STRIPE.md` com análise completa
-- **Recomendação:** Configurar Boleto imediatamente, solicitar convite PIX
+- **Integração com Resend:** Criada aba para disparar promoções diretamente pelo painel administrativo para todos os leads ao mesmo tempo. A IA substitui a tag `[CUPOM]` na copy pelo código criado na Stripe.
+- **Domínio Hostinger:** O domínio `contosdeoracao.online` (hospedado na Hostinger) está verificado e pronto no Resend. *ATENÇÃO: Ele está sendo usado como domínio inicial/teste.*
+- **⚠️ QUANDO VOCÊ TROCAR DE DOMÍNIO NO FUTURO, VOCÊ DEVE:**
+  1. Adicionar o novo domínio no painel do [Resend](https://resend.com) e autenticar os registros de DNS (TXT, SPF, DKIM) onde quer que ele esteja hospedado.
+  2. Alterar o remetente (`from`) dentro do arquivo `src/app/api/admin/enviar-promocao/route.ts` para usar o novo domínio (ex: `contato@seu-novo-dominio.com.br`).
+  3. Alterar a variável de ambiente `NEXT_PUBLIC_SITE_URL` na Vercel.
+  4. Mudar os Webhooks da Stripe para apontar para o novo site.
 
 ---
 
