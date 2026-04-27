@@ -4,7 +4,13 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2, Monitor } from 'lucide-react'
+import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2, Monitor, Lock } from 'lucide-react'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+import FormularioPagamento from './FormularioPagamento'
+
+// Carrega o Stripe public key
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
 
 type Step = 1 | 2 | 3
 
@@ -22,6 +28,7 @@ export default function AssinarPage() {
   // Estados para carregamento dinâmico
   const [planos, setPlanos] = useState<any[]>([])
   const [loadingCheckout, setLoadingCheckout] = useState(false)
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
 
   // Busca preços reais ativos na montagem
   useEffect(() => {
@@ -73,7 +80,7 @@ export default function AssinarPage() {
   async function finalizarPagamento() {
     setLoadingCheckout(true)
     try {
-      const response = await fetch('/api/stripe/checkout', {
+      const response = await fetch('/api/stripe/assinatura', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -84,14 +91,14 @@ export default function AssinarPage() {
         })
       })
       const data = await response.json()
-      if (data.url) {
-        window.location.href = data.url
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret)
       } else {
-        alert(data.error || 'Erro ao criar sessão de pagamento. Verifique se os planos estão configurados corretamente no Stripe.')
-        setLoadingCheckout(false)
+        alert(data.error || 'Erro ao inicializar plataforma segura.')
       }
     } catch (e) {
-      alert('Erro de conexão ao criar checkout. Tente novamente.')
+      alert('Erro de conexão ao criar assinatura. Tente novamente.')
+    } finally {
       setLoadingCheckout(false)
     }
   }
@@ -421,63 +428,91 @@ export default function AssinarPage() {
             <h1 className="text-white text-2xl font-black mb-1 text-center">Confirmar assinatura</h1>
             <p className="text-white/40 text-sm mb-8 text-center">Revise seus dados antes de pagar</p>
 
-            {/* Resumo */}
-            <div className="rounded-2xl p-6 mb-5"
-              style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(212,175,55,0.2)' }}>
-              <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Resumo do pedido</p>
+            {/* Formulário Embutido da Stripe ou Resumo */}
+            {!clientSecret ? (
+              <>
+                {/* Resumo */}
+                <div className="rounded-2xl p-6 mb-5"
+                  style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(212,175,55,0.2)' }}>
+                  <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Resumo do pedido</p>
 
-              <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span className="text-white/60 text-sm">Nome</span>
-                <span className="text-white font-semibold text-sm capitalize">{nome}</span>
-              </div>
-              <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span className="text-white/60 text-sm">E-mail</span>
-                <span className="text-white font-semibold text-sm">{email}</span>
-              </div>
-              <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span className="text-white/60 text-sm">Plano</span>
-                <span className="font-bold text-sm" style={{ color: '#D4AF37' }}>
-                  {planoDetalhe ? `${planoDetalhe.produto.nome} — R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/${planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}` : 'Carregando...'}
-                </span>
-              </div>
-              <div className="flex justify-between pt-3 mt-1">
-                <span className="text-white font-black text-sm">Total hoje</span>
-                <span className="font-black text-lg" style={{ color: '#D4AF37' }}>
-                  {planoDetalhe ? `R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 0,00'}
-                </span>
-              </div>
-            </div>
+                  <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span className="text-white/60 text-sm">Nome</span>
+                    <span className="text-white font-semibold text-sm capitalize">{nome}</span>
+                  </div>
+                  <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span className="text-white/60 text-sm">E-mail</span>
+                    <span className="text-white font-semibold text-sm">{email}</span>
+                  </div>
+                  <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span className="text-white/60 text-sm">Plano</span>
+                    <span className="font-bold text-sm" style={{ color: '#D4AF37' }}>
+                      {planoDetalhe ? `${planoDetalhe.produto.nome} — R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/${planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}` : 'Carregando...'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between pt-3 mt-1">
+                    <span className="text-white font-black text-sm">Total hoje</span>
+                    <span className="font-black text-lg" style={{ color: '#D4AF37' }}>
+                      {planoDetalhe ? `R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 0,00'}
+                    </span>
+                  </div>
+                </div>
 
-            {/* Info de pagamento seguro */}
-            <div className="rounded-xl p-4 mb-5 flex items-start gap-3"
-              style={{ background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)' }}>
-              <Shield size={16} className="shrink-0 mt-0.5 text-emerald-400" />
-              <div>
-                <p className="text-emerald-400 font-bold text-sm">Pagamento 100% seguro</p>
-                <p className="text-white/40 text-xs mt-0.5">
-                  Você será redirecionado para o checkout oficial do Stripe.
-                  Sua conta será criada e ativada instantaneamente após o pagamento.
-                </p>
+                <button onClick={finalizarPagamento} disabled={loadingCheckout}
+                  className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                  style={{ background: '#D4AF37', color: '#090B10' }}>
+                  {loadingCheckout ? (
+                    <><Loader2 className="animate-spin" size={18} /> Preparando ambiente seguro...</>
+                  ) : (
+                    <><Lock size={18} /> Ir para o Pagamento Seguro <ChevronRight size={18} /></>
+                  )}
+                </button>
+              </>
+            ) : (
+              <div className="rounded-2xl p-6" style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(212,175,55,0.2)' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <Lock size={16} className="text-[#D4AF37]" />
+                  <span className="text-[#D4AF37] font-bold text-sm">Ambiente Seguro Stripe</span>
+                </div>
+                <Elements 
+                  stripe={stripePromise} 
+                  options={{
+                    clientSecret,
+                    appearance: {
+                      theme: 'night',
+                      variables: {
+                        colorBackground: '#090B10',
+                        colorPrimary: '#D4AF37',
+                        colorText: '#ffffff',
+                        colorDanger: '#ef4444',
+                        borderRadius: '12px',
+                      },
+                      rules: {
+                        '.Input': {
+                          backgroundColor: '#111827',
+                          borderColor: '#374151',
+                        },
+                        '.Input:focus': {
+                          borderColor: '#D4AF37',
+                        }
+                      }
+                    }
+                  }}
+                >
+                  <FormularioPagamento />
+                </Elements>
               </div>
-            </div>
+            )}
 
-            <button onClick={finalizarPagamento} disabled={loadingCheckout}
-              className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ background: '#D4AF37', color: '#090B10' }}>
-              {loadingCheckout ? (
-                <><Loader2 className="animate-spin" size={18} /> Redirecionando...</>
-              ) : (
-                <>Ir para o pagamento segura <ChevronRight size={18} /></>
-              )}
-            </button>
+            {!clientSecret && (
+              <button onClick={() => setStep(2)}
+                className="w-full py-3 mt-3 text-white/30 text-sm hover:text-white transition-colors cursor-pointer"
+                style={{ background: 'transparent', border: 'none' }}>
+                ← Voltar
+              </button>
+            )}
 
-            <button onClick={() => setStep(2)}
-              className="w-full py-3 mt-3 text-white/30 text-sm hover:text-white transition-colors cursor-pointer"
-              style={{ background: 'transparent', border: 'none' }}>
-              ← Voltar
-            </button>
-
-            <p className="text-center text-white/20 text-xs mt-4">
+            <p className="text-center text-white/20 text-xs mt-6">
               Ao continuar você concorda com nossos{' '}
               <span style={{ color: '#D4AF37' }} className="cursor-pointer hover:underline">Termos de Uso</span>
             </p>

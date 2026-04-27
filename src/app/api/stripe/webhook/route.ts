@@ -89,17 +89,29 @@ export async function POST(request: NextRequest) {
     if (email) await criarOuAtivarUsuario(email, formatarNomeCurto(nomeRaw), maxTelas, productId)
   }
 
-  // ── RENOVAÇÃO DE ASSINATURA ──
+  // ── ASSINATURA CONCLUÍDA (Stripe Elements) ou RENOVAÇÃO ──
   if (event.type === 'invoice.payment_succeeded') {
     const invoice = event.data.object as import('stripe').Stripe.Invoice & { customer_email?: string }
     const email = invoice.customer_email ?? ''
     if (email) {
       const usuario = await buscarUsuarioPorEmail(email)
       if (usuario) {
+        let maxTelas = 1;
+        let productId = '';
+        try {
+          const priceId = invoice.lines?.data?.[0]?.price?.id;
+          if (priceId) {
+            const price = await stripe.prices.retrieve(priceId, { expand: ['product'] });
+            const product = price.product as import('stripe').Stripe.Product;
+            maxTelas = Number(product.metadata?.max_telas || 1);
+            productId = product.id;
+          }
+        } catch (e) { console.warn('Erro ao buscar metadados do plano') }
+
         await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
-          user_metadata: { plano_ativo: true },
+          user_metadata: { plano_ativo: true, max_telas: maxTelas, stripe_product_id: productId },
         })
-        console.log(`✅ Renovação Stripe confirmada: ${email}`)
+        console.log(`✅ Pagamento Stripe confirmado (Acesso Liberado): ${email}`)
       }
     }
   }
