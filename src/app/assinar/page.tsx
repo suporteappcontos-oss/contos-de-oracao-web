@@ -113,6 +113,32 @@ export default function AssinarPage() {
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1920&q=60')" }} />
       <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-transparent" />
 
+      {/* Estilos globais para animações exclusivas */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes shine {
+          0% { transform: translateX(-100%) rotate(45deg); }
+          100% { transform: translateX(200%) rotate(45deg); }
+        }
+        @keyframes floatGlow {
+          0%, 100% { box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+          50% { box-shadow: 0 0 35px rgba(212,175,55,0.5); }
+        }
+        .plano-selecionado {
+          animation: floatGlow 3s ease-in-out infinite;
+          transform: scale(1.03);
+          z-index: 10;
+        }
+        .plano-selecionado::after {
+          content: "";
+          position: absolute;
+          top: -50%; left: -50%; width: 200%; height: 200%;
+          background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+          transform: rotate(45deg);
+          animation: shine 4s infinite;
+          pointer-events: none;
+        }
+      `}} />
+
       {/* Header */}
       <header className="relative z-10 px-6 py-5 flex items-center justify-between"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
@@ -129,23 +155,27 @@ export default function AssinarPage() {
         </Link>
       </header>
 
-      {/* Indicador de Steps */}
-      <div className="relative z-10 flex items-center justify-center pt-8 pb-6 gap-3">
+      {/* Indicador de Steps Premium */}
+      <div className="relative z-10 flex items-center justify-center pt-10 pb-8 gap-2 sm:gap-4 max-w-2xl mx-auto px-4">
         {[1, 2, 3].map((s) => (
-          <div key={s} className="flex items-center gap-3">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-black transition-all ${step === s
-              ? 'text-[#090B10] scale-110'
+          <div key={s} className="flex items-center gap-2 sm:gap-4 flex-1 last:flex-none">
+            <div className={`flex items-center justify-center min-w-[36px] h-9 rounded-full text-sm font-black transition-all duration-500 ${step === s
+              ? 'text-[#090B10] scale-110 shadow-[0_0_20px_rgba(212,175,55,0.4)] ring-4 ring-[#D4AF37]/20'
               : step > s
                 ? 'text-[#090B10]'
-                : 'text-white/30 border border-white/15'
+                : 'text-white/30 border-2 border-white/10'
               }`}
               style={step >= s ? { background: '#D4AF37' } : {}}>
-              {step > s ? <Check size={14} /> : s}
+              {step > s ? <Check size={16} /> : s}
             </div>
-            <span className={`text-xs font-semibold hidden sm:inline ${step === s ? 'text-white' : 'text-white/30'}`}>
+            <span className={`text-xs sm:text-sm font-bold whitespace-nowrap hidden sm:inline transition-all duration-500 ${step === s ? 'text-white' : step > s ? 'text-[#D4AF37]' : 'text-white/30'}`}>
               {s === 1 ? 'Seus dados' : s === 2 ? 'Escolher plano' : 'Pagamento'}
             </span>
-            {s < 3 && <div className="w-8 h-px" style={{ background: step > s ? '#D4AF37' : 'rgba(255,255,255,0.1)' }} />}
+            {s < 3 && (
+              <div className="flex-1 h-[2px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: '#D4AF37' }} />
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -158,8 +188,8 @@ export default function AssinarPage() {
           <div className="rounded-2xl p-8 md:p-10"
             style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(255,255,255,0.08)' }}>
 
-            <h1 className="text-white text-2xl font-black mb-1">Criar sua conta</h1>
-            <p className="text-white/40 text-sm mb-8">Informe seus dados para começar</p>
+            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 tracking-tight">Criar sua conta</h1>
+            <p className="text-white/50 text-sm mb-8 font-medium">Informe seus dados para começar</p>
 
             <div className="flex flex-col gap-5">
               {/* Nome */}
@@ -302,8 +332,8 @@ export default function AssinarPage() {
         {/* ── STEP 2: Selecionar Plano ── */}
         {step === 2 && (
           <div>
-            <h1 className="text-white text-2xl font-black mb-1 text-center">Escolha seu plano</h1>
-            <p className="text-white/40 text-sm mb-8 text-center">Cancele quando quiser</p>
+            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 text-center tracking-tight">Escolha seu plano</h1>
+            <p className="text-white/50 text-sm mb-8 text-center font-medium">Selecione o melhor plano para você</p>
 
             <div className="flex flex-col gap-4 mb-6">
               {planos.length === 0 && <p className="text-white/50 text-center">Carregando planos...</p>}
@@ -312,10 +342,10 @@ export default function AssinarPage() {
                 <button
                   key={plano.id}
                   onClick={() => setPlanoSelecionado(plano.id)}
-                  className="w-full text-left rounded-2xl p-5 transition-all cursor-pointer relative"
+                  className={`w-full text-left rounded-2xl p-5 transition-all duration-300 cursor-pointer overflow-hidden ${planoSelecionado === plano.id ? 'plano-selecionado border-2 border-[#D4AF37]' : 'border-2 border-white/5 hover:border-white/20 hover:bg-white/5'}`}
                   style={{
-                    background: planoSelecionado === plano.id ? 'rgba(212,175,55,0.08)' : 'rgba(21,36,62,0.7)',
-                    border: `2px solid ${planoSelecionado === plano.id ? '#D4AF37' : 'rgba(255,255,255,0.08)'}`,
+                    background: planoSelecionado === plano.id ? 'rgba(212,175,55,0.1)' : 'rgba(21,36,62,0.7)',
+                    position: 'relative'
                   }}>
                   {plano.intervalo === 'year' && (
                     <div className="absolute -top-3 left-5 px-3 py-0.5 rounded-full text-xs font-black"
@@ -425,16 +455,31 @@ export default function AssinarPage() {
         {/* ── STEP 3: Confirmar e Pagar ── */}
         {step === 3 && (
           <div>
-            <h1 className="text-white text-2xl font-black mb-1 text-center">Confirmar assinatura</h1>
-            <p className="text-white/40 text-sm mb-8 text-center">Revise seus dados antes de pagar</p>
+            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 text-center tracking-tight">Confirmar assinatura</h1>
+            <p className="text-white/50 text-sm mb-8 text-center font-medium">Revise seus dados antes de pagar</p>
 
             {/* Formulário Embutido da Stripe ou Resumo */}
             {!clientSecret ? (
               <>
-                {/* Resumo */}
-                <div className="rounded-2xl p-6 mb-5"
-                  style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(212,175,55,0.2)' }}>
-                  <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Resumo do pedido</p>
+                {/* Resumo - Animação de Bilhete Premium */}
+                <div className="rounded-2xl p-6 mb-5 relative overflow-hidden"
+                  style={{ 
+                    background: 'linear-gradient(145deg, rgba(21,36,62,0.9), rgba(9,11,16,0.9))', 
+                    border: '1px solid rgba(212,175,55,0.4)',
+                    boxShadow: '0 10px 40px rgba(212,175,55,0.15)'
+                  }}>
+                  {/* Efeito de brilho cruzando o resumo */}
+                  <div className="absolute inset-0 pointer-events-none opacity-50"
+                    style={{
+                      background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1), transparent)',
+                      transform: 'skewX(-20deg)',
+                      animation: 'shine 3s infinite'
+                    }} />
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <Check size={18} className="text-[#D4AF37]" />
+                    <p className="text-[#D4AF37] text-xs font-black uppercase tracking-widest m-0">Plano Selecionado</p>
+                  </div>
 
                   <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                     <span className="text-white/60 text-sm">Nome</span>
@@ -485,9 +530,9 @@ export default function AssinarPage() {
 
             {!clientSecret && (
               <button onClick={() => setStep(2)}
-                className="w-full py-3 mt-3 text-white/30 text-sm hover:text-white transition-colors cursor-pointer"
-                style={{ background: 'transparent', border: 'none' }}>
-                ← Voltar
+                className="w-full py-4 mt-3 rounded-xl text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2 group border border-white/5 hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5 text-white/50 hover:text-[#D4AF37]"
+                style={{ background: 'transparent' }}>
+                <span className="transition-transform group-hover:-translate-x-1">←</span> Voltar para Escolha do Plano
               </button>
             )}
 
