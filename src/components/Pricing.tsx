@@ -8,7 +8,9 @@ export default async function Pricing() {
   let planosRenderizados: any[] = []
 
   if (prices.data.length > 0) {
-    planosRenderizados = prices.data.map((price) => {
+    planosRenderizados = prices.data
+      .filter((price) => (price.product as any).active === true)
+      .map((price) => {
       const produto = price.product as any
       const isAnual = price.recurring?.interval === 'year'
       const valor = price.unit_amount! / 100
