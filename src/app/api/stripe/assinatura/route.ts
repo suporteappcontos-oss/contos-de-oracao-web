@@ -84,6 +84,9 @@ export async function POST(request: NextRequest) {
         } else {
           clientSecret = invoice.payment_intent.client_secret
         }
+      }
+    }
+
     if (!clientSecret) {
        console.error("DEBUG STRIPE API:", JSON.stringify(subscription, null, 2));
        return NextResponse.json({ 
