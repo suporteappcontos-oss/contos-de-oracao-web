@@ -29,6 +29,7 @@ export default function AssinarPage() {
   const [planos, setPlanos] = useState<any[]>([])
   const [loadingCheckout, setLoadingCheckout] = useState(false)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [erroCheckout, setErroCheckout] = useState<string | null>(null)
 
   // Busca preços reais ativos na montagem
   useEffect(() => {
@@ -93,11 +94,12 @@ export default function AssinarPage() {
       const data = await response.json()
       if (data.clientSecret) {
         setClientSecret(data.clientSecret)
+        setErroCheckout(null)
       } else {
-        alert(data.error || 'Erro ao inicializar plataforma segura.')
+        setErroCheckout(data.error || 'Erro ao inicializar plataforma segura.')
       }
     } catch (e) {
-      alert('Erro de conexão ao criar assinatura. Tente novamente.')
+      setErroCheckout('Erro de conexão ao criar assinatura. Tente novamente.')
     } finally {
       setLoadingCheckout(false)
     }
@@ -467,6 +469,12 @@ export default function AssinarPage() {
                     <><Lock size={18} /> Ir para o Pagamento Seguro <ChevronRight size={18} /></>
                   )}
                 </button>
+
+                {erroCheckout && (
+                  <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold text-center break-words">
+                    {erroCheckout}
+                  </div>
+                )}
               </>
             ) : (
               <div className="rounded-2xl p-6" style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(212,175,55,0.2)' }}>

@@ -88,9 +88,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (!clientSecret) {
-       console.error("DEBUG STRIPE API:", JSON.stringify(subscription, null, 2));
        return NextResponse.json({ 
-         error: `DEBUG FATAL: Não foi possível obter o clientSecret. Status: ${subscription.status}. JSON da Subscription: ${JSON.stringify(subscription)}` 
+         error: `FALHA STRIPE: status=${subscription.status} | invoice=${!!subscription.latest_invoice} | temPI=${!!(subscription.latest_invoice as any)?.payment_intent} | statusFatura=${(subscription.latest_invoice as any)?.status} | url=${(subscription.latest_invoice as any)?.hosted_invoice_url}` 
        }, { status: 500 })
     }
 
