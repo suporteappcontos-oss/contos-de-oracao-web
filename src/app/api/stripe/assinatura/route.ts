@@ -67,10 +67,9 @@ export async function POST(request: NextRequest) {
       const setupIntent = subscription.pending_setup_intent as import('stripe').Stripe.SetupIntent
       clientSecret = setupIntent.client_secret
     } else {
-      const invoice = subscription.latest_invoice as import('stripe').Stripe.Invoice
+      const invoice = subscription.latest_invoice as any
       if (invoice && invoice.payment_intent) {
-         const paymentIntent = invoice.payment_intent as import('stripe').Stripe.PaymentIntent
-         clientSecret = paymentIntent.client_secret
+         clientSecret = invoice.payment_intent.client_secret
       }
     }
 
