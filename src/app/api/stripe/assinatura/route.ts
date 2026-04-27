@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     if (!clientSecret) {
        console.error("DEBUG STRIPE API:", JSON.stringify(subscription, null, 2));
        return NextResponse.json({ 
-         error: `Erro na Stripe: status = ${subscription.status}. Tem payment_intent? ${!!(subscription.latest_invoice as any)?.payment_intent}. Se for trial, verifique pending_setup_intent.` 
+         error: `DEBUG FATAL: Não foi possível obter o clientSecret. Status: ${subscription.status}. JSON da Subscription: ${JSON.stringify(subscription)}` 
        }, { status: 500 })
     }
 
