@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         let maxTelas = 1;
         let productId = '';
         try {
-          const priceId = invoice.lines?.data?.[0]?.price?.id;
+          const priceId = (invoice.lines?.data?.[0] as any)?.price?.id;
           if (priceId) {
             const price = await stripe.prices.retrieve(priceId, { expand: ['product'] });
             const product = price.product as import('stripe').Stripe.Product;
