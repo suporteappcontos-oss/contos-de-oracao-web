@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     if (!clientSecret) {
        console.error("DEBUG STRIPE API:", JSON.stringify(subscription, null, 2));
        return NextResponse.json({ 
-         error: 'A Stripe bloqueou a geração do formulário de cartão. Provavelmente porque o valor do plano (R$ 1,00) está abaixo do valor mínimo de processamento da Stripe (R$ 2,00 a R$ 5,00). Por favor, teste com um plano de pelo menos R$ 5,00.' 
+         error: `Erro na Stripe: status = ${subscription.status}. Tem payment_intent? ${!!(subscription.latest_invoice as any)?.payment_intent}. Se for trial, verifique pending_setup_intent.` 
        }, { status: 500 })
     }
 
