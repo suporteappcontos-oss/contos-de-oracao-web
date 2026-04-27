@@ -62,14 +62,28 @@ export async function POST(request: NextRequest) {
 
     let clientSecret = null
 
-    // Pode ser um setup intent (se tiver trial) ou payment intent (cobrança imediata)
+    // Lógica defensiva para buscar o clientSecret mesmo se o expand falhar ou for string
     if (subscription.pending_setup_intent) {
-      const setupIntent = subscription.pending_setup_intent as import('stripe').Stripe.SetupIntent
-      clientSecret = setupIntent.client_secret
-    } else {
-      const invoice = subscription.latest_invoice as any
+      if (typeof subscription.pending_setup_intent === 'string') {
+        const setupIntent = await stripe.setupIntents.retrieve(subscription.pending_setup_intent)
+        clientSecret = setupIntent.client_secret
+      } else {
+        const setupIntent = subscription.pending_setup_intent as any
+        clientSecret = setupIntent.client_secret
+      }
+    } else if (subscription.latest_invoice) {
+      let invoice = subscription.latest_invoice as any
+      if (typeof invoice === 'string') {
+        invoice = await stripe.invoices.retrieve(invoice)
+      }
+      
       if (invoice && invoice.payment_intent) {
-         clientSecret = invoice.payment_intent.client_secret
+        if (typeof invoice.payment_intent === 'string') {
+          const pi = await stripe.paymentIntents.retrieve(invoice.payment_intent)
+          clientSecret = pi.client_secret
+        } else {
+          clientSecret = invoice.payment_intent.client_secret
+        }
       }
     }
 
