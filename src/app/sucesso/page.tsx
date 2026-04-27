@@ -50,10 +50,10 @@ export default function SucessoPage() {
 
         <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem', marginBottom: '2rem', lineHeight: 1.6 }}>
           <p style={{ marginBottom: '1rem' }}>
-            <strong style={{ color: '#fff' }}>Novo por aqui?</strong> Enviamos um link de acesso para o seu e-mail. Clique nele para criar a sua senha!
+            <strong style={{ color: '#fff' }}>Tudo pronto!</strong> Sua assinatura foi ativada com sucesso.
           </p>
           <p>
-            <strong style={{ color: '#fff' }}>Já é assinante e estava renovando?</strong> Seu acesso já foi reativado instantaneamente.
+            Você já pode acessar a plataforma utilizando o e-mail e a senha que acabou de cadastrar no passo anterior.
           </p>
         </div>
 
