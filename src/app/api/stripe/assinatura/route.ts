@@ -50,30 +50,51 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `ID de plano inválido: ${priceId}` }, { status: 400 })
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.online'
-
-    // Em vez de manipular faturas manualmente, usamos o novo "Checkout Embutido" do Stripe
-    const session = await stripe.checkout.sessions.create({
-      ui_mode: 'embedded_page' as any,
-      mode: 'subscription',
-      customer_email: email,
-      client_reference_id: userId,
-      locale: 'pt-BR',
-      line_items: [{ price: priceId, quantity: 1 }],
-      metadata: { nome, email, plano },
-      subscription_data: {
-        metadata: { nome, email, plano },
-      },
-      return_url: `${siteUrl}/sucesso?session_id={CHECKOUT_SESSION_ID}`,
-      allow_promotion_codes: true,
+    // Volta para a lógica de Assinatura via Elements (que permite controle total do design)
+    const subscription = await stripe.subscriptions.create({
+      customer: stripeCustomerId,
+      items: [{ price: priceId }],
+      payment_behavior: 'default_incomplete',
+      payment_settings: { save_default_payment_method: 'on_subscription' },
+      expand: ['latest_invoice.payment_intent', 'pending_setup_intent'],
+      metadata: { nome, email, plano, userId }
     })
 
-    if (!session.client_secret) {
-       console.error("DEBUG STRIPE SESSION:", JSON.stringify(session, null, 2));
-       return NextResponse.json({ error: 'Não foi possível gerar a sessão de checkout embutida.' }, { status: 500 })
+    let clientSecret = null
+
+    // Lógica defensiva para buscar o clientSecret mesmo se o expand falhar ou for string
+    if (subscription.pending_setup_intent) {
+      if (typeof subscription.pending_setup_intent === 'string') {
+        const setupIntent = await stripe.setupIntents.retrieve(subscription.pending_setup_intent)
+        clientSecret = setupIntent.client_secret
+      } else {
+        const setupIntent = subscription.pending_setup_intent as any
+        clientSecret = setupIntent.client_secret
+      }
+    } else if (subscription.latest_invoice) {
+      let invoice = subscription.latest_invoice as any
+      if (typeof invoice === 'string') {
+        invoice = await stripe.invoices.retrieve(invoice)
+      }
+      
+      if (invoice && invoice.payment_intent) {
+        if (typeof invoice.payment_intent === 'string') {
+          const pi = await stripe.paymentIntents.retrieve(invoice.payment_intent)
+          clientSecret = pi.client_secret
+        } else {
+          clientSecret = invoice.payment_intent.client_secret
+        }
+      }
     }
 
-    return NextResponse.json({ clientSecret: session.client_secret })
+    if (!clientSecret) {
+       console.error("DEBUG STRIPE API:", JSON.stringify(subscription, null, 2));
+       return NextResponse.json({ 
+         error: 'A Stripe bloqueou a geração do formulário de cartão. Provavelmente porque o valor do plano (R$ 1,00) está abaixo do valor mínimo de processamento da Stripe (R$ 2,00 a R$ 5,00). Por favor, teste com um plano de pelo menos R$ 5,00.' 
+       }, { status: 500 })
+    }
+
+    return NextResponse.json({ clientSecret })
   } catch (error: any) {
     console.error('❌ Erro ao criar sessão Stripe Embutida:', error)
     return NextResponse.json({ error: error.message || 'Erro interno ao processar assinatura' }, { status: 500 })
