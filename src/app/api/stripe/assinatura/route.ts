@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Em vez de manipular faturas manualmente, usamos o novo "Checkout Embutido" do Stripe
     const session = await stripe.checkout.sessions.create({
-      ui_mode: 'embedded',
+      ui_mode: 'embedded' as any,
       mode: 'subscription',
       customer_email: email,
       client_reference_id: userId,
