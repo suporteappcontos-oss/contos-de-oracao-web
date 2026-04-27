@@ -6,8 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2, Monitor, Lock } from 'lucide-react'
 import { loadStripe } from '@stripe/stripe-js'
-import { Elements } from '@stripe/react-stripe-js'
-import FormularioPagamento from './FormularioPagamento'
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 
 // Carrega o Stripe public key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
@@ -474,33 +473,12 @@ export default function AssinarPage() {
                   <Lock size={16} className="text-[#D4AF37]" />
                   <span className="text-[#D4AF37] font-bold text-sm">Ambiente Seguro Stripe</span>
                 </div>
-                <Elements 
+                <EmbeddedCheckoutProvider 
                   stripe={stripePromise} 
-                  options={{
-                    clientSecret,
-                    appearance: {
-                      theme: 'night',
-                      variables: {
-                        colorBackground: '#090B10',
-                        colorPrimary: '#D4AF37',
-                        colorText: '#ffffff',
-                        colorDanger: '#ef4444',
-                        borderRadius: '12px',
-                      },
-                      rules: {
-                        '.Input': {
-                          backgroundColor: '#111827',
-                          borderColor: '#374151',
-                        },
-                        '.Input:focus': {
-                          borderColor: '#D4AF37',
-                        }
-                      }
-                    }
-                  }}
+                  options={{ clientSecret }}
                 >
-                  <FormularioPagamento />
-                </Elements>
+                  <EmbeddedCheckout />
+                </EmbeddedCheckoutProvider>
               </div>
             )}
 
