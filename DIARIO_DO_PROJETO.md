@@ -5,6 +5,12 @@
 > **Proprietário:** João Pires de Freitas Neto  
 > **E-mail do dono (admin):** suporte.appcontos@gmail.com  
 
+## 🤖 REGRA DE OURO PARA IAs (LEIA ANTES DE AGIR)
+**O proprietário deste projeto NÃO lida com comandos de terminal, Git, GitHub ou Vercel manualmente.** 
+1. Todas as IAs devem automatizar o máximo possível os processos de linha de comando.
+2. Sempre que uma IA fizer alterações no código, ela DEVE tentar realizar o `git push` automaticamente para o repositório, pois o Vercel faz o deploy automático ao receber o push.
+3. Se a execução de comandos falhar por limitação do sistema, a IA deve instruir o usuário de forma extremamente mastigada sobre como usar a interface gráfica do VS Code (Aba Source Control > Commit & Sync) para subir o código com apenas 1 clique.
+
 ---
 
 ## 🗺️ Visão Geral do Projeto
@@ -56,11 +62,11 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 - **Resultado:** PIX e Boletos agora aparecem para clientes finais
 - **Dados bancários:** Configurados na Stripe
 
-### 8. Domínio Customizado para Checkout 
+### 8. Domínio Customizado para Checkout ✅
 - **Status:** Domínio principal `contosdeoracao.online` está ativo e respondendo
-- **Subdomínio:** `pagamento.contosdeoracao.online` configurado e aguardando verificação Stripe
-- **DNS:** CNAME apontando para `hosted-checkout.stripecdn.com`
-- **Situação:** Aguardando aprovação final (pode levar até 3 horas)
+- **Subdomínio:** `pagamento.contosdeoracao.online` configurado e **Verificado** pela Stripe
+- **DNS:** CNAME validado com sucesso.
+- **Situação:** Ativo. A partir de agora, os clientes verão este domínio na hora de pagar.
 
 ### 9. Webhook de Produção 
 - **Status:** Webhook implementado e pronto para produção
@@ -72,13 +78,22 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 ## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 25/04/2026 - Tarde)
 
 ### 10. Melhorias de UX e Segurança ✅
-- **Login:** Removido campo de confirmação de senha (local incorreto)
-- **Cadastro:** Mantida confirmação de senha apenas na página `/assinar`
-- **Ícones:** Implementados olhos para mostrar/ocultar senhas
-- **Validação:** Senhas coincidentes validadas antes de criar conta
-- **Planos:** Adicionado badge dinâmico de telas simultâneas
-- **Benefícios:** Exibição dinâmica conforme plano selecionado
-- **Admin:** Corrigido link "visitar" para abrir na mesma aba
+- **Login:** Removido campo de confirmação de senha (local incorreto).
+- **Login/Header:** Removido o badge "Premium" engessado que aparecia para usuários não logados.
+- **Cadastro:** Mantida confirmação de senha apenas na página `/assinar`.
+- **Ícones:** Implementados olhos para mostrar/ocultar senhas.
+- **Validação:** Senhas coincidentes validadas antes de criar conta.
+- **Planos:** Adicionado badge dinâmico de telas simultâneas.
+- **Benefícios:** Exibição dinâmica conforme plano selecionado.
+- **Admin:** Corrigido link "visitar" para abrir na mesma aba.
+
+### 11. Customização Dinâmica de Etiquetas de Planos ✅
+- **StripeAdmin:** Adicionada uma Textbox "Etiqueta (Badge)" na criação e edição de planos (ex: Premium, Básico, Família).
+- **Backend:** A API (`/api/stripe/produtos`) agora lê e salva a `etiqueta` diretamente no `metadata` do produto na Stripe, permitindo que a aplicação saiba exatamente qual selo mostrar no perfil de cada usuário.
+
+### 12. Captação Inteligente de Leads (Carrinho Abandonado) ✅
+- **Admin Panel:** O status de usuários não pagantes foi alterado de "Bloqueado" para "Lead (Pendente)".
+- **Exportação Rápida:** Criado o botão `CopyLeadsButton` na aba de assinantes para copiar instantaneamente todos os e-mails de usuários inativos. Isso permite colar em ferramentas de e-mail marketing oferecendo cupons e recuperando vendas.
 
 ### 11. Análise de Pagamentos PIX ✅
 - **Status:** PIX disponível apenas para contas convidadas pela Stripe
@@ -90,11 +105,8 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 
 ## 🟡 O QUE ESTÁ EM ANDAMENTO
 
-### Prioridade 1: Verificação de Domínio Stripe
-- **Status:** Subdomínio `pagamento.contosdeoracao.online` configurado
-- **DNS:** CNAME apontando corretamente para `hosted-checkout.stripecdn.com`
-- **Situação:** Aguardando verificação final pela Stripe (até 3 horas)
-- **Ação:** Monitorar e aguardar e-mail de confirmação
+### Prioridade 1: Testar o fluxo de pagamento final em Produção
+- **Ação:** Fazer uma compra teste (pode gerar um boleto ou pix) direto pelo site para garantir que tudo (webhook, liberação de acesso, redirecionamento) está rodando perfeito no domínio oficial.
 
 ---
 

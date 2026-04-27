@@ -26,6 +26,7 @@ export async function GET() {
     descricao: p.description,
     beneficios: p.metadata.beneficios || '',
     max_telas: Number(p.metadata.max_telas || 1),
+    etiqueta: p.metadata.etiqueta || '',
     ativo: p.active,
     precos: prices.data
       .filter(pr => pr.product === p.id)
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
   if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   const body = await request.json()
-  const { nome, descricao, preco, intervalo, beneficios, max_telas } = body
+  const { nome, descricao, preco, intervalo, beneficios, max_telas, etiqueta } = body
 
   if (!nome || !preco || isNaN(preco)) {
     return NextResponse.json({ error: 'Nome e preço são obrigatórios e devem ser válidos' }, { status: 400 })
@@ -61,6 +62,7 @@ try {
     metadata: {
       beneficios: beneficios || 'Acesso ilimitado ao catálogo, Resolução Full HD, Suporte prioritário',
       max_telas: String(max_telas || 1),
+      etiqueta: etiqueta || nome,
     }
   })
 
@@ -96,7 +98,7 @@ export async function DELETE(request: NextRequest) {
 // ── PUT — Editar produto ──
 export async function PUT(request: NextRequest) {
   if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-  const { id, nome, beneficios, max_telas } = await request.json()
+  const { id, nome, beneficios, max_telas, etiqueta } = await request.json()
   
   if (!id || !nome) return NextResponse.json({ error: 'ID e Nome são obrigatórios' }, { status: 400 })
 
@@ -105,6 +107,7 @@ export async function PUT(request: NextRequest) {
     metadata: {
       beneficios: beneficios || '',
       max_telas: String(max_telas || 1),
+      etiqueta: etiqueta || nome,
     }
   })
   return NextResponse.json({ success: true })

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Tag, Settings, CreditCard, Trash2, X, RefreshCw, Check, Edit3, Save, Eye } from 'lucide-react'
 
 type Preco = { id: string; valor: number; moeda: string; intervalo: string }
-type Produto = { id: string; nome: string; ativo: boolean; precos: Preco[]; beneficios?: string; max_telas?: number }
+type Produto = { id: string; nome: string; ativo: boolean; precos: Preco[]; beneficios?: string; max_telas?: number; etiqueta?: string }
 type Cupom = { id: string; nome: string; desconto: string; usos_max: number | null; usos_atual: number; ativo: boolean; expira: string | null }
 
 const BENEFICIOS_PADRAO = [
@@ -21,7 +21,7 @@ export function StripeAdmin() {
   const [cupons, setCupons] = useState<Cupom[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', preco: '29,90', intervalo: 'month', max_telas: 1 })
+  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', etiqueta: 'Premium', preco: '29,90', intervalo: 'month', max_telas: 1 })
   const [beneficiosCheck, setBeneficiosCheck] = useState<string[]>(['Acesso ilimitado ao catálogo', 'Resolução Full HD'])
   const [beneficioCustom, setBeneficioCustom] = useState('')
 
@@ -30,7 +30,7 @@ export function StripeAdmin() {
 
   // Edit states
   const [editandoId, setEditandoId] = useState<string | null>(null)
-  const [produtoEdit, setProdutoEdit] = useState({ nome: '', beneficios: '', max_telas: 1 })
+  const [produtoEdit, setProdutoEdit] = useState({ nome: '', etiqueta: '', beneficios: '', max_telas: 1 })
 
   const fetchData = async () => {
     setLoading(true)
@@ -76,6 +76,7 @@ export function StripeAdmin() {
       preco: parsePreco(novoProduto.preco),
       beneficios: beneficiosCheck.join(', '),
       max_telas: novoProduto.max_telas,
+      etiqueta: novoProduto.etiqueta,
     }
 
     try {
@@ -106,7 +107,7 @@ export function StripeAdmin() {
 
   const iniciarEdicao = (p: Produto) => {
     setEditandoId(p.id)
-    setProdutoEdit({ nome: p.nome, beneficios: p.beneficios || '', max_telas: p.max_telas || 1 })
+    setProdutoEdit({ nome: p.nome, etiqueta: p.etiqueta || '', beneficios: p.beneficios || '', max_telas: p.max_telas || 1 })
   }
 
   const salvarEdicao = async (id: string) => {
@@ -114,7 +115,7 @@ export function StripeAdmin() {
     try {
       const response = await fetch('/api/stripe/produtos', {
         method: 'PUT',
-        body: JSON.stringify({ id, nome: produtoEdit.nome, beneficios: produtoEdit.beneficios, max_telas: produtoEdit.max_telas })
+        body: JSON.stringify({ id, nome: produtoEdit.nome, etiqueta: produtoEdit.etiqueta, beneficios: produtoEdit.beneficios, max_telas: produtoEdit.max_telas })
       })
       const data = await response.json()
       if (data.error) {
@@ -183,9 +184,17 @@ export function StripeAdmin() {
             </h3>
             
             <form onSubmit={criarProduto} className="space-y-5">
-              <div>
-                <label className={labelCls}>Nome do Plano</label>
-                <input type="text" required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>Nome do Plano</label>
+                  <input type="text" required value={novoProduto.nome} onChange={e => setNovoProduto({...novoProduto, nome: e.target.value})} className={inputCls} />
+                  <p className="text-[0.65rem] text-white/30 mt-1">Ex: Assinatura Mensal</p>
+                </div>
+                <div>
+                  <label className={labelCls}>Etiqueta (Badge)</label>
+                  <input type="text" required value={novoProduto.etiqueta} onChange={e => setNovoProduto({...novoProduto, etiqueta: e.target.value})} className={inputCls} />
+                  <p className="text-[0.65rem] text-[#D4AF37] mt-1">Aparece no logo. Ex: Premium</p>
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -307,6 +316,10 @@ export function StripeAdmin() {
                         <div>
                           <label className={labelCls}>Nome</label>
                           <input className={inputCls} value={produtoEdit.nome} onChange={e => setProdutoEdit({...produtoEdit, nome: e.target.value})} />
+                        </div>
+                        <div>
+                          <label className={labelCls}>Etiqueta</label>
+                          <input className={inputCls} value={produtoEdit.etiqueta} onChange={e => setProdutoEdit({...produtoEdit, etiqueta: e.target.value})} />
                         </div>
                         <div>
                           <label className={labelCls}>Benefícios (separe por vírgula)</label>

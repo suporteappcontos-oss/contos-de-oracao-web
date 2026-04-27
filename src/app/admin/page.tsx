@@ -14,6 +14,7 @@ import {
   Settings, Clock
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
+import { CopyLeadsButton } from './CopyLeadsButton'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -362,11 +363,12 @@ export default async function AdminPage({
         {/* ══════════ ABA USUÁRIOS ══════════ */}
         {activeTab === 'usuarios' && (
           <div className="space-y-6">
-            <div className="flex items-end justify-between">
+            <div className="flex items-end justify-between flex-wrap gap-4">
               <div>
                 <h2 className="text-white text-2xl font-black tracking-tight">Gestão de Assinantes</h2>
                 <p className="text-white/50 text-sm mt-1">{membrosAtivos} usuários com plano ativo no momento.</p>
               </div>
+              <CopyLeadsButton emails={usuarios.filter(u => !u.plano_ativo).map(u => u.email)} />
             </div>
 
             {usuarios.length === 0 ? (
@@ -409,9 +411,9 @@ export default async function AdminPage({
 
                       {/* Status badge */}
                       <div className="col-span-3 md:col-span-2">
-                        <span className={`inline-flex items-center gap-1.5 text-[0.65rem] px-3 py-1.5 rounded-xl font-bold uppercase tracking-widest border ${u.plano_ativo ? 'text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20' : 'text-red-400 bg-red-500/10 border-red-500/20'}`}>
-                          <div className={`w-1.5 h-1.5 rounded-full ${u.plano_ativo ? 'bg-[#10b981]' : 'bg-red-400'}`} />
-                          {u.plano_ativo ? 'Ativo' : 'Bloqueado'}
+                        <span className={`inline-flex items-center gap-1.5 text-[0.65rem] px-3 py-1.5 rounded-xl font-bold uppercase tracking-widest border ${u.plano_ativo ? 'text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20' : 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/20'}`}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${u.plano_ativo ? 'bg-[#10b981]' : 'bg-[#D4AF37]'}`} />
+                          {u.plano_ativo ? 'Ativo' : 'Lead (Pendente)'}
                         </span>
                       </div>
 
