@@ -155,20 +155,17 @@ export default function AssinarPage() {
         </Link>
       </header>
 
-      {/* Layout de duas colunas (Esquerda: Info, Direita: Checkout) */}
-      <div className="relative z-10 flex flex-col lg:flex-row max-w-7xl mx-auto w-full flex-1 pb-16">
+      {/* Layout Unificado (Esquerda: Info, Direita: Checkout) */}
+      <div className="relative z-10 flex flex-col lg:flex-row max-w-6xl mx-auto w-full flex-1 mb-16 rounded-[2rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.85)', backdropFilter: 'blur(20px)' }}>
         
-        {/* Lado Esquerdo - Card Animado de Benefícios */}
-        <div className="w-full lg:w-1/2 p-6 lg:p-12 flex flex-col justify-center">
-          <div className="max-w-md mx-auto lg:ml-auto lg:mr-12 w-full relative group">
-             {/* Glow Animado por Trás do Card */}
-             <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37] to-[#8B7322] rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 animate-pulse"></div>
+        {/* Lado Esquerdo - Info da Assinatura */}
+        <div className="w-full lg:w-5/12 p-8 lg:p-12 flex flex-col justify-center relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>
+             {/* Glow Animado por Trás */}
+             <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-transparent pointer-events-none"></div>
              
-             {/* Card Glassmorphism */}
-             <div className="relative rounded-[2rem] p-8 md:p-10" style={{ background: 'rgba(21,36,62,0.65)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)' }}>
-                
+             <div className="relative z-10 w-full max-w-sm mx-auto">
                 <h2 className="text-3xl lg:text-4xl font-black text-white mb-4 leading-tight">
-                  Sua jornada <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F9E596]">Premium</span> começa aqui
+                  Sua jornada <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F9E596]">começa aqui</span>
                 </h2>
                 
                 <p className="text-white/70 mb-8 leading-relaxed font-medium">
@@ -201,11 +198,10 @@ export default function AssinarPage() {
                    </div>
                 )}
              </div>
-          </div>
         </div>
 
         {/* Lado Direito - Fluxo de Checkout */}
-        <div className="w-full lg:w-1/2 px-4 lg:px-12 pt-6 lg:pt-12 flex flex-col">
+        <div className="w-full lg:w-7/12 px-6 lg:px-16 py-8 lg:py-12 flex flex-col justify-center">
           <div className="max-w-lg mx-auto w-full">
             
             {/* Indicador de Steps Premium */}
@@ -235,8 +231,7 @@ export default function AssinarPage() {
 
             {/* ── STEP 1: Nome e Email ── */}
         {step === 1 && (
-          <div className="rounded-2xl p-8 md:p-10"
-            style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="pt-2">
 
             <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 tracking-tight">Criar sua conta</h1>
             <p className="text-white/50 text-sm mb-8 font-medium">Informe seus dados para começar</p>
@@ -381,7 +376,7 @@ export default function AssinarPage() {
 
         {/* ── STEP 2: Selecionar Plano ── */}
         {step === 2 && (
-          <div>
+          <div className="pt-2">
             <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 text-center tracking-tight">Escolha seu plano</h1>
             <p className="text-white/50 text-sm mb-8 text-center font-medium">Selecione o melhor plano para você</p>
 
@@ -504,7 +499,7 @@ export default function AssinarPage() {
 
         {/* ── STEP 3: Confirmar e Pagar ── */}
         {step === 3 && (
-          <div>
+          <div className="pt-2">
             <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 text-center tracking-tight">Confirmar assinatura</h1>
             <p className="text-white/50 text-sm mb-8 text-center font-medium">Revise seus dados antes de pagar</p>
 
@@ -564,8 +559,8 @@ export default function AssinarPage() {
                 </button>
               </>
             ) : (
-              <div className="rounded-2xl p-6" style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(212,175,55,0.2)' }}>
-                <div className="flex items-center gap-2 mb-4">
+              <div className="mt-4">
+                <div className="flex items-center gap-2 mb-4 justify-center">
                   <Lock size={16} className="text-[#D4AF37]" />
                   <span className="text-[#D4AF37] font-bold text-sm">Ambiente Seguro Stripe</span>
                 </div>
