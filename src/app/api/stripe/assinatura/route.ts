@@ -84,11 +84,16 @@ export async function POST(request: NextRequest) {
         } else {
           clientSecret = invoice.payment_intent.client_secret
         }
-      }
-    }
-
     if (!clientSecret) {
-       return NextResponse.json({ error: 'Não foi possível gerar a chave de pagamento segura.' }, { status: 500 })
+       console.error("DEBUG STRIPE API:", JSON.stringify(subscription, null, 2));
+       return NextResponse.json({ 
+         error: 'DEBUG: ' + JSON.stringify({
+            status: subscription.status,
+            invoice: typeof subscription.latest_invoice,
+            pi: (subscription.latest_invoice as any)?.payment_intent,
+            setup: subscription.pending_setup_intent
+         }) 
+       }, { status: 500 })
     }
 
     return NextResponse.json({ clientSecret })
