@@ -155,35 +155,85 @@ export default function AssinarPage() {
         </Link>
       </header>
 
-      {/* Indicador de Steps Premium */}
-      <div className="relative z-10 flex items-center justify-center pt-10 pb-8 gap-2 sm:gap-4 max-w-2xl mx-auto px-4">
-        {[1, 2, 3].map((s) => (
-          <div key={s} className="flex items-center gap-2 sm:gap-4 flex-1 last:flex-none">
-            <div className={`flex items-center justify-center min-w-[36px] h-9 rounded-full text-sm font-black transition-all duration-500 ${step === s
-              ? 'text-[#090B10] scale-110 shadow-[0_0_20px_rgba(212,175,55,0.4)] ring-4 ring-[#D4AF37]/20'
-              : step > s
-                ? 'text-[#090B10]'
-                : 'text-white/30 border-2 border-white/10'
-              }`}
-              style={step >= s ? { background: '#D4AF37' } : {}}>
-              {step > s ? <Check size={16} /> : s}
-            </div>
-            <span className={`text-xs sm:text-sm font-bold whitespace-nowrap hidden sm:inline transition-all duration-500 ${step === s ? 'text-white' : step > s ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-              {s === 1 ? 'Seus dados' : s === 2 ? 'Escolher plano' : 'Pagamento'}
-            </span>
-            {s < 3 && (
-              <div className="flex-1 h-[2px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: '#D4AF37' }} />
-              </div>
-            )}
+      {/* Layout de duas colunas (Esquerda: Info, Direita: Checkout) */}
+      <div className="relative z-10 flex flex-col lg:flex-row max-w-7xl mx-auto w-full flex-1 pb-16">
+        
+        {/* Lado Esquerdo - Card Animado de Benefícios */}
+        <div className="w-full lg:w-1/2 p-6 lg:p-12 flex flex-col justify-center">
+          <div className="max-w-md mx-auto lg:ml-auto lg:mr-12 w-full relative group">
+             {/* Glow Animado por Trás do Card */}
+             <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37] to-[#8B7322] rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000 animate-pulse"></div>
+             
+             {/* Card Glassmorphism */}
+             <div className="relative rounded-[2rem] p-8 md:p-10" style={{ background: 'rgba(21,36,62,0.65)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(16px)' }}>
+                
+                <h2 className="text-3xl lg:text-4xl font-black text-white mb-4 leading-tight">
+                  Sua jornada <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F9E596]">Premium</span> começa aqui
+                </h2>
+                
+                <p className="text-white/70 mb-8 leading-relaxed font-medium">
+                  Acesso ilimitado a conteúdos exclusivos, mensagens edificantes e materiais inéditos feitos com qualidade de cinema.
+                </p>
+                
+                <ul className="space-y-5 mb-8">
+                   <li className="flex items-center gap-4 text-white/90 font-medium">
+                     <div className="flex items-center justify-center w-8 h-8 rounded-full" style={{ background: 'rgba(212,175,55,0.15)' }}><Check size={16} className="text-[#D4AF37]"/></div> 
+                     Qualidade de cinema em todas as telas
+                   </li>
+                   <li className="flex items-center gap-4 text-white/90 font-medium">
+                     <div className="flex items-center justify-center w-8 h-8 rounded-full" style={{ background: 'rgba(212,175,55,0.15)' }}><Check size={16} className="text-[#D4AF37]"/></div> 
+                     Novos episódios toda semana
+                   </li>
+                   <li className="flex items-center gap-4 text-white/90 font-medium">
+                     <div className="flex items-center justify-center w-8 h-8 rounded-full" style={{ background: 'rgba(212,175,55,0.15)' }}><Check size={16} className="text-[#D4AF37]"/></div> 
+                     Cancele facilmente a qualquer momento
+                   </li>
+                </ul>
+                
+                {/* Destaque do Plano Dinâmico (Mostra se já tiver escolhido no Passo 2) */}
+                {step > 1 && planoDetalhe && (
+                   <div className="mt-8 p-5 rounded-2xl transition-all duration-500 transform translate-y-0 opacity-100" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05))', border: '1px solid rgba(212,175,55,0.3)' }}>
+                      <p className="text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-1 flex items-center gap-2">
+                         <Check size={14} /> Plano Selecionado
+                      </p>
+                      <p className="text-white font-black text-xl">{planoDetalhe.produto.nome}</p>
+                      <p className="text-white/70 font-semibold mt-1">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
+                   </div>
+                )}
+             </div>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* Conteúdo */}
-      <main className="relative z-10 max-w-lg mx-auto px-4 pb-16">
+        {/* Lado Direito - Fluxo de Checkout */}
+        <div className="w-full lg:w-1/2 px-4 lg:px-12 pt-6 lg:pt-12 flex flex-col">
+          <div className="max-w-lg mx-auto w-full">
+            
+            {/* Indicador de Steps Premium */}
+            <div className="flex items-center justify-center pb-8 gap-2 sm:gap-4 w-full">
+              {[1, 2, 3].map((s) => (
+                <div key={s} className="flex items-center gap-2 sm:gap-4 flex-1 last:flex-none">
+                  <div className={`flex items-center justify-center min-w-[36px] h-9 rounded-full text-sm font-black transition-all duration-500 ${step === s
+                    ? 'text-[#090B10] scale-110 shadow-[0_0_20px_rgba(212,175,55,0.4)] ring-4 ring-[#D4AF37]/20'
+                    : step > s
+                      ? 'text-[#090B10]'
+                      : 'text-white/30 border-2 border-white/10'
+                    }`}
+                    style={step >= s ? { background: '#D4AF37' } : {}}>
+                    {step > s ? <Check size={16} /> : s}
+                  </div>
+                  <span className={`text-xs sm:text-sm font-bold whitespace-nowrap hidden sm:inline transition-all duration-500 ${step === s ? 'text-white' : step > s ? 'text-[#D4AF37]' : 'text-white/30'}`}>
+                    {s === 1 ? 'Seus dados' : s === 2 ? 'Escolher plano' : 'Pagamento'}
+                  </span>
+                  {s < 3 && (
+                    <div className="flex-1 h-[2px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                      <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: '#D4AF37' }} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
 
-        {/* ── STEP 1: Nome e Email ── */}
+            {/* ── STEP 1: Nome e Email ── */}
         {step === 1 && (
           <div className="rounded-2xl p-8 md:p-10"
             style={{ background: 'rgba(21,36,62,0.85)', border: '1px solid rgba(255,255,255,0.08)' }}>
@@ -542,7 +592,9 @@ export default function AssinarPage() {
             </p>
           </div>
         )}
-      </main>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
