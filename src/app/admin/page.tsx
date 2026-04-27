@@ -157,10 +157,11 @@ export default async function AdminPage({
         </div>
 
         {/* Stats — 4 cards premium */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mb-12">
           {[
             { label: 'Total de Vídeos', value: totalVideos, icon: Film, color: 'from-[#00a8e1] to-[#007ba6]' },
             { label: 'Vídeos Ativos', value: videosAtivos, icon: Eye, color: 'from-[#10b981] to-[#047857]' },
+            { label: 'Vídeos Ocultos', value: totalVideos - videosAtivos, icon: EyeOff, color: 'from-[#ef4444] to-[#b91c1c]' },
             { label: 'Assinantes Ativos', value: membrosAtivos, icon: UserCheck, color: 'from-[#FFD700] to-[#D4AF37]', darkText: true },
             { label: 'Total de Cadastros', value: totalMembros, icon: Users, color: 'from-[#8b5cf6] to-[#6d28d9]' },
           ].map(s => (
@@ -319,9 +320,11 @@ export default async function AdminPage({
                                </div>
                             )}
                             {!video.ativo && (
-                               <div className="absolute top-3 right-3 bg-red-500 text-white text-[0.65rem] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-lg">
-                                 Oculto
-                               </div>
+                              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 pointer-events-none overflow-hidden">
+                                <div className="absolute transform -rotate-45 bg-gradient-to-r from-red-600 via-red-500 to-yellow-500 text-white font-black text-[0.7rem] sm:text-sm uppercase tracking-[0.3em] py-2 w-[150%] text-center shadow-[0_0_20px_rgba(239,68,68,0.5)] border-y-2 border-yellow-400">
+                                  VÍDEO OCULTO
+                                </div>
+                              </div>
                             )}
                           </div>
 

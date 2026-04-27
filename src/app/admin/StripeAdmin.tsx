@@ -25,7 +25,7 @@ export function StripeAdmin() {
   const [beneficiosCheck, setBeneficiosCheck] = useState<string[]>(['Acesso ilimitado ao catálogo', 'Resolução Full HD'])
   const [beneficioCustom, setBeneficioCustom] = useState('')
 
-  const [novoCupom, setNovoCupom] = useState({ nome: '', codigo: '', tipo: 'percentual', valor: '', usos_max: '' })
+  const [novoCupom, setNovoCupom] = useState({ nome: '', codigo: '', tipo: 'percentual', valor: '', usos_max: '', dias_expiracao: '' })
   const [loadingAction, setLoadingAction] = useState(false)
 
   // Edit states
@@ -133,7 +133,7 @@ export function StripeAdmin() {
   const criarCupom = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoadingAction(true)
-    const res = await fetch('/api/stripe/cupons', { method: 'POST', body: JSON.stringify(novoCupom) })
+    const res = await fetch('/api/stripe/cupons', { method: 'POST', body: JSON.stringify({ ...novoCupom }) })
     const data = await res.json()
     if (data.error) alert(data.error)
     else alert('Cupom criado com sucesso!')
@@ -404,6 +404,10 @@ export function StripeAdmin() {
             <div className="md:col-span-2">
               <label className={labelCls}>Limite de usos (Opcional)</label>
               <input type="number" placeholder="Ex: 100" value={novoCupom.usos_max} onChange={e => setNovoCupom({...novoCupom, usos_max: e.target.value})} className={inputCls} />
+            </div>
+            <div className="md:col-span-2">
+              <label className={labelCls}>Validade (Em Dias)</label>
+              <input type="number" placeholder="Ex: 7" className={inputCls} value={novoCupom.dias_expiracao} onChange={e => setNovoCupom({...novoCupom, dias_expiracao: e.target.value})} />
             </div>
             <div className="md:col-span-3 flex justify-end">
               <button disabled={loadingAction} className="bg-[#00a8e1] text-white px-8 py-3.5 rounded-xl font-black flex items-center gap-2 hover:bg-[#008dbd] transition-colors w-full md:w-auto justify-center">
