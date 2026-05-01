@@ -1,7 +1,55 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { stripe } from '@/lib/stripe'
+import { supabaseAdmin, buscarUsuarioPorEmail } from '@/lib/supabase-admin'
 
-export default function SucessoPage() {
+export default async function SucessoPage(props: any) {
+  // Garantir compatibilidade com Next.js 14 e 15 para searchParams
+  const searchParams = props.searchParams ? await props.searchParams : {}
+  const sessionId = searchParams.session_id
+
+  // 🔒 ATIVAÇÃO IMEDIATA: Verificamos a sessão diretamente no momento do sucesso
+  // Isso evita que o usuário chegue na /watch antes do webhook do Stripe ser processado
+  if (sessionId) {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId as string)
+      if (session.status === 'complete') {
+        const email = session.customer_email || session.metadata?.email || ''
+        if (email) {
+          const existente = await buscarUsuarioPorEmail(email)
+          // Se o plano ainda não constar como ativo no banco, forçamos a ativação
+          if (existente && existente.user_metadata?.plano_ativo !== true) {
+            
+            let maxTelas = 1
+            let etiquetaPlano = ''
+            
+            try {
+              const priceId = (session as any).line_items?.data?.[0]?.price?.id || session.metadata?.plano || ''
+              if (priceId) {
+                const price = await stripe.prices.retrieve(priceId, { expand: ['product'] })
+                const product = price.product as import('stripe').Stripe.Product
+                maxTelas = Number(product.metadata?.max_telas || 1)
+                etiquetaPlano = product.metadata?.etiqueta || product.name || ''
+              }
+            } catch (err) {}
+
+            await supabaseAdmin.auth.admin.updateUserById(existente.id, {
+              user_metadata: { 
+                ...existente.user_metadata, 
+                plano_ativo: true,
+                max_telas: maxTelas,
+                etiqueta_plano: etiquetaPlano || existente.user_metadata?.etiqueta_plano
+              }
+            })
+            console.log(`⚡ Plano ativado instantaneamente via /sucesso: ${email}`)
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Erro ao verificar sessão do Stripe no sucesso:', e)
+    }
+  }
+
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',

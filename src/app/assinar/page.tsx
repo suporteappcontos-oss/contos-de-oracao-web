@@ -533,7 +533,7 @@ export default function AssinarPage() {
                     className="w-full py-3.5 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     style={{ background: '#D4AF37', color: '#090B10' }}>
                     {loadingCheckout ? (
-                      <><InfinityIcon className="animate-pulse" size={20} /> Preparando ambiente seguro...</>
+                      <><InfinityIcon className="animate-spin" size={20} /> Preparando ambiente seguro...</>
                     ) : (
                       <><Lock size={16} /> Ir para o Pagamento Seguro <ChevronRight size={16} /></>
                     )}

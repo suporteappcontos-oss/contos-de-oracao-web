@@ -143,7 +143,7 @@ export default function EsqueciSenhaPage() {
               className="mt-1 w-full rounded-xl font-extrabold text-base cursor-pointer transition-all hover:brightness-110 flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
               style={{ padding: '14px', background: '#D4AF37', color: '#090B10', border: 'none', fontFamily: 'Outfit, sans-serif' }}>
               {loading ? (
-                <><InfinityIcon className="animate-pulse" size={20} /> Enviando...</>
+                <><InfinityIcon className="animate-spin" size={20} /> Enviando...</>
               ) : (
                 'Enviar link de recuperação →'
               )}

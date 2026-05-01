@@ -38,7 +38,7 @@ function GlobalLoaderInner() {
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#090B10]/80 backdrop-blur-sm transition-all duration-300">
-      <InfinityIcon className="animate-pulse text-[#D4AF37] mb-2" size={48} style={{ filter: 'drop-shadow(0 0 10px rgba(212,175,55,0.5))' }} />
+      <InfinityIcon className="animate-spin text-[#D4AF37] mb-2" size={48} style={{ filter: 'drop-shadow(0 0 10px rgba(212,175,55,0.5))' }} />
       <h2 className="text-white font-bold text-xl tracking-wider font-outfit">Carregando...</h2>
     </div>
   )
