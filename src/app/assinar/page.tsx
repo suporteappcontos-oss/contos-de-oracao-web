@@ -28,6 +28,7 @@ export default function AssinarPage() {
   const [planos, setPlanos] = useState<any[]>([])
   const [loadingCheckout, setLoadingCheckout] = useState(false)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [erroCheckout, setErroCheckout] = useState<{ msg: string; tipo: 'email_duplicado' | 'generico' } | null>(null)
 
   // Busca preços reais ativos na montagem
   useEffect(() => {
@@ -78,6 +79,7 @@ export default function AssinarPage() {
 
   async function finalizarPagamento() {
     setLoadingCheckout(true)
+    setErroCheckout(null)
     try {
       const response = await fetch('/api/stripe/assinatura', {
         method: 'POST',
@@ -93,10 +95,15 @@ export default function AssinarPage() {
       if (data.clientSecret) {
         setClientSecret(data.clientSecret)
       } else {
-        alert(data.error || 'Erro ao inicializar plataforma segura.')
+        const msgErro = data.error || ''
+        const emailDuplicado = msgErro.toLowerCase().includes('already been registered') || msgErro.toLowerCase().includes('already registered') || msgErro.toLowerCase().includes('email already')
+        setErroCheckout({
+          msg: emailDuplicado ? 'Este e-mail já possui uma conta cadastrada.' : msgErro || 'Erro ao inicializar plataforma segura.',
+          tipo: emailDuplicado ? 'email_duplicado' : 'generico'
+        })
       }
     } catch (e) {
-      alert('Erro de conexão ao criar assinatura. Tente novamente.')
+      setErroCheckout({ msg: 'Erro de conexão. Verifique sua internet e tente novamente.', tipo: 'generico' })
     } finally {
       setLoadingCheckout(false)
     }
@@ -159,7 +166,7 @@ export default function AssinarPage() {
       <div className="relative z-10 flex flex-col lg:flex-row max-w-6xl mx-auto w-full flex-1 mb-16 rounded-[2rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.85)', backdropFilter: 'blur(20px)' }}>
         
         {/* Lado Esquerdo - Info da Assinatura */}
-        <div className="w-full lg:w-5/12 p-6 lg:p-10 flex flex-col justify-center relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>
+        <div className="w-full lg:w-4/12 p-6 lg:p-8 flex flex-col justify-center relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>
              {/* Glow Animado por Trás */}
              <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-transparent pointer-events-none"></div>
              
@@ -547,6 +554,27 @@ export default function AssinarPage() {
                     </span>
                   </div>
                 </div>
+
+                {/* Banner de erro inline */}
+                {erroCheckout && (
+                  <div className="mb-4 p-4 rounded-xl" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
+                    <p className="text-red-400 text-sm font-semibold mb-3">⚠️ {erroCheckout.msg}</p>
+                    {erroCheckout.tipo === 'email_duplicado' ? (
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Link href="/login" className="flex-1 text-center py-2 rounded-lg text-sm font-bold no-underline transition-all hover:brightness-110" style={{ background: '#D4AF37', color: '#090B10' }}>
+                          Fazer Login →
+                        </Link>
+                        <Link href="/esqueci-senha" className="flex-1 text-center py-2 rounded-lg text-sm font-bold no-underline transition-all border border-white/10 hover:border-white/30 text-white/70 hover:text-white">
+                          Recuperar Senha
+                        </Link>
+                      </div>
+                    ) : (
+                      <button onClick={() => setErroCheckout(null)} className="text-xs text-white/40 hover:text-white/70 transition-colors underline cursor-pointer bg-transparent border-none">
+                        Tentar novamente
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 <button onClick={finalizarPagamento} disabled={loadingCheckout}
                   className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"

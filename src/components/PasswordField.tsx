@@ -16,8 +16,8 @@ export default function PasswordField({ name, placeholder, label }: Props) {
     <div>
       <label style={{
         display: 'block', color: 'rgba(255,255,255,0.5)',
-        fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px',
-        fontFamily: 'Outfit, sans-serif'
+        fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px',
+        fontFamily: 'Outfit, sans-serif', fontWeight: 600
       }}>
         {label}
       </label>
@@ -29,13 +29,13 @@ export default function PasswordField({ name, placeholder, label }: Props) {
           minLength={6}
           placeholder={placeholder}
           style={{
-            width: '100%', padding: '14px 48px 14px 14px', boxSizing: 'border-box',
-            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: '12px', color: '#fff', fontSize: '1rem', outline: 'none',
+            width: '100%', padding: '14px 48px 14px 16px', boxSizing: 'border-box',
+            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '12px', color: '#fff', fontSize: '0.95rem', outline: 'none',
             fontFamily: 'Outfit, sans-serif', transition: 'border 0.2s'
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
-          onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)' }}
+          onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
         />
         <button
           type="button"
@@ -43,17 +43,18 @@ export default function PasswordField({ name, placeholder, label }: Props) {
           style={{
             position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
             background: 'none', border: 'none', cursor: 'pointer',
-            color: 'rgba(255,255,255,0.35)', padding: '4px',
+            color: 'rgba(255,255,255,0.3)', padding: '4px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'color 0.2s'
           }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.3)' }}
           aria-label={show ? 'Ocultar senha' : 'Mostrar senha'}
         >
-          {show ? <EyeOff size={20} /> : <Eye size={20} />}
+          {show ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
     </div>
   )
 }
+
