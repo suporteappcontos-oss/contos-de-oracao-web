@@ -21,8 +21,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <Link href="/" className="flex items-center gap-3 no-underline w-fit">
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain" />
           <div>
-            <div className="text-white font-black text-base leading-tight">Contos de Oração</div>
-            <div className="text-[0.5rem] font-extrabold uppercase tracking-widest -mt-0.5" style={{ color: '#D4AF37' }}>Premium</div>
+            <div style={{ color: '#fff', fontWeight: 900, fontSize: '1rem', lineHeight: 1.2 }}>Contos de Oração</div>
           </div>
         </Link>
       </header>

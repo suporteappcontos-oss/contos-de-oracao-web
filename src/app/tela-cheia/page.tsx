@@ -13,7 +13,6 @@ export default function TelaCheia() {
         <Image src="/logo.png" alt="Contos de Oração" width={44} height={44} className="object-contain" />
         <div className="text-left">
           <div className="text-white font-black text-lg leading-tight">Contos de Oração</div>
-          <div className="text-[0.55rem] font-extrabold uppercase tracking-widest" style={{ color: '#D4AF37' }}>Premium</div>
         </div>
       </Link>
 

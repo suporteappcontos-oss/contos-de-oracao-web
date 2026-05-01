@@ -8,7 +8,6 @@ export default function Footer() {
         <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-contain opacity-70" />
         <div>
           <div className="text-white font-bold text-sm">Contos de Oração</div>
-          <div className="text-[0.55rem] font-extrabold uppercase tracking-widest" style={{ color: '#D4AF37' }}>Premium</div>
         </div>
       </div>
       <div className="flex flex-wrap gap-6 mb-8">

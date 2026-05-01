@@ -159,42 +159,42 @@ export default function AssinarPage() {
       <div className="relative z-10 flex flex-col lg:flex-row max-w-6xl mx-auto w-full flex-1 mb-16 rounded-[2rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.85)', backdropFilter: 'blur(20px)' }}>
         
         {/* Lado Esquerdo - Info da Assinatura */}
-        <div className="w-full lg:w-5/12 p-8 lg:p-12 flex flex-col justify-center relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>
+        <div className="w-full lg:w-5/12 p-6 lg:p-10 flex flex-col justify-center relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>
              {/* Glow Animado por Trás */}
              <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-transparent pointer-events-none"></div>
              
-             <div className="relative z-10 w-full max-w-sm mx-auto">
-                <h2 className="text-3xl lg:text-4xl font-black text-white mb-4 leading-tight">
-                  Sua jornada <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F9E596]">começa aqui</span>
+             <div className="relative z-10 w-full max-w-xs mx-auto">
+                <h2 className="text-xl lg:text-2xl font-black text-white mb-2 leading-snug">
+                  Sua jornada <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F9E596]">começa aqui</span>
                 </h2>
                 
-                <p className="text-white/70 mb-8 leading-relaxed font-medium">
-                  Acesso ilimitado a conteúdos exclusivos, mensagens edificantes e materiais inéditos feitos com qualidade de cinema.
+                <p className="text-white/50 text-xs mb-4 leading-relaxed">
+                  Acesso ilimitado a conteúdos exclusivos e mensagens edificantes.
                 </p>
                 
-                <ul className="space-y-5 mb-8">
-                   <li className="flex items-center gap-4 text-white/90 font-medium">
-                     <div className="flex items-center justify-center w-8 h-8 rounded-full" style={{ background: 'rgba(212,175,55,0.15)' }}><Check size={16} className="text-[#D4AF37]"/></div> 
+                <ul className="space-y-2.5 mb-5">
+                   <li className="flex items-center gap-2.5 text-white/80 text-sm">
+                     <Check size={13} className="text-[#D4AF37] shrink-0"/> 
                      Qualidade de cinema em todas as telas
                    </li>
-                   <li className="flex items-center gap-4 text-white/90 font-medium">
-                     <div className="flex items-center justify-center w-8 h-8 rounded-full" style={{ background: 'rgba(212,175,55,0.15)' }}><Check size={16} className="text-[#D4AF37]"/></div> 
+                   <li className="flex items-center gap-2.5 text-white/80 text-sm">
+                     <Check size={13} className="text-[#D4AF37] shrink-0"/> 
                      Novos episódios toda semana
                    </li>
-                   <li className="flex items-center gap-4 text-white/90 font-medium">
-                     <div className="flex items-center justify-center w-8 h-8 rounded-full" style={{ background: 'rgba(212,175,55,0.15)' }}><Check size={16} className="text-[#D4AF37]"/></div> 
+                   <li className="flex items-center gap-2.5 text-white/80 text-sm">
+                     <Check size={13} className="text-[#D4AF37] shrink-0"/> 
                      Cancele facilmente a qualquer momento
                    </li>
                 </ul>
                 
                 {/* Destaque do Plano Dinâmico (Mostra se já tiver escolhido no Passo 2) */}
                 {step > 1 && planoDetalhe && (
-                   <div className="mt-8 p-5 rounded-2xl transition-all duration-500 transform translate-y-0 opacity-100" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05))', border: '1px solid rgba(212,175,55,0.3)' }}>
-                      <p className="text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-1 flex items-center gap-2">
-                         <Check size={14} /> Plano Selecionado
+                   <div className="p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
+                      <p className="text-[#D4AF37] text-[0.6rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                         <Check size={11} /> Plano Selecionado
                       </p>
-                      <p className="text-white font-black text-xl">{planoDetalhe.produto.nome}</p>
-                      <p className="text-white/70 font-semibold mt-1">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
+                      <p className="text-white font-black text-base">{planoDetalhe.produto.nome}</p>
+                      <p className="text-white/60 text-xs font-semibold mt-0.5">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
                    </div>
                 )}
              </div>

@@ -21,7 +21,6 @@ export default function SucessoPage() {
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} style={{ objectFit: 'contain' }} />
           <div>
             <div style={{ color: '#fff', fontWeight: 900, fontSize: '1rem', lineHeight: 1.2 }}>Contos de Oração</div>
-            <div style={{ color: '#D4AF37', fontSize: '0.5rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.2em' }}>Premium</div>
           </div>
         </Link>
       </header>

@@ -126,6 +126,12 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 - **Status:** Ajustado.
 - Como a arquitetura de senha foi mudada (o usuário cria a senha no Passo 1, ANTES de pagar), a página `/sucesso` foi reescrita para remover instruções sobre "clicar no link do email", alertando apenas que ele já pode fazer o Login imediatamente.
 
+### 16. Redesign Premium do Fluxo de Pagamento (Checkout) ✅
+- **Layout Unificado (Split Layout):** Substituição do formulário simples centralizado por um Card Gigante estilo Glassmorphism.
+- **Lado Esquerdo Dinâmico:** Exibe os benefícios do acesso, e a partir do Passo 2 (quando escolhe o plano), exibe dinamicamente um mini-card dourado informando o preço e nome do plano selecionado.
+- **Animações de Alto Nível:** Linha do tempo (Steps) preenche dinamicamente de dourado; Botão 'Voltar' repaginado com hover; Títulos com gradientes metálicos; Fundo responsivo que mostra o BG global ('Cara da Bíblia').
+- **Responsividade Pura:** Em celulares (Mobile), as colunas empilham lindamente, garantindo que o usuário tenha vontade de comprar antes mesmo de colocar os dados.
+
 ---
 
 ## 💰 Custo Mensal da Plataforma Atual
@@ -154,4 +160,4 @@ d:\Projeto\web\
 └── DIARIO_DO_PROJETO.md      ← Este diário de documentação da Plataforma!
 ```
 
-*Arquivo atualizado em 23/04/2026 após a migração monumental para o ecossistema Stripe.*
+*Arquivo atualizado em 27/04/2026 após a implementação do redesign do checkout embutido.*

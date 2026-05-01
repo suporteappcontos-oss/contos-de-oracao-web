@@ -38,13 +38,8 @@ export default async function WatchPage() {
     redirect('/?acesso=expirado')
   }
 
-  // Label do plano baseado no plano real do usuário
-  const PLANO_LABEL: Record<string, string> = {
-    basico: 'Básico',
-    familia: 'Família',
-    premium: 'Premium',
-  }
-  const planoLabel = PLANO_LABEL[perfil?.plano ?? ''] ?? 'Plataforma'
+  // Etiqueta dinâmica vinda do metadata da Stripe (salva pelo webhook)
+  const planoLabel = isAdmin ? 'Administrador' : (user.user_metadata?.etiqueta_plano || perfil?.plano || 'Assinante')
 
   const { data: videos } = await supabase
     .from('videos').select('*').eq('ativo', true)

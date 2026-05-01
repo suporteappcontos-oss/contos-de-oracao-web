@@ -15,10 +15,11 @@ async function criarOuAtivarUsuario(
   email: string,
   nome: string,
   maxTelas: number = 1,
-  productId: string = ''
+  productId: string = '',
+  etiquetaPlano: string = ''
 ) {
   const existente = await buscarUsuarioPorEmail(email)
-  const metaAtualizado = { plano_ativo: true, nome, max_telas: maxTelas, stripe_product_id: productId }
+  const metaAtualizado = { plano_ativo: true, nome, max_telas: maxTelas, stripe_product_id: productId, etiqueta_plano: etiquetaPlano }
 
   if (existente) {
     await supabaseAdmin.auth.admin.updateUserById(existente.id, {
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
     // Busca max_telas do produto comprado
     let maxTelas = 1
     let productId = ''
+    let etiquetaPlano = ''
     try {
       const priceId = (session as any).line_items?.data?.[0]?.price?.id
         || session.metadata?.plano || ''
@@ -81,12 +83,13 @@ export async function POST(request: NextRequest) {
         const product = price.product as import('stripe').Stripe.Product
         maxTelas = Number(product.metadata?.max_telas || 1)
         productId = product.id
+        etiquetaPlano = product.metadata?.etiqueta || product.name || ''
       }
     } catch (e) {
       console.warn('⚠️ Não foi possível buscar max_telas, usando 1 como padrão.')
     }
 
-    if (email) await criarOuAtivarUsuario(email, formatarNomeCurto(nomeRaw), maxTelas, productId)
+    if (email) await criarOuAtivarUsuario(email, formatarNomeCurto(nomeRaw), maxTelas, productId, etiquetaPlano)
   }
 
   // ── ASSINATURA CONCLUÍDA (Stripe Elements) ou RENOVAÇÃO ──
@@ -98,6 +101,7 @@ export async function POST(request: NextRequest) {
       if (usuario) {
         let maxTelas = 1;
         let productId = '';
+        let etiquetaPlano = '';
         try {
           const priceId = (invoice.lines?.data?.[0] as any)?.price?.id;
           if (priceId) {
@@ -105,11 +109,12 @@ export async function POST(request: NextRequest) {
             const product = price.product as import('stripe').Stripe.Product;
             maxTelas = Number(product.metadata?.max_telas || 1);
             productId = product.id;
+            etiquetaPlano = product.metadata?.etiqueta || product.name || '';
           }
         } catch (e) { console.warn('Erro ao buscar metadados do plano') }
 
         await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
-          user_metadata: { plano_ativo: true, max_telas: maxTelas, stripe_product_id: productId },
+          user_metadata: { plano_ativo: true, max_telas: maxTelas, stripe_product_id: productId, etiqueta_plano: etiquetaPlano },
         })
         console.log(`✅ Pagamento Stripe confirmado (Acesso Liberado): ${email}`)
       }

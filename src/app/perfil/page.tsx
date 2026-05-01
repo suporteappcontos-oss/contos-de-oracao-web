@@ -74,10 +74,8 @@ export default async function PerfilPage() {
     ? new Date(user.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
     : '—'
 
-  const PLANO_LABEL: Record<string, string> = {
-    basico: 'Básico', familia: 'Família', premium: 'Premium',
-  }
-  const planoLabel = isAdmin ? 'Administrador' : (PLANO_LABEL[perfil?.plano ?? ''] ?? 'Assinante')
+  // Etiqueta dinâmica vinda do metadata da Stripe (salva pelo webhook)
+  const planoLabel = isAdmin ? 'Administrador' : (user.user_metadata?.etiqueta_plano || perfil?.plano || 'Assinante')
 
   return (
     <div className="min-h-screen text-white pb-20" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
