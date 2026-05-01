@@ -208,8 +208,8 @@ export default function AssinarPage() {
         </div>
 
         {/* Lado Direito - Fluxo de Checkout */}
-        <div className="w-full lg:w-7/12 px-6 lg:px-16 py-8 lg:py-12 flex flex-col justify-center">
-          <div className="max-w-lg mx-auto w-full">
+        <div className="w-full lg:w-7/12 px-4 lg:px-10 py-6 lg:py-10 flex flex-col justify-center">
+          <div className="max-w-sm mx-auto w-full">
             
             {/* Indicador de Steps */}
             <div className="flex items-center justify-center pb-8 gap-0 w-full">
@@ -241,23 +241,20 @@ export default function AssinarPage() {
 
             {/* ── STEP 1: Nome e Email ── */}
         {step === 1 && (
-          <div className="pt-2">
+          <div className="pt-1">
+            <h1 className="text-white text-xl font-black mb-1 tracking-tight">Criar sua conta</h1>
+            <p className="text-white/40 text-xs mb-5">Informe seus dados para começar</p>
 
-            <h1 className="text-white text-2xl font-black mb-1 tracking-tight">Criar sua conta</h1>
-            <p className="text-white/40 text-sm mb-7">Informe seus dados para começar</p>
-
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
               {/* Nome */}
               <div>
-                <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold block mb-1.5">
-                  Seu nome completo
-                </label>
+                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Seu nome completo</label>
                 <input
                   type="text"
                   value={nome}
                   onChange={e => { setNome(e.target.value); setErros(p => ({ ...p, nome: undefined })) }}
                   placeholder="João Silva"
-                  className="w-full px-4 py-3.5 rounded-xl text-white text-sm outline-none transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-lg text-white text-sm outline-none transition-all"
                   style={{
                     background: 'rgba(255,255,255,0.04)',
                     border: `1.5px solid ${erros.nome ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
@@ -272,15 +269,13 @@ export default function AssinarPage() {
 
               {/* Email */}
               <div>
-                <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold block mb-1.5">
-                  Seu e-mail
-                </label>
+                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Seu e-mail</label>
                 <input
                   type="email"
                   value={email}
                   onChange={e => { setEmail(e.target.value); setErros(p => ({ ...p, email: undefined })) }}
                   placeholder="joao@email.com"
-                  className="w-full px-4 py-3.5 rounded-xl text-white text-sm outline-none transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-lg text-white text-sm outline-none transition-all"
                   style={{
                     background: 'rgba(255,255,255,0.04)',
                     border: `1.5px solid ${erros.email ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
@@ -295,21 +290,21 @@ export default function AssinarPage() {
 
               {/* Senha */}
               <div>
-                <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold block mb-1.5">
-                  Crie uma senha de acesso
-                </label>
+                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Crie uma senha de acesso</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type={mostrarSenha ? 'text' : 'password'}
                     value={senha}
                     onChange={e => { setSenha(e.target.value); setErros(p => ({ ...p, senha: undefined, confirmarSenha: undefined })) }}
-                    placeholder="Mínimo de 6 caracteres"
-                    className="w-full px-4 py-3.5 pr-12 rounded-xl text-white text-sm outline-none transition-all"
+                    placeholder="Mínimo 6 caracteres"
+                    className="w-full px-3.5 py-2.5 pr-11 rounded-lg text-white text-sm outline-none transition-all"
                     style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: `1px solid ${erros.senha ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      background: 'rgba(255,255,255,0.04)',
+                      border: `1.5px solid ${erros.senha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
                       fontFamily: 'Outfit, sans-serif'
                     }}
+                    onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
+                    onBlur={e => { e.currentTarget.style.borderColor = erros.senha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
                     onKeyDown={e => e.key === 'Enter' && irParaStep2()}
                   />
                   <button
@@ -333,21 +328,21 @@ export default function AssinarPage() {
 
               {/* Confirmar Senha */}
               <div>
-                <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold block mb-1.5">
-                  Confirme sua senha
-                </label>
+                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Confirme sua senha</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type={mostrarConfirmar ? 'text' : 'password'}
                     value={confirmarSenha}
                     onChange={e => { setConfirmarSenha(e.target.value); setErros(p => ({ ...p, confirmarSenha: undefined })) }}
                     placeholder="Digite a senha novamente"
-                    className="w-full px-4 py-3.5 pr-12 rounded-xl text-white text-sm outline-none transition-all"
+                    className="w-full px-3.5 py-2.5 pr-11 rounded-lg text-white text-sm outline-none transition-all"
                     style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: `1px solid ${erros.confirmarSenha ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      background: 'rgba(255,255,255,0.04)',
+                      border: `1.5px solid ${erros.confirmarSenha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
                       fontFamily: 'Outfit, sans-serif'
                     }}
+                    onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
+                    onBlur={e => { e.currentTarget.style.borderColor = erros.confirmarSenha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
                     onKeyDown={e => e.key === 'Enter' && irParaStep2()}
                   />
                   <button
@@ -373,9 +368,9 @@ export default function AssinarPage() {
               </div>
 
               <button onClick={irParaStep2}
-                className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 mt-2"
+                className="w-full py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 mt-1"
                 style={{ background: '#D4AF37', color: '#090B10' }}>
-                Continuar <ChevronRight size={18} />
+                Continuar <ChevronRight size={16} strokeWidth={3} />
               </button>
             </div>
 
@@ -388,18 +383,18 @@ export default function AssinarPage() {
 
         {/* ── STEP 2: Selecionar Plano ── */}
         {step === 2 && (
-          <div className="pt-2">
-            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 text-center tracking-tight">Escolha seu plano</h1>
-            <p className="text-white/50 text-sm mb-8 text-center font-medium">Selecione o melhor plano para você</p>
+          <div className="pt-1">
+            <h1 className="text-white text-xl font-black mb-1 text-center tracking-tight">Escolha seu plano</h1>
+            <p className="text-white/40 text-xs mb-5 text-center">Selecione o melhor plano para você</p>
 
-            <div className="flex flex-col gap-4 mb-6">
+            <div className="flex flex-col gap-3 mb-4">
               {planos.length === 0 && <p className="text-white/50 text-center">Carregando planos...</p>}
 
               {planos.map(plano => (
                 <button
                   key={plano.id}
                   onClick={() => setPlanoSelecionado(plano.id)}
-                  className={`w-full text-left rounded-2xl p-5 transition-all duration-300 cursor-pointer overflow-hidden ${planoSelecionado === plano.id ? 'plano-selecionado border-2 border-[#D4AF37]' : 'border-2 border-white/5 hover:border-white/20 hover:bg-white/5'}`}
+                  className={`w-full text-left rounded-xl p-4 transition-all duration-300 cursor-pointer overflow-hidden ${planoSelecionado === plano.id ? 'plano-selecionado border-2 border-[#D4AF37]' : 'border border-white/5 hover:border-white/20 hover:bg-white/5'}`}
                   style={{
                     background: planoSelecionado === plano.id ? 'rgba(212,175,55,0.1)' : 'rgba(21,36,62,0.7)',
                     position: 'relative'
@@ -412,8 +407,8 @@ export default function AssinarPage() {
                   )}
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-white font-black text-lg">{plano.produto.nome}</div>
-                      <div className="text-white/50 text-sm mt-0.5">
+                      <div className="text-white font-black text-base">{plano.produto.nome}</div>
+                      <div className="text-white/50 text-xs mt-0.5">
                         {plano.intervalo === 'month' ? 'Cobrado mensalmente' : plano.intervalo === 'year' ? 'Cobrado anualmente' : 'Cobrança personalizada'}
                       </div>
                       {/* Badge de telas simultâneas */}
@@ -430,10 +425,10 @@ export default function AssinarPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-black text-2xl" style={{ color: '#D4AF37' }}>
-                        R$ {(plano.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </div>
-                      <div className="text-white/40 text-xs">/{plano.intervalo === 'month' ? 'mês' : plano.intervalo === 'year' ? 'ano' : 'ciclo'}</div>
+                      <div className="font-black text-xl" style={{ color: '#D4AF37' }}>
+                         R$ {(plano.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                       </div>
+                       <div className="text-white/40 text-xs">/{plano.intervalo === 'month' ? 'mês' : plano.intervalo === 'year' ? 'ano' : 'ciclo'}</div>
                     </div>
                   </div>
                   {planoSelecionado === plano.id && (
@@ -447,7 +442,7 @@ export default function AssinarPage() {
             </div>
 
             {/* Benefícios Dinâmicos */}
-            <div className="rounded-2xl p-5 mb-6"
+            <div className="rounded-xl p-4 mb-4"
               style={{ background: 'rgba(21,36,62,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">
                 {planoDetalhe ? `Benefícios do plano ${planoDetalhe.produto.nome}` : 'O que está incluído'}
@@ -496,9 +491,9 @@ export default function AssinarPage() {
             </div>
 
             <button onClick={irParaStep3}
-              className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
               style={{ background: '#D4AF37', color: '#090B10' }}>
-              Continuar <ChevronRight size={18} />
+              Continuar <ChevronRight size={16} strokeWidth={3} />
             </button>
 
             <button onClick={() => setStep(1)}
@@ -511,9 +506,9 @@ export default function AssinarPage() {
 
         {/* ── STEP 3: Confirmar e Pagar ── */}
         {step === 3 && (
-          <div className="pt-2">
-            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 text-center tracking-tight">Confirmar assinatura</h1>
-            <p className="text-white/50 text-sm mb-8 text-center font-medium">Revise seus dados antes de pagar</p>
+          <div className="pt-1">
+            <h1 className="text-white text-xl font-black mb-1 text-center tracking-tight">Confirmar assinatura</h1>
+            <p className="text-white/40 text-xs mb-5 text-center">Revise seus dados antes de pagar</p>
 
             {/* Formulário Embutido da Stripe ou Resumo */}
             {!clientSecret ? (
@@ -581,15 +576,18 @@ export default function AssinarPage() {
                   </div>
                 )}
 
-                <button onClick={finalizarPagamento} disabled={loadingCheckout}
-                  className="w-full py-4 font-extrabold rounded-xl text-base transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                  style={{ background: '#D4AF37', color: '#090B10' }}>
-                  {loadingCheckout ? (
-                    <><Loader2 className="animate-spin" size={18} /> Preparando ambiente seguro...</>
-                  ) : (
-                    <><Lock size={18} /> Ir para o Pagamento Seguro <ChevronRight size={18} /></>
-                  )}
-                </button>
+                {/* Botoes: esconde pagamento e voltar se email duplicado */}
+                {erroCheckout?.tipo === 'email_duplicado' ? null : (
+                  <button onClick={finalizarPagamento} disabled={loadingCheckout}
+                    className="w-full py-3.5 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                    style={{ background: '#D4AF37', color: '#090B10' }}>
+                    {loadingCheckout ? (
+                      <><Loader2 className="animate-spin" size={17} /> Preparando ambiente seguro...</>
+                    ) : (
+                      <><Lock size={16} /> Ir para o Pagamento Seguro <ChevronRight size={16} /></>
+                    )}
+                  </button>
+                )}
               </>
             ) : (
               <div className="mt-4">
@@ -606,9 +604,9 @@ export default function AssinarPage() {
               </div>
             )}
 
-            {!clientSecret && (
+            {!clientSecret && erroCheckout?.tipo !== 'email_duplicado' && (
               <button onClick={() => setStep(2)}
-                className="w-full py-4 mt-3 rounded-xl text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2 group border border-white/5 hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5 text-white/50 hover:text-[#D4AF37]"
+                className="w-full py-3 mt-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 group border border-white/5 hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5 text-white/40 hover:text-[#D4AF37]"
                 style={{ background: 'transparent' }}>
                 <span className="transition-transform group-hover:-translate-x-1">←</span> Voltar para Escolha do Plano
               </button>
