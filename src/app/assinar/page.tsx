@@ -162,13 +162,82 @@ export default function AssinarPage() {
         </Link>
       </header>
 
-      {/* Layout Unificado — Card compacto centralizado */}
-      <div className="relative z-10 w-full max-w-2xl mx-auto px-4 mb-16 mt-8">
+      {/* Layout Unificado (Esquerda: Info e Benefícios, Direita: Checkout) */}
+      <div className="relative z-10 flex flex-col lg:flex-row max-w-4xl mx-auto w-full flex-1 mb-16 mt-8 rounded-[1.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
         
-        {/* Card do Checkout */}
-        <div className="rounded-[1.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
-          <div className="px-6 py-8 sm:px-10">
+        {/* Lado Esquerdo - Info e Benefícios */}
+        <div className="hidden lg:flex w-full lg:w-1/2 p-6 lg:p-10 flex-col relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>
+          {/* Glow Animado por Trás */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-transparent pointer-events-none"></div>
+          
+          <div className="relative z-10 w-full h-full flex flex-col">
+            <h2 className="text-xl lg:text-2xl font-black text-white mb-2 leading-snug">
+              Sua jornada <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F9E596]">começa aqui</span>
+            </h2>
+            <p className="text-white/50 text-xs mb-6 leading-relaxed">
+              Acesso ilimitado a conteúdos exclusivos e mensagens edificantes.
+            </p>
 
+            {/* Caixa de benefícios centralizada dinamicamente */}
+            <div className="rounded-xl p-5 w-full flex-1" style={{ background: 'rgba(21,36,62,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <p className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Check size={14} />
+                {planoDetalhe ? `Benefícios: ${planoDetalhe.produto.nome}` : 'O que está incluído'}
+              </p>
+              
+              {planoDetalhe && planoDetalhe.produto.metadata?.beneficios ? (
+                // Benefícios personalizados do plano selecionado
+                planoDetalhe.produto.metadata.beneficios.split(',').map((beneficio: string, i: number) => (
+                  <div key={i} className="flex items-start gap-3 py-2.5" style={{ borderBottom: i < planoDetalhe.produto.metadata.beneficios.split(',').length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                    <span style={{ color: '#D4AF37', marginTop: '2px' }}>✓</span>
+                    <span className="text-white/80 text-sm leading-snug">{beneficio.trim()}</span>
+                  </div>
+                ))
+              ) : (
+                // Benefícios padrão quando não há plano selecionado
+                [
+                  '📺 Acesso ilimitado a todos os vídeos',
+                  '❤️ Salve favoritos e assista de onde parou',
+                  '📱 Disponível em qualquer dispositivo',
+                  '🚀 Em breve: App exclusivo iOS/Android',
+                  '🎥 Qualidade de cinema em Full HD',
+                  '⭐ Cancele a qualquer momento'
+                ].map((text, i) => (
+                  <div key={i} className="flex items-start gap-3 py-2.5" style={{ borderBottom: i < 5 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                    <span style={{ color: '#D4AF37', marginTop: '2px' }}>{text.split(' ')[0]}</span>
+                    <span className="text-white/80 text-sm leading-snug">{text.substring(text.indexOf(' ') + 1)}</span>
+                  </div>
+                ))
+              )}
+
+              {planoDetalhe && (
+                <div className="mt-5 pt-4 border-t border-white/10">
+                  <div className="flex items-start gap-2">
+                    <Shield size={16} style={{ color: '#D4AF37', marginTop: '1px' }} />
+                    <span className="text-white/60 text-xs">
+                      {planoDetalhe.intervalo === 'year' ? 'Economia: 12 meses pelo preço de 10!' : 'Sem fidelidade. Cancele quando quiser, sem multas.'}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Destaque do Plano Dinâmico no Checkout final */}
+            {step === 3 && planoDetalhe && (
+              <div className="mt-6 p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
+                 <p className="text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                    <Check size={12} strokeWidth={3} /> Plano Selecionado
+                 </p>
+                 <p className="text-white font-black text-lg">{planoDetalhe.produto.nome}</p>
+                 <p className="text-white/60 text-xs font-semibold mt-0.5">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Lado Direito - Fluxo de Checkout */}
+        <div className="w-full lg:w-1/2">
+          <div className="px-6 py-8 sm:px-10 h-full flex flex-col justify-center">
             
             {/* Indicador de Steps — Pills com destaque */}
             <div className="flex items-center justify-center mb-8 gap-0 w-full">
@@ -411,54 +480,6 @@ export default function AssinarPage() {
               ))}
             </div>
 
-            {/* Benefícios Dinâmicos */}
-            <div className="rounded-xl p-4 mb-4"
-              style={{ background: 'rgba(21,36,62,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">
-                {planoDetalhe ? `Benefícios do plano ${planoDetalhe.produto.nome}` : 'O que está incluído'}
-              </p>
-              
-              {planoDetalhe && planoDetalhe.produto.metadata?.beneficios ? (
-                // Benefícios personalizados do plano selecionado
-                planoDetalhe.produto.metadata.beneficios.split(',').map((beneficio: string, i: number) => (
-                  <div key={i} className="flex items-center gap-3 py-2"
-                    style={{ borderBottom: i < planoDetalhe.produto.metadata.beneficios.split(',').length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                    <span style={{ color: '#D4AF37' }}>✓</span>
-                    <span className="text-white/70 text-sm">{beneficio.trim()}</span>
-                  </div>
-                ))
-              ) : (
-                // Benefícios padrão quando não há plano selecionado
-                [
-                  [<Play size={14} />, '📺 Acesso ilimitado a todos os vídeos e orações'],
-                  [<Heart size={14} />, '❤️ Salve seus favoritos e continue de onde parou'],
-                  [<Download size={14} />, '📱 Assista em qualquer dispositivo (computador, celular, tablet)'],
-                  [<Shield size={14} />, '🚀 Em breve: App exclusivo para iOS e Android'],
-                  [<Shield size={14} />, '🎥 Vídeos em Full HD (1080p)'],
-                  [<Shield size={14} />, '⭐ Suporte prioritário 24/7'],
-                ].map(([icon, text], i) => (
-                  <div key={i} className="flex items-center gap-3 py-2"
-                    style={{ borderBottom: i < 5 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                    <span style={{ color: '#D4AF37' }}>{text.toString().split(' ')[0]}</span>
-                    <span className="text-white/70 text-sm">{text.toString().substring(text.toString().indexOf(' ') + 1)}</span>
-                  </div>
-                ))
-              )}
-              
-              {planoDetalhe && (
-                <div className="mt-4 pt-3 border-t border-white/10">
-                  <div className="flex items-center gap-2">
-                    <Shield size={16} style={{ color: '#D4AF37' }} />
-                    <span className="text-white/50 text-xs">
-                      {planoDetalhe.intervalo === 'year' 
-                        ? '💰 Economia: 12 meses pelo preço de 10!' 
-                        : '🔄 Cancele quando quiser, sem multa'
-                      }
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
 
             <button onClick={irParaStep3}
               className="w-full py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
@@ -483,48 +504,6 @@ export default function AssinarPage() {
             {/* Formulário Embutido da Stripe ou Resumo */}
             {!clientSecret ? (
               <>
-                {/* Resumo - Animação de Bilhete Premium */}
-                <div className="rounded-2xl p-6 mb-5 relative overflow-hidden"
-                  style={{ 
-                    background: 'linear-gradient(145deg, rgba(21,36,62,0.9), rgba(9,11,16,0.9))', 
-                    border: '1px solid rgba(212,175,55,0.4)',
-                    boxShadow: '0 10px 40px rgba(212,175,55,0.15)'
-                  }}>
-                  {/* Efeito de brilho cruzando o resumo */}
-                  <div className="absolute inset-0 pointer-events-none opacity-50"
-                    style={{
-                      background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1), transparent)',
-                      transform: 'skewX(-20deg)',
-                      animation: 'shine 3s infinite'
-                    }} />
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <Check size={18} className="text-[#D4AF37]" />
-                    <p className="text-[#D4AF37] text-xs font-black uppercase tracking-widest m-0">Plano Selecionado</p>
-                  </div>
-
-                  <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="text-white/60 text-sm">Nome</span>
-                    <span className="text-white font-semibold text-sm capitalize">{nome}</span>
-                  </div>
-                  <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="text-white/60 text-sm">E-mail</span>
-                    <span className="text-white font-semibold text-sm">{email}</span>
-                  </div>
-                  <div className="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="text-white/60 text-sm">Plano</span>
-                    <span className="font-bold text-sm" style={{ color: '#D4AF37' }}>
-                      {planoDetalhe ? `${planoDetalhe.produto.nome} — R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/${planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}` : 'Carregando...'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between pt-3 mt-1">
-                    <span className="text-white font-black text-sm">Total hoje</span>
-                    <span className="font-black text-lg" style={{ color: '#D4AF37' }}>
-                      {planoDetalhe ? `R$ ${(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'R$ 0,00'}
-                    </span>
-                  </div>
-                </div>
-
                 {/* Banner de erro inline */}
                 {erroCheckout && (
                   <div className="mb-4 p-4 rounded-xl" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
