@@ -1,13 +1,47 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
-import { enviarResetSenha } from './actions'
+import { useState, useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
 
-type Props = {
-  searchParams: Promise<{ enviado?: string; erro?: string }>
-}
+export default function EsqueciSenhaPage() {
+  const [loading, setLoading] = useState(false)
+  const [enviado, setEnviado] = useState(false)
+  const [erro, setErro] = useState('')
+  const [email, setEmail] = useState('')
 
-export default async function EsqueciSenhaPage({ searchParams }: Props) {
-  const { enviado, erro } = await searchParams
+  // Lê query params na montagem (URL: ?enviado=1 ou ?erro=...)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('enviado')) setEnviado(true)
+    const erroParam = params.get('erro')
+    if (erroParam) setErro(decodeURIComponent(erroParam))
+  }, [])
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    setLoading(true)
+    setErro('')
+    try {
+      const res = await fetch('/api/auth/esqueci-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setEnviado(true)
+      } else {
+        setErro(data.error || 'Ocorreu um erro. Tente novamente.')
+        setLoading(false)
+      }
+    } catch {
+      setErro('Erro de conexão. Tente novamente.')
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
@@ -24,10 +58,7 @@ export default async function EsqueciSenhaPage({ searchParams }: Props) {
       <header className="absolute top-0 w-full py-4 px-[4%] z-30">
         <Link href="/" className="flex items-center gap-3 no-underline w-fit">
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain" />
-          <div>
-            <div className="text-white font-black text-base leading-tight">Contos de Oração</div>
-            <div className="text-[0.5rem] font-extrabold uppercase tracking-widest -mt-0.5" style={{ color: '#D4AF37' }}>Espiritualidade</div>
-          </div>
+          <div className="text-white font-black text-base leading-tight">Contos de Oração</div>
         </Link>
       </header>
 
@@ -39,15 +70,15 @@ export default async function EsqueciSenhaPage({ searchParams }: Props) {
         }}>
 
         {/* Ícone */}
-        <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-6"
+        <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-5"
           style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)' }}>
           🔑
         </div>
 
-        <h1 className="text-white text-2xl md:text-3xl font-black mb-2">
+        <h1 className="text-white text-2xl md:text-3xl font-black mb-1.5">
           {enviado ? 'E-mail enviado!' : 'Esqueci minha senha'}
         </h1>
-        <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="text-sm mb-7" style={{ color: 'rgba(255,255,255,0.4)' }}>
           {enviado
             ? 'Se esse e-mail estiver cadastrado, você receberá o link em breve. Verifique também a caixa de spam.'
             : 'Digite seu e-mail e enviaremos um link para criar uma nova senha.'}
@@ -71,25 +102,30 @@ export default async function EsqueciSenhaPage({ searchParams }: Props) {
           </div>
         ) : (
           /* Formulário */
-          <form action={enviarResetSenha} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
             <div>
-              <label className="block text-[0.7rem] uppercase tracking-widest font-semibold mb-2"
-                style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <label className="block text-[0.65rem] uppercase tracking-widest font-bold mb-1.5"
+                style={{ color: 'rgba(255,255,255,0.4)' }}>
                 E-mail
               </label>
               <input
-                type="text"
-                name="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 required
                 placeholder="seu@email.com"
+                disabled={loading}
                 className="w-full outline-none transition-all text-sm rounded-xl"
                 style={{
-                  padding: '14px', boxSizing: 'border-box' as const,
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-                  color: '#fff', fontFamily: 'Outfit, sans-serif'
+                  padding: '14px 16px', boxSizing: 'border-box' as const,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1.5px solid rgba(255,255,255,0.08)',
+                  color: '#fff', fontFamily: 'Outfit, sans-serif',
+                  opacity: loading ? 0.6 : 1
                 }}
-                onFocus={undefined}
+                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
               />
             </div>
 
@@ -97,17 +133,24 @@ export default async function EsqueciSenhaPage({ searchParams }: Props) {
             {erro && (
               <div className="rounded-xl px-4 py-3 text-sm text-center"
                 style={{ background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.25)', color: '#ff8080' }}>
-                ❌ {decodeURIComponent(erro)}
+                ❌ {erro}
               </div>
             )}
 
-            <button type="submit" className="mt-2 w-full rounded-xl font-extrabold text-base cursor-pointer transition-all hover:brightness-110"
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-1 w-full rounded-xl font-extrabold text-base cursor-pointer transition-all hover:brightness-110 flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
               style={{ padding: '14px', background: '#D4AF37', color: '#090B10', border: 'none', fontFamily: 'Outfit, sans-serif' }}>
-              Enviar link de recuperação →
+              {loading ? (
+                <><Loader2 className="animate-spin" size={18} /> Enviando...</>
+              ) : (
+                'Enviar link de recuperação →'
+              )}
             </button>
 
             <Link href="/login" className="text-center text-sm no-underline transition-colors hover:opacity-80"
-              style={{ color: 'rgba(255,255,255,0.35)', marginTop: '4px' }}>
+              style={{ color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>
               ← Voltar para o Login
             </Link>
           </form>

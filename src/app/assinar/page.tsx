@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2, Monitor, Lock } from 'lucide-react'
+import { Check, ChevronRight, Shield, Play, Heart, Download, Loader2, Monitor, Lock, Eye, EyeOff } from 'lucide-react'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 
@@ -211,24 +211,27 @@ export default function AssinarPage() {
         <div className="w-full lg:w-7/12 px-6 lg:px-16 py-8 lg:py-12 flex flex-col justify-center">
           <div className="max-w-lg mx-auto w-full">
             
-            {/* Indicador de Steps Premium */}
-            <div className="flex items-center justify-center pb-8 gap-2 sm:gap-4 w-full">
+            {/* Indicador de Steps */}
+            <div className="flex items-center justify-center pb-8 gap-0 w-full">
               {[1, 2, 3].map((s) => (
-                <div key={s} className="flex items-center gap-2 sm:gap-4 flex-1 last:flex-none">
-                  <div className={`flex items-center justify-center min-w-[36px] h-9 rounded-full text-sm font-black transition-all duration-500 ${step === s
-                    ? 'text-[#090B10] scale-110 shadow-[0_0_20px_rgba(212,175,55,0.4)] ring-4 ring-[#D4AF37]/20'
-                    : step > s
-                      ? 'text-[#090B10]'
-                      : 'text-white/30 border-2 border-white/10'
-                    }`}
-                    style={step >= s ? { background: '#D4AF37' } : {}}>
-                    {step > s ? <Check size={16} /> : s}
+                <div key={s} className="flex items-center flex-1 last:flex-none last:flex-grow-0">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className={`flex items-center justify-center w-9 h-9 rounded-full text-sm font-black transition-all duration-500 ${step === s
+                      ? 'text-[#090B10] shadow-[0_0_20px_rgba(212,175,55,0.5)] ring-4 ring-[#D4AF37]/25'
+                      : step > s
+                        ? 'text-[#090B10]'
+                        : 'text-white/25 border border-white/10'
+                      }`}
+                      style={step >= s ? { background: '#D4AF37' } : {}}
+                    >
+                      {step > s ? <Check size={15} strokeWidth={3} /> : s}
+                    </div>
+                    <span className={`text-[0.65rem] font-bold uppercase tracking-wider hidden sm:block transition-all duration-500 ${step === s ? 'text-[#D4AF37]' : step > s ? 'text-[#D4AF37]/60' : 'text-white/20'}`}>
+                      {s === 1 ? 'Dados' : s === 2 ? 'Plano' : 'Pagamento'}
+                    </span>
                   </div>
-                  <span className={`text-xs sm:text-sm font-bold whitespace-nowrap hidden sm:inline transition-all duration-500 ${step === s ? 'text-white' : step > s ? 'text-[#D4AF37]' : 'text-white/30'}`}>
-                    {s === 1 ? 'Seus dados' : s === 2 ? 'Escolher plano' : 'Pagamento'}
-                  </span>
                   {s < 3 && (
-                    <div className="flex-1 h-[2px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                    <div className="flex-1 h-[1px] mx-3 mt-[-10px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
                       <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: '#D4AF37' }} />
                     </div>
                   )}
@@ -240,8 +243,8 @@ export default function AssinarPage() {
         {step === 1 && (
           <div className="pt-2">
 
-            <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 text-3xl font-black mb-2 tracking-tight">Criar sua conta</h1>
-            <p className="text-white/50 text-sm mb-8 font-medium">Informe seus dados para começar</p>
+            <h1 className="text-white text-2xl font-black mb-1 tracking-tight">Criar sua conta</h1>
+            <p className="text-white/40 text-sm mb-7">Informe seus dados para começar</p>
 
             <div className="flex flex-col gap-5">
               {/* Nome */}
@@ -256,10 +259,12 @@ export default function AssinarPage() {
                   placeholder="João Silva"
                   className="w-full px-4 py-3.5 rounded-xl text-white text-sm outline-none transition-all"
                   style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: `1px solid ${erros.nome ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    background: 'rgba(255,255,255,0.04)',
+                    border: `1.5px solid ${erros.nome ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
                     fontFamily: 'Outfit, sans-serif'
                   }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = erros.nome ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
                   onKeyDown={e => e.key === 'Enter' && irParaStep2()}
                 />
                 {erros.nome && <p className="text-red-400 text-xs mt-1.5">{erros.nome}</p>}
@@ -277,10 +282,12 @@ export default function AssinarPage() {
                   placeholder="joao@email.com"
                   className="w-full px-4 py-3.5 rounded-xl text-white text-sm outline-none transition-all"
                   style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: `1px solid ${erros.email ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    background: 'rgba(255,255,255,0.04)',
+                    border: `1.5px solid ${erros.email ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
                     fontFamily: 'Outfit, sans-serif'
                   }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = erros.email ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
                   onKeyDown={e => e.key === 'Enter' && irParaStep2()}
                 />
                 {erros.email && <p className="text-red-400 text-xs mt-1.5">{erros.email}</p>}
@@ -318,7 +325,7 @@ export default function AssinarPage() {
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)' }}
                   >
-                    {mostrarSenha ? '👁️' : '👁️‍🗨️'}
+                    {mostrarSenha ? <EyeOff size={17} /> : <Eye size={17} />}
                   </button>
                 </div>
                 {erros.senha && <p className="text-red-400 text-xs mt-1.5">{erros.senha}</p>}
@@ -356,7 +363,7 @@ export default function AssinarPage() {
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
                     onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)' }}
                   >
-                    {mostrarConfirmar ? '👁️' : '👁️‍🗨️'}
+                    {mostrarConfirmar ? <EyeOff size={17} /> : <Eye size={17} />}
                   </button>
                 </div>
                 {erros.confirmarSenha && <p className="text-red-400 text-xs mt-1.5">{erros.confirmarSenha}</p>}
@@ -372,11 +379,9 @@ export default function AssinarPage() {
               </button>
             </div>
 
-            <p className="text-center text-white/20 text-xs mt-6">
+            <p className="text-center text-white/20 text-xs mt-5">
               Já tem uma conta?{' '}
-              <Link href="/login" style={{ color: '#D4AF37' }} className="no-underline hover:underline font-semibold">
-                Fazer login
-              </Link>
+              <Link href="/login" style={{ color: '#D4AF37' }} className="no-underline hover:underline font-bold">Fazer login</Link>
             </p>
           </div>
         )}
