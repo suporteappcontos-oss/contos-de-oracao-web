@@ -162,77 +162,47 @@ export default function AssinarPage() {
         </Link>
       </header>
 
-      {/* Layout Unificado (Esquerda: Info, Direita: Checkout) */}
-      <div className="relative z-10 flex flex-col lg:flex-row max-w-6xl mx-auto w-full flex-1 mb-16 rounded-[2rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.85)', backdropFilter: 'blur(20px)' }}>
+      {/* Layout Unificado — Card compacto centralizado */}
+      <div className="relative z-10 w-full max-w-2xl mx-auto px-4 mb-16 mt-8">
         
-        {/* Lado Esquerdo - Info da Assinatura */}
-        <div className="w-full lg:w-4/12 p-6 lg:p-8 flex flex-col justify-center relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>
-             {/* Glow Animado por Trás */}
-             <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-transparent pointer-events-none"></div>
-             
-             <div className="relative z-10 w-full max-w-xs mx-auto">
-                <h2 className="text-xl lg:text-2xl font-black text-white mb-2 leading-snug">
-                  Sua jornada <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F9E596]">começa aqui</span>
-                </h2>
-                
-                <p className="text-white/50 text-xs mb-4 leading-relaxed">
-                  Acesso ilimitado a conteúdos exclusivos e mensagens edificantes.
-                </p>
-                
-                <ul className="space-y-2.5 mb-5">
-                   <li className="flex items-center gap-2.5 text-white/80 text-sm">
-                     <Check size={13} className="text-[#D4AF37] shrink-0"/> 
-                     Qualidade de cinema em todas as telas
-                   </li>
-                   <li className="flex items-center gap-2.5 text-white/80 text-sm">
-                     <Check size={13} className="text-[#D4AF37] shrink-0"/> 
-                     Novos episódios toda semana
-                   </li>
-                   <li className="flex items-center gap-2.5 text-white/80 text-sm">
-                     <Check size={13} className="text-[#D4AF37] shrink-0"/> 
-                     Cancele facilmente a qualquer momento
-                   </li>
-                </ul>
-                
-                {/* Destaque do Plano Dinâmico (Mostra se já tiver escolhido no Passo 2) */}
-                {step > 1 && planoDetalhe && (
-                   <div className="p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
-                      <p className="text-[#D4AF37] text-[0.6rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                         <Check size={11} /> Plano Selecionado
-                      </p>
-                      <p className="text-white font-black text-base">{planoDetalhe.produto.nome}</p>
-                      <p className="text-white/60 text-xs font-semibold mt-0.5">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
-                   </div>
-                )}
-             </div>
-        </div>
+        {/* Card do Checkout */}
+        <div className="rounded-[1.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
+          <div className="px-6 py-8 sm:px-10">
 
-        {/* Lado Direito - Fluxo de Checkout */}
-        <div className="w-full lg:w-7/12 px-4 lg:px-10 py-6 lg:py-10 flex flex-col justify-center">
-          <div className="max-w-sm mx-auto w-full">
             
-            {/* Indicador de Steps */}
-            <div className="flex items-center justify-center pb-8 gap-0 w-full">
+            {/* Indicador de Steps — Pills com destaque */}
+            <div className="flex items-center justify-center mb-8 gap-0 w-full">
               {[1, 2, 3].map((s) => (
                 <div key={s} className="flex items-center flex-1 last:flex-none last:flex-grow-0">
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className={`flex items-center justify-center w-9 h-9 rounded-full text-sm font-black transition-all duration-500 ${step === s
-                      ? 'text-[#090B10] shadow-[0_0_20px_rgba(212,175,55,0.5)] ring-4 ring-[#D4AF37]/25'
-                      : step > s
-                        ? 'text-[#090B10]'
-                        : 'text-white/25 border border-white/10'
+                  <div className="flex flex-col items-center gap-1">
+                    {/* Bolinha da etapa */}
+                    <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-black transition-all duration-500 ${
+                      step === s
+                        ? 'text-[#090B10] shadow-[0_0_18px_rgba(212,175,55,0.6)] scale-110'
+                        : step > s
+                          ? 'text-[#090B10]'
+                          : 'text-white/30'
                       }`}
-                      style={step >= s ? { background: '#D4AF37' } : {}}
+                      style={step >= s ? { background: '#D4AF37' } : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
                     >
-                      {step > s ? <Check size={15} strokeWidth={3} /> : s}
+                      {step > s ? <Check size={14} strokeWidth={3} /> : s}
                     </div>
-                    <span className={`text-[0.65rem] font-bold uppercase tracking-wider hidden sm:block transition-all duration-500 ${step === s ? 'text-[#D4AF37]' : step > s ? 'text-[#D4AF37]/60' : 'text-white/20'}`}>
-                      {s === 1 ? 'Dados' : s === 2 ? 'Plano' : 'Pagamento'}
-                    </span>
+                    {/* Label com pill de destaque no step ativo */}
+                    <div className={`px-2.5 py-0.5 rounded-full transition-all duration-500 mt-0.5 ${
+                      step === s
+                        ? 'bg-[#D4AF37]/15'
+                        : 'bg-transparent'
+                    }`}>
+                      <span className={`text-[0.6rem] font-extrabold uppercase tracking-wider hidden sm:block transition-all duration-500 ${
+                        step === s ? 'text-[#D4AF37]' : step > s ? 'text-[#D4AF37]/50' : 'text-white/20'
+                      }`}>
+                        {s === 1 ? 'Dados' : s === 2 ? 'Plano' : 'Pagamento'}
+                      </span>
+                    </div>
                   </div>
                   {s < 3 && (
-                    <div className="flex-1 h-[1px] mx-3 mt-[-10px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                      <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: '#D4AF37' }} />
+                    <div className="flex-1 h-[1px] mx-2 mt-[-14px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                      <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: 'linear-gradient(to right, #D4AF37, #F9E596)' }} />
                     </div>
                   )}
                 </div>
@@ -612,12 +582,13 @@ export default function AssinarPage() {
               </button>
             )}
 
-            <p className="text-center text-white/20 text-xs mt-6">
+            <p className="text-center text-white/20 text-xs mt-5">
               Ao continuar você concorda com nossos{' '}
               <span style={{ color: '#D4AF37' }} className="cursor-pointer hover:underline">Termos de Uso</span>
             </p>
           </div>
         )}
+
           </div>
         </div>
       </div>
