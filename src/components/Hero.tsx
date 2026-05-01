@@ -1,8 +1,22 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Hero() {
+  const [emailHero, setEmailHero] = useState('');
+  const router = useRouter();
+
+  const handleComecar = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailHero.trim() !== '') {
+      router.push(`/assinar?email=${encodeURIComponent(emailHero)}`);
+    } else {
+      router.push('/assinar');
+    }
+  };
+
   return (
     <section
       id="home"
@@ -19,7 +33,7 @@ export default function Hero() {
       <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(9,11,16,0.65) 0%, rgba(9,11,16,0.6) 50%, #090B10 100%)' }} />
 
       {/* Conteúdo centralizado */}
-      <div className="relative z-10 max-w-3xl px-5 flex flex-col items-center">
+      <div className="relative z-10 max-w-3xl px-5 flex flex-col items-center w-full">
         
         {/* Logo Grande */}
         <div className="animate-fade-in mb-6">
@@ -51,9 +65,11 @@ export default function Hero() {
         </p>
 
         {/* CTA */}
-        <div className="animate-fade-in delay-350 flex flex-col sm:flex-row gap-3 w-full max-w-md">
+        <form onSubmit={handleComecar} className="animate-fade-in delay-350 flex flex-col sm:flex-row gap-3 w-full max-w-md">
           <input
             type="email"
+            value={emailHero}
+            onChange={(e) => setEmailHero(e.target.value)}
             placeholder="Seu melhor e-mail"
             className="flex-1 rounded-xl px-5 py-4 text-white text-sm outline-none transition-all"
             style={{
@@ -62,14 +78,14 @@ export default function Hero() {
               fontFamily: 'Outfit, sans-serif',
             }}
           />
-          <Link
-            href="/login"
-            className="px-6 py-4 rounded-xl font-extrabold text-sm text-center transition-all hover:brightness-110 hover:scale-105 whitespace-nowrap"
+          <button
+            type="submit"
+            className="px-6 py-4 rounded-xl font-extrabold text-sm text-center transition-all hover:brightness-110 hover:scale-105 whitespace-nowrap cursor-pointer border-none"
             style={{ background: '#D4AF37', color: '#090B10', fontFamily: 'Outfit, sans-serif' }}
           >
             Começar Agora →
-          </Link>
-        </div>
+          </button>
+        </form>
 
         <p className="animate-fade-in delay-500 text-white/30 text-xs mt-5" style={{ fontFamily: 'Outfit, sans-serif' }}>
           Já tem uma conta?{' '}

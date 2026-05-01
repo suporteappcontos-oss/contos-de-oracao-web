@@ -33,9 +33,9 @@ export default function Navbar() {
       </Link>
 
       {/* Links */}
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-4 sm:gap-5">
         <a href="#home" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors no-underline">Início</a>
-        <a href="#planos" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors no-underline">Planos</a>
+        <a href="#planos" className="text-white/70 hover:text-white text-sm transition-colors no-underline font-semibold">Planos</a>
         <Link
           href="/login"
           className="text-sm font-bold px-5 py-2 rounded-xl transition-all hover:scale-105 no-underline"

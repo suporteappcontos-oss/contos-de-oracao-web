@@ -32,11 +32,13 @@ export default function AssinarPage() {
 
   // Busca preços reais ativos na montagem
   useEffect(() => {
-    // Pega o parametro 'plan' da url se existir
+    // Pega o parametro 'plan' e 'email' da url se existir
     const params = new URLSearchParams(window.location.search)
     const planParam = params.get('plan')
+    const emailParam = params.get('email')
 
     if (planParam) setPlanoSelecionado(planParam)
+    if (emailParam) setEmail(emailParam)
 
     fetch('/api/stripe/planos-publicos')
       .then(r => r.json())
@@ -178,6 +180,17 @@ export default function AssinarPage() {
               Acesso ilimitado a conteúdos exclusivos e mensagens edificantes.
             </p>
 
+            {/* Destaque do Plano Dinâmico no Checkout final */}
+            {step === 3 && planoDetalhe && (
+              <div className="mb-4 p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
+                 <p className="text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                    <Check size={12} strokeWidth={3} /> Plano Selecionado
+                 </p>
+                 <p className="text-white font-black text-lg">{planoDetalhe.produto.nome}</p>
+                 <p className="text-white/60 text-xs font-semibold mt-0.5">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
+              </div>
+            )}
+
             {/* Caixa de benefícios centralizada dinamicamente */}
             <div className="rounded-xl p-5 w-full flex-1" style={{ background: 'rgba(21,36,62,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <p className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -221,17 +234,6 @@ export default function AssinarPage() {
                 </div>
               )}
             </div>
-
-            {/* Destaque do Plano Dinâmico no Checkout final */}
-            {step === 3 && planoDetalhe && (
-              <div className="mt-6 p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
-                 <p className="text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                    <Check size={12} strokeWidth={3} /> Plano Selecionado
-                 </p>
-                 <p className="text-white font-black text-lg">{planoDetalhe.produto.nome}</p>
-                 <p className="text-white/60 text-xs font-semibold mt-0.5">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
-              </div>
-            )}
           </div>
         </div>
 
@@ -352,14 +354,14 @@ export default function AssinarPage() {
                     style={{
                       position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: 'rgba(255,255,255,0.35)', padding: '4px',
+                      color: '#000000', padding: '4px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'color 0.2s'
+                      transition: 'color 0.2s',
                     }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#000000' }}
                   >
-                    {mostrarSenha ? <EyeOff size={17} /> : <Eye size={17} />}
+                    {mostrarSenha ? <EyeOff size={19} strokeWidth={2.5} /> : <Eye size={19} strokeWidth={2.5} />}
                   </button>
                 </div>
                 {erros.senha && <p className="text-red-400 text-xs mt-1.5">{erros.senha}</p>}
@@ -390,14 +392,14 @@ export default function AssinarPage() {
                     style={{
                       position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: 'rgba(255,255,255,0.35)', padding: '4px',
+                      color: '#000000', padding: '4px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'color 0.2s'
+                      transition: 'color 0.2s',
                     }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#000000' }}
                   >
-                    {mostrarConfirmar ? <EyeOff size={17} /> : <Eye size={17} />}
+                    {mostrarConfirmar ? <EyeOff size={19} strokeWidth={2.5} /> : <Eye size={19} strokeWidth={2.5} />}
                   </button>
                 </div>
                 {erros.confirmarSenha && <p className="text-red-400 text-xs mt-1.5">{erros.confirmarSenha}</p>}
