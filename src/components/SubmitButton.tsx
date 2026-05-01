@@ -1,14 +1,16 @@
 'use client'
 
 import { useFormStatus } from 'react-dom'
-import { Loader2 } from 'lucide-react'
+import { Infinity as InfinityIcon } from 'lucide-react'
 
 export default function SubmitButton({ 
   children, 
-  formAction 
+  formAction,
+  textLoading = "Carregando..."
 }: { 
   children: React.ReactNode
   formAction?: (payload: FormData) => void
+  textLoading?: string
 }) {
   const { pending } = useFormStatus()
 
@@ -20,7 +22,7 @@ export default function SubmitButton({
       style={{ background: '#D4AF37', color: '#090B10', fontFamily: 'Outfit, sans-serif' }}
     >
       {pending ? (
-        <><Loader2 className="animate-spin" size={18} /> Entrando...</>
+        <><InfinityIcon className="animate-pulse" size={18} /> {textLoading}</>
       ) : (
         children
       )}

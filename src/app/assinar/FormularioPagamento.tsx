@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { Loader2 } from 'lucide-react';
+import { Infinity as InfinityIcon } from 'lucide-react';
 
 export default function FormularioPagamento() {
   const stripe = useStripe();
@@ -47,7 +47,7 @@ export default function FormularioPagamento() {
         disabled={!stripe || !elements || carregando}
         className="w-full py-4 mt-6 font-extrabold rounded-xl text-base transition-all hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         style={{ background: '#D4AF37', color: '#090B10' }}>
-        {carregando ? <><Loader2 className="animate-spin" size={18} /> Finalizando Assinatura...</> : 'Efetuar Pagamento Agora'}
+        {carregando ? <><InfinityIcon className="animate-pulse" size={20} /> Finalizando Assinatura...</> : 'Efetuar Pagamento Agora'}
       </button>
     </form>
   )

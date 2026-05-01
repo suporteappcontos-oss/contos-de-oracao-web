@@ -43,15 +43,15 @@ export default function PasswordField({ name, placeholder, label }: Props) {
           style={{
             position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
             background: 'none', border: 'none', cursor: 'pointer',
-            color: 'rgba(255,255,255,0.3)', padding: '4px',
+            color: '#000000', padding: '4px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'color 0.2s'
+            transition: 'color 0.2s',
           }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.3)' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#000000' }}
           aria-label={show ? 'Ocultar senha' : 'Mostrar senha'}
         >
-          {show ? <EyeOff size={18} /> : <Eye size={18} />}
+          {show ? <EyeOff size={19} strokeWidth={2.5} /> : <Eye size={19} strokeWidth={2.5} />}
         </button>
       </div>
     </div>

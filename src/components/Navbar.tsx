@@ -34,7 +34,9 @@ export default function Navbar() {
 
       {/* Links */}
       <div className="flex items-center gap-4 sm:gap-5">
-        <a href="#home" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors no-underline">Início</a>
+        {scrolled && (
+          <a href="#home" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors no-underline">Início</a>
+        )}
         <a href="#planos" className="text-white/70 hover:text-white text-sm transition-colors no-underline font-semibold">Planos</a>
         <Link
           href="/login"
