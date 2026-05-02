@@ -92,7 +92,6 @@ export default async function WatchPage() {
 
         {/* Direita */}
         <div className="flex items-center gap-2 md:gap-3">
-          <span className="text-[#94A3B8] text-xs hidden lg:inline truncate max-w-[200px]">{user.email}</span>
           
           {isAdmin && (
             <Link
