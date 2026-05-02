@@ -5,9 +5,9 @@ import Image from 'next/image'
 import {
   Heart, LogOut, Key, ChevronLeft, Calendar,
   Crown, XCircle, CheckCircle2, Play, Mail,
-  Pencil, AlertTriangle, Shield
+  AlertTriangle, Shield
 } from 'lucide-react'
-import { salvarNome } from './actions'
+import ClientEditableName from './ClientEditableName'
 import CancelarPlanoBtn from '@/components/CancelarPlanoBtn'
 
 type VideoFavorito = {
@@ -121,7 +121,7 @@ export default async function PerfilPage() {
             {/* Info */}
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h1 className="text-white font-black text-xl md:text-2xl capitalize">{displayName}</h1>
+                <ClientEditableName initialName={nome} defaultName={displayName} />
                 <span className={`flex items-center gap-1 text-[0.6rem] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                   planoAtivo
                     ? 'text-emerald-400 border border-emerald-500/25 bg-emerald-500/10'
@@ -143,87 +143,61 @@ export default async function PerfilPage() {
           </div>
         </div>
 
-        {/* ── EDITAR NOME ── */}
-        <div className="rounded-2xl p-5 mb-5"
-          style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Pencil size={14} style={{ color: '#D4AF37' }} />
-            <h2 className="text-white font-bold text-sm">Editar Nome</h2>
-          </div>
-          <form action={salvarNome} className="flex gap-2">
-            <input
-              name="nome"
-              defaultValue={nome}
-              placeholder="Como você quer ser chamado(a)?"
-              maxLength={40}
-              className="flex-1 bg-[#0f171e] border border-[#1e3040] focus:border-[#D4AF37] rounded-xl px-4 py-2.5 text-white placeholder-[#4a6373] focus:outline-none transition-colors text-sm"
-            />
-            <button type="submit"
-              className="px-4 py-2.5 rounded-xl font-bold text-sm transition-all hover:brightness-110 shrink-0"
-              style={{ background: '#D4AF37', color: '#090B10' }}>
-              Salvar
-            </button>
-          </form>
-          <p className="text-[#4a6373] text-xs mt-2">Este nome aparecerá na plataforma no lugar do seu e-mail.</p>
-        </div>
-
-        {/* ── STATUS DO PLANO ── */}
-        <div className="rounded-2xl p-5 mb-6"
-          style={{
-            background: planoAtivo ? 'rgba(16,185,129,0.04)' : 'rgba(239,68,68,0.04)',
-            border: `1px solid ${planoAtivo ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'}`,
-          }}>
-          <div className="flex items-start justify-between flex-wrap gap-4">
+        {/* ── GERENCIAMENTO EM LINHA ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-8">
+          
+          {/* Box 1: Status do Plano */}
+          <div className="rounded-xl p-5 flex flex-col justify-between"
+            style={{
+              background: planoAtivo ? 'rgba(16,185,129,0.04)' : 'rgba(239,68,68,0.04)',
+              border: `1px solid ${planoAtivo ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'}`,
+            }}>
             <div>
-              <div className="flex items-center gap-2 font-bold mb-1"
-                style={{ color: planoAtivo ? '#10B981' : '#ef4444' }}>
+              <div className="flex items-center gap-2 font-bold mb-1" style={{ color: planoAtivo ? '#10B981' : '#ef4444' }}>
                 {planoAtivo ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
                 {planoAtivo ? 'Assinatura Ativa' : 'Assinatura Inativa'}
               </div>
-              <p className="text-[#64748B] text-xs max-w-md">
-                {planoAtivo
-                  ? 'Você tem acesso completo. Para cancelar sua assinatura, clique no botão ao lado.'
-                  : 'Sua assinatura expirou. Renove para continuar assistindo ao conteúdo.'}
+              <p className="text-[#64748B] text-xs mb-4">
+                {planoAtivo ? 'Acesso liberado a todos os conteúdos exclusivos.' : 'Sua assinatura expirou. Renove para continuar.'}
               </p>
             </div>
             {planoAtivo && !isAdmin ? (
               <CancelarPlanoBtn />
             ) : !planoAtivo && (
-              <Link href="/#planos"
-                className="shrink-0 px-5 py-2.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110"
-                style={{ background: '#D4AF37', color: '#090B10' }}>
+              <Link href="/#planos" className="w-full text-center px-5 py-2.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110" style={{ background: '#D4AF37', color: '#090B10' }}>
                 Renovar →
               </Link>
             )}
           </div>
-        </div>
 
-        {/* ── AÇÕES RÁPIDAS ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+          {/* Box 2: Alterar Senha */}
           <Link href="/esqueci-senha"
-            className="flex items-start gap-3 p-4 rounded-xl transition-all hover:scale-[1.02]"
+            className="flex flex-col justify-center gap-3 p-5 rounded-xl transition-all hover:scale-[1.02]"
             style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.2)' }}>
-              <Key size={16} style={{ color: '#D4AF37' }} />
+              <Key size={18} style={{ color: '#D4AF37' }} />
             </div>
             <div>
               <div className="text-white font-bold text-sm">Alterar Senha</div>
-              <div className="text-[#64748B] text-xs mt-0.5">Redefina sua senha de acesso</div>
+              <div className="text-[#64748B] text-xs mt-0.5">Redefina sua senha de acesso a qualquer momento.</div>
             </div>
           </Link>
+
+          {/* Box 3: Suporte */}
           <a href="mailto:suporte.appcontos@gmail.com"
-            className="flex items-start gap-3 p-4 rounded-xl transition-all hover:scale-[1.02]"
+            className="flex flex-col justify-center gap-3 p-5 rounded-xl transition-all hover:scale-[1.02]"
             style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{ background: 'rgba(0,168,225,0.1)', border: '1px solid rgba(0,168,225,0.2)' }}>
-              <Shield size={16} style={{ color: '#00a8e1' }} />
+              <Shield size={18} style={{ color: '#00a8e1' }} />
             </div>
             <div>
-              <div className="text-white font-bold text-sm">Suporte</div>
-              <div className="text-[#64748B] text-xs mt-0.5">Fale conosco por e-mail</div>
+              <div className="text-white font-bold text-sm">Central de Suporte</div>
+              <div className="text-[#64748B] text-xs mt-0.5">Precisa de ajuda? Fale conosco por e-mail.</div>
             </div>
           </a>
+
         </div>
 
         {/* ── AVISO SEGURANÇA ── */}
@@ -231,7 +205,7 @@ export default async function PerfilPage() {
           style={{ background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.12)' }}>
           <AlertTriangle size={14} className="shrink-0 mt-0.5" style={{ color: '#D4AF37' }} />
           <p className="text-[#64748B] text-xs">
-            Ao cancelar o plano, seu acesso será bloqueado imediatamente. Para reativar, acesse o link de compra e assine novamente.
+            Ao cancelar sua assinatura, <b>você continuará com acesso total até o final do período que já foi pago.</b> Após essa data, o plano não será renovado e o acesso será suspenso.
           </p>
         </div>
 
