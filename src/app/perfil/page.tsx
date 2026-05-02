@@ -68,7 +68,7 @@ export default async function PerfilPage() {
   const email = user.email || ''
   const nome = user.user_metadata?.nome || ''
   const displayName = nome || email.split('@')[0]
-  const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=111827&textColor=D4AF37&fontWeight=bold`
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=111827&color=D4AF37&bold=true&size=128`
 
   const dataCriacao = user.created_at
     ? new Date(user.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })

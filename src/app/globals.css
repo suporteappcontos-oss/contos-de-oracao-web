@@ -87,6 +87,16 @@ select option { background: #090B10; color: #F8FAFC; }
   100% { background-position: 600px 0; }
 }
 
+/* Loader Premium 1 - Traçado */
+.premium-trace path {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: premiumTrace 2s ease-in-out infinite alternate;
+}
+@keyframes premiumTrace {
+  to { stroke-dashoffset: 0; }
+}
+
 .animate-fade-in-up { animation: fadeInUp 0.8s ease forwards; opacity: 0; }
 .animate-fade-in    { animation: fadeIn 0.6s ease forwards; opacity: 0; }
 .delay-100  { animation-delay: 0.1s; }
