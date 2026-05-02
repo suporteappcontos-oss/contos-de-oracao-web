@@ -1,6 +1,6 @@
 # 📘 CONTOS DE ORAÇÃO — Diário de Desenvolvimento da Plataforma
 
-> **Última atualização:** 27 de Abril de 2026  
+> **Última atualização:** 02 de Maio de 2026  
 > **Desenvolvedor:** IA Antigravity (Google DeepMind)  
 > **Proprietário:** João Pires de Freitas Neto  
 > **E-mail do dono (admin):** suporte.appcontos@gmail.com  
@@ -106,7 +106,13 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 ## 🟡 O QUE ESTÁ EM ANDAMENTO
 
 ### Prioridade 1: Testar o fluxo de pagamento final em Produção
-- **Ação:** Fazer uma compra teste (pode gerar um boleto ou pix) direto pelo site para garantir que tudo (webhook, liberação de acesso, redirecionamento) está rodando perfeito no domínio oficial.
+- **Ação:** Fazer uma compra real ou gerar um PIX no site oficial, e ver se o acesso é liberado instantaneamente.
+
+### Prioridade 2: Cadastrar Conteúdo Final
+- **Ação:** Fazer upload dos vídeos originais na Bunny.net, pegar os IDs e cadastrar os vídeos oficiais pelo painel Admin do site.
+
+### Prioridade 3: Configurar Preços Reais
+- **Ação:** No painel Admin (Aba Planos), criar os planos definitivos que os clientes vão ver com seus preços reais.
 
 ---
 
@@ -131,6 +137,32 @@ Estamos transformando o app "Contos de Oração" numa **plataforma de streaming 
 - **Lado Esquerdo Dinâmico:** Exibe os benefícios do acesso, e a partir do Passo 2 (quando escolhe o plano), exibe dinamicamente um mini-card dourado informando o preço e nome do plano selecionado.
 - **Animações de Alto Nível:** Linha do tempo (Steps) preenche dinamicamente de dourado; Botão 'Voltar' repaginado com hover; Títulos com gradientes metálicos; Fundo responsivo que mostra o BG global ('Cara da Bíblia').
 - **Responsividade Pura:** Em celulares (Mobile), as colunas empilham lindamente, garantindo que o usuário tenha vontade de comprar antes mesmo de colocar os dados.
+
+---
+
+## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 02/05/2026)
+
+### 17. Refinamento Visual de Perfil e Avatares (UI/UX) ✅
+- **Edição Dinâmica (Client Side):** O formulário engessado de "Editar Nome" virou um botão de Lápis invisível que transforma o próprio nome em uma caixa de texto.
+- **Avatares Seguros:** Os avatares gerados com Dicebear (que podiam apresentar imagens inesperadas) foram trocados pelo `UI-Avatars`, que gera as Iniciais em cores padronizadas (Seguro para todas as idades).
+- **Layout de Ações Rápidas:** Os botões de Cancelamento, Trocar Senha e Suporte foram alinhados lado a lado, ganhando uma identidade coesa (Ícones nas cores de alerta/atenção).
+- **Aviso de Cancelamento Inteligente:** Ajustada a cópia (texto) de cancelamento. A plataforma não bloqueia mais o acesso imediatamente, respeitando a regra do Stripe de manter o cliente com acesso até o último dia pago da mensalidade vigente.
+
+### 18. Dashboard de Analytics (Relatórios) ✅
+- **Tabela de Tracking:** Criada tabela inteligente no Banco de Dados (`visualizacoes`) que rastreia os cliques no Player sem atrapalhar a performance do usuário.
+- **Ranking Administrativo:** Criada nova aba "Relatórios" no painel de administração que cruza os dados do Banco.
+- **Estatísticas em Tempo Real:** O dono agora vê duas vitrines (Top 10 Vídeos Mais Assistidos e Top 10 Mais Favoritados) organizadas por posição (1º, 2º) de forma analítica e visual.
+
+---
+
+## 🚀 CHECKLIST FINAL PARA O LANÇAMENTO OFICIAL
+
+Aqui está a lista estrita e exata do que falta ser feito **apenas por você** (Dono da plataforma) para abrir o site para os clientes começarem a comprar:
+
+1. **[ ] Cadastrar os Vídeos Reais:** Entrar na Bunny.net, upar os vídeos que você vai vender, copiar o `Video ID` deles e cadastrar 1 por 1 lá no painel `Admin > Aba Catálogo`.
+2. **[ ] Ajustar os Preços Finais:** Ir na tela `Admin > Aba Planos`, criar os planos que você quer vender e configurar o Preço certo e a Etiqueta certa.
+3. **[ ] Comprar no próprio site (Teste Final):** Entrar no site como se fosse um cliente, criar uma conta e gerar um PIX. Pagar esse pix (o dinheiro vai pra sua própria conta).
+4. **[ ] Verificar se Deu Tudo Certo:** Se após o PIX, a tela de "Assinatura Ativa" ficar verde na página de Perfil, e você conseguir ver os vídeos sem bloqueio, **PARABÉNS! A plataforma está PRONTA PARA FATURAR!**
 
 ---
 

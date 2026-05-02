@@ -117,9 +117,6 @@ export default async function WatchPage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="hidden sm:inline text-[#94A3B8] text-xs group-hover:text-white transition-colors font-semibold max-w-[80px] truncate">
-              {user.user_metadata?.nome || user.email?.split('@')[0]}
-            </span>
           </Link>
 
           <form action={logout} className="m-0 p-0 flex items-center">
