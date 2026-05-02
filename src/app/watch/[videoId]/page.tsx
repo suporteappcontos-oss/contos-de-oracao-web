@@ -26,6 +26,12 @@ export default async function VideoPlayerPage({ params }: Props) {
 
   if (!video) redirect('/watch')
 
+  // Registra a visualização (ignorando erros caso já exista ou haja falha)
+  await supabase.from('visualizacoes').insert({
+    video_id: videoId,
+    user_id: user.id
+  })
+
   // Verifica se este vídeo já é favorito do usuário
   const { data: favCheck } = await supabase
     .from('favoritos')
@@ -142,7 +148,7 @@ export default async function VideoPlayerPage({ params }: Props) {
               <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border-2"
                 style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
                 <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.email || '')}&backgroundColor=transparent`}
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(nome)}&background=111827&color=D4AF37&bold=true&size=128`}
                   alt="Avatar"
                   className="w-full h-full object-cover"
                 />

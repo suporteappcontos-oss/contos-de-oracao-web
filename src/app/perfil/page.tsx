@@ -262,8 +262,8 @@ export default async function PerfilPage() {
         <div className="mt-12 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
           <form action={logout}>
             <button type="submit"
-              className="flex items-center gap-2 text-sm text-[#4a5568] hover:text-red-400 transition-colors cursor-pointer">
-              <LogOut size={14} /> Sair da conta
+              className="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-xl font-bold text-sm bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 transition-all cursor-pointer shadow-lg shadow-red-500/5">
+              <LogOut size={16} /> Sair da Conta
             </button>
           </form>
         </div>

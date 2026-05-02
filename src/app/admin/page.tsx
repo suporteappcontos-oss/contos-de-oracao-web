@@ -11,7 +11,7 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Settings, Clock
+  Settings, Clock, Heart, BarChart3
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -93,6 +93,25 @@ export default async function AdminPage({
 
   const editingVideo = editId ? (videos as VideoType[])?.find(v => v.id === editId) : null
 
+  // Rankings
+  let topFavoritos: any[] = []
+  let topVisualizados: any[] = []
+  try {
+    const { data: favs } = await supabase.from('favoritos').select('video_id')
+    const favCounts = favs?.reduce((acc, f) => { acc[f.video_id] = (acc[f.video_id] || 0) + 1; return acc }, {} as Record<string, number>) || {}
+    topFavoritos = Object.entries(favCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([id, count]) => {
+      const v = videos?.find(v => v.id === id)
+      return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
+    })
+
+    const { data: views } = await supabase.from('visualizacoes').select('video_id')
+    const viewCounts = views?.reduce((acc, v) => { acc[v.video_id] = (acc[v.video_id] || 0) + 1; return acc }, {} as Record<string, number>) || {}
+    topVisualizados = Object.entries(viewCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([id, count]) => {
+      const v = videos?.find(v => v.id === id)
+      return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
+    })
+  } catch(e) { console.error('Erro ao buscar estatísticas:', e) }
+
   return (
     <div className="min-h-screen text-white pb-20 selection:bg-[#D4AF37] selection:text-black" style={{ background: 'radial-gradient(circle at top, #111827 0%, #090B10 100%)', fontFamily: 'Outfit, sans-serif' }}>
 
@@ -139,6 +158,7 @@ export default async function AdminPage({
             {[
               { id: 'videos', label: 'Catálogo', icon: Film, count: totalVideos },
               { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
+              { id: 'relatorios', label: 'Relatórios', icon: BarChart3, count: null },
               { id: 'stripe', label: 'Planos', icon: Settings, count: null },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
@@ -180,6 +200,79 @@ export default async function AdminPage({
             </div>
           ))}
         </div>
+
+        {/* ══════════ ABA RELATÓRIOS ══════════ */}
+        {activeTab === 'relatorios' && (
+          <div className="space-y-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                <BarChart3 size={20} className="text-purple-400" />
+              </div>
+              <div>
+                <h2 className="text-white text-2xl font-black tracking-tight">Ranking de Desempenho</h2>
+                <p className="text-white/40 text-sm">Acompanhe quais conteúdos estão performando melhor.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* TOP VISUALIZADOS */}
+              <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
+                <div className="flex items-center gap-2 mb-6 text-[#00a8e1]">
+                  <Eye size={20} />
+                  <h3 className="text-white font-bold text-lg">Vídeos Mais Assistidos</h3>
+                </div>
+                {topVisualizados.length === 0 ? (
+                  <p className="text-white/30 text-sm text-center py-10">Nenhuma visualização registrada ainda.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {topVisualizados.map((item, i) => (
+                      <div key={item.id} className="flex items-center gap-4 bg-white/5 rounded-2xl p-3 border border-white/5">
+                        <div className="w-8 text-center text-[#00a8e1] font-black text-xl opacity-80">{i + 1}º</div>
+                        <div className="w-16 aspect-video bg-[#15243E] rounded-lg overflow-hidden shrink-0"
+                             style={{ backgroundImage: `url(${item.thumbnail_url || getFallback(item.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-bold text-sm truncate">{item.titulo}</p>
+                        </div>
+                        <div className="bg-[#00a8e1]/10 text-[#00a8e1] px-3 py-1 rounded-lg text-xs font-black">
+                          {item.count} views
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* TOP FAVORITOS */}
+              <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
+                <div className="flex items-center gap-2 mb-6 text-pink-500">
+                  <Heart size={20} />
+                  <h3 className="text-white font-bold text-lg">Vídeos Mais Favoritados</h3>
+                </div>
+                {topFavoritos.length === 0 ? (
+                  <p className="text-white/30 text-sm text-center py-10">Nenhum favorito registrado ainda.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {topFavoritos.map((item, i) => (
+                      <div key={item.id} className="flex items-center gap-4 bg-white/5 rounded-2xl p-3 border border-white/5">
+                        <div className="w-8 text-center text-pink-500 font-black text-xl opacity-80">{i + 1}º</div>
+                        <div className="w-16 aspect-video bg-[#15243E] rounded-lg overflow-hidden shrink-0"
+                             style={{ backgroundImage: `url(${item.thumbnail_url || getFallback(item.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-bold text-sm truncate">{item.titulo}</p>
+                        </div>
+                        <div className="bg-pink-500/10 text-pink-500 px-3 py-1 rounded-lg text-xs font-black">
+                          {item.count} ♥
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+        )}
 
         {/* ══════════ ABA VÍDEOS ══════════ */}
         {activeTab === 'videos' && (

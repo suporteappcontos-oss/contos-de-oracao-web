@@ -112,7 +112,7 @@ export default async function WatchPage() {
             <div className="relative w-8 h-8 rounded-xl overflow-hidden border-2 transition-all group-hover:border-[#D4AF37] shrink-0"
               style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
               <img
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.email || '')}&backgroundColor=transparent`}
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.nome || user.email?.split('@')[0] || '')}&background=111827&color=D4AF37&bold=true&size=128`}
                 alt="Avatar"
                 className="w-full h-full object-cover"
               />

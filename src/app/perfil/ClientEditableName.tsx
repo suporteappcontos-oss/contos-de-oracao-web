@@ -44,7 +44,7 @@ export default function ClientEditableName({ initialName, defaultName }: { initi
       <h1 className="text-white font-black text-xl md:text-2xl capitalize">{defaultName}</h1>
       <button 
         onClick={() => setIsEditing(true)}
-        className="opacity-100 md:opacity-0 group-hover:opacity-100 p-1.5 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 text-white/40 hover:text-[#D4AF37] transition-all"
+        className="p-1.5 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 text-white/40 hover:text-[#D4AF37] transition-all"
         title="Editar Nome"
       >
         <Pencil size={14} />
