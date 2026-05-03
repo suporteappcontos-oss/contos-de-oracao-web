@@ -200,6 +200,8 @@ export default async function PerfilPage() {
 
         </div>
 
+        </div>
+
         {/* ── AVISO SEGURANÇA ── */}
         <div className="rounded-xl p-4 mb-8 flex items-start gap-3"
           style={{ background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.12)' }}>
@@ -207,6 +209,35 @@ export default async function PerfilPage() {
           <p className="text-[#64748B] text-xs">
             Ao cancelar sua assinatura, <b>você continuará com acesso total até o final do período que já foi pago.</b> Após essa data, o plano não será renovado e o acesso será suspenso.
           </p>
+        </div>
+
+        {/* ── APLICATIVO ANDROID ── */}
+        <div className="mb-12 bg-[#D4AF37]/5 border border-[#D4AF37]/20 rounded-2xl p-6 relative overflow-hidden group">
+          <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 blur-3xl rounded-full pointer-events-none transition-all group-hover:bg-[#D4AF37]/20" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
+            <div className="flex items-center gap-5 text-center sm:text-left">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] flex items-center justify-center p-[1px] shadow-lg shrink-0">
+                <div className="w-full h-full bg-[#090B10] rounded-2xl flex items-center justify-center">
+                  <Smartphone size={24} className="text-[#D4AF37]" />
+                </div>
+              </div>
+              <div>
+                <h4 className="text-white font-bold text-lg mb-1">Aplicativo Android</h4>
+                <p className="text-[#94A3B8] text-sm max-w-md">Instale o nosso aplicativo oficial para ter as orações sempre no seu bolso, com uma experiência super rápida e limpa.</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 w-full sm:w-auto shrink-0">
+              <a href="/contos-de-oracao.apk" download className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
+                 style={{ background: '#D4AF37', color: '#090B10' }}>
+                <Download size={16} />
+                Baixar App (.APK)
+              </a>
+              <div className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm bg-white/5 border border-white/10 text-white/40 cursor-not-allowed select-none"
+                 title="Lançamento em Breve na Google Play Store">
+                Google Play (Em breve)
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── MEUS FAVORITOS ── */}

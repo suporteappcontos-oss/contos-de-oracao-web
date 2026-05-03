@@ -1,6 +1,25 @@
-import { Smartphone, Download, Star } from 'lucide-react'
+'use client';
+import { Smartphone, Download, Star, X } from 'lucide-react'
+import { useState, useEffect } from 'react';
 
 export default function AppBanner() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Só mostra se o cliente ainda não tiver dispensado o banner
+    const isDismissed = localStorage.getItem('app_banner_dismissed');
+    if (!isDismissed) {
+      setIsVisible(true);
+    }
+  }, []);
+
+  if (!isVisible) return null;
+
+  const handleClose = () => {
+    localStorage.setItem('app_banner_dismissed', 'true');
+    setIsVisible(false);
+  };
+
   return (
     <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-16">
       <div 
@@ -10,6 +29,12 @@ export default function AppBanner() {
           border: '1px solid rgba(212,175,55,0.2)',
         }}
       >
+        <button 
+          onClick={handleClose}
+          className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white/50 hover:text-white transition-all z-20"
+        >
+          <X size={20} />
+        </button>
         {/* Glow de fundo */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37] opacity-[0.03] blur-[100px] rounded-full pointer-events-none" />
 
@@ -28,7 +53,7 @@ export default function AppBanner() {
           </p>
 
           <a 
-            href="#" 
+            href="/perfil" 
             className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-black transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_30px_rgba(212,175,55,0.2)]"
             style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', color: '#090B10' }}
           >
