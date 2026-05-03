@@ -15,15 +15,16 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: {
-    icon: '/favicon.png',
-    apple: '/logo.png',
+    icon: '/logo_stripe.png',
+    apple: '/logo_stripe.png',
+    shortcut: '/logo_stripe.png',
   },
   openGraph: {
     title: 'Contos de Oração — Streaming Católico',
     description: 'Orações, novenas, terços e histórias de santos. A maior plataforma de espiritualidade católica do Brasil.',
     url: 'https://contos-de-oracao.vercel.app',
     siteName: 'Contos de Oração',
-    images: [{ url: '/logo.png', width: 512, height: 512, alt: 'Contos de Oração' }],
+    images: [{ url: '/logo_stripe.png', width: 512, height: 512, alt: 'Contos de Oração' }],
     locale: 'pt_BR',
     type: 'website',
   },
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Contos de Oração — Streaming Católico',
     description: 'Orações, novenas e histórias de santos. Assista onde quiser.',
-    images: ['/logo.png'],
+    images: ['/logo_stripe.png'],
   },
 };
 
