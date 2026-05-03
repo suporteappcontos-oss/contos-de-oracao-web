@@ -5,7 +5,7 @@ import Image from 'next/image'
 import {
   Heart, LogOut, Key, ChevronLeft, Calendar,
   Crown, XCircle, CheckCircle2, Play, Mail,
-  AlertTriangle, Shield
+  AlertTriangle, Shield, Smartphone, Download
 } from 'lucide-react'
 import ClientEditableName from './ClientEditableName'
 import CancelarPlanoBtn from '@/components/CancelarPlanoBtn'
