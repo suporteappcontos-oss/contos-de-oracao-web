@@ -21,7 +21,7 @@ type Props = {
 
 export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
   const router = useRouter()
-  const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado'>('verificando')
+  const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const deviceToken = useRef<string>('')
 
