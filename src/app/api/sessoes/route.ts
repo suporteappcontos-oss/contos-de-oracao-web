@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
   if (totalAtivo >= maxTelas) {
     // Ao invés de bloquear, nós vamos APAGAR as sessões mais antigas para abrir espaço para essa nova
     const qtdParaApagar = (totalAtivo - maxTelas) + 1
-    const sessoesParaApagar = sessoesAtivas.slice(0, qtdParaApagar).map(s => s.id)
+    const sessoesParaApagar = sessoesAtivas?.slice(0, qtdParaApagar).map(s => s.id) || []
     
     if (sessoesParaApagar.length > 0) {
       await supabaseAdmin.from('sessoes_ativas').delete().in('id', sessoesParaApagar)
