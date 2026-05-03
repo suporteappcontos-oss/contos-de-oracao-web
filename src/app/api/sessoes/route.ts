@@ -47,18 +47,22 @@ export async function POST(request: NextRequest) {
   }
 
   // Conta quantas sessões ativas este usuário tem no momento
-  const { count } = await supabaseAdmin
+  const { data: sessoesAtivas } = await supabaseAdmin
     .from('sessoes_ativas')
-    .select('id', { count: 'exact', head: true })
+    .select('id, atualizado_em')
     .eq('user_id', user.id)
+    .order('atualizado_em', { ascending: true })
 
-  const totalAtivo = count ?? 0
+  const totalAtivo = sessoesAtivas ? sessoesAtivas.length : 0
 
   if (totalAtivo >= maxTelas) {
-    return NextResponse.json(
-      { error: 'limite_atingido', max_telas: maxTelas, telas_ativas: totalAtivo },
-      { status: 429 }
-    )
+    // Ao invés de bloquear, nós vamos APAGAR as sessões mais antigas para abrir espaço para essa nova
+    const qtdParaApagar = (totalAtivo - maxTelas) + 1
+    const sessoesParaApagar = sessoesAtivas.slice(0, qtdParaApagar).map(s => s.id)
+    
+    if (sessoesParaApagar.length > 0) {
+      await supabaseAdmin.from('sessoes_ativas').delete().in('id', sessoesParaApagar)
+    }
   }
 
   // Registra nova sessão
@@ -80,11 +84,23 @@ export async function PATCH(request: NextRequest) {
   const { device_token } = await request.json()
   if (!device_token) return NextResponse.json({ error: 'device_token obrigatório' }, { status: 400 })
 
+  // Verifica se a sessão ainda existe (se não foi apagada por outro login)
+  const { data: sessao } = await supabaseAdmin
+    .from('sessoes_ativas')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('device_token', device_token)
+    .single()
+
+  if (!sessao) {
+    // Foi desconectado / chutado
+    return NextResponse.json({ error: 'sessao_derrubada' }, { status: 403 })
+  }
+
   await supabaseAdmin
     .from('sessoes_ativas')
     .update({ atualizado_em: new Date().toISOString() })
-    .eq('user_id', user.id)
-    .eq('device_token', device_token)
+    .eq('id', sessao.id)
 
   return NextResponse.json({ ok: true })
 }

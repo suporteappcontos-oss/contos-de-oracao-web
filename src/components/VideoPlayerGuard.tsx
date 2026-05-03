@@ -52,14 +52,20 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
 
       setStatus('liberado')
 
-      // Inicia heartbeat a cada 60 segundos para manter a sessão viva
+      // Inicia heartbeat a cada 15 segundos para manter a sessão viva e checar se foi chutado
       heartbeatRef.current = setInterval(async () => {
-        await fetch('/api/sessoes', {
+        const hbRes = await fetch('/api/sessoes', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ device_token: token }),
         })
-      }, 60_000)
+        
+        if (hbRes.status === 403) {
+            // Foi chutado!
+            setStatus('derrubado')
+            if (heartbeatRef.current) clearInterval(heartbeatRef.current)
+        }
+      }, 15_000)
     } catch {
       // Em caso de falha de rede, libera o player sem bloquear o usuário
       setStatus('liberado')
@@ -111,10 +117,36 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     )
   }
 
-  // ── ESTADO: Bloqueado (limite atingido) ──
+  // ── ESTADO: Bloqueado (limite atingido - antigo, talvez não ocorra mais) ──
   if (status === 'bloqueado') {
-    router.push('/tela-cheia')
+    router.push('/watch')
     return null
+  }
+
+  // ── ESTADO: Derrubado (Login em outro lugar) ──
+  if (status === 'derrubado') {
+    return (
+      <div
+        className="bg-black w-full flex items-center justify-center"
+        style={{ aspectRatio: '16/9', maxWidth: '1600px', margin: '0 auto' }}
+      >
+        <div className="flex flex-col items-center gap-4 px-6 text-center">
+          <div className="w-12 h-12 rounded-full border-2 border-[#EF4444] flex items-center justify-center">
+            <span className="text-[#EF4444] text-xl font-bold">!</span>
+          </div>
+          <h2 className="text-white text-lg font-bold">Acesso Interrompido</h2>
+          <p className="text-[#94A3B8] text-sm max-w-sm">
+            A reprodução foi interrompida porque sua conta está sendo usada em outro dispositivo no momento.
+          </p>
+          <button
+            onClick={() => router.push('/watch')}
+            className="mt-4 px-6 py-2 bg-[#D4AF37] text-black font-bold rounded-lg hover:bg-[#D4AF37]/90 transition-colors"
+          >
+            Voltar ao Catálogo
+          </button>
+        </div>
+      </div>
+    )
   }
 
   // ── ESTADO: Liberado ──
