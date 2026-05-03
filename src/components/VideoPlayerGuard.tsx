@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 
 // Gera ou recupera um token único para este dispositivo/navegador
 function getDeviceToken(): string {
@@ -23,9 +24,17 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
   const router = useRouter()
   const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const realtimeRef = useRef<ReturnType<typeof createClient> | null>(null)
   const deviceToken = useRef<string>('')
+  const statusRef = useRef<string>('verificando')
 
-  // Registra sessão e inicia heartbeat
+  // Atualiza status e o ref junto
+  const updateStatus = (s: typeof status) => {
+    statusRef.current = s
+    setStatus(s)
+  }
+
+  // Registra sessão e inicia escuta em tempo real
   const iniciarSessao = useCallback(async () => {
     const token = getDeviceToken()
     deviceToken.current = token
@@ -38,44 +47,73 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
       })
 
       if (res.status === 429) {
-        // Limite atingido
-        setStatus('bloqueado')
+        updateStatus('bloqueado')
         return
       }
 
       if (!res.ok) {
-        // Erro inesperado: libera mesmo assim para não prejudicar o usuário
         console.warn('Erro ao registrar sessão, liberando player.')
-        setStatus('liberado')
+        updateStatus('liberado')
         return
       }
 
-      setStatus('liberado')
+      updateStatus('liberado')
 
-      // Inicia heartbeat a cada 15 segundos para manter a sessão viva e checar se foi chutado
+      // ── REALTIME: escuta mudanças na tabela sessoes_ativas ─────────────
+      // Quando uma nova sessão for criada para o mesmo user (outro device),
+      // e o device_token não for o nosso → fomos chutados!
+      const supabase = createClient()
+      realtimeRef.current = supabase
+
+      supabase
+        .channel('sessao-radar')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'sessoes_ativas' },
+          async (payload) => {
+            if (statusRef.current === 'derrubado') return
+
+            // Checa se ainda existe nossa sessão
+            const hbRes = await fetch('/api/sessoes', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ device_token: token }),
+            })
+
+            if (hbRes.status === 403) {
+              updateStatus('derrubado')
+              if (heartbeatRef.current) clearInterval(heartbeatRef.current)
+            }
+          }
+        )
+        .subscribe()
+      // ──────────────────────────────────────────────────────────────────
+
+      // Heartbeat de segurança a cada 10s (fallback caso o Realtime falhe)
       heartbeatRef.current = setInterval(async () => {
+        if (statusRef.current === 'derrubado') {
+          clearInterval(heartbeatRef.current!)
+          return
+        }
         const hbRes = await fetch('/api/sessoes', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ device_token: token }),
         })
-        
         if (hbRes.status === 403) {
-            // Foi chutado!
-            setStatus('derrubado')
-            if (heartbeatRef.current) clearInterval(heartbeatRef.current)
+          updateStatus('derrubado')
+          if (heartbeatRef.current) clearInterval(heartbeatRef.current)
         }
-      }, 15_000)
+      }, 10_000)
+
     } catch {
-      // Em caso de falha de rede, libera o player sem bloquear o usuário
-      setStatus('liberado')
+      updateStatus('liberado')
     }
   }, [videoId])
 
   // Remove a sessão ao sair da página
   const encerrarSessao = useCallback(() => {
     if (!deviceToken.current) return
-    // Usa sendBeacon para garantir que a requisição seja enviada mesmo ao fechar a aba
     navigator.sendBeacon(
       '/api/sessoes',
       JSON.stringify({ device_token: deviceToken.current })
@@ -85,15 +123,17 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
   useEffect(() => {
     iniciarSessao()
 
-    // Listener para quando o usuário fecha ou muda de aba
     window.addEventListener('beforeunload', encerrarSessao)
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') encerrarSessao()
     })
 
     return () => {
-      // Limpeza ao desmontar o componente (navegação interna)
       if (heartbeatRef.current) clearInterval(heartbeatRef.current)
+      // Desconecta o canal Realtime
+      if (realtimeRef.current) {
+        realtimeRef.current.channel('sessao-radar').unsubscribe()
+      }
       encerrarSessao()
       window.removeEventListener('beforeunload', encerrarSessao)
     }
@@ -117,7 +157,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     )
   }
 
-  // ── ESTADO: Bloqueado (limite atingido - antigo, talvez não ocorra mais) ──
+  // ── ESTADO: Bloqueado ──
   if (status === 'bloqueado') {
     router.push('/watch')
     return null
@@ -130,17 +170,18 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
         className="bg-black w-full flex items-center justify-center"
         style={{ aspectRatio: '16/9', maxWidth: '1600px', margin: '0 auto' }}
       >
-        <div className="flex flex-col items-center gap-4 px-6 text-center">
-          <div className="w-12 h-12 rounded-full border-2 border-[#EF4444] flex items-center justify-center">
-            <span className="text-[#EF4444] text-xl font-bold">!</span>
+        <div className="flex flex-col items-center gap-5 px-6 text-center">
+          <div className="w-14 h-14 rounded-full border-2 border-[#EF4444] flex items-center justify-center animate-pulse">
+            <span className="text-[#EF4444] text-2xl font-bold">!</span>
           </div>
           <h2 className="text-white text-lg font-bold">Acesso Interrompido</h2>
           <p className="text-[#94A3B8] text-sm max-w-sm">
-            A reprodução foi interrompida porque sua conta está sendo usada em outro dispositivo no momento.
+            Sua conta entrou em outro dispositivo e a reprodução foi encerrada automaticamente.
           </p>
           <button
             onClick={() => router.push('/watch')}
-            className="mt-4 px-6 py-2 bg-[#D4AF37] text-black font-bold rounded-lg hover:bg-[#D4AF37]/90 transition-colors"
+            className="mt-2 px-8 py-3 font-bold rounded-xl hover:brightness-110 transition-all"
+            style={{ background: '#D4AF37', color: '#090B10' }}
           >
             Voltar ao Catálogo
           </button>
