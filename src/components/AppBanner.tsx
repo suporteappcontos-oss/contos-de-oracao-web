@@ -1,81 +1,70 @@
 'use client';
-import { Smartphone, Download, Star, X } from 'lucide-react'
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function AppBanner() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Só mostra se o cliente ainda não tiver dispensado o banner
-    const isDismissed = localStorage.getItem('app_banner_dismissed');
-    if (!isDismissed) {
-      setIsVisible(true);
-    }
+    if (!localStorage.getItem('app_banner_v2')) setVisible(true);
   }, []);
 
-  if (!isVisible) return null;
-
-  const handleClose = () => {
-    localStorage.setItem('app_banner_dismissed', 'true');
-    setIsVisible(false);
-  };
+  if (!visible) return null;
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-16">
-      <div 
-        className="relative overflow-hidden rounded-[2rem] md:rounded-[3rem] p-8 md:p-14 flex flex-col md:flex-row items-center justify-between gap-10"
-        style={{
-          background: 'linear-gradient(135deg, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.15) 100%)',
-          border: '1px solid rgba(212,175,55,0.2)',
-        }}
+    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-10">
+      <div
+        className="relative overflow-hidden rounded-3xl flex flex-col md:flex-row items-center gap-8 p-8 md:p-12"
+        style={{ background: 'linear-gradient(135deg,#0e1015 0%,#16180f 50%,#0e1015 100%)', border: '1px solid rgba(212,175,55,0.25)' }}
       >
-        <button 
-          onClick={handleClose}
-          className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white/50 hover:text-white transition-all z-20"
-        >
-          <X size={20} />
-        </button>
-        {/* Glow de fundo */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37] opacity-[0.03] blur-[100px] rounded-full pointer-events-none" />
+        {/* Glow */}
+        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(212,175,55,0.15),transparent 70%)' }} />
+        <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(24,119,242,0.08),transparent 70%)' }} />
 
-        <div className="flex-1 text-center md:text-left relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-6">
-            <Star size={12} fill="currentColor" /> Novidade
+        {/* Ícone do App */}
+        <div className="shrink-0 relative">
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-[22px] overflow-hidden shadow-2xl border-2 border-[#D4AF37]/30">
+            <Image src="/logo.png" alt="Contos de Oração" width={96} height={96} className="object-contain w-full h-full bg-[#090B10]" />
           </div>
-          
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-5 tracking-tight leading-[1.1]">
-            Leve a Palavra <br className="hidden md:block"/>
-            com você.
-          </h2>
-          
-          <p className="text-[#8197a4] text-sm md:text-lg max-w-xl mx-auto md:mx-0 mb-8 leading-relaxed">
-            Baixe o nosso novo aplicativo oficial para Android. Assista às reflexões onde estiver, salve seus favoritos e tenha uma experiência ainda mais rápida.
-          </p>
+          {/* Badge "NOVO" */}
+          <div className="absolute -top-2 -right-2 bg-[#D4AF37] text-black text-[10px] font-black px-2 py-0.5 rounded-full">NOVO</div>
+        </div>
 
-          <a 
-            href="/perfil" 
-            className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-black transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_30px_rgba(212,175,55,0.2)]"
-            style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', color: '#090B10' }}
+        {/* Texto */}
+        <div className="flex-1 text-center md:text-left">
+          <p className="text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-2">📱 Aplicativo Oficial Android</p>
+          <h2 className="text-white text-2xl md:text-3xl font-black leading-tight mb-2">
+            Contos de Oração<br />
+            <span className="text-[#D4AF37]">na palma da mão</span>
+          </h2>
+          <p className="text-white/50 text-sm mb-5 max-w-md">
+            Assista aos vídeos exclusivos, receba notificações de novos lançamentos e viva a fé em qualquer lugar.
+          </p>
+          {/* Stars */}
+          <div className="flex items-center justify-center md:justify-start gap-1.5 mb-5">
+            {[1,2,3,4,5].map(i => (
+              <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#D4AF37"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            ))}
+            <span className="text-white/40 text-xs ml-1">100% Gratuito</span>
+          </div>
+          <a
+            href="/perfil"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm transition-all hover:scale-105 shadow-lg"
+            style={{ background: 'linear-gradient(135deg,#FFD700,#D4AF37)', color: '#090B10' }}
           >
-            <Download size={20} strokeWidth={2.5} />
-            Baixar App Android (Grátis)
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar para Android — Grátis
           </a>
         </div>
 
-        {/* Ilustração ou Ícone Gigante */}
-        <div className="relative shrink-0 flex items-center justify-center z-10 hidden sm:flex">
-          <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border border-dashed border-[#D4AF37]/30 flex items-center justify-center relative">
-            <div className="absolute w-full h-full animate-spin-slow opacity-30" style={{ border: '1px dashed #D4AF37', borderRadius: '50%', animationDuration: '20s' }} />
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#8b7322] flex items-center justify-center shadow-2xl p-[2px]">
-              <div className="w-full h-full bg-[#090B10] rounded-full flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#D4AF37]/20 to-transparent opacity-50" />
-                <Smartphone size={60} className="text-[#D4AF37]" strokeWidth={1.5} />
-              </div>
-            </div>
-          </div>
-        </div>
-
+        {/* Fechar */}
+        <button
+          onClick={() => { localStorage.setItem('app_banner_v2', '1'); setVisible(false); }}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-all text-xl leading-none"
+        >
+          ×
+        </button>
       </div>
     </div>
-  )
+  );
 }
