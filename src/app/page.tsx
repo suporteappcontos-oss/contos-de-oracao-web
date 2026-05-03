@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Carousel from "@/components/Carousel";
 import Pricing from "@/components/Pricing";
+import AppBanner from "@/components/AppBanner";
 import Footer from "@/components/Footer";
 
 type Props = {
@@ -64,6 +65,7 @@ export default async function Home({ searchParams }: Props) {
         <Carousel title="Lançamentos" images={movieImages} />
         <Carousel title="Em Alta" images={trendingImages} />
       </div>
+      <AppBanner />
       <Pricing />
       <Footer />
     </main>
