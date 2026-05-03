@@ -200,8 +200,6 @@ export default async function PerfilPage() {
 
         </div>
 
-        </div>
-
         {/* ── AVISO SEGURANÇA ── */}
         <div className="rounded-xl p-4 mb-8 flex items-start gap-3"
           style={{ background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.12)' }}>
