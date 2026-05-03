@@ -101,10 +101,6 @@ export default async function VideoPlayerPage({ params }: Props) {
 
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <div className="text-[0.55rem] font-extrabold px-2 py-0.5 rounded uppercase tracking-widest"
-                style={{ background: 'rgba(212,175,55,0.15)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.3)' }}>
-                ✦ CDO
-              </div>
               <div className="flex items-center gap-1 text-[#8197a4] text-xs">
                 <Tag size={11} /> {video.categoria}
               </div>
