@@ -20,18 +20,45 @@ async function verificarAdmin() {
   const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
   if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') redirect('/')
   return { supabase, user }
+  return { supabase, user }
+}
+
+// ─── Helper de Upload pro Bunny.net ───
+async function uploadToBunny(file: File, prefix: string): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer();
+  const extensao = file.name.split('.').pop() || 'jpg';
+  const fileName = `${prefix}_${Date.now()}.${extensao}`;
+
+  const res = await fetch(`https://br.storage.bunnycdn.com/contos-apks/${fileName}`, {
+    method: 'PUT',
+    headers: {
+      'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+      'Content-Type': file.type || 'image/jpeg',
+    },
+    body: arrayBuffer // Envio direto do ArrayBuffer suportado pelo fetch() nativo
+  });
+
+  if (!res.ok) throw new Error(`Falha no upload [${res.status}]: ${res.statusText}`);
+  return `https://contos-apks.b-cdn.net/${fileName}`;
 }
 
 // ─── Adicionar vídeo ───
 export async function adicionarVideo(formData: FormData) {
   const { supabase } = await verificarAdmin()
+
+  let thumbnailUrl = formData.get('thumbnail_url') as string;
+  const thumbFile = formData.get('thumbnail_file') as File | null;
+  if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
+    thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+  }
+
   const { error } = await supabase.from('videos').insert({
     titulo: formData.get('titulo') as string,
     descricao: (formData.get('descricao') as string) || null,
     categoria: (formData.get('categoria') as string) || 'Geral',
     bunny_video_id: formData.get('bunny_video_id') as string,
     bunny_library_id: process.env.BUNNY_LIBRARY_ID || '642831',
-    thumbnail_url: (formData.get('thumbnail_url') as string) || null,
+    thumbnail_url: thumbnailUrl || null,
     duracao: (formData.get('duracao') as string) || null,
     ativo: true,
   })
@@ -43,13 +70,21 @@ export async function adicionarVideo(formData: FormData) {
 // ─── Editar vídeo ───
 export async function editarVideo(videoId: string, formData: FormData) {
   const { supabase } = await verificarAdmin()
+
+  let thumbnailUrl = formData.get('thumbnail_url') as string;
+  const thumbFile = formData.get('thumbnail_file') as File | null;
+  if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
+    thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+  }
+
   await supabase.from('videos').update({
     titulo: formData.get('titulo') as string,
     descricao: (formData.get('descricao') as string) || null,
     categoria: formData.get('categoria') as string,
-    thumbnail_url: (formData.get('thumbnail_url') as string) || null,
+    thumbnail_url: thumbnailUrl || null,
     duracao: (formData.get('duracao') as string) || null,
   }).eq('id', videoId)
+  
   revalidatePath('/admin')
   revalidatePath('/watch')
   redirect('/admin?tab=videos')
@@ -86,35 +121,18 @@ export async function togglePlanoUsuario(userId: string, planoAtual: boolean) {
 
 // ─── Salvar Configuração Global (Fundo do app/site) ───
 export async function salvarConfiguracao(formData: FormData) {
-  await verificarAdmin(); // Deixamos fora do try..catch porque ele usa redirect() internamente
+  await verificarAdmin();
 
   try {
     const file = formData.get('backgroundImage') as File | null;
 
     if (!file || typeof file === 'string' || file.size === 0) {
-      console.error('Nenhum arquivo de imagem válido foi recebido no servidor.');
+      console.error('Nenhum arquivo válido recebido.');
       return;
     }
 
-    const extensao = file.name.split('.').pop() || 'jpg';
-    const fileName = `background_${Date.now()}.${extensao}`;
-
-    // 1. Faz upload da imagem pro Bunny.net Storage (usamos arrayBuffer pra garantir compatibilidade no Next.js)
-    const arrayBuffer = await file.arrayBuffer();
-    const resImg = await fetch(`https://br.storage.bunnycdn.com/contos-apks/${fileName}`, {
-      method: 'PUT',
-      headers: {
-        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
-        'Content-Type': file.type || 'image/jpeg',
-      },
-      body: Buffer.from(arrayBuffer)
-    });
-
-    if (!resImg.ok) {
-      throw new Error(`Falha no upload da imagem: ${resImg.statusText}`);
-    }
-
-    const bgUrl = `https://contos-apks.b-cdn.net/${fileName}`;
+    // 1. Faz upload usando o helper seguro
+    const bgUrl = await uploadToBunny(file, 'background');
     const config = { background_url: bgUrl };
 
     // 2. Atualiza o config.json apontando para a nova imagem
@@ -127,15 +145,10 @@ export async function salvarConfiguracao(formData: FormData) {
       body: JSON.stringify(config)
     });
 
-    if (!resConf.ok) {
-      throw new Error(`Falha no upload do config.json: ${resConf.statusText}`);
-    }
+    if (!resConf.ok) throw new Error(`Erro config.json: ${resConf.statusText}`);
 
-    // Revalida a página para exibir o novo fundo imediatamente
     revalidatePath('/', 'layout');
-    
   } catch (error: any) {
     console.error('❌ Erro no salvarConfiguracao:', error.message || error);
-    // Não damos throw aqui para não travar a tela com o "Global Error" para o usuário.
   }
 }

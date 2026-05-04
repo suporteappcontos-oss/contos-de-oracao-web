@@ -292,7 +292,7 @@ export default async function AdminPage({
                 </div>
               </div>
 
-              <form action={adicionarVideo}>
+              <form action={adicionarVideo} encType="multipart/form-data">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                   <div className="md:col-span-8">
                     <label className={labelCls}>Título *</label>
@@ -313,8 +313,11 @@ export default async function AdminPage({
                     <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx" className={inputCls + ' font-mono text-white/70'} />
                   </div>
                   <div className="md:col-span-5">
-                    <label className={labelCls}>URL da Thumbnail (Opcional)</label>
-                    <input name="thumbnail_url" placeholder="https://..." className={inputCls} />
+                    <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
+                    <div className="space-y-2">
+                      <input name="thumbnail_url" placeholder="URL opcional (ex: https://...)" className={inputCls} />
+                      <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
+                    </div>
                   </div>
                   <div className="md:col-span-3">
                     <label className={labelCls}>Duração</label>
@@ -362,7 +365,7 @@ export default async function AdminPage({
                              <Link href="/admin?tab=videos" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
                           </div>
                           
-                          <form action={editarVideo.bind(null, video.id)} className="space-y-4">
+                          <form action={editarVideo.bind(null, video.id)} encType="multipart/form-data" className="space-y-4">
                             <div>
                               <label className={labelCls}>Título</label>
                               <input name="titulo" required defaultValue={editingVideo.titulo} className={inputCls} />
@@ -384,8 +387,11 @@ export default async function AdminPage({
                               <textarea name="descricao" rows={2} defaultValue={editingVideo.descricao || ''} className={inputCls} />
                             </div>
                             <div>
-                              <label className={labelCls}>Thumbnail</label>
-                              <input name="thumbnail_url" defaultValue={editingVideo.thumbnail_url || ''} className={inputCls} />
+                              <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
+                              <div className="space-y-2">
+                                <input name="thumbnail_url" defaultValue={editingVideo.thumbnail_url || ''} placeholder="Mantenha a URL ou envie um novo arquivo" className={inputCls} />
+                                <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
+                              </div>
                             </div>
                             <button type="submit" className="w-full mt-2 bg-[#D4AF37] text-black font-black py-3 rounded-xl hover:brightness-110">
                               Salvar
