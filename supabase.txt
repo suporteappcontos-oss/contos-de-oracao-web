@@ -1,0 +1,295 @@
+Add push token column to perfiles:
+-- Adiciona coluna push_token na tabela perfis
+ALTER TABLE public.perfis ADD COLUMN IF NOT EXISTS push_token TEXT;
+
+
+Enable Realtime for Active Sessions
+-- Habilita o Realtime na tabela de sessões ativas
+ALTER PUBLICATION supabase_realtime ADD TABLE public.sessoes_ativas;
+
+
+Policy for Viewing Active Videos:
+
+-- Permite que visitantes não logados vejam os vídeos ativos (para o carrossel do Onboarding)
+CREATE POLICY "Anon pode ver videos ativos"
+ON public.videos
+FOR SELECT
+TO anon
+USING (ativo = true);
+
+
+Tabela de Visualizações por Vídeo e Usuário:
+
+-- Cria a tabela para registrar cada visualização
+CREATE TABLE visualizacoes (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  video_id UUID REFERENCES videos(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  criado_em TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now())
+);
+
+-- Permite que o sistema leia e adicione visualizações livremente
+ALTER TABLE visualizacoes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Visualizações: Todos podem ler"
+  ON visualizacoes FOR SELECT
+  USING (true);
+
+CREATE POLICY "Visualizações: Usuários logados podem inserir"
+  ON visualizacoes FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+
+
+Tabela de Sessões Ativas por Dispositivo:
+
+
+-- Cria tabela de sessões ativas (rastreamento de dispositivos)
+CREATE TABLE sessoes_ativas (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id      UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  device_token TEXT NOT NULL,      -- token único gerado no navegador do cliente
+  video_id     TEXT NOT NULL,      -- qual vídeo está assistindo
+  criado_em    TIMESTAMPTZ DEFAULT NOW(),
+  atualizado_em TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index para busca rápida por usuário
+CREATE INDEX idx_sessoes_user_id ON sessoes_ativas(user_id);
+
+-- RLS: usuário só vê as próprias sessões. Admin vê todas.
+ALTER TABLE sessoes_ativas ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuário gerencia suas próprias sessões"
+ON sessoes_ativas FOR ALL
+TO authenticated
+USING (user_id = auth.uid());
+
+-- Função que limpa sessões com mais de 2 horas (evita acúmulo)
+CREATE OR REPLACE FUNCTION limpar_sessoes_antigas()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM sessoes_ativas
+  WHERE atualizado_em < NOW() - INTERVAL '2 hours';
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+Políticas de Acesso por Role (RLS):
+
+
+-- 1. LIGANDO O SISTEMA DE SEGURANÇA NAS TABELAS
+ALTER TABLE videos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE perfis ENABLE ROW LEVEL SECURITY;
+ALTER TABLE favoritos ENABLE ROW LEVEL SECURITY;
+
+-- ═════════════════════════════════════════════════
+-- 🎬 REGRAS DA TABELA: VIDEOS
+-- ═════════════════════════════════════════════════
+
+-- REGRA 1: Qualquer assinante logado pode APENAS LER/VER o catálogo.
+CREATE POLICY "Assinantes podem ver o catalogo" 
+ON videos FOR SELECT 
+TO authenticated 
+USING (true);
+
+-- REGRA 2: Apenas o dono pode Inserir, Atualizar ou Deletar os vídeos (Total Controle).
+CREATE POLICY "Apenas admin pode modificar videos" 
+ON videos FOR ALL 
+TO authenticated 
+USING (
+  (auth.jwt() ->> 'email') = 'suporte.appcontos@gmail.com'
+  OR auth.uid() IN (SELECT id FROM perfis WHERE role = 'admin')
+);
+
+-- ═════════════════════════════════════════════════
+-- 👤 REGRAS DA TABELA: PERFIS
+-- ═════════════════════════════════════════════════
+
+-- REGRA 1: Um cliente normal só pode ler a sua PRÓPRIA linha (seus dados).
+-- O dono (Admin) tem uma chave-mestra e pode ler os perfis de todo mundo.
+CREATE POLICY "Ler proprio perfil ou Admin" 
+ON perfis FOR SELECT 
+TO authenticated 
+USING (
+  id = auth.uid() 
+  OR (auth.jwt() ->> 'email') = 'suporte.appcontos@gmail.com'
+);
+
+-- REGRA 2: O cliente só pode atualizar o próprio perfil.
+CREATE POLICY "Atualizar proprio perfil" 
+ON perfis FOR UPDATE 
+TO authenticated 
+USING (id = auth.uid());
+
+-- ═════════════════════════════════════════════════
+-- ⭐ REGRAS DA TABELA: FAVORITOS
+-- ═════════════════════════════════════════════════
+
+-- REGRA ÚNICA: O cliente só consegue ver, adicionar ou remover vídeos da SUA PRÓPRIA lista.
+CREATE POLICY "Clientes gerenciam apenas seus favoritos" 
+ON favoritos FOR ALL 
+TO authenticated 
+USING (user_id = auth.uid());
+
+
+
+User Video Favorites:
+
+
+CREATE TABLE IF NOT EXISTS public.favoritos (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  video_id uuid REFERENCES public.videos(id) ON DELETE CASCADE NOT NULL,
+  criado_em timestamptz DEFAULT now(),
+  UNIQUE(user_id, video_id)
+);
+ALTER TABLE public.favoritos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "usuarios_proprios_favoritos" ON public.favoritos
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+
+
+
+Activate Active Plan Flag for User:
+
+
+
+UPDATE auth.users 
+SET raw_user_meta_data = raw_user_meta_data || '{"plano_ativo": true}'::jsonb
+WHERE email = 'teste@contosdeoracao.online';
+
+
+
+Favoritos com controle de acesso:
+
+
+CREATE TABLE IF NOT EXISTS public.favoritos (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  video_id uuid REFERENCES public.videos(id) ON DELETE CASCADE NOT NULL,
+  criado_em timestamptz DEFAULT now(),
+  UNIQUE(user_id, video_id)
+);
+
+ALTER TABLE public.favoritos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "usuarios_gerenciam_proprios_favoritos"
+  ON public.favoritos FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+
+
+Set User Role to Admin:
+
+
+
+INSERT INTO public.perfis (id, role, nome)
+SELECT id, 'admin', 'Admin'
+FROM auth.users
+WHERE email ILIKE '%suporte.appcontos@gmail.com%'
+ON CONFLICT (id) DO UPDATE
+SET role = 'admin';
+
+
+
+
+Perfis e Vídeos com RLS e Trigger de Provisionamento:
+
+
+
+
+-- 1. TABELA DE PERFIS
+CREATE TABLE IF NOT EXISTS public.perfis (
+  id        UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  role      TEXT DEFAULT 'membro' CHECK (role IN ('admin', 'membro')),
+  nome      TEXT,
+  criado_em TIMESTAMPTZ DEFAULT now()
+);
+
+-- 2. TRIGGER: cria perfil automaticamente ao registrar usuário
+CREATE OR REPLACE FUNCTION public.criar_perfil_usuario()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.perfis (id, role, nome)
+  VALUES (NEW.id, 'membro', NEW.raw_user_meta_data->>'nome')
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.criar_perfil_usuario();
+
+-- 3. Criar perfis para usuários que já existem
+INSERT INTO public.perfis (id, role)
+SELECT id, 'membro' FROM auth.users
+ON CONFLICT (id) DO NOTHING;
+
+-- 4. DAR ADMIN PARA O DONO
+UPDATE public.perfis
+SET role = 'admin'
+WHERE id = (
+  SELECT id FROM auth.users WHERE email = 'suporte.appcontos@gmail.com'
+);
+
+-- 5. TABELA DE VÍDEOS
+CREATE TABLE IF NOT EXISTS public.videos (
+  id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  titulo           TEXT NOT NULL,
+  descricao        TEXT,
+  categoria        TEXT DEFAULT 'Geral',
+  thumbnail_url    TEXT,
+  bunny_video_id   TEXT NOT NULL,
+  bunny_library_id TEXT NOT NULL DEFAULT '642831',
+  duracao          TEXT,
+  criado_em        TIMESTAMPTZ DEFAULT now(),
+  ativo            BOOLEAN DEFAULT true
+);
+
+-- 6. SEGURANÇA (RLS) — VÍDEOS
+ALTER TABLE public.videos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "assinantes_ver_videos"
+  ON public.videos FOR SELECT TO authenticated
+  USING (ativo = true);
+
+CREATE POLICY "admin_inserir_videos"
+  ON public.videos FOR INSERT TO authenticated
+  WITH CHECK (
+    EXISTS (SELECT 1 FROM public.perfis WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "admin_atualizar_videos"
+  ON public.videos FOR UPDATE TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM public.perfis WHERE id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "admin_deletar_videos"
+  ON public.videos FOR DELETE TO authenticated
+  USING (
+    EXISTS (SELECT 1 FROM public.perfis WHERE id = auth.uid() AND role = 'admin')
+  );
+
+-- 7. SEGURANÇA (RLS) — PERFIS
+ALTER TABLE public.perfis ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "usuario_ver_proprio_perfil"
+  ON public.perfis FOR SELECT TO authenticated
+  USING (id = auth.uid());
+
+-- 8. INSERIR O PRIMEIRO VÍDEO
+INSERT INTO public.videos (titulo, descricao, categoria, bunny_video_id, bunny_library_id, ativo)
+VALUES (
+  'Videoplayback — Contos de Oração',
+  'Primeiro vídeo da plataforma. Bem-vindo ao Contos de Oração!',
+  'Geral',
+  'e8d73902-df41-4675-8691-b528e2bde19c',
+  '642831',
+  true
+);

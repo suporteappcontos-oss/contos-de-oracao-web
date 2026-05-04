@@ -1,54 +1,90 @@
-# 📖 Diário do Projeto — Contos de Oração (SITE)
-**Atualizado em:** 03/05/2026
+# 📖 DIÁRIO DO PROJETO — CONTOS DE ORAÇÃO (SITE WEB)
+**Última atualização:** 04/05/2026  
+**Domínio ativo:** https://www.contosdeoracao.online  
+**Stack:** Next.js 14 · Supabase · Stripe · Bunny.net CDN · Vercel
 
 ---
 
-## ✅ O QUE JÁ ESTÁ FEITO NO SITE
+## ✅ O QUE JÁ ESTÁ PRONTO NO SITE
 
-- [x] Landing page com seção de planos (Stripe)
-- [x] Login / Cadastro com Supabase Auth
-- [x] Área logada `/watch` com catálogo de vídeos
-- [x] Player de vídeo com controle de sessão simultânea
-- [x] Realtime — detecta novo login em outro dispositivo em < 1 segundo
-- [x] Header com bolinas de Instagram e Facebook
-- [x] Sino de notificações 🔔 com últimos vídeos lançados
-- [x] Banner premium de download do App
+### 🏠 Landing Page & Marketing
+- [x] Hero animado com tagline e botões de CTA
+- [x] Carrossel de thumbnails dos vídeos do catálogo
+- [x] Seção **"Planos e Preços"** movida para página própria `/planos`
+- [x] Banner CTA na homepage → link para `/planos`
+- [x] Banner de download do app (`AppBanner.tsx`)
+- [x] Footer completo com links e redes sociais
+
+### 📄 Página de Planos (`/planos`)
+- [x] Criada página dedicada com hero + componente `Pricing`
+- [x] Seção de FAQ (4 perguntas frequentes)
+- [x] Busca planos direto da Stripe em tempo real
+- [x] Link correto no App agora aponta para `/planos`
+
+### 🔐 Autenticação & Contas
+- [x] Login / Cadastro via Supabase Auth
+- [x] Página de cadastro integrada (`/assinar`) — cria usuário + inicia checkout Stripe
+- [x] Recuperação de senha (`/esqueci-senha` + `/atualizar-senha`)
+- [x] Campo `user_metadata.nome` salvo no Supabase Auth ao cadastrar
+- [x] Trigger automático: ao criar usuário → cria linha em `public.perfis`
+
+### 🎬 Área Logada (`/watch`)
+- [x] Catálogo de vídeos organizado por categoria
+- [x] Player Bunny.net embutido via `<iframe>` com `Referer` correto
+- [x] Guard de acesso: verifica `plano_ativo = true` no `user_metadata`
+- [x] Controle de sessão simultânea (tabela `sessoes_ativas`)
+  - Realtime via Supabase: detecta login em outro dispositivo em < 1s
+  - Limite de telas por plano (padrão: 1, anual: 2, família: 5)
+- [x] Sistema de favoritos (favorito no app aparece no site e vice-versa)
+- [x] Página de vídeo individual `/watch/[videoId]`
+
+### 🔔 Notificações Push
+- [x] API `/api/push/enviar` — envia push via Expo Push Service
+- [x] Sino 🔔 no header com últimos vídeos lançados
+- [x] Redirecionamento automático ao clicar na notificação (vai para o vídeo)
+
+### 💳 Integração Stripe
+- [x] Checkout de assinatura via Stripe
+- [x] Webhook que ativa `plano_ativo = true` no Supabase quando pagamento é confirmado
+- [x] Portal do cliente (gerenciar/cancelar assinatura)
+- [x] API pública de planos: `GET /api/stripe/planos-publicos` (consumida pelo App)
+
+### ⚙️ Painel Admin (`/admin`)
+- [x] Protegido por role `admin` na tabela `perfis`
+- [x] CRUD completo de vídeos (título, categoria, thumbnail, Bunny ID, duração)
+- [x] Ativar/desativar vídeos sem deletar
+- [x] Ver e gerenciar assinantes
+
+### 🛡️ SEO & Performance
+- [x] Meta tags completas (título, descrição, Open Graph, Twitter Card)
+- [x] `metadataBase` configurado para `www.contosdeoracao.online`
+- [x] Favicon configurado (`logo_stripe.png` — 89,3 KB em `/web/public/`)
 - [x] Página 404 personalizada (dark + versículo bíblico)
-- [x] SEO completo — título, descrição, Open Graph, Twitter Card
-- [x] API de push notifications `/api/push/enviar`
 - [x] Deploy automático via `.bat`
 
 ---
 
 ## 🔴 PENDÊNCIAS DO SITE
 
-### 🌐 Domínio e Ícone — FAZER JUNTOS quando trocar o domínio
-> ⚠️ **LEMBRETE IMPORTANTE:**
-> Quando trocar para o novo domínio (ex: `contosdeoracao.com.br`), fazer TUDO isso:
+### 🌐 Troca de Domínio — CHECKLIST COMPLETO
+> ⚠️ **Quando trocar de domínio, fazer TUDO isso na ordem:**
 >
-> 1. **Atualizar o `metadataBase`** em `src/app/layout.tsx`:
+> 1. **`src/app/layout.tsx`** — atualizar `metadataBase`:
 >    ```ts
->    metadataBase: new URL('https://SEU-NOVO-DOMINIO.com.br'),
+>    metadataBase: new URL('https://NOVO-DOMINIO.com.br'),
 >    ```
->
-> 2. **Atualizar a URL canônica** no mesmo arquivo:
->    ```ts
->    alternates: { canonical: '/' },
->    ```
->
-> 3. **Verificar o favicon** — o `logo_stripe.png` (89KB) já está configurado
->    corretamente. Após trocar o domínio, esperar 2-7 dias para o Google
->    atualizar o ícone automaticamente, ou usar o Google Search Console
->    para solicitar re-indexação:
->    👉 https://search.google.com/search-console
->
-> 4. **Atualizar as URLs hardcoded** no App (`SubscriptionScreen.js`):
->    - `API_URL` → nova URL da API de planos
->    - `CHECKOUT_URL` → nova URL da página de assinatura
->
-> 5. **Adicionar domínio no Supabase** (Authentication → URL Configuration)
->
-> 6. **Adicionar domínio no Stripe** (webhooks e redirect URLs)
+> 2. **Supabase** → Authentication → URL Configuration → adicionar novo domínio
+> 3. **Stripe** → Webhooks → atualizar endpoint URL
+> 4. **Stripe** → redirect URLs para checkout e portal
+> 5. **App** (`SubscriptionScreen.js`) → `API_URL` e `CHECKOUT_URL` já apontam para `www.contosdeoracao.online` — atualizar para o novo domínio
+> 6. **App** (`AuthScreen.js`) → link do `resetPasswordForEmail` → atualizar
+> 7. Aguardar 2-7 dias para Google atualizar favicon/ícone na busca
+
+### 📌 Melhorias Futuras
+- [ ] Página de perfil do usuário mais completa (`/perfil`)
+- [ ] Sistema de progresso de vídeo (% assistido)
+- [ ] Notificação por e-mail de novos vídeos
+- [ ] Dashboard de analytics para o admin (views por vídeo)
 
 ---
 
@@ -57,10 +93,98 @@
 | Arquivo | Função |
 |---|---|
 | `src/app/layout.tsx` | SEO global, favicon, Open Graph |
+| `src/app/page.tsx` | Homepage — carrossel + banner CTA para /planos |
+| `src/app/planos/page.tsx` | Página dedicada de planos e preços |
+| `src/app/assinar/page.tsx` | Cadastro + checkout Stripe |
+| `src/app/watch/page.tsx` | Área logada principal (catálogo) |
+| `src/app/watch/[videoId]/page.tsx` | Player individual de vídeo |
+| `src/app/admin/page.tsx` | Painel administrativo |
+| `src/app/admin/actions.ts` | Server Actions do CRUD de vídeos |
 | `src/app/not-found.tsx` | Página 404 personalizada |
+| `src/components/VideoCard.tsx` | Card de vídeo com fallback de thumbnail |
 | `src/components/VideoPlayerGuard.tsx` | Controle de sessão simultânea |
-| `src/components/NotificationBell.tsx` | Sino de notificações |
+| `src/components/Pricing.tsx` | Cards de planos (busca da Stripe) |
 | `src/components/AppBanner.tsx` | Banner de download do App |
 | `src/app/api/push/enviar/route.ts` | API de envio de push notifications |
-| `src/app/api/stripe/planos-publicos/route.ts` | API de planos (consumida pelo App) |
-| `src/app/watch/page.tsx` | Área logada principal |
+| `src/app/api/stripe/planos-publicos/route.ts` | API pública de planos (consumida pelo App) |
+| `src/app/api/stripe/checkout/route.ts` | Inicia checkout + cria usuário Supabase |
+| `src/app/api/stripe/webhook/route.ts` | Ativa plano no Supabase ao pagar |
+
+---
+
+## 🗄️ BANCO DE DADOS — SUPABASE (SCHEMA COMPLETO)
+
+### Tabela: `public.perfis`
+| Coluna | Tipo | Descrição |
+|---|---|---|
+| `id` | UUID PK | FK → `auth.users(id)` — CASCADE DELETE |
+| `role` | TEXT | `'admin'` ou `'membro'` (padrão: `'membro'`) |
+| `nome` | TEXT | Nome completo (copiado de `user_metadata.nome` via trigger) |
+| `push_token` | TEXT | Token Expo Push (salvo pelo App ao login) |
+| `criado_em` | TIMESTAMPTZ | Data de criação |
+
+> **Trigger:** `on_auth_user_created` → cria linha em `perfis` automaticamente ao registrar usuário
+
+### Tabela: `public.videos`
+| Coluna | Tipo | Descrição |
+|---|---|---|
+| `id` | UUID PK | Gerado automaticamente |
+| `titulo` | TEXT | Título do vídeo (obrigatório) |
+| `descricao` | TEXT | Descrição (opcional) |
+| `categoria` | TEXT | Ex: 'Oração', 'Novena', 'Terço' (padrão: `'Geral'`) |
+| `thumbnail_url` | TEXT | URL da imagem de capa (opcional — usa fallback determinístico se null) |
+| `bunny_video_id` | TEXT | ID do vídeo no Bunny Stream (obrigatório) |
+| `bunny_library_id` | TEXT | ID da biblioteca Bunny (fixo: `642831`) |
+| `duracao` | TEXT | Ex: `'12:34'` (opcional) |
+| `ativo` | BOOLEAN | Visível no catálogo? (padrão: `true`) |
+| `criado_em` | TIMESTAMPTZ | Data de upload |
+
+> **URL do player:** `https://iframe.mediadelivery.net/embed/{bunny_library_id}/{bunny_video_id}`  
+> **Thumbnail fallback:** algoritmo determinístico por ID (mesmo no site e no app)
+
+### Tabela: `public.favoritos`
+| Coluna | Tipo | Descrição |
+|---|---|---|
+| `id` | UUID PK | Gerado automaticamente |
+| `user_id` | UUID FK | → `auth.users(id)` CASCADE DELETE |
+| `video_id` | UUID FK | → `videos(id)` CASCADE DELETE |
+| `criado_em` | TIMESTAMPTZ | Quando foi favoritado |
+> **Constraint:** `UNIQUE(user_id, video_id)` — sem duplicatas
+
+### Tabela: `public.visualizacoes`
+| Coluna | Tipo | Descrição |
+|---|---|---|
+| `id` | UUID PK | Gerado automaticamente |
+| `video_id` | UUID FK | → `videos(id)` CASCADE DELETE |
+| `user_id` | UUID FK | → `auth.users(id)` CASCADE DELETE |
+| `criado_em` | TIMESTAMPTZ | Quando assistiu |
+
+### Tabela: `public.sessoes_ativas`
+| Coluna | Tipo | Descrição |
+|---|---|---|
+| `id` | UUID PK | Gerado automaticamente |
+| `user_id` | UUID FK | → `auth.users(id)` CASCADE DELETE |
+| `device_token` | TEXT | Token único gerado no dispositivo |
+| `video_id` | TEXT | Qual vídeo está assistindo |
+| `criado_em` | TIMESTAMPTZ | Início da sessão |
+| `atualizado_em` | TIMESTAMPTZ | Último heartbeat |
+> **Realtime:** habilitado (`supabase_realtime` publication)  
+> **Cleanup:** função `limpar_sessoes_antigas()` — remove sessões com > 2h sem atividade
+
+### RLS (Row Level Security) — Resumo
+
+| Tabela | Quem pode LER | Quem pode ESCREVER |
+|---|---|---|
+| `videos` | anon (ativo=true) + authenticated | admin |
+| `perfis` | próprio usuário + admin | próprio usuário |
+| `favoritos` | próprio usuário | próprio usuário |
+| `visualizacoes` | todos | usuário logado (próprio uid) |
+| `sessoes_ativas` | próprio usuário | próprio usuário |
+
+### `user_metadata` no Supabase Auth
+Campo | Valor | Quem salva
+---|---|---
+`nome` | Nome completo do usuário | Checkout ao criar conta
+`plano_ativo` | `true` / `false` | Webhook do Stripe
+`etiqueta_plano` | Ex: `'Mensal'`, `'Anual'` | Webhook do Stripe
+`has_downloaded_app` | `true` | App ao fazer login
