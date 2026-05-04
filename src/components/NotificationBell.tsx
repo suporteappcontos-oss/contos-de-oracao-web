@@ -50,8 +50,13 @@ export default function NotificationBell() {
   };
 
   const timeAgo = (iso: string) => {
-    const diff = Date.now() - new Date(iso).getTime();
+    // Supabase retorna timestamps sem 'Z' — forçar UTC adicionando 'Z' se necessário
+    const isoUtc = iso.endsWith('Z') || iso.includes('+') ? iso : iso + 'Z';
+    const diff = Date.now() - new Date(isoUtc).getTime();
+    // Evitar valores negativos (relógio do servidor vs cliente)
+    if (diff < 0) return 'agora';
     const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'agora';
     if (mins < 60) return `${mins}min atrás`;
     const hrs = Math.floor(mins / 60);
     if (hrs < 24) return `${hrs}h atrás`;
