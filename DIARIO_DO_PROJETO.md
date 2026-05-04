@@ -1,195 +1,66 @@
-# 📘 CONTOS DE ORAÇÃO — Diário de Desenvolvimento da Plataforma
-
-> **Última atualização:** 02 de Maio de 2026  
-> **Desenvolvedor:** IA Antigravity (Google DeepMind)  
-> **Proprietário:** João Pires de Freitas Neto  
-> **E-mail do dono (admin):** suporte.appcontos@gmail.com  
-
-## 🤖 REGRA DE OURO PARA IAs (LEIA ANTES DE AGIR)
-**O proprietário deste projeto NÃO lida com comandos de terminal, Git, GitHub ou Vercel manualmente.** 
-1. Todas as IAs devem automatizar o máximo possível os processos de linha de comando.
-2. Sempre que uma IA fizer alterações no código, ela DEVE tentar realizar o `git push` automaticamente para o repositório, pois o Vercel faz o deploy automático ao receber o push.
-3. Se a execução de comandos falhar por limitação do sistema, a IA deve instruir o usuário de forma extremamente mastigada sobre como usar a interface gráfica do VS Code (Aba Source Control > Commit & Sync) para subir o código com apenas 1 clique.
+# 📖 Diário do Projeto — Contos de Oração (SITE)
+**Atualizado em:** 03/05/2026
 
 ---
 
-## 🗺️ Visão Geral do Projeto
-Estamos transformando o app "Contos de Oração" numa **plataforma de streaming completa na web**, com:
-- Site premium estilo Netflix (Fundo `#090B10` e Destaques `#D4AF37`)
-- Sistema de assinatura pago com **Checkout Dinâmico via Stripe**
-- Banco de dados e Autenticação (via Supabase)
-- Hospedagem profissional de vídeos (via Bunny.net)
-- Painel administrativo on-site para o dono gerenciar conteúdo e planos
+## ✅ O QUE JÁ ESTÁ FEITO NO SITE
+
+- [x] Landing page com seção de planos (Stripe)
+- [x] Login / Cadastro com Supabase Auth
+- [x] Área logada `/watch` com catálogo de vídeos
+- [x] Player de vídeo com controle de sessão simultânea
+- [x] Realtime — detecta novo login em outro dispositivo em < 1 segundo
+- [x] Header com bolinas de Instagram e Facebook
+- [x] Sino de notificações 🔔 com últimos vídeos lançados
+- [x] Banner premium de download do App
+- [x] Página 404 personalizada (dark + versículo bíblico)
+- [x] SEO completo — título, descrição, Open Graph, Twitter Card
+- [x] API de push notifications `/api/push/enviar`
+- [x] Deploy automático via `.bat`
 
 ---
 
-## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Até 23/04/2026)
+## 🔴 PENDÊNCIAS DO SITE
 
-### 1. Site Web e Design (Next.js 16 + Tailwind CSS)
-- **Framework:** Next.js 16 com App Router, TypeScript e Tailwind CSS v4.
-- Componentes modulares fluídos, incluindo Navbars, Hero Banners, VideoCards com animações de hover e interfaces de vidro (Glassmorphism).
-- **Remoção de Falsos Positivos Visuais:** Os placeholders da Netflix foram apagados.
-
-### 2. Painel Administrativo de Conteúdo (`/admin`)
-- Tela de `Gerenciamento de Conteúdo` totalmente funcional, restrita ao acesso admin.
-- Integração direta de novos vídeos informando (Título, Descrição, Bunny Video ID, Thumbnail, Categoria).
-- Ações imediatas de Publicar/Ocultar, e Deletar vídeos.
-
-### 3. Gestão de Planos Financeiros (`/admin` + Stripe)
-- **Painel Dinâmico:** O administrador pode criar, editar (nome, preço, benefícios, cor do card) e apagar planos diretamente do site, refletindo em tempo real no banco de dados da Stripe.
-- **Cupons:** Integração com a API da Stripe para listar cupons ativos automaticamente.
-
-### 4. Tela de Assinante (`/watch`)
-- Carrosseis de vídeo segmentados por categorias e HeroBanner dinâmico.
-- Tela dedicada ao Player (`/watch/[videoId]`) com o player do Bunny.net imbutido.
-
-### 5. Sistema de Autenticação (Supabase)
-- **SMTP Personalizado:** Configurado via Gmail (Senha de App de 16 dígitos).
-- Recurso de "Esqueci minha senha" ajustado.
-
-### 6. Sistema de Cobranças (Migração Total para Stripe)
-- **Kiwify Removida:** Todo o fluxo do projeto foi desvinculado da Kiwify.
-- **Checkout Automático:** O botão de compra gera sessões únicas no Stripe já habilitadas com Cartão, Pix e Boleto de acordo com o painel da Stripe.
-- **Webhook Stripe (`api/stripe/webhook`):** Robô criado para escutar eventos. Se a compra aprova, ele cria o acesso no Supabase, marca `plano_ativo: true` e envia o e-mail pro cliente criar a senha. Se o cliente cancelar, corta o acesso.
-- **Página de Sucesso:** Fluxo aprimorado para `/sucesso` para não confundir o cliente durante o processo de setar senha de primeiro acesso.
-
----
-
-## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 25/04/2026)
-
-### 7. Conta de Produção Stripe ✅
-- **Status:** Conta ativada para produção pelo proprietário
-- **Resultado:** PIX e Boletos agora aparecem para clientes finais
-- **Dados bancários:** Configurados na Stripe
-
-### 8. Domínio Customizado para Checkout ✅
-- **Status:** Domínio principal `contosdeoracao.online` está ativo e respondendo
-- **Subdomínio:** `pagamento.contosdeoracao.online` configurado e **Verificado** pela Stripe
-- **DNS:** CNAME validado com sucesso.
-- **Situação:** Ativo. A partir de agora, os clientes verão este domínio na hora de pagar.
-
-### 9. Webhook de Produção 
-- **Status:** Webhook implementado e pronto para produção
-- **URL:** `https://contosdeoracao.online/api/stripe/webhook`
-- **Implementação:** Código completo com validação de assinatura Stripe
+### 🌐 Domínio e Ícone — FAZER JUNTOS quando trocar o domínio
+> ⚠️ **LEMBRETE IMPORTANTE:**
+> Quando trocar para o novo domínio (ex: `contosdeoracao.com.br`), fazer TUDO isso:
+>
+> 1. **Atualizar o `metadataBase`** em `src/app/layout.tsx`:
+>    ```ts
+>    metadataBase: new URL('https://SEU-NOVO-DOMINIO.com.br'),
+>    ```
+>
+> 2. **Atualizar a URL canônica** no mesmo arquivo:
+>    ```ts
+>    alternates: { canonical: '/' },
+>    ```
+>
+> 3. **Verificar o favicon** — o `logo_stripe.png` (89KB) já está configurado
+>    corretamente. Após trocar o domínio, esperar 2-7 dias para o Google
+>    atualizar o ícone automaticamente, ou usar o Google Search Console
+>    para solicitar re-indexação:
+>    👉 https://search.google.com/search-console
+>
+> 4. **Atualizar as URLs hardcoded** no App (`SubscriptionScreen.js`):
+>    - `API_URL` → nova URL da API de planos
+>    - `CHECKOUT_URL` → nova URL da página de assinatura
+>
+> 5. **Adicionar domínio no Supabase** (Authentication → URL Configuration)
+>
+> 6. **Adicionar domínio no Stripe** (webhooks e redirect URLs)
 
 ---
 
-## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 25/04/2026 - Tarde)
+## 📂 ARQUIVOS CRÍTICOS DO SITE
 
-### 10. Melhorias de UX e Segurança ✅
-- **Login:** Removido campo de confirmação de senha (local incorreto).
-- **Login/Header:** Removido o badge "Premium" engessado que aparecia para usuários não logados.
-- **Cadastro:** Mantida confirmação de senha apenas na página `/assinar`.
-- **Ícones:** Implementados olhos para mostrar/ocultar senhas.
-- **Validação:** Senhas coincidentes validadas antes de criar conta.
-- **Planos:** Adicionado badge dinâmico de telas simultâneas.
-- **Benefícios:** Exibição dinâmica conforme plano selecionado.
-- **Admin:** Corrigido link "visitar" para abrir na mesma aba.
-
-### 11. Customização Dinâmica de Etiquetas de Planos ✅
-- **StripeAdmin:** Adicionada uma Textbox "Etiqueta (Badge)" na criação e edição de planos (ex: Premium, Básico, Família).
-- **Backend:** A API (`/api/stripe/produtos`) agora lê e salva a `etiqueta` diretamente no `metadata` do produto na Stripe, permitindo que a aplicação saiba exatamente qual selo mostrar no perfil de cada usuário.
-
-### 12. Captação Inteligente de Leads e E-mail Marketing ✅
-- **Admin Panel:** O status de usuários não pagantes foi alterado de "Bloqueado" para "Lead (Pendente)".
-- **Integração com Resend:** Criada aba para disparar promoções diretamente pelo painel administrativo para todos os leads ao mesmo tempo. A IA substitui a tag `[CUPOM]` na copy pelo código criado na Stripe.
-- **Domínio Hostinger:** O domínio `contosdeoracao.online` (hospedado na Hostinger) está verificado e pronto no Resend. *ATENÇÃO: Ele está sendo usado como domínio inicial/teste.*
-- **⚠️ QUANDO VOCÊ TROCAR DE DOMÍNIO NO FUTURO, VOCÊ DEVE:**
-  1. Adicionar o novo domínio no painel do [Resend](https://resend.com) e autenticar os registros de DNS (TXT, SPF, DKIM) onde quer que ele esteja hospedado.
-  2. Alterar o remetente (`from`) dentro do arquivo `src/app/api/admin/enviar-promocao/route.ts` para usar o novo domínio (ex: `contato@seu-novo-dominio.com.br`).
-  3. Alterar a variável de ambiente `NEXT_PUBLIC_SITE_URL` na Vercel.
-  4. Mudar os Webhooks da Stripe para apontar para o novo site.
-
----
-
-## 🟡 O QUE ESTÁ EM ANDAMENTO
-
-### Prioridade 1: Testar o fluxo de pagamento final em Produção
-- **Ação:** Fazer uma compra real ou gerar um PIX no site oficial, e ver se o acesso é liberado instantaneamente.
-
-### Prioridade 2: Cadastrar Conteúdo Final
-- **Ação:** Fazer upload dos vídeos originais na Bunny.net, pegar os IDs e cadastrar os vídeos oficiais pelo painel Admin do site.
-
-### Prioridade 3: Configurar Preços Reais
-- **Ação:** No painel Admin (Aba Planos), criar os planos definitivos que os clientes vão ver com seus preços reais.
-
----
-
-## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 27/04/2026)
-
-### 13. Checkout Embutido de Alta Conversão (Stripe Embedded Checkout) ✅
-- **Status:** Implementado em Produção.
-- A página `/assinar` não redireciona mais o cliente para uma página em branco da Stripe. Em vez disso, a página inteira da Stripe é carregada de forma invisível e 100% segura DENTRO do site (`ui_mode: 'embedded_page'`). 
-- Resolvido um edge case onde planos de teste/valores pequenos poderiam gerar objetos nulos (PaymentIntent = null). O Embedded Checkout assume toda essa lógica.
-
-### 14. Correção de Planos "Fantasmas" no Site ✅
-- **Status:** Implementado e Sincronizado.
-- A vitrine de preços do site (Página Inicial e Assinar) possuía um problema onde exibia "Preços Ativos" atrelados a "Produtos Arquivados".
-- Foi adicionado um filtro estrito na API (`price.product.active === true`) garantindo que apenas planos 100% ativos na Stripe apareçam para o usuário final.
-
-### 15. Ajuste no Texto de Sucesso do Cadastro ✅
-- **Status:** Ajustado.
-- Como a arquitetura de senha foi mudada (o usuário cria a senha no Passo 1, ANTES de pagar), a página `/sucesso` foi reescrita para remover instruções sobre "clicar no link do email", alertando apenas que ele já pode fazer o Login imediatamente.
-
-### 16. Redesign Premium do Fluxo de Pagamento (Checkout) ✅
-- **Layout Unificado (Split Layout):** Substituição do formulário simples centralizado por um Card Gigante estilo Glassmorphism.
-- **Lado Esquerdo Dinâmico:** Exibe os benefícios do acesso, e a partir do Passo 2 (quando escolhe o plano), exibe dinamicamente um mini-card dourado informando o preço e nome do plano selecionado.
-- **Animações de Alto Nível:** Linha do tempo (Steps) preenche dinamicamente de dourado; Botão 'Voltar' repaginado com hover; Títulos com gradientes metálicos; Fundo responsivo que mostra o BG global ('Cara da Bíblia').
-- **Responsividade Pura:** Em celulares (Mobile), as colunas empilham lindamente, garantindo que o usuário tenha vontade de comprar antes mesmo de colocar os dados.
-
----
-
-## ✅ O QUE JÁ FOI FEITO E CONCLUÍDO (Atualizado 02/05/2026)
-
-### 17. Refinamento Visual de Perfil e Avatares (UI/UX) ✅
-- **Edição Dinâmica (Client Side):** O formulário engessado de "Editar Nome" virou um botão de Lápis invisível que transforma o próprio nome em uma caixa de texto.
-- **Avatares Seguros:** Os avatares gerados com Dicebear (que podiam apresentar imagens inesperadas) foram trocados pelo `UI-Avatars`, que gera as Iniciais em cores padronizadas (Seguro para todas as idades).
-- **Layout de Ações Rápidas:** Os botões de Cancelamento, Trocar Senha e Suporte foram alinhados lado a lado, ganhando uma identidade coesa (Ícones nas cores de alerta/atenção).
-- **Aviso de Cancelamento Inteligente:** Ajustada a cópia (texto) de cancelamento. A plataforma não bloqueia mais o acesso imediatamente, respeitando a regra do Stripe de manter o cliente com acesso até o último dia pago da mensalidade vigente.
-
-### 18. Dashboard de Analytics (Relatórios) ✅
-- **Tabela de Tracking:** Criada tabela inteligente no Banco de Dados (`visualizacoes`) que rastreia os cliques no Player sem atrapalhar a performance do usuário.
-- **Ranking Administrativo:** Criada nova aba "Relatórios" no painel de administração que cruza os dados do Banco.
-- **Estatísticas em Tempo Real:** O dono agora vê duas vitrines (Top 10 Vídeos Mais Assistidos e Top 10 Mais Favoritados) organizadas por posição (1º, 2º) de forma analítica e visual.
-
----
-
-## 🚀 CHECKLIST FINAL PARA O LANÇAMENTO OFICIAL
-
-Aqui está a lista estrita e exata do que falta ser feito **apenas por você** (Dono da plataforma) para abrir o site para os clientes começarem a comprar:
-
-1. **[ ] Cadastrar os Vídeos Reais:** Entrar na Bunny.net, upar os vídeos que você vai vender, copiar o `Video ID` deles e cadastrar 1 por 1 lá no painel `Admin > Aba Catálogo`.
-2. **[ ] Ajustar os Preços Finais:** Ir na tela `Admin > Aba Planos`, criar os planos que você quer vender e configurar o Preço certo e a Etiqueta certa.
-3. **[ ] Comprar no próprio site (Teste Final):** Entrar no site como se fosse um cliente, criar uma conta e gerar um PIX. Pagar esse pix (o dinheiro vai pra sua própria conta).
-4. **[ ] Verificar se Deu Tudo Certo:** Se após o PIX, a tela de "Assinatura Ativa" ficar verde na página de Perfil, e você conseguir ver os vídeos sem bloqueio, **PARABÉNS! A plataforma está PRONTA PARA FATURAR!**
-
----
-
-## 💰 Custo Mensal da Plataforma Atual
-| Serviço | Custo | Situação |
-|---|---|---|
-| Vercel (site) | **Grátis** | Rodando liso. |
-| Supabase (banco) | **Grátis** | Limites gratuitos. |
-| Bunny.net (vídeos) | **R$ ~30 a 50/mês** | Necessário botar crédito para os vídeos rodarem. |
-| Stripe (cobranças) | **% por venda** | Paga apenas a taxa por transação aprovada. |
-
----
-
-## 📁 Estrutura Atualizada e Resumida
-```
-d:\Projeto\web\
-├── src\
-│   ├── app\
-│   │   ├── admin\            ← Painel do Dono (Vídeos e Planos Stripe)
-│   │   ├── watch\            ← Plataforma do Assinante
-│   │   ├── atualizar-senha\  ← Criação de senha (Novo Assinante)
-│   │   ├── sucesso\          ← Tela pós-pagamento aprovado
-│   │   └── api\stripe\       ← APIs do Checkout, Planos e Webhooks
-│   ├── components\           ← Banners, Cards, Navbar, etc.
-│   └── utils\supabase\       ← Clientes de Conexão com DB
-├── .env.local                ← Chaves do Supabase e da Stripe
-└── DIARIO_DO_PROJETO.md      ← Este diário de documentação da Plataforma!
-```
-
-*Arquivo atualizado em 27/04/2026 após a implementação do redesign do checkout embutido.*
+| Arquivo | Função |
+|---|---|
+| `src/app/layout.tsx` | SEO global, favicon, Open Graph |
+| `src/app/not-found.tsx` | Página 404 personalizada |
+| `src/components/VideoPlayerGuard.tsx` | Controle de sessão simultânea |
+| `src/components/NotificationBell.tsx` | Sino de notificações |
+| `src/components/AppBanner.tsx` | Banner de download do App |
+| `src/app/api/push/enviar/route.ts` | API de envio de push notifications |
+| `src/app/api/stripe/planos-publicos/route.ts` | API de planos (consumida pelo App) |
+| `src/app/watch/page.tsx` | Área logada principal |
