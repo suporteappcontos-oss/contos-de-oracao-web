@@ -37,7 +37,7 @@ export default function Navbar() {
         {scrolled && (
           <a href="#home" className="hidden md:inline text-white/70 hover:text-white text-sm transition-colors no-underline">Início</a>
         )}
-        <a href="#planos" className="text-white/70 hover:text-white text-sm transition-colors no-underline font-semibold">Planos</a>
+        <Link href="/planos" className="text-white/70 hover:text-white text-sm transition-colors no-underline font-semibold">Planos</Link>
 
         {/* Botões Redes Sociais (bolinas) */}
         <a

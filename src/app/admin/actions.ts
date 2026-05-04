@@ -83,3 +83,25 @@ export async function togglePlanoUsuario(userId: string, planoAtual: boolean) {
   if (error) console.error('❌ Erro ao atualizar plano:', error.message)
   revalidatePath('/admin')
 }
+
+// ─── Salvar Configuração Global (Fundo do app/site) ───
+export async function salvarConfiguracao(formData: FormData) {
+  await verificarAdmin()
+  const bgUrl = formData.get('backgroundUrl') as string
+
+  const config = {
+    background_url: bgUrl
+  }
+
+  // Envia direto pro Bunny.net pra ficar disponível na hora pra todos!
+  await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
+    method: 'PUT',
+    headers: {
+      'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(config)
+  })
+
+  revalidatePath('/', 'layout')
+}

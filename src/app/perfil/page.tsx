@@ -5,10 +5,11 @@ import Image from 'next/image'
 import {
   Heart, LogOut, Key, ChevronLeft, Calendar,
   Crown, XCircle, CheckCircle2, Play, Mail,
-  AlertTriangle, Shield, Smartphone, Download
+  AlertTriangle, Shield, Smartphone, Download, MessageCircle
 } from 'lucide-react'
 import ClientEditableName from './ClientEditableName'
 import CancelarPlanoBtn from '@/components/CancelarPlanoBtn'
+import Pricing from '@/components/Pricing'
 
 type VideoFavorito = {
   id: string
@@ -184,17 +185,17 @@ export default async function PerfilPage() {
             </div>
           </Link>
 
-          {/* Box 3: Suporte */}
-          <a href="mailto:suporte.appcontos@gmail.com"
-            className="flex flex-col justify-center gap-3 p-5 rounded-xl transition-all hover:scale-[1.02]"
+          {/* Box 3: Suporte (WhatsApp João Pires) */}
+          <a href="https://wa.me/5566997182760" target="_blank" rel="noopener noreferrer"
+            className="flex flex-col justify-center gap-3 p-5 rounded-xl transition-all hover:scale-[1.02] group"
             style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'rgba(0,168,225,0.1)', border: '1px solid rgba(0,168,225,0.2)' }}>
-              <Shield size={18} style={{ color: '#00a8e1' }} />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-[#25D366]/20"
+              style={{ background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.2)' }}>
+              <MessageCircle size={18} style={{ color: '#25D366' }} />
             </div>
             <div>
-              <div className="text-white font-bold text-sm">Central de Suporte</div>
-              <div className="text-[#64748B] text-xs mt-0.5">Precisa de ajuda? Fale conosco por e-mail.</div>
+              <div className="text-white font-bold text-sm">Falar com Desenvolvedor</div>
+              <div className="text-[#64748B] text-xs mt-0.5">Dúvidas? Chame o João Pires direto no WhatsApp.</div>
             </div>
           </a>
 
@@ -207,6 +208,11 @@ export default async function PerfilPage() {
           <p className="text-[#64748B] text-xs">
             Ao cancelar sua assinatura, <b>você continuará com acesso total até o final do período que já foi pago.</b> Após essa data, o plano não será renovado e o acesso será suspenso.
           </p>
+        </div>
+
+        {/* ── DETALHES DOS PLANOS ── */}
+        <div className="mb-12 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
+          <Pricing />
         </div>
 
         {/* ── APLICATIVO ANDROID ── */}

@@ -5,13 +5,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   adicionarVideo, editarVideo, toggleVideoAtivo,
-  deletarVideo, togglePlanoUsuario,
+  deletarVideo, togglePlanoUsuario, salvarConfiguracao
 } from './actions'
 
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Settings, Clock, Heart, BarChart3
+  Settings, Clock, Heart, BarChart3, MonitorSmartphone
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -160,6 +160,7 @@ export default async function AdminPage({
               { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
               { id: 'relatorios', label: 'Relatórios', icon: BarChart3, count: null },
               { id: 'stripe', label: 'Planos', icon: Settings, count: null },
+              { id: 'config', label: 'App', icon: MonitorSmartphone, count: null },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
                 className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
@@ -533,6 +534,37 @@ export default async function AdminPage({
         {/* ════════ ABA STRIPE ════════ */}
         {activeTab === 'stripe' && (
           <StripeAdmin />
+        )}
+
+        {/* ════════ ABA CONFIGURAÇÕES GERAIS ════════ */}
+        {activeTab === 'config' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
+                <MonitorSmartphone size={20} className="text-[#D4AF37]" />
+              </div>
+              <div>
+                <h2 className="text-white text-2xl font-black tracking-tight">Personalização</h2>
+                <p className="text-white/40 text-sm">Defina imagens e temas para o site e o aplicativo mobile.</p>
+              </div>
+            </div>
+            
+            <div className="bg-[#111827] border border-white/5 rounded-[2rem] p-8 shadow-2xl max-w-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/5 to-transparent rounded-bl-full pointer-events-none" />
+              <form action={salvarConfiguracao} className="space-y-6 relative z-10">
+                <div>
+                  <label className={labelCls}>URL do Plano de Fundo (Bíblia, Textura, etc) *</label>
+                  <input name="backgroundUrl" placeholder="https://exemplo.com/imagem-biblia.jpg" className={inputCls} required />
+                  <p className="text-white/40 text-xs mt-3">Esta imagem será sincronizada automaticamente em <b>fundo de todas as telas</b> tanto no site quanto no aplicativo Android. Copie a URL de alguma imagem da internet ou do Unsplash.</p>
+                </div>
+                <div className="pt-4 border-t border-white/5">
+                  <button type="submit" className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-black px-6 py-3.5 rounded-xl font-black transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                    Salvar e Sincronizar Fundo
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         )}
 
       </main>
