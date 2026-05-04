@@ -225,7 +225,7 @@ export default async function PerfilPage() {
               </div>
             </div>
             <div className="flex flex-col gap-3 w-full sm:w-auto shrink-0">
-              <a href="/contos-de-oracao.apk" download className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
+              <a href="https://contos-apks.b-cdn.net/contos-de-oracao.apk" className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
                  style={{ background: '#D4AF37', color: '#090B10' }}>
                 <Download size={16} />
                 Baixar App (.APK)

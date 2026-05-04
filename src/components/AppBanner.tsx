@@ -48,7 +48,7 @@ export default function AppBanner() {
             <span className="text-white/40 text-xs ml-1">100% Gratuito</span>
           </div>
           <a
-            href="/perfil"
+            href="https://contos-apks.b-cdn.net/contos-de-oracao.apk"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm transition-all hover:scale-105 shadow-lg"
             style={{ background: 'linear-gradient(135deg,#FFD700,#D4AF37)', color: '#090B10' }}
           >
