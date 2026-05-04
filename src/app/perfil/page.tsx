@@ -194,8 +194,8 @@ export default async function PerfilPage() {
               <MessageCircle size={18} style={{ color: '#25D366' }} />
             </div>
             <div>
-              <div className="text-white font-bold text-sm">Falar com Desenvolvedor</div>
-              <div className="text-[#64748B] text-xs mt-0.5">Dúvidas? Chame o João Pires direto no WhatsApp.</div>
+              <div className="text-white font-bold text-sm">Suporte Técnico</div>
+              <div className="text-[#64748B] text-xs mt-0.5">Atendimento rápido e especializado via WhatsApp.</div>
             </div>
           </a>
 
