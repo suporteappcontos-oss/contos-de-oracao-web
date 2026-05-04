@@ -87,21 +87,37 @@ export async function togglePlanoUsuario(userId: string, planoAtual: boolean) {
 // ─── Salvar Configuração Global (Fundo do app/site) ───
 export async function salvarConfiguracao(formData: FormData) {
   await verificarAdmin()
-  const bgUrl = formData.get('backgroundUrl') as string
+  const file = formData.get('backgroundImage') as File
 
-  const config = {
-    background_url: bgUrl
+  if (file && file.size > 0) {
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    const extensao = file.name.split('.').pop() || 'jpg'
+    const fileName = `background_${Date.now()}.${extensao}`
+
+    // 1. Faz upload da imagem pro Bunny.net Storage
+    await fetch(`https://br.storage.bunnycdn.com/contos-apks/${fileName}`, {
+      method: 'PUT',
+      headers: {
+        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+        'Content-Type': file.type || 'image/jpeg',
+      },
+      body: buffer
+    })
+
+    const bgUrl = `https://contos-apks.b-cdn.net/${fileName}`
+    const config = { background_url: bgUrl }
+
+    // 2. Atualiza o config.json apontando para a nova imagem (atualização imediata para todos)
+    await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
+      method: 'PUT',
+      headers: {
+        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(config)
+    })
   }
-
-  // Envia direto pro Bunny.net pra ficar disponível na hora pra todos!
-  await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
-    method: 'PUT',
-    headers: {
-      'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(config)
-  })
 
   revalidatePath('/', 'layout')
 }

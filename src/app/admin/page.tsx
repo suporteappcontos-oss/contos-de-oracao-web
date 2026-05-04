@@ -553,9 +553,9 @@ export default async function AdminPage({
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/5 to-transparent rounded-bl-full pointer-events-none" />
               <form action={salvarConfiguracao} className="space-y-6 relative z-10">
                 <div>
-                  <label className={labelCls}>URL do Plano de Fundo (Bíblia, Textura, etc) *</label>
-                  <input name="backgroundUrl" placeholder="https://exemplo.com/imagem-biblia.jpg" className={inputCls} required />
-                  <p className="text-white/40 text-xs mt-3">Esta imagem será sincronizada automaticamente em <b>fundo de todas as telas</b> tanto no site quanto no aplicativo Android. Copie a URL de alguma imagem da internet ou do Unsplash.</p>
+                  <label className={labelCls}>Upload do Plano de Fundo (Bíblia, Textura, etc) *</label>
+                  <input type="file" name="backgroundImage" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" required />
+                  <p className="text-white/40 text-xs mt-3">Faça o upload de uma imagem do seu computador. Esta imagem será sincronizada automaticamente em <b>fundo de todas as telas</b> tanto no site quanto no aplicativo Android.</p>
                 </div>
                 <div className="pt-4 border-t border-white/5">
                   <button type="submit" className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-black px-6 py-3.5 rounded-xl font-black transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(212,175,55,0.2)]">
