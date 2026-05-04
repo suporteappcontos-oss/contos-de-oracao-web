@@ -551,7 +551,7 @@ export default async function AdminPage({
             
             <div className="bg-[#111827] border border-white/5 rounded-[2rem] p-8 shadow-2xl max-w-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/5 to-transparent rounded-bl-full pointer-events-none" />
-              <form action={salvarConfiguracao} className="space-y-6 relative z-10">
+              <form action={salvarConfiguracao} encType="multipart/form-data" className="space-y-6 relative z-10">
                 <div>
                   <label className={labelCls}>Upload do Plano de Fundo (Bíblia, Textura, etc) *</label>
                   <input type="file" name="backgroundImage" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" required />
