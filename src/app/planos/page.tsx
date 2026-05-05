@@ -23,15 +23,15 @@ export default function PlanosPage() {
         {/* Glow Dourado sutil atrás de tudo */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#D4AF37] opacity-5 blur-[150px] rounded-full z-0 pointer-events-none" />
 
-        {/* Imagem Esquerda (Jesus com crianças) - Fundo no celular */}
+        {/* Imagem Esquerda (Jesus com crianças) */}
         <div 
-          className="absolute left-0 xl:left-[2%] top-[60%] xl:top-1/2 -translate-y-1/2 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-center bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
+          className="absolute left-0 xl:left-[2%] bottom-0 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
           style={{ backgroundImage: "url('/jesus-criancas.png')" }}
         />
 
-        {/* Imagem Direita (Mulher orando) - Fundo no celular */}
+        {/* Imagem Direita (Mulher orando) */}
         <div 
-          className="absolute right-0 xl:right-[2%] top-[60%] xl:top-1/2 -translate-y-1/2 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-center bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
+          className="absolute right-0 xl:right-[2%] bottom-0 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
           style={{ backgroundImage: "url('/mulher-orando.png')" }}
         />
 
@@ -75,14 +75,14 @@ export default function PlanosPage() {
       </section>
 
       {/* FAQ rápido */}
-      <section
-        style={{
-          background: '#090B10',
-          padding: '60px 24px',
-          maxWidth: '700px',
-          margin: '0 auto',
-        }}
-      >
+      <div className="w-full bg-[#090B10]">
+        <section
+          style={{
+            padding: '60px 24px',
+            maxWidth: '700px',
+            margin: '0 auto',
+          }}
+        >
         <h2
           style={{
             fontFamily: '"Playfair Display", serif',
@@ -144,7 +144,8 @@ export default function PlanosPage() {
             </p>
           </div>
         ))}
-      </section>
+        </section>
+      </div>
 
       <Footer />
     </main>
