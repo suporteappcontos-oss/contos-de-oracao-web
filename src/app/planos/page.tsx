@@ -15,17 +15,17 @@ export default function PlanosPage() {
       {/* Seção Principal Unificada (Texto + Preços + Imagens Laterais) */}
       <section className="relative w-full overflow-hidden bg-[#090B10] pt-[120px] pb-[80px] min-h-[800px] flex flex-col items-center">
         
-        {/* Imagem Esquerda (Jesus com crianças) - Oculta no celular */}
+        {/* Imagem Esquerda (Jesus com crianças) - Aparece no celular como fundo sutil */}
         <div 
-          className="hidden xl:block absolute left-0 bottom-0 w-[450px] h-[700px] bg-contain bg-bottom bg-no-repeat opacity-100 z-0"
+          className="absolute left-0 bottom-0 w-[250px] xl:w-[450px] h-[450px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-20 xl:opacity-100 z-0 pointer-events-none"
           style={{ 
             backgroundImage: "url('/jesus-criancas.png')",
           }}
         />
 
-        {/* Imagem Direita (Mulher orando) - Oculta no celular */}
+        {/* Imagem Direita (Mulher orando) - Aparece no celular como fundo sutil */}
         <div 
-          className="hidden xl:block absolute right-0 bottom-0 w-[450px] h-[700px] bg-contain bg-bottom bg-no-repeat opacity-100 z-0"
+          className="absolute right-0 bottom-0 w-[250px] xl:w-[450px] h-[450px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-20 xl:opacity-100 z-0 pointer-events-none"
           style={{ 
             backgroundImage: "url('/mulher-orando.png')", 
           }}

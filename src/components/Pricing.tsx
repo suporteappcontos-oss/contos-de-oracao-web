@@ -69,15 +69,9 @@ export default async function Pricing() {
   return (
     <section
       id="planos"
-      className="py-12 md:py-16 px-[4%] text-center"
-      style={{ background: '#090B10', borderTop: '1px solid rgba(212,175,55,0.1)', fontFamily: 'Outfit, sans-serif' }}
+      className="py-6 md:py-12 px-[4%] text-center"
+      style={{ fontFamily: 'Outfit, sans-serif' }}
     >
-      <p className="text-[#FFD700] uppercase tracking-widest text-xs font-semibold mb-2">Planos e Preços</p>
-      <h2 className="text-2xl md:text-4xl mb-2 font-extrabold text-white">
-        Escolha o plano ideal para você
-      </h2>
-      <p className="text-white/50 text-base mb-8">Cancele quando quiser. Sem taxas escondidas.</p>
-
       <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch flex-wrap gap-5">
         {planosRenderizados.map((plano) => (
           <div
