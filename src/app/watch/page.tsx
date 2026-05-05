@@ -62,9 +62,10 @@ export default async function WatchPage() {
   const recentes: Video[] = []
   const idsVistos = new Set<string>()
   for (const item of (historico ?? [])) {
-    if (!idsVistos.has(item.video_id) && item.videos.ativo) {
+    const videoData = Array.isArray(item.videos) ? item.videos[0] : item.videos;
+    if (videoData && !idsVistos.has(item.video_id) && videoData.ativo) {
       idsVistos.add(item.video_id)
-      recentes.push(item.videos as unknown as Video)
+      recentes.push(videoData as Video)
     }
   }
 
