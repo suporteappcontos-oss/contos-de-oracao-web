@@ -71,12 +71,8 @@ export default function AssinarPage() {
     return Object.keys(novosErros).length === 0
   }
 
-  function irParaStep2() {
+  function irParaPagamento() {
     if (validarStep1()) setStep(2)
-  }
-
-  function irParaStep3() {
-    setStep(3)
   }
 
   async function finalizarPagamento() {
@@ -181,7 +177,7 @@ export default function AssinarPage() {
             </p>
 
             {/* Destaque do Plano Dinâmico no Checkout final */}
-            {step === 3 && planoDetalhe && (
+            {step === 2 && planoDetalhe && (
               <div className="mb-4 p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
                  <p className="text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <Check size={12} strokeWidth={3} /> Plano Selecionado
@@ -242,8 +238,8 @@ export default function AssinarPage() {
           <div className="px-6 py-8 sm:px-10 h-full flex flex-col justify-center">
             
             {/* Indicador de Steps — Pills com destaque */}
-            <div className="flex items-center justify-center mb-8 gap-0 w-full">
-              {[1, 2, 3].map((s) => (
+            <div className="flex items-center justify-center mb-8 gap-0 w-full max-w-sm mx-auto">
+              {[1, 2].map((s) => (
                 <div key={s} className="flex items-center flex-1 last:flex-none last:flex-grow-0">
                   <div className="flex flex-col items-center gap-1">
                     {/* Bolinha da etapa */}
@@ -267,12 +263,12 @@ export default function AssinarPage() {
                       <span className={`text-[0.6rem] font-extrabold uppercase tracking-wider hidden sm:block transition-all duration-500 ${
                         step === s ? 'text-[#D4AF37]' : step > s ? 'text-[#D4AF37]/50' : 'text-white/20'
                       }`}>
-                        {s === 1 ? 'Dados' : s === 2 ? 'Plano' : 'Pagamento'}
+                        {s === 1 ? 'Dados' : 'Pagamento'}
                       </span>
                     </div>
                   </div>
-                  {s < 3 && (
-                    <div className="flex-1 h-[1px] mx-2 mt-[-14px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  {s < 2 && (
+                    <div className="flex-1 h-[1px] mx-4 mt-[-14px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
                       <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: 'linear-gradient(to right, #D4AF37, #F9E596)' }} />
                     </div>
                   )}
@@ -408,10 +404,10 @@ export default function AssinarPage() {
                 </p>
               </div>
 
-              <button onClick={irParaStep2}
+              <button onClick={irParaPagamento}
                 className="w-full py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 mt-1"
                 style={{ background: '#D4AF37', color: '#090B10' }}>
-                Continuar <ChevronRight size={16} strokeWidth={3} />
+                Continuar para Pagamento <ChevronRight size={16} strokeWidth={3} />
               </button>
             </div>
 
@@ -422,83 +418,8 @@ export default function AssinarPage() {
           </div>
         )}
 
-        {/* ── STEP 2: Selecionar Plano ── */}
+        {/* ── STEP 2: Confirmar e Pagar ── */}
         {step === 2 && (
-          <div className="pt-1">
-            <h1 className="text-white text-xl font-black mb-1 text-center tracking-tight">Escolha seu plano</h1>
-            <p className="text-white/40 text-xs mb-5 text-center">Selecione o melhor plano para você</p>
-
-            <div className="flex flex-col gap-3 mb-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
-              {planos.length === 0 && <p className="text-white/50 text-center">Carregando planos...</p>}
-
-              {planos.map(plano => (
-                <button
-                  key={plano.id}
-                  onClick={() => setPlanoSelecionado(plano.id)}
-                  className={`w-full text-left rounded-xl p-4 transition-all duration-300 cursor-pointer overflow-hidden ${planoSelecionado === plano.id ? 'plano-selecionado border-2 border-[#D4AF37]' : 'border border-white/5 hover:border-white/20 hover:bg-white/5'}`}
-                  style={{
-                    background: planoSelecionado === plano.id ? 'rgba(212,175,55,0.1)' : 'rgba(21,36,62,0.7)',
-                    position: 'relative'
-                  }}>
-                  {plano.intervalo === 'year' && (
-                    <div className="inline-block mb-3 px-3 py-1 rounded-full text-[0.65rem] font-black uppercase tracking-wider"
-                      style={{ background: '#D4AF37', color: '#090B10' }}>
-                      Mais Econômico
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-white font-black text-base">{plano.produto.nome}</div>
-                      <div className="text-white/50 text-xs mt-0.5">
-                        {plano.intervalo === 'month' ? 'Cobrado mensalmente' : plano.intervalo === 'year' ? 'Cobrado anualmente' : 'Cobrança personalizada'}
-                      </div>
-                      {/* Badge de telas simultâneas */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <div
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
-                          style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)' }}
-                        >
-                          <Monitor size={13} style={{ color: '#D4AF37' }} />
-                          <span className="text-[0.75rem] font-bold" style={{ color: '#D4AF37' }}>
-                            {(plano.produto.metadata?.max_telas || 1)} tela{(plano.produto.metadata?.max_telas || 1) > 1 ? 's' : ''} simultânea{(plano.produto.metadata?.max_telas || 1) > 1 ? 's' : ''}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-black text-xl" style={{ color: '#D4AF37' }}>
-                         R$ {(plano.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                       </div>
-                       <div className="text-white/40 text-xs">/{plano.intervalo === 'month' ? 'mês' : plano.intervalo === 'year' ? 'ano' : 'ciclo'}</div>
-                    </div>
-                  </div>
-                  {planoSelecionado === plano.id && (
-                    <div className="absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center"
-                      style={{ background: '#D4AF37' }}>
-                      <Check size={12} className="text-[#090B10]" />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-
-
-            <button onClick={irParaStep3}
-              className="w-full py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
-              style={{ background: '#D4AF37', color: '#090B10' }}>
-              Continuar <ChevronRight size={16} strokeWidth={3} />
-            </button>
-
-            <button onClick={() => setStep(1)}
-              className="w-full py-3 mt-3 text-white/30 text-sm hover:text-white transition-colors cursor-pointer"
-              style={{ background: 'transparent', border: 'none' }}>
-              ← Voltar
-            </button>
-          </div>
-        )}
-
-        {/* ── STEP 3: Confirmar e Pagar ── */}
-        {step === 3 && (
           <div className="pt-1">
             <h1 className="text-white text-xl font-black mb-1 text-center tracking-tight">Confirmar assinatura</h1>
             <p className="text-white/40 text-xs mb-5 text-center">Revise seus dados antes de pagar</p>
@@ -556,10 +477,10 @@ export default function AssinarPage() {
             )}
 
             {!clientSecret && erroCheckout?.tipo !== 'email_duplicado' && (
-              <button onClick={() => setStep(2)}
+              <button onClick={() => setStep(1)}
                 className="w-full py-3 mt-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 group border border-white/5 hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5 text-white/40 hover:text-[#D4AF37]"
                 style={{ background: 'transparent' }}>
-                <span className="transition-transform group-hover:-translate-x-1">←</span> Voltar para Escolha do Plano
+                <span className="transition-transform group-hover:-translate-x-1">←</span> Voltar para alterar dados
               </button>
             )}
 
