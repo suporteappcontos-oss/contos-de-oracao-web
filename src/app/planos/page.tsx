@@ -12,66 +12,69 @@ export default function PlanosPage() {
     <main>
       <Navbar />
 
-      {/* Seção Principal Unificada (Texto + Preços + Imagens Laterais) */}
+      {/* Seção Principal Unificada */}
       <section 
-        className="relative w-full overflow-hidden pt-[120px] pb-[100px] min-h-[900px] flex flex-col items-center"
-        style={{
-          background: 'radial-gradient(circle at center, #111a2c 0%, #090B10 60%, #050608 100%)'
-        }}
+        className="w-full bg-[#050608] pt-[120px] pb-[100px] flex justify-center px-4"
       >
-        
-        {/* Glow Dourado sutil atrás de tudo */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#D4AF37] opacity-5 blur-[150px] rounded-full z-0 pointer-events-none" />
-
-        {/* Imagem Esquerda (Jesus com crianças) */}
+        {/* O Grande "Card" que contém as imagens e os planos */}
         <div 
-          className="absolute left-0 xl:left-[2%] top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[450px] h-[350px] xl:h-[700px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
-          style={{ backgroundImage: "url('/jesus-criancas.png')" }}
-        />
+          className="relative w-full max-w-[1300px] min-h-[850px] rounded-[2rem] border-2 border-[#D4AF37]/50 shadow-[0_0_60px_rgba(212,175,55,0.15)] flex flex-col items-center overflow-hidden"
+          style={{
+            background: 'radial-gradient(circle at center, #111a2c 0%, #090B10 60%, #050608 100%)'
+          }}
+        >
+          {/* Glow Dourado sutil atrás de tudo */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#D4AF37] opacity-5 blur-[150px] rounded-full z-0 pointer-events-none" />
 
-        {/* Imagem Direita (Mulher orando) */}
-        <div 
-          className="absolute right-0 xl:right-[2%] top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[450px] h-[350px] xl:h-[700px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
-          style={{ backgroundImage: "url('/mulher-orando.png')" }}
-        />
+          {/* Imagem Esquerda (Jesus com crianças) */}
+          <div 
+            className="absolute left-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
+            style={{ backgroundImage: "url('/jesus-criancas.png')" }}
+          />
 
-        {/* Textos (Hero) */}
-        <div className="relative z-10 w-full max-w-3xl mx-auto px-6 text-center mb-12">
-          <h1
-            style={{
-              fontFamily: '"Outfit", sans-serif',
-              fontSize: 'clamp(32px, 6vw, 60px)',
-              fontWeight: '900',
-              color: '#FFFFFF',
-              lineHeight: '1.1',
-              textTransform: 'uppercase',
-              textShadow: '0px 4px 20px rgba(0,0,0,0.8)'
-            }}
-          >
-            ESCOLHA O <br/>
-            <span style={{ color: '#D4AF37' }}>PLANO IDEAL</span><br/>
-            PARA SUA FAMÍLIA<br/>
-            E MINISTÉRIO
-          </h1>
-          
-          <div className="flex flex-row justify-center items-center gap-6 mt-6">
-             <div className="flex items-center gap-2">
-                <span className="text-[#D4AF37] text-xl">▶</span>
-                <span className="text-white/80 font-medium text-sm md:text-base">Filmes que educam na fé.</span>
-             </div>
-             <div className="w-[1px] h-8 bg-white/20"></div>
-             <div className="flex items-center gap-2">
-                <span className="text-[#D4AF37] text-xl">📖</span>
-                <span className="text-white/80 font-medium text-sm md:text-base">Materiais que formam para a vida.</span>
-             </div>
+          {/* Imagem Direita (Mulher orando) */}
+          <div 
+            className="absolute right-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
+            style={{ backgroundImage: "url('/mulher-orando.png')" }}
+          />
+
+          {/* Textos (Hero) */}
+          <div className="relative z-10 w-full max-w-3xl mx-auto px-6 text-center mt-12 mb-12">
+            <h1
+              style={{
+                fontFamily: '"Outfit", sans-serif',
+                fontSize: 'clamp(32px, 6vw, 60px)',
+                fontWeight: '900',
+                color: '#FFFFFF',
+                lineHeight: '1.1',
+                textTransform: 'uppercase',
+                textShadow: '0px 4px 20px rgba(0,0,0,0.8)'
+              }}
+            >
+              ESCOLHA O <br/>
+              <span style={{ color: '#D4AF37' }}>PLANO IDEAL</span><br/>
+              PARA SUA FAMÍLIA<br/>
+              E MINISTÉRIO
+            </h1>
+            
+            <div className="flex flex-row justify-center items-center gap-6 mt-6">
+               <div className="flex items-center gap-2">
+                  <span className="text-[#D4AF37] text-xl">▶</span>
+                  <span className="text-white/80 font-medium text-sm md:text-base">Filmes que educam na fé.</span>
+               </div>
+               <div className="w-[1px] h-8 bg-white/20"></div>
+               <div className="flex items-center gap-2">
+                  <span className="text-[#D4AF37] text-xl">📖</span>
+                  <span className="text-white/80 font-medium text-sm md:text-base">Materiais formativos.</span>
+               </div>
+            </div>
+          </div>
+
+          {/* Central: Planos da Stripe */}
+          <div className="relative z-10 w-full max-w-5xl mx-auto px-4 mt-4 pb-12">
+            <Pricing />
           </div>
         </div>
-
-        {/* Central: Planos da Stripe encapsulados num Mega-Card no Desktop */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 xl:p-10 xl:bg-[#111827]/60 xl:backdrop-blur-xl xl:border xl:border-[#D4AF37]/30 xl:rounded-[3rem] xl:shadow-[0_0_80px_rgba(212,175,55,0.08)] mt-4">
-          <Pricing />
-        </div>
-
       </section>
 
       {/* FAQ rápido */}
