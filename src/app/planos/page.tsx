@@ -69,9 +69,28 @@ export default function PlanosPage() {
         </div>
       </section>
 
-      {/* Componente de preços (já busca da Stripe) */}
-      <div style={{ background: '#090B10' }}>
-        <Pricing />
+      {/* Componente de preços com as imagens nas laterais */}
+      <div className="relative w-full overflow-hidden bg-[#090B10] py-8 flex justify-center items-center min-h-[700px]">
+        {/* Imagem Esquerda (Jesus com crianças) - Oculta no celular */}
+        <div 
+          className="hidden xl:block absolute left-0 bottom-0 w-[420px] h-[600px] bg-contain bg-bottom bg-no-repeat opacity-90"
+          style={{ 
+            backgroundImage: "url('/jesus-criancas.png')",
+          }}
+        />
+
+        {/* Central: Planos da Stripe */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto">
+          <Pricing />
+        </div>
+
+        {/* Imagem Direita (Mulher orando) - Oculta no celular */}
+        <div 
+          className="hidden xl:block absolute right-0 bottom-0 w-[420px] h-[600px] bg-contain bg-bottom bg-no-repeat opacity-90"
+          style={{ 
+            backgroundImage: "url('/mulher-orando.png')", 
+          }}
+        />
       </div>
 
       {/* FAQ rápido */}
