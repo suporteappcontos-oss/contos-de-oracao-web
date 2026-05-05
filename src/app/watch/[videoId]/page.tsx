@@ -5,6 +5,7 @@ import Image from 'next/image'
 import FavoritoButton from '@/components/FavoritoButton'
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
 import { ChevronLeft, Clock, Tag, Share2, ChevronRight } from 'lucide-react'
+import crypto from 'crypto'
 
 type Props = {
   params: Promise<{ videoId: string }>
@@ -51,7 +52,17 @@ export default async function VideoPlayerPage({ params }: Props) {
     .limit(5)
 
   const nome = user.user_metadata?.nome || user.email?.split('@')[0] || 'Assinante'
-  const embedUrl = `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br`
+  
+  let embedUrl = `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br`
+  
+  // Implementação da Dica de Ouro: Autenticação por Token (Protege e faz rodar no APK)
+  const securityKey = process.env.BUNNY_STREAM_TOKEN_KEY
+  if (securityKey) {
+    const expires = Math.floor(Date.now() / 1000) + (3600 * 6) // Expira em 6 horas
+    const hashString = securityKey + video.bunny_video_id + expires
+    const token = crypto.createHash('sha256').update(hashString).digest('hex')
+    embedUrl += `&token=${token}&expires=${expires}`
+  }
 
   const FALLBACK = [
     'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400&q=70',

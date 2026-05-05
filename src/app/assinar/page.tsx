@@ -299,7 +299,7 @@ export default function AssinarPage() {
                   }}
                   onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
                   onBlur={e => { e.currentTarget.style.borderColor = erros.nome ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
-                  onKeyDown={e => e.key === 'Enter' && irParaStep2()}
+                  onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
                 />
                 {erros.nome && <p className="text-red-400 text-xs mt-1.5">{erros.nome}</p>}
               </div>
@@ -320,7 +320,7 @@ export default function AssinarPage() {
                   }}
                   onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
                   onBlur={e => { e.currentTarget.style.borderColor = erros.email ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
-                  onKeyDown={e => e.key === 'Enter' && irParaStep2()}
+                  onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
                 />
                 {erros.email && <p className="text-red-400 text-xs mt-1.5">{erros.email}</p>}
               </div>
@@ -342,7 +342,7 @@ export default function AssinarPage() {
                     }}
                     onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
                     onBlur={e => { e.currentTarget.style.borderColor = erros.senha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
-                    onKeyDown={e => e.key === 'Enter' && irParaStep2()}
+                    onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
                   />
                   <button
                     type="button"
@@ -380,7 +380,7 @@ export default function AssinarPage() {
                     }}
                     onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
                     onBlur={e => { e.currentTarget.style.borderColor = erros.confirmarSenha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
-                    onKeyDown={e => e.key === 'Enter' && irParaStep2()}
+                    onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
                   />
                   <button
                     type="button"
