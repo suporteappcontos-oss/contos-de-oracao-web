@@ -12,86 +12,63 @@ export default function PlanosPage() {
     <main>
       <Navbar />
 
-      {/* Hero da página de planos */}
-      <section
-        style={{
-          paddingTop: '120px',
-          paddingBottom: '40px',
-          textAlign: 'center',
-          background: 'linear-gradient(180deg, #0d1117 0%, #090B10 100%)',
-        }}
-      >
-        <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 24px' }}>
-          <span
-            style={{
-              display: 'inline-block',
-              background: 'rgba(212,175,55,0.12)',
-              border: '1px solid rgba(212,175,55,0.3)',
-              color: '#D4AF37',
-              borderRadius: '20px',
-              padding: '6px 18px',
-              fontSize: '13px',
-              fontWeight: '600',
-              letterSpacing: '1px',
-              marginBottom: '20px',
-              fontFamily: 'Outfit, sans-serif',
-            }}
-          >
-            ✝ PLANOS E ASSINATURA
-          </span>
-
-          <h1
-            style={{
-              fontFamily: '"Playfair Display", serif',
-              fontSize: 'clamp(32px, 5vw, 52px)',
-              color: '#FFFFFF',
-              lineHeight: '1.2',
-              marginBottom: '16px',
-            }}
-          >
-            Acesso Completo à{' '}
-            <span style={{ color: '#D4AF37' }}>Maior Plataforma</span>{' '}
-            Católica do Brasil
-          </h1>
-
-          <p
-            style={{
-              fontFamily: 'Outfit, sans-serif',
-              fontSize: '16px',
-              color: 'rgba(255,255,255,0.55)',
-              lineHeight: '1.7',
-              marginBottom: '0',
-            }}
-          >
-            Escolha o plano ideal para você e comece a assistir agora mesmo.
-            Sem compromisso — cancele quando quiser.
-          </p>
-        </div>
-      </section>
-
-      {/* Componente de preços com as imagens nas laterais */}
-      <div className="relative w-full overflow-hidden bg-[#090B10] py-8 flex justify-center items-center min-h-[700px]">
+      {/* Seção Principal Unificada (Texto + Preços + Imagens Laterais) */}
+      <section className="relative w-full overflow-hidden bg-[#090B10] pt-[120px] pb-[80px] min-h-[800px] flex flex-col items-center">
+        
         {/* Imagem Esquerda (Jesus com crianças) - Oculta no celular */}
         <div 
-          className="hidden xl:block absolute left-0 bottom-0 w-[420px] h-[600px] bg-contain bg-bottom bg-no-repeat opacity-90"
+          className="hidden xl:block absolute left-0 bottom-0 w-[450px] h-[700px] bg-contain bg-bottom bg-no-repeat opacity-100 z-0"
           style={{ 
             backgroundImage: "url('/jesus-criancas.png')",
           }}
         />
 
-        {/* Central: Planos da Stripe */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto">
-          <Pricing />
-        </div>
-
         {/* Imagem Direita (Mulher orando) - Oculta no celular */}
         <div 
-          className="hidden xl:block absolute right-0 bottom-0 w-[420px] h-[600px] bg-contain bg-bottom bg-no-repeat opacity-90"
+          className="hidden xl:block absolute right-0 bottom-0 w-[450px] h-[700px] bg-contain bg-bottom bg-no-repeat opacity-100 z-0"
           style={{ 
             backgroundImage: "url('/mulher-orando.png')", 
           }}
         />
-      </div>
+
+        {/* Textos (Hero) */}
+        <div className="relative z-10 w-full max-w-3xl mx-auto px-6 text-center mb-12">
+          <h1
+            style={{
+              fontFamily: '"Outfit", sans-serif',
+              fontSize: 'clamp(32px, 6vw, 60px)',
+              fontWeight: '900',
+              color: '#FFFFFF',
+              lineHeight: '1.1',
+              textTransform: 'uppercase',
+              textShadow: '0px 4px 20px rgba(0,0,0,0.8)'
+            }}
+          >
+            ESCOLHA O <br/>
+            <span style={{ color: '#D4AF37' }}>PLANO IDEAL</span><br/>
+            PARA SUA FAMÍLIA<br/>
+            E MINISTÉRIO
+          </h1>
+          
+          <div className="flex flex-row justify-center items-center gap-6 mt-6">
+             <div className="flex items-center gap-2">
+                <span className="text-[#D4AF37] text-xl">▶</span>
+                <span className="text-white/80 font-medium text-sm md:text-base">Filmes que educam na fé.</span>
+             </div>
+             <div className="w-[1px] h-8 bg-white/20"></div>
+             <div className="flex items-center gap-2">
+                <span className="text-[#D4AF37] text-xl">📖</span>
+                <span className="text-white/80 font-medium text-sm md:text-base">Materiais que formam para a vida.</span>
+             </div>
+          </div>
+        </div>
+
+        {/* Central: Planos da Stripe */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4">
+          <Pricing />
+        </div>
+
+      </section>
 
       {/* FAQ rápido */}
       <section
