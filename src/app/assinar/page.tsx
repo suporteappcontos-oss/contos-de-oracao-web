@@ -428,7 +428,7 @@ export default function AssinarPage() {
             <h1 className="text-white text-xl font-black mb-1 text-center tracking-tight">Escolha seu plano</h1>
             <p className="text-white/40 text-xs mb-5 text-center">Selecione o melhor plano para você</p>
 
-            <div className="flex flex-col gap-3 mb-4">
+            <div className="flex flex-col gap-3 mb-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
               {planos.length === 0 && <p className="text-white/50 text-center">Carregando planos...</p>}
 
               {planos.map(plano => (
@@ -441,9 +441,9 @@ export default function AssinarPage() {
                     position: 'relative'
                   }}>
                   {plano.intervalo === 'year' && (
-                    <div className="absolute -top-3 left-5 px-3 py-0.5 rounded-full text-xs font-black"
+                    <div className="inline-block mb-3 px-3 py-1 rounded-full text-[0.65rem] font-black uppercase tracking-wider"
                       style={{ background: '#D4AF37', color: '#090B10' }}>
-                      Melhor Opção
+                      Mais Econômico
                     </div>
                   )}
                   <div className="flex items-center justify-between">

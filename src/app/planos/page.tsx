@@ -28,13 +28,13 @@ export default function PlanosPage() {
 
           {/* Imagem Esquerda (Jesus com crianças) */}
           <div 
-            className="absolute left-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
+            className="absolute left-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-20 xl:opacity-30 z-0 pointer-events-none"
             style={{ backgroundImage: "url('/jesus-criancas.png')" }}
           />
 
           {/* Imagem Direita (Mulher orando) */}
           <div 
-            className="absolute right-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
+            className="absolute right-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-20 xl:opacity-30 z-0 pointer-events-none"
             style={{ backgroundImage: "url('/mulher-orando.png')" }}
           />
 

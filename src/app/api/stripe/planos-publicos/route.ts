@@ -16,7 +16,7 @@ export async function GET() {
         produto: {
           id: (price.product as any).id,
           nome: (price.product as any).name,
-          beneficios: (price.product as any).metadata?.beneficios
+          metadata: (price.product as any).metadata
         }
       }))
 

@@ -87,14 +87,7 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               </div>
             </div>
 
-            <ul className="list-none mb-5 text-left grow space-y-2">
-              {plano.beneficios.map((b: string, i: number) => (
-                <li key={`${b}-${i}`} className="flex items-start gap-2 text-white/80 text-sm">
-                  <span className="text-[#FFD700] font-bold mt-0.5 shrink-0">✓</span>
-                  {b}
-                </li>
-              ))}
-            </ul>
+            <div className="grow"></div>
 
             <button
               onClick={() => setSelectedProduct(plano)}
@@ -104,78 +97,102 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                   : 'bg-white/10 text-white border border-white/10 hover:bg-white/20'
               }`}
             >
-              Assinar agora →
+              Ver detalhes e assinar →
             </button>
           </div>
         ))}
       </div>
 
-      {/* Modal de Escolha (Mensal vs Anual) */}
+      {/* Modal de Escolha (Mensal vs Anual e Benefícios) */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm transition-opacity">
-          <div className="bg-[#111827] border border-white/10 rounded-3xl w-full max-w-md p-6 relative shadow-[0_0_50px_rgba(212,175,55,0.15)] animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-[999] flex items-center justify-center px-4 bg-black/80 backdrop-blur-sm transition-opacity overflow-y-auto py-10">
+          <div className="bg-[#111827] border border-white/10 rounded-3xl w-full max-w-4xl p-6 lg:p-8 relative shadow-[0_0_50px_rgba(212,175,55,0.15)] animate-in fade-in zoom-in duration-200 my-auto">
             <button 
               onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 p-2 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+              className="absolute top-4 right-4 p-2 text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors z-10"
             >
               <X size={20} />
             </button>
             
-            <h3 className="text-2xl font-black text-white mb-2 text-left">
-              Escolha o período do <span className="text-[#D4AF37]">{selectedProduct.nome}</span>
-            </h3>
-            <p className="text-white/50 text-sm mb-6 text-left">
-              Selecione se prefere pagar mensalmente ou aproveitar o desconto do plano anual.
-            </p>
+            <div className="mb-6 lg:mb-8 text-center">
+              <h3 className="text-2xl lg:text-3xl font-black text-white mb-2">
+                Detalhes do <span className="text-[#D4AF37]">{selectedProduct.nome}</span>
+              </h3>
+              <p className="text-white/50 text-sm">
+                Confira os benefícios incluídos e escolha o melhor período para você.
+              </p>
+            </div>
 
-            <div className="flex flex-col gap-4">
-              {/* Opção Mensal */}
-              {selectedProduct.priceMensal && (
-                <a
-                  href={`/assinar?plan=${selectedProduct.priceMensal.id}`}
-                  className="flex flex-col p-4 rounded-2xl border-2 border-white/5 hover:border-[#D4AF37] bg-[#090B10] transition-all group no-underline text-left"
-                >
-                  <div className="text-white/50 text-xs font-bold uppercase tracking-widest mb-1 group-hover:text-white/70">Pagamento Mensal</div>
-                  <div className="text-white font-black text-2xl group-hover:text-[#D4AF37] transition-colors">
-                    R$ {selectedProduct.priceMensal.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}<span className="text-sm text-white/50 font-medium">/mês</span>
-                  </div>
-                  <div className="text-white/40 text-xs mt-2">Cobrado a cada mês. Cancele quando quiser.</div>
-                </a>
-              )}
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Coluna Esquerda: Benefícios */}
+              <div className="flex-1 bg-white/5 rounded-2xl p-6 border border-white/5">
+                <h4 className="text-[#D4AF37] font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span className="text-xl">✨</span> O que está incluído
+                </h4>
+                <ul className="space-y-3">
+                  {selectedProduct.beneficios.map((b: string, i: number) => (
+                    <li key={i} className="flex items-start gap-3 text-white/80 text-sm leading-relaxed pb-3 border-b border-white/5 last:border-0 last:pb-0">
+                      <span className="text-[#D4AF37] font-bold mt-0.5 shrink-0">✓</span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-              {/* Opção Anual */}
-              {selectedProduct.priceAnual && (
-                <a
-                  href={`/assinar?plan=${selectedProduct.priceAnual.id}`}
-                  className="relative flex flex-col p-4 rounded-2xl border-2 border-[#D4AF37] hover:bg-[#D4AF37]/5 bg-[#090B10] transition-all group no-underline text-left shadow-[0_0_20px_rgba(212,175,55,0.1)]"
-                >
-                  <div className="absolute -top-3 right-4 bg-[#22c55e] text-white text-[0.65rem] font-black px-3 py-1 rounded-full shadow-lg">
-                    MAIS ECONÔMICO
-                  </div>
-                  <div className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-1">Pagamento Anual</div>
-                  <div className="text-white font-black text-2xl">
-                    R$ {selectedProduct.priceAnual.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}<span className="text-sm text-white/50 font-medium">/ano</span>
-                  </div>
-                  <div className="text-[#D4AF37] text-sm mt-2 font-medium">
-                    Equivale a apenas R$ {(selectedProduct.priceAnual.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por mês!
-                  </div>
-                  {(() => {
-                    if (selectedProduct.priceMensal && selectedProduct.priceAnual) {
-                      const totalMensal = selectedProduct.priceMensal.valor * 12;
-                      const economiaTotal = totalMensal - selectedProduct.priceAnual.valor;
-                      if (economiaTotal > 0) {
-                        const porcentagem = Math.round((economiaTotal / totalMensal) * 100);
-                        return (
-                          <div className="text-[#22c55e] text-[0.75rem] font-bold mt-2 uppercase tracking-wide">
-                            {porcentagem}% DE DESCONTO <span className="text-white/50 capitalize font-medium ml-1">(Economize R$ {economiaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano)</span>
-                          </div>
-                        );
+              {/* Coluna Direita: Opções de Pagamento */}
+              <div className="flex-1 flex flex-col gap-4 justify-center">
+                <h4 className="text-white/70 font-bold text-sm uppercase tracking-widest mb-1 text-center lg:text-left">
+                  Escolha o Pagamento
+                </h4>
+                
+                {/* Opção Mensal */}
+                {selectedProduct.priceMensal && (
+                  <a
+                    href={`/assinar?plan=${selectedProduct.priceMensal.id}`}
+                    className="flex flex-col p-5 rounded-2xl border-2 border-white/5 hover:border-[#D4AF37] bg-[#090B10] transition-all group no-underline text-left"
+                  >
+                    <div className="text-white/50 text-xs font-bold uppercase tracking-widest mb-1 group-hover:text-white/70">Pagamento Mensal</div>
+                    <div className="text-white font-black text-2xl group-hover:text-[#D4AF37] transition-colors">
+                      R$ {selectedProduct.priceMensal.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}<span className="text-sm text-white/50 font-medium">/mês</span>
+                    </div>
+                    <div className="text-white/40 text-xs mt-2">Cobrado a cada mês. Cancele quando quiser.</div>
+                  </a>
+                )}
+
+                {/* Opção Anual */}
+                {selectedProduct.priceAnual && (
+                  <a
+                    href={`/assinar?plan=${selectedProduct.priceAnual.id}`}
+                    className="relative flex flex-col p-5 rounded-2xl border-2 border-[#D4AF37] hover:bg-[#D4AF37]/5 bg-[#090B10] transition-all group no-underline text-left shadow-[0_0_20px_rgba(212,175,55,0.1)]"
+                  >
+                    <div className="absolute -top-3 right-4 bg-[#22c55e] text-white text-[0.65rem] font-black px-3 py-1 rounded-full shadow-lg">
+                      MAIS ECONÔMICO
+                    </div>
+                    <div className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-1">Pagamento Anual</div>
+                    <div className="text-white font-black text-2xl">
+                      R$ {selectedProduct.priceAnual.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}<span className="text-sm text-white/50 font-medium">/ano</span>
+                    </div>
+                    <div className="text-[#D4AF37] text-sm mt-2 font-medium">
+                      Equivale a apenas R$ {(selectedProduct.priceAnual.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por mês!
+                    </div>
+                    {(() => {
+                      if (selectedProduct.priceMensal && selectedProduct.priceAnual) {
+                        const totalMensal = selectedProduct.priceMensal.valor * 12;
+                        const economiaTotal = totalMensal - selectedProduct.priceAnual.valor;
+                        if (economiaTotal > 0) {
+                          const porcentagem = Math.round((economiaTotal / totalMensal) * 100);
+                          return (
+                            <div className="text-[#22c55e] text-[0.75rem] font-bold mt-2 uppercase tracking-wide">
+                              {porcentagem}% DE DESCONTO <span className="text-white/50 capitalize font-medium ml-1">(Economize R$ {economiaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano)</span>
+                            </div>
+                          );
+                        }
                       }
-                    }
-                    return null;
-                  })()}
-                </a>
-              )}
+                      return null;
+                    })()}
+                  </a>
+                )}
+              </div>
             </div>
             
           </div>
