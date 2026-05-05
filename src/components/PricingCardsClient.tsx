@@ -162,12 +162,12 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                   {(() => {
                     if (selectedProduct.priceMensal && selectedProduct.priceAnual) {
                       const totalMensal = selectedProduct.priceMensal.valor * 12;
-                      const economia = totalMensal - selectedProduct.priceAnual.valor;
-                      if (economia > 0) {
-                        const porcentagem = Math.round((economia / totalMensal) * 100);
+                      const economiaTotal = totalMensal - selectedProduct.priceAnual.valor;
+                      if (economiaTotal > 0) {
+                        const porcentagem = Math.round((economiaTotal / totalMensal) * 100);
                         return (
                           <div className="text-[#22c55e] text-[0.75rem] font-bold mt-2 uppercase tracking-wide">
-                            {porcentagem}% DE DESCONTO <span className="text-white/50 capitalize font-medium ml-1">(Economize R$ {economia.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano)</span>
+                            {porcentagem}% DE DESCONTO <span className="text-white/50 capitalize font-medium ml-1">(Economize R$ {economiaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano)</span>
                           </div>
                         );
                       }
