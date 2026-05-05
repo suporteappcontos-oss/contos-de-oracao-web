@@ -8,12 +8,17 @@ type Produto = { id: string; nome: string; ativo: boolean; precos: Preco[]; bene
 type Cupom = { id: string; nome: string; desconto: string; usos_max: number | null; usos_atual: number; ativo: boolean; expira: string | null }
 
 const BENEFICIOS_PADRAO = [
-  'Acesso ilimitado ao catálogo',
-  'Resolução Full HD',
-  'Resolução 4K',
-  'Suporte prioritário',
-  'Acesso a lançamentos',
-  'Cancele quando quiser'
+  'Acesso a todos os filmes',
+  'Materiais didáticos inclusos (HQ, atividades, jogos e mais)',
+  'Acesso a aplicativos (jogos, brincadeiras e atividades interativas)',
+  'Materiais exclusivos (roteiros, formações, conteúdos extras)',
+  'Conteúdos e recursos exclusivos para catequistas',
+  'Novos lançamentos mensais',
+  'Download de materiais',
+  'Download ilimitado de materiais',
+  'Suporte por e-mail',
+  'Suporte prioritário por e-mail',
+  'Suporte prioritário via e-mail e WhatsApp',
 ]
 
 export function StripeAdmin() {
@@ -22,7 +27,13 @@ export function StripeAdmin() {
   const [loading, setLoading] = useState(true)
 
   const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', etiqueta: 'Premium', preco: '29,90', intervalo: 'month', max_telas: 1 })
-  const [beneficiosCheck, setBeneficiosCheck] = useState<string[]>(['Acesso ilimitado ao catálogo', 'Resolução Full HD'])
+  const [beneficiosCheck, setBeneficiosCheck] = useState<string[]>([
+    'Acesso a todos os filmes', 
+    'Materiais didáticos inclusos (HQ, atividades, jogos e mais)',
+    'Novos lançamentos mensais',
+    'Download de materiais',
+    'Suporte por e-mail'
+  ])
   const [beneficioCustom, setBeneficioCustom] = useState('')
 
   const [novoCupom, setNovoCupom] = useState({ nome: '', codigo: '', tipo: 'percentual', valor: '', usos_max: '', dias_expiracao: '' })

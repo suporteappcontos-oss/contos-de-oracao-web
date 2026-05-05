@@ -25,13 +25,13 @@ export default function PlanosPage() {
 
         {/* Imagem Esquerda (Jesus com crianças) */}
         <div 
-          className="absolute left-0 xl:left-[2%] bottom-0 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
+          className="absolute left-0 xl:left-[2%] top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[450px] h-[350px] xl:h-[700px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
           style={{ backgroundImage: "url('/jesus-criancas.png')" }}
         />
 
         {/* Imagem Direita (Mulher orando) */}
         <div 
-          className="absolute right-0 xl:right-[2%] bottom-0 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
+          className="absolute right-0 xl:right-[2%] top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[450px] h-[350px] xl:h-[700px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-25 xl:opacity-100 z-0 pointer-events-none"
           style={{ backgroundImage: "url('/mulher-orando.png')" }}
         />
 
@@ -67,8 +67,8 @@ export default function PlanosPage() {
           </div>
         </div>
 
-        {/* Central: Planos da Stripe */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4">
+        {/* Central: Planos da Stripe encapsulados num Mega-Card no Desktop */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 xl:p-10 xl:bg-[#111827]/60 xl:backdrop-blur-xl xl:border xl:border-[#D4AF37]/30 xl:rounded-[3rem] xl:shadow-[0_0_80px_rgba(212,175,55,0.08)] mt-4">
           <Pricing />
         </div>
 
