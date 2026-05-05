@@ -13,6 +13,7 @@
 - [x] Seção **"Planos e Preços"** movida para página própria `/planos`
 - [x] Banner CTA na homepage → link para `/planos`
 - [x] Banner de download do app (`AppBanner.tsx`)
+- [x] Botão Flutuante de Suporte via WhatsApp Global (`WhatsAppButton.tsx`)
 - [x] Footer completo com links e redes sociais
 
 ### 📄 Página de Planos (`/planos`)
@@ -35,6 +36,7 @@
 - [x] Guard de acesso: verifica `plano_ativo = true` no `user_metadata`
 - [x] Controle de sessão simultânea (tabela `sessoes_ativas`)
   - Realtime via Supabase: detecta login em outro dispositivo em < 1s
+  - API Centralizada (`/api/sessoes`): usada TANTO pelo site quanto pelo App para garantir a derrubada correta do acesso.
   - Limite de telas por plano (padrão: 1, anual: 2, família: 5)
   - Isolamento por abas via `sessionStorage` (abrir nova aba = novo dispositivo)
 - [x] Sistema de favoritos (favorito no app aparece no site e vice-versa)
@@ -56,7 +58,7 @@
 - [x] CRUD completo de vídeos (título, categoria, thumbnail, Bunny ID, duração)
 - [x] Ativar/desativar vídeos sem deletar
 - [x] Ver e gerenciar assinantes
-- [x] **NOVO:** Upload direto de imagens do computador para Thumbnails de Vídeos e Fundo Global do App para a Bunny.net (sem necessidade de URLs externas), suportando arquivos pesados (até 10MB via Server Actions).
+- [x] **NOVO:** Upload direto de imagens do computador para Thumbnails de Vídeos e Fundo Global do App para a Bunny.net, suportando imagens sem corte forçado no app.
 
 ### 🛡️ SEO & Performance
 - [x] Meta tags completas (título, descrição, Open Graph, Twitter Card)
