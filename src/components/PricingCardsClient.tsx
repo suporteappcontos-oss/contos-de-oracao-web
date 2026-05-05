@@ -159,6 +159,21 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                   <div className="text-[#D4AF37] text-sm mt-2 font-medium">
                     Equivale a apenas R$ {(selectedProduct.priceAnual.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por mês!
                   </div>
+                  {(() => {
+                    if (selectedProduct.priceMensal && selectedProduct.priceAnual) {
+                      const totalMensal = selectedProduct.priceMensal.valor * 12;
+                      const economia = totalMensal - selectedProduct.priceAnual.valor;
+                      if (economia > 0) {
+                        const porcentagem = Math.round((economia / totalMensal) * 100);
+                        return (
+                          <div className="text-[#22c55e] text-[0.75rem] font-bold mt-2 uppercase tracking-wide">
+                            {porcentagem}% DE DESCONTO <span className="text-white/50 capitalize font-medium ml-1">(Economize R$ {economia.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano)</span>
+                          </div>
+                        );
+                      }
+                    }
+                    return null;
+                  })()}
                 </a>
               )}
             </div>

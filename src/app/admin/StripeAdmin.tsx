@@ -286,14 +286,35 @@ export function StripeAdmin() {
               <h3 className="text-2xl font-black text-[#D4AF37] mb-1">{novoProduto.nome}</h3>
               <p className="text-white/40 text-xs font-medium mb-4 uppercase tracking-widest">Assinatura</p>
               
-              <div className="flex items-end gap-1 mb-6">
+              <div className="flex flex-col items-start gap-1 mb-6">
+                <div className="flex items-end gap-1">
                   <span className="text-white font-extrabold text-3xl">R$ {novoProduto.precoMensal}</span>
                   <span className="text-white/40 text-sm ml-1">/mês</span>
-                  {novoProduto.precoAnual && novoProduto.precoAnual.trim() !== '' && (
-                    <div className="text-[#D4AF37] text-xs font-bold mt-1">
-                      Ou R$ {novoProduto.precoAnual}/ano
+                </div>
+                {novoProduto.precoAnual && novoProduto.precoAnual.trim() !== '' && (
+                  <div className="flex flex-col mt-2">
+                    <div className="text-[#D4AF37] text-xs font-bold bg-[#D4AF37]/10 px-2 py-1 rounded-md inline-block">
+                      Ou R$ {novoProduto.precoAnual} /ano
                     </div>
-                  )}
+                    {(() => {
+                      const pMensal = Number(novoProduto.precoMensal.replace(',', '.'));
+                      const pAnual = Number(novoProduto.precoAnual.replace(',', '.'));
+                      if (!isNaN(pMensal) && !isNaN(pAnual) && pMensal > 0 && pAnual > 0) {
+                        const totalMensal = pMensal * 12;
+                        const economia = totalMensal - pAnual;
+                        if (economia > 0) {
+                          const porcentagem = Math.round((economia / totalMensal) * 100);
+                          return (
+                            <div className="text-[#22c55e] text-[0.7rem] font-bold mt-1.5 uppercase tracking-wide">
+                              {porcentagem}% DE DESCONTO <span className="text-white/50 capitalize font-medium ml-1">(Economize R$ {economia.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano)</span>
+                            </div>
+                          );
+                        }
+                      }
+                      return null;
+                    })()}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2 mb-6">
