@@ -4,13 +4,13 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
-// Gera ou recupera um token único para este dispositivo/navegador
+// Gera ou recupera um token único para esta aba
 function getDeviceToken(): string {
   if (typeof window === 'undefined') return ''
-  let token = localStorage.getItem('cdo_device_token')
+  let token = sessionStorage.getItem('cdo_device_token')
   if (!token) {
     token = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
-    localStorage.setItem('cdo_device_token', token)
+    sessionStorage.setItem('cdo_device_token', token)
   }
   return token
 }

@@ -30,11 +30,13 @@
 
 ### 🎬 Área Logada (`/watch`)
 - [x] Catálogo de vídeos organizado por categoria
+- [x] **NOVO:** Seção "Continue Assistindo" baseada no histórico de visualizações
 - [x] Player Bunny.net embutido via `<iframe>` com `Referer` correto
 - [x] Guard de acesso: verifica `plano_ativo = true` no `user_metadata`
 - [x] Controle de sessão simultânea (tabela `sessoes_ativas`)
   - Realtime via Supabase: detecta login em outro dispositivo em < 1s
   - Limite de telas por plano (padrão: 1, anual: 2, família: 5)
+  - Isolamento por abas via `sessionStorage` (abrir nova aba = novo dispositivo)
 - [x] Sistema de favoritos (favorito no app aparece no site e vice-versa)
 - [x] Página de vídeo individual `/watch/[videoId]`
 
@@ -54,6 +56,7 @@
 - [x] CRUD completo de vídeos (título, categoria, thumbnail, Bunny ID, duração)
 - [x] Ativar/desativar vídeos sem deletar
 - [x] Ver e gerenciar assinantes
+- [x] **NOVO:** Upload direto de imagens do computador para Thumbnails de Vídeos e Fundo Global do App para a Bunny.net (sem necessidade de URLs externas), suportando arquivos pesados (até 10MB via Server Actions).
 
 ### 🛡️ SEO & Performance
 - [x] Meta tags completas (título, descrição, Open Graph, Twitter Card)
@@ -81,10 +84,8 @@
 > 7. Aguardar 2-7 dias para Google atualizar favicon/ícone na busca
 
 ### 📌 Melhorias Futuras
-- [ ] Página de perfil do usuário mais completa (`/perfil`)
-- [ ] Sistema de progresso de vídeo (% assistido)
-- [ ] Notificação por e-mail de novos vídeos
 - [ ] Dashboard de analytics para o admin (views por vídeo)
+- [ ] Notificação por e-mail de novos vídeos
 
 ---
 

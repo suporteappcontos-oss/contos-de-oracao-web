@@ -52,6 +52,22 @@ export default async function WatchPage() {
     .from('favoritos').select('video_id').eq('user_id', user!.id)
   const favoritosSet = new Set((favoritosData ?? []).map(f => f.video_id))
 
+  // 🕒 HISTÓRICO DE VISUALIZAÇÕES (Continue Assistindo)
+  const { data: historico } = await supabase
+    .from('visualizacoes')
+    .select('video_id, criado_em, videos!inner(*)')
+    .eq('user_id', user.id)
+    .order('criado_em', { ascending: false })
+
+  const recentes: Video[] = []
+  const idsVistos = new Set<string>()
+  for (const item of (historico ?? [])) {
+    if (!idsVistos.has(item.video_id) && item.videos.ativo) {
+      idsVistos.add(item.video_id)
+      recentes.push(item.videos as unknown as Video)
+    }
+  }
+
   const categorias = [...new Set((videos ?? []).map((v: Video) => v.categoria))]
   const videosPorCategoria: Record<string, Video[]> = {}
   categorias.forEach(cat => {
@@ -184,6 +200,16 @@ export default async function WatchPage() {
 
             {/* Carrosséis */}
             <div className="space-y-4">
+              {recentes.length > 0 && (
+                <div className="mb-6">
+                  <CategoryCarousel title="Continue Assistindo" count={recentes.length}>
+                    {recentes.slice(0, 10).map((video: Video) => (
+                      <VideoCard key={`hist-${video.id}`} video={video} isFavoritado={favoritosSet.has(video.id)} />
+                    ))}
+                  </CategoryCarousel>
+                </div>
+              )}
+
               {categorias.map(cat => (
                 <CategoryCarousel key={cat} title={cat} count={videosPorCategoria[cat].length}>
                   {videosPorCategoria[cat].map((video: Video) => (

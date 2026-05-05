@@ -96,6 +96,7 @@ export default async function AdminPage({
   // Rankings
   let topFavoritos: any[] = []
   let topVisualizados: any[] = []
+  const viewsByDay: Record<string, number> = {}
   try {
     const { data: favs } = await supabase.from('favoritos').select('video_id')
     const favCounts = favs?.reduce((acc, f) => { acc[f.video_id] = (acc[f.video_id] || 0) + 1; return acc }, {} as Record<string, number>) || {}
@@ -104,13 +105,34 @@ export default async function AdminPage({
       return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
     })
 
-    const { data: views } = await supabase.from('visualizacoes').select('video_id')
+    const { data: views } = await supabase.from('visualizacoes').select('video_id, criado_em')
     const viewCounts = views?.reduce((acc, v) => { acc[v.video_id] = (acc[v.video_id] || 0) + 1; return acc }, {} as Record<string, number>) || {}
     topVisualizados = Object.entries(viewCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([id, count]) => {
       const v = videos?.find(v => v.id === id)
       return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
     })
+
+    // Calcula visualizações dos últimos 7 dias
+    const views7Days = views?.filter(v => new Date(v.criado_em) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) || []
+    
+    // Group by Day
+    // Inicializa os últimos 7 dias
+    for(let i=6; i>=0; i--) {
+      const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+      const dateStr = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+      viewsByDay[dateStr] = 0
+    }
+
+    views7Days.forEach(v => {
+       const d = new Date(v.criado_em).toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+       if (viewsByDay[d] !== undefined) {
+          viewsByDay[d]++
+       }
+    })
   } catch(e) { console.error('Erro ao buscar estatísticas:', e) }
+
+  const chartData = Object.entries(viewsByDay).map(([dia, count]) => ({ dia, count }))
+  const maxViews = Math.max(...chartData.map(d => d.count), 1) // Prevent division by 0
 
   return (
     <div className="min-h-screen text-white pb-20 selection:bg-[#D4AF37] selection:text-black" style={{ background: 'radial-gradient(circle at top, #111827 0%, #090B10 100%)', fontFamily: 'Outfit, sans-serif' }}>
@@ -213,6 +235,34 @@ export default async function AdminPage({
                 <h2 className="text-white text-2xl font-black tracking-tight">Ranking de Desempenho</h2>
                 <p className="text-white/40 text-sm">Acompanhe quais conteúdos estão performando melhor.</p>
               </div>
+            </div>
+
+            {/* GRÁFICO DE 7 DIAS */}
+            <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
+               <div className="flex items-center gap-2 mb-6 text-[#D4AF37]">
+                  <BarChart3 size={20} />
+                  <h3 className="text-white font-bold text-lg">Visualizações (Últimos 7 Dias)</h3>
+               </div>
+               <div className="flex items-end justify-between h-48 gap-2 pt-4 border-b border-white/10 pb-2">
+                  {chartData.map((d, i) => {
+                     const height = Math.max((d.count / maxViews) * 100, 2) // min 2% para mostrar uma barra pequena
+                     return (
+                       <div key={i} className="flex flex-col items-center flex-1 gap-2 group h-full">
+                         <div className="w-full relative flex flex-col justify-end h-full">
+                            {/* Tooltip */}
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#D4AF37] text-black text-xs font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                              {d.count}
+                            </div>
+                            <div 
+                              className="w-full bg-gradient-to-t from-[#D4AF37]/20 to-[#D4AF37] rounded-t-lg transition-all duration-500 group-hover:brightness-125" 
+                              style={{ height: `${height}%` }}
+                            />
+                         </div>
+                         <span className="text-white/50 text-[0.65rem] font-black uppercase tracking-widest">{d.dia}</span>
+                       </div>
+                     )
+                  })}
+               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
