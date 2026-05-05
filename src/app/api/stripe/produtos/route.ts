@@ -48,10 +48,10 @@ export async function POST(request: NextRequest) {
   if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   const body = await request.json()
-  const { nome, descricao, preco, intervalo, beneficios, max_telas, etiqueta } = body
+  const { nome, descricao, precoMensal, precoAnual, beneficios, max_telas, etiqueta } = body
 
-  if (!nome || !preco || isNaN(preco)) {
-    return NextResponse.json({ error: 'Nome e preço são obrigatórios e devem ser válidos' }, { status: 400 })
+  if (!nome || !precoMensal || isNaN(precoMensal)) {
+    return NextResponse.json({ error: 'Nome e preço mensal são obrigatórios e devem ser válidos' }, { status: 400 })
   }
 
 try {
@@ -66,17 +66,29 @@ try {
     }
   })
 
-  // Cria o preço
-  const price = await stripe.prices.create({
+  // Cria o preço mensal
+  const priceMensalObj = await stripe.prices.create({
     product: produto.id,
-    unit_amount: Math.round(preco * 100),
+    unit_amount: Math.round(precoMensal * 100),
     currency: 'brl',
-    recurring: { interval: intervalo || 'month' },
+    recurring: { interval: 'month' },
   })
+
+  // Se houver preço anual preenchido, cria também
+  let priceAnualObj = null
+  if (precoAnual && !isNaN(precoAnual)) {
+    priceAnualObj = await stripe.prices.create({
+      product: produto.id,
+      unit_amount: Math.round(precoAnual * 100),
+      currency: 'brl',
+      recurring: { interval: 'year' },
+    })
+  }
 
   return NextResponse.json({
     produto: { id: produto.id, nome: produto.name },
-    preco: { id: price.id, valor: preco, intervalo },
+    precoMensal: priceMensalObj.id,
+    precoAnual: priceAnualObj ? priceAnualObj.id : null,
   })
 } catch (error: any) {
   console.error("Erro ao criar produto:", error)

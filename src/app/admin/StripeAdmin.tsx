@@ -26,7 +26,7 @@ export function StripeAdmin() {
   const [cupons, setCupons] = useState<Cupom[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', etiqueta: 'Premium', preco: '29,90', intervalo: 'month', max_telas: 1 })
+  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', etiqueta: 'Premium', precoMensal: '29,90', precoAnual: '290,00', max_telas: 1 })
   const [beneficiosCheck, setBeneficiosCheck] = useState<string[]>([
     'Acesso a todos os filmes', 
     'Materiais didáticos inclusos (HQ, atividades, jogos e mais)',
@@ -84,7 +84,8 @@ export function StripeAdmin() {
     
     const payload = {
       ...novoProduto,
-      preco: parsePreco(novoProduto.preco),
+      precoMensal: parsePreco(novoProduto.precoMensal),
+      precoAnual: novoProduto.precoAnual ? parsePreco(novoProduto.precoAnual) : null,
       beneficios: beneficiosCheck.join(', '),
       max_telas: novoProduto.max_telas,
       etiqueta: novoProduto.etiqueta,
@@ -207,27 +208,38 @@ export function StripeAdmin() {
                   <p className="text-[0.65rem] text-[#D4AF37] mt-1">Aparece no logo. Ex: Premium</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className={labelCls}>Intervalo</label>
-                  <select value={novoProduto.intervalo} onChange={e => setNovoProduto({...novoProduto, intervalo: e.target.value})} className={inputCls}>
-                    <option value="month">Mensal</option>
-                    <option value="year">Anual</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={labelCls}>Valor (R$)</label>
-                  <input type="text" required value={novoProduto.preco} onChange={e => setNovoProduto({...novoProduto, preco: e.target.value.replace(/[^0-9,.]/g, '')})} className={inputCls} />
-                </div>
-                <div>
-                  <label className={labelCls}>🖥️ Limite de Telas</label>
+                  <label className="block text-[#8197a4] text-xs font-bold mb-2 tracking-wider">VALOR MENSAL (R$)</label>
                   <input
-                    type="number" min={1} max={10}
-                    value={novoProduto.max_telas}
-                    onChange={e => setNovoProduto({...novoProduto, max_telas: Number(e.target.value)})}
-                    className={inputCls}
+                    type="text"
+                    value={novoProduto.precoMensal}
+                    onChange={(e) => setNovoProduto({ ...novoProduto, precoMensal: e.target.value })}
+                    className="w-full p-3 rounded-lg bg-[#0f172a] border border-[#1e293b] text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
                   />
                 </div>
+
+                <div>
+                  <label className="block text-[#8197a4] text-xs font-bold mb-2 tracking-wider">VALOR ANUAL (R$) <span className="text-white/30 font-normal">(Opcional)</span></label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 290,00"
+                    value={novoProduto.precoAnual}
+                    onChange={(e) => setNovoProduto({ ...novoProduto, precoAnual: e.target.value })}
+                    className="w-full p-3 rounded-lg bg-[#0f172a] border border-[#1e293b] text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelCls}>🖥️ Limite de Telas</label>
+                <input
+                  type="number" min={1} max={10}
+                  value={novoProduto.max_telas}
+                  onChange={e => setNovoProduto({...novoProduto, max_telas: Number(e.target.value)})}
+                  className={inputCls}
+                />
               </div>
 
               <div>
@@ -272,11 +284,16 @@ export function StripeAdmin() {
               </div>
               
               <h3 className="text-2xl font-black text-[#D4AF37] mb-1">{novoProduto.nome}</h3>
-              <p className="text-white/40 text-xs font-medium mb-4 uppercase tracking-widest">Assinatura {novoProduto.intervalo === 'month' ? 'Mensal' : 'Anual'}</p>
+              <p className="text-white/40 text-xs font-medium mb-4 uppercase tracking-widest">Assinatura</p>
               
               <div className="flex items-end gap-1 mb-6">
-                <span className="text-4xl font-black text-white">R$ {novoProduto.preco || '0,00'}</span>
-                <span className="text-white/40 text-sm mb-1 font-medium">/mês</span>
+                  <span className="text-white font-extrabold text-3xl">R$ {novoProduto.precoMensal}</span>
+                  <span className="text-white/40 text-sm ml-1">/mês</span>
+                  {novoProduto.precoAnual && novoProduto.precoAnual.trim() !== '' && (
+                    <div className="text-[#D4AF37] text-xs font-bold mt-1">
+                      Ou R$ {novoProduto.precoAnual}/ano
+                    </div>
+                  )}
               </div>
 
               <div className="flex items-center gap-2 mb-6">
