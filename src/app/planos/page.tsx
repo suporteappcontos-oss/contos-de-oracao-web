@@ -13,22 +13,26 @@ export default function PlanosPage() {
       <Navbar />
 
       {/* Seção Principal Unificada (Texto + Preços + Imagens Laterais) */}
-      <section className="relative w-full overflow-hidden bg-[#090B10] pt-[120px] pb-[80px] min-h-[800px] flex flex-col items-center">
+      <section 
+        className="relative w-full overflow-hidden pt-[120px] pb-[100px] min-h-[900px] flex flex-col items-center"
+        style={{
+          background: 'radial-gradient(circle at center, #111a2c 0%, #090B10 60%, #050608 100%)'
+        }}
+      >
         
-        {/* Imagem Esquerda (Jesus com crianças) - Aparece no celular como fundo sutil */}
+        {/* Glow Dourado sutil atrás de tudo */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#D4AF37] opacity-5 blur-[150px] rounded-full z-0 pointer-events-none" />
+
+        {/* Imagem Esquerda (Jesus com crianças) - Fundo no celular */}
         <div 
-          className="absolute left-0 bottom-0 w-[250px] xl:w-[450px] h-[450px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-20 xl:opacity-100 z-0 pointer-events-none"
-          style={{ 
-            backgroundImage: "url('/jesus-criancas.png')",
-          }}
+          className="absolute left-0 xl:left-[2%] top-[60%] xl:top-1/2 -translate-y-1/2 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-center bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
+          style={{ backgroundImage: "url('/jesus-criancas.png')" }}
         />
 
-        {/* Imagem Direita (Mulher orando) - Aparece no celular como fundo sutil */}
+        {/* Imagem Direita (Mulher orando) - Fundo no celular */}
         <div 
-          className="absolute right-0 bottom-0 w-[250px] xl:w-[450px] h-[450px] xl:h-[700px] bg-contain bg-bottom bg-no-repeat opacity-20 xl:opacity-100 z-0 pointer-events-none"
-          style={{ 
-            backgroundImage: "url('/mulher-orando.png')", 
-          }}
+          className="absolute right-0 xl:right-[2%] top-[60%] xl:top-1/2 -translate-y-1/2 w-[300px] xl:w-[450px] h-[500px] xl:h-[700px] bg-contain bg-center bg-no-repeat opacity-15 xl:opacity-100 z-0 pointer-events-none"
+          style={{ backgroundImage: "url('/mulher-orando.png')" }}
         />
 
         {/* Textos (Hero) */}
