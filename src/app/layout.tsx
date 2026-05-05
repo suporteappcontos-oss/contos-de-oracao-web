@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   keywords: ['orações', 'novenas', 'católico', 'streaming', 'retiro espiritual', 'terço', 'santos', 'fé', 'contos de oração'],
   authors: [{ name: 'Contos de Oração' }],
   creator: 'Contos de Oração',
-  metadataBase: new URL('https://contos-de-oracao.vercel.app'),
+  metadataBase: new URL('https://www.contosdeoracao.com.br'),
   alternates: { canonical: '/' },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Contos de Oração — Streaming Católico',
     description: 'Orações, novenas, terços e histórias de santos. A maior plataforma de espiritualidade católica do Brasil.',
-    url: 'https://contos-de-oracao.vercel.app',
+    url: 'https://www.contosdeoracao.com.br',
     siteName: 'Contos de Oração',
     images: [{ url: '/logo_stripe.png', width: 512, height: 512, alt: 'Contos de Oração' }],
     locale: 'pt_BR',

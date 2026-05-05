@@ -39,8 +39,8 @@ export async function POST(req: Request) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'Contos de Oração <contato@contosdeoracao.online>', // O domínio contosdeoracao.online DEVE estar verificado no Resend
-          to: ['contato@contosdeoracao.online'],
+          from: 'Contos de Oração <contato@contosdeoracao.com.br>', // O domínio contosdeoracao.com.br DEVE estar verificado no Resend
+          to: ['contato@contosdeoracao.com.br'],
           bcc: chunk,
           subject: assunto,
           html: mensagem.replace(/\n/g, '<br/>')

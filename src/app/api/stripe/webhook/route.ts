@@ -40,7 +40,7 @@ async function criarOuAtivarUsuario(
     return
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.online'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.com.br'
   await supabaseAdmin.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/atualizar-senha`,
   })

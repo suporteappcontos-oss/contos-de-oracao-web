@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `ID de plano inválido: ${priceId}` }, { status: 400 })
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.online'
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.com.br'
 
     // Em vez de manipular faturas manualmente, usamos o novo "Checkout Embutido" do Stripe
     const session = await stripe.checkout.sessions.create({
