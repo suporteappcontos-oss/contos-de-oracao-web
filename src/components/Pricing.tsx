@@ -24,7 +24,7 @@ export default async function Pricing() {
             destaque: isAnual || false, // Se tiver plano anual, o card ganha destaque
             maxTelas: Number(prod.metadata?.max_telas || 1),
             beneficios: prod.metadata?.beneficios
-              ? prod.metadata.beneficios.split(',').map((b: string) => b.trim())
+              ? prod.metadata.beneficios.split(/\|/).map((b: string) => b.trim()).filter(Boolean)
               : [
                   'Acesso ilimitado ao catálogo',
                   'Assista em qualquer dispositivo',

@@ -12,17 +12,14 @@ export const supabaseAdmin = createClient(
  */
 export async function buscarUsuarioPorEmail(email: string) {
   try {
-    const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users?filter=${encodeURIComponent(email)}&per_page=1`
-    const res = await fetch(url, {
-      headers: {
-        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
-      },
+    // Tenta primeiro listar os usuários para achar o email
+    const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000
     })
-    if (!res.ok) return null
-    const data = await res.json()
-    const users = data.users as Array<{ id: string; email: string; user_metadata: Record<string, unknown> }>
-    return users?.find(u => u.email === email) ?? null
+    
+    if (error || !users) return null
+    return users.find(u => u.email === email) ?? null
   } catch {
     return null
   }

@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin, buscarUsuarioPorEmail } from '@/lib/supabase-admin'
+import { createClient } from '@/utils/supabase/server'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { plano, nome, email, senha } = body
 
-    if (!plano || !email || !senha) {
+    // Verifica se o usuário está logado
+    const supabaseClient = await createClient()
+    const { data: { session } } = await supabaseClient.auth.getSession()
+    const isLogged = !!session
+
+    if (!plano || !email) {
       return NextResponse.json({ error: 'Todos os campos são obrigatórios' }, { status: 400 })
+    }
+
+    if (!isLogged && !senha) {
+      return NextResponse.json({ error: 'A senha é obrigatória para criar uma nova conta' }, { status: 400 })
     }
 
     // ── CRIA OU ATUALIZA O USUÁRIO NO SUPABASE ──
@@ -16,6 +26,10 @@ export async function POST(request: NextRequest) {
     let userId = ''
 
     if (existente) {
+      if (!isLogged) {
+         // O email existe, mas a pessoa não está logada. Não podemos deixá-la avançar sem provar que é dona da conta.
+         return NextResponse.json({ error: 'Este e-mail já possui uma conta cadastrada. Faça login para continuar.' }, { status: 400 })
+      }
       userId = existente.id
     } else {
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({

@@ -4,8 +4,10 @@ import { login } from './actions';
 import PasswordField from '@/components/PasswordField';
 import SubmitButton from '@/components/SubmitButton';
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error: erro } = await searchParams
+export default async function LoginPage(props: { searchParams: Promise<{ error?: string, redirect?: string }> }) {
+  const searchParams = await props.searchParams;
+  const erro = searchParams.error;
+  const redirectUrl = searchParams.redirect;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-20"
@@ -34,6 +36,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <p className="text-white/40 text-sm mb-7">Acesse sua conta para assistir ao conteúdo.</p>
 
         <form className="flex flex-col gap-4">
+          {redirectUrl && <input type="hidden" name="redirect" value={redirectUrl} />}
           <div className="flex flex-col gap-1.5">
             <label className="text-white/50 text-[0.7rem] uppercase tracking-widest font-semibold">E-mail</label>
             <input

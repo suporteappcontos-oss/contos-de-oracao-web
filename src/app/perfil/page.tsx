@@ -8,7 +8,7 @@ import {
   AlertTriangle, Shield, Smartphone, Download, MessageCircle
 } from 'lucide-react'
 import ClientEditableName from './ClientEditableName'
-import CancelarPlanoBtn from '@/components/CancelarPlanoBtn'
+import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
 import Pricing from '@/components/Pricing'
 
 type VideoFavorito = {
@@ -163,7 +163,9 @@ export default async function PerfilPage() {
               </p>
             </div>
             {planoAtivo && !isAdmin ? (
-              <CancelarPlanoBtn />
+              <div className="flex gap-2 mt-2">
+                <GerenciarStripeBtn />
+              </div>
             ) : !planoAtivo && (
               <Link href="/#planos" className="w-full text-center px-5 py-2.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110" style={{ background: '#D4AF37', color: '#090B10' }}>
                 Renovar →

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Check, ChevronRight, Shield, Play, Heart, Download, Monitor, Lock, Eye, EyeOff, Infinity as InfinityIcon } from 'lucide-react'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
+import { createClient } from '@/utils/supabase/client'
 
 // Carrega o Stripe public key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
@@ -29,6 +30,7 @@ export default function AssinarPage() {
   const [loadingCheckout, setLoadingCheckout] = useState(false)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [erroCheckout, setErroCheckout] = useState<{ msg: string; tipo: 'email_duplicado' | 'generico' } | null>(null)
+  const [isLogged, setIsLogged] = useState(false)
 
   // Busca preços reais ativos na montagem
   useEffect(() => {
@@ -51,6 +53,17 @@ export default function AssinarPage() {
         }
       })
       .catch(console.error)
+
+    // Verifica sessão do usuário
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setIsLogged(true)
+        setNome(session.user.user_metadata?.nome || '')
+        setEmail(session.user.email || '')
+        setStep(2) // Pula direto para o pagamento!
+      }
+    })
   }, [])
 
   function validarStep1() {
@@ -71,8 +84,28 @@ export default function AssinarPage() {
     return Object.keys(novosErros).length === 0
   }
 
-  function irParaPagamento() {
-    if (validarStep1()) setStep(2)
+  async function irParaPagamento() {
+    if (validarStep1()) {
+      setLoadingCheckout(true)
+      try {
+        const res = await fetch('/api/auth/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        })
+        const data = await res.json()
+        if (data.existe) {
+          setErroCheckout({ msg: 'Este e-mail já possui uma conta cadastrada. Faça login para continuar.', tipo: 'email_duplicado' })
+          setStep(2) // Vai para o step 2 que já tem a UI de login preparada para erros
+        } else {
+          setStep(2)
+        }
+      } catch (e) {
+        setStep(2)
+      } finally {
+        setLoadingCheckout(false)
+      }
+    }
   }
 
   async function finalizarPagamento() {
@@ -94,7 +127,7 @@ export default function AssinarPage() {
         setClientSecret(data.clientSecret)
       } else {
         const msgErro = data.error || ''
-        const emailDuplicado = msgErro.toLowerCase().includes('already been registered') || msgErro.toLowerCase().includes('already registered') || msgErro.toLowerCase().includes('email already')
+        const emailDuplicado = msgErro.toLowerCase().includes('already been registered') || msgErro.toLowerCase().includes('already registered') || msgErro.toLowerCase().includes('email already') || msgErro.includes('Este e-mail já possui uma conta')
         setErroCheckout({
           msg: emailDuplicado ? 'Este e-mail já possui uma conta cadastrada.' : msgErro || 'Erro ao inicializar plataforma segura.',
           tipo: emailDuplicado ? 'email_duplicado' : 'generico'
@@ -196,8 +229,8 @@ export default function AssinarPage() {
               
               {planoDetalhe && planoDetalhe.produto.metadata?.beneficios ? (
                 // Benefícios personalizados do plano selecionado
-                planoDetalhe.produto.metadata.beneficios.split(',').map((beneficio: string, i: number) => (
-                  <div key={i} className="flex items-start gap-3 py-2.5" style={{ borderBottom: i < planoDetalhe.produto.metadata.beneficios.split(',').length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                planoDetalhe.produto.metadata.beneficios.split(/\|/).filter(Boolean).map((beneficio: string, i: number, arr: any[]) => (
+                  <div key={i} className="flex items-start gap-3 py-2.5" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
                     <span style={{ color: '#D4AF37', marginTop: '2px' }}>✓</span>
                     <span className="text-white/80 text-sm leading-snug">{beneficio.trim()}</span>
                   </div>
@@ -404,10 +437,10 @@ export default function AssinarPage() {
                 </p>
               </div>
 
-              <button onClick={irParaPagamento}
-                className="w-full py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 mt-1"
+              <button onClick={irParaPagamento} disabled={loadingCheckout}
+                className="w-full py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 mt-1 disabled:opacity-50"
                 style={{ background: '#D4AF37', color: '#090B10' }}>
-                Continuar para Pagamento <ChevronRight size={16} strokeWidth={3} />
+                {loadingCheckout ? 'Aguarde...' : 'Continuar para Pagamento'} <ChevronRight size={16} strokeWidth={3} />
               </button>
             </div>
 
@@ -433,7 +466,7 @@ export default function AssinarPage() {
                     <p className="text-red-400 text-sm font-semibold mb-3">⚠️ {erroCheckout.msg}</p>
                     {erroCheckout.tipo === 'email_duplicado' ? (
                       <div className="flex flex-col sm:flex-row gap-2">
-                        <Link href="/login" className="flex-1 text-center py-2 rounded-lg text-sm font-bold no-underline transition-all hover:brightness-110" style={{ background: '#D4AF37', color: '#090B10' }}>
+                        <Link href={`/login?redirect=${encodeURIComponent(`/assinar?plan=${planoSelecionado}`)}`} className="flex-1 text-center py-2 rounded-lg text-sm font-bold no-underline transition-all hover:brightness-110" style={{ background: '#D4AF37', color: '#090B10' }}>
                           Fazer Login →
                         </Link>
                         <Link href="/esqueci-senha" className="flex-1 text-center py-2 rounded-lg text-sm font-bold no-underline transition-all border border-white/10 hover:border-white/30 text-white/70 hover:text-white">
@@ -476,7 +509,7 @@ export default function AssinarPage() {
               </div>
             )}
 
-            {!clientSecret && erroCheckout?.tipo !== 'email_duplicado' && (
+            {!clientSecret && erroCheckout?.tipo !== 'email_duplicado' && !isLogged && (
               <button onClick={() => setStep(1)}
                 className="w-full py-3 mt-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 group border border-white/5 hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5 text-white/40 hover:text-[#D4AF37]"
                 style={{ background: 'transparent' }}>

@@ -18,8 +18,13 @@ export async function login(formData: FormData) {
     redirect('/login?error=credenciais_invalidas')
   }
 
+  const redirectTo = formData.get('redirect') as string
   revalidatePath('/', 'layout')
-  redirect('/watch') // No futuro a gente cria essa tela
+  if (redirectTo && redirectTo.startsWith('/')) {
+    redirect(redirectTo)
+  } else {
+    redirect('/watch') // No futuro a gente cria essa tela
+  }
 }
 
 export async function signup(formData: FormData) {

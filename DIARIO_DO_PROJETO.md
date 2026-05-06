@@ -1,5 +1,5 @@
 # 📖 DIÁRIO DO PROJETO — CONTOS DE ORAÇÃO (SITE WEB)
-**Última atualização:** 04/05/2026  
+**Última atualização:** 05/05/2026  
 **Domínio ativo:** https://www.contosdeoracao.online  
 **Stack:** Next.js 14 · Supabase · Stripe · Bunny.net CDN · Vercel
 
@@ -30,6 +30,7 @@
 - [x] Trigger automático: ao criar usuário → cria linha em `public.perfis`
 
 ### 🎬 Área Logada (`/watch`)
+- [x] **NOVO:** Autenticação por Token (Bunny.net Token Auth) implementada para blindar vídeos e resolver erro 403 no .apk
 - [x] Catálogo de vídeos organizado por categoria
 - [x] **NOVO:** Seção "Continue Assistindo" baseada no histórico de visualizações
 - [x] Player Bunny.net embutido via `<iframe>` com `Referer` correto
@@ -48,6 +49,10 @@
 - [x] Redirecionamento automático ao clicar na notificação (vai para o vídeo)
 
 ### 💳 Integração Stripe
+- [x] Funil de Checkout Otimizado (2 passos rápidos sem redundância de escolher plano)
+- [x] Novo UI de Planos (`/planos`) com Modal interativo de benefícios e cálculo automático de descontos
+- [x] Correção do corte de Benefícios (aceitando vírgulas dentro de parênteses e pipe `|`)
+- [x] Fluxo de Checkout Inteligente: Se e-mail já existe, redireciona para login e volta automaticamente para pagamento pulando a etapa de senha.
 - [x] Checkout de assinatura via Stripe
 - [x] Webhook que ativa `plano_ativo = true` no Supabase quando pagamento é confirmado
 - [x] Portal do cliente (gerenciar/cancelar assinatura)
@@ -81,11 +86,26 @@
 > 2. **Supabase** → Authentication → URL Configuration → adicionar novo domínio
 > 3. **Stripe** → Webhooks → atualizar endpoint URL
 > 4. **Stripe** → redirect URLs para checkout e portal
-> 5. **App** (`SubscriptionScreen.js`) → `API_URL` e `CHECKOUT_URL` já apontam para `www.contosdeoracao.online` — atualizar para o novo domínio
-> 6. **App** (`AuthScreen.js`) → link do `resetPasswordForEmail` → atualizar
-> 7. Aguardar 2-7 dias para Google atualizar favicon/ícone na busca
+> 5. **App** (`SubscriptionScreen.js`) → `API_URL` e `CHECKOUT_URL` já apontam para `www.contosdeoracao.online`
+
+## 🔒 CORE BLOQUEADO (NÃO MODIFICAR SEM PERMISSÃO EXPLÍCITA)
+1. **Mecanismo de Assinatura (Checkout)**: A validação de usuário e geração de sessão com a Stripe (em `/api/stripe/assinatura` e `/assinar/page.tsx`) **NÃO DEVE SER ALTERADA**. O fluxo já foi testado à exaustão e garante que contas duplicadas não sejam criadas e que o Stripe Checkout abra corretamente após checar o email na rota rápida `check-email`.
+2. **Parser de Benefícios**: O `Pricing.tsx` e `SubscriptionScreen.js` (App) fazem split dos benefícios via **barra vertical (`|`)**. Isso é definitivo para não conflitar com vírgulas em textos longos.
+3. **Mecanismo de Update do App**: A função `isNewerVersion` está **TRAVADA** como `remote > local` (Ex: "1.0.4" > "1.0.2"). Ela consulta o Bunny.
+
+## 📝 Status Atual das Tarefas (06/05/2026)
+
+### ✅ Finalizado:
+- **Botão Real do Portal Stripe:** Adicionado o botão "Gerenciar na Stripe" ao site na página `perfil/page.tsx` para permitir aos usuários trocar de plano ou cancelar suas assinaturas usando o Customer Portal da Stripe.
+- **Redirecionamento do App para Perfil:** Quando o usuário clica em "Gerenciar" no App, ele agora é redirecionado para o perfil do site. Assim, o fluxo não tenta abrir um novo checkout indevidamente.
+- **Melhoria no Erro de Email Existente (Checkout):** Agora, o passo 1 já faz um "pre-check" de e-mail ao clicar em "Continuar para Pagamento". Se o e-mail existir no Supabase, a UI já aciona o botão de Login. Isso salva o usuário de ter que clicar de novo no botão final para descobrir o erro.
+- **Correção da renderização dos benefícios na tela de planos:** O sistema de separação de frases estava quebrando na vírgula e colocando símbolos misturados. O código foi limpo. **Agora, para separar os benefícios no painel da Stripe, o cliente deve usar o caractere `|`**.
+
+### 🚨 Bugs para Corrigir
+- [ ] **Atualizador Automático (OTA):** O aplicativo não detectou nova versão. Provavelmente o APK instalado no celular do usuário ainda tinha a lógica antiga (com bug). Ele precisará baixar o `.apk` novo manualmente 1 vez para que as *próximas* atualizações funcionem.
 
 ### 📌 Melhorias Futuras
+- [ ] **NOVO:** Implementar Seção de HQs / Materiais Extras (Modelar tabelas para PDFs/Imagens e adicionar nova interface no Site)
 - [ ] Dashboard de analytics para o admin (views por vídeo)
 - [ ] Notificação por e-mail de novos vídeos
 
