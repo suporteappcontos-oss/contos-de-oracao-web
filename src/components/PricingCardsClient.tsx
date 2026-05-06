@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Monitor, Check } from 'lucide-react';
+import { Monitor, Check, ChevronDown, ChevronUp } from 'lucide-react';
 
 type PriceInfo = { id: string; valor: number };
 
@@ -20,6 +20,11 @@ type ProdutoInfo = {
 
 export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo[] }) {
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (id: string) => {
+    setExpandedCards(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   if (produtos.length === 0) {
     return (
@@ -126,13 +131,56 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               {/* Lista de Benefícios */}
               <div className="text-left mb-8 flex-1">
                 <ul className="space-y-3.5">
-                  {plano.beneficios.map((b, i) => (
-                    <li key={i} className="flex items-start gap-3 text-white/90 text-[0.9rem] leading-snug">
+                  {/* Benefícios Destaque */}
+                  {plano.beneficios.filter(b => b.startsWith('⭐')).map((b, i) => (
+                    <li key={`dest-${i}`} className="flex items-start gap-3 text-white/90 text-[0.9rem] leading-snug font-medium">
                       <Check size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
-                      <span>{b}</span>
+                      <span>{b.replace('⭐', '')}</span>
+                    </li>
+                  ))}
+                  
+                  {/* Caso não tenha nenhum destaque configurado no admin, mostra pelo menos os 3 primeiros normais para o card não ficar vazio */}
+                  {!plano.beneficios.some(b => b.startsWith('⭐')) && plano.beneficios.slice(0, 3).map((b, i) => (
+                    <li key={`fallback-${i}`} className="flex items-start gap-3 text-white/90 text-[0.9rem] leading-snug">
+                      <Check size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
+                      <span>{b.replace('⭐', '')}</span>
                     </li>
                   ))}
                 </ul>
+
+                {/* Benefícios Normais (Ocultos no Ver Detalhes) */}
+                {(() => {
+                  const normais = plano.beneficios.some(b => b.startsWith('⭐')) 
+                    ? plano.beneficios.filter(b => !b.startsWith('⭐'))
+                    : plano.beneficios.slice(3); // se não tiver destaque, o resto vai pro detalhes
+
+                  if (normais.length === 0) return null;
+
+                  const isExpanded = expandedCards[plano.id];
+
+                  return (
+                    <div className="mt-4 border-t border-white/5 pt-4">
+                      <button 
+                        onClick={() => toggleExpand(plano.id)}
+                        className="flex items-center justify-between w-full text-sm font-bold text-white/60 hover:text-[#D4AF37] transition-colors"
+                      >
+                        <span>{isExpanded ? 'Ocultar detalhes' : 'Ver detalhes'}</span>
+                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </button>
+                      
+                      {isExpanded && (
+                        <ul className="space-y-3.5 mt-4 pt-2 border-t border-white/5">
+                          {normais.map((b, i) => (
+                            <li key={`norm-${i}`} className="flex items-start gap-3 text-white/60 text-[0.85rem] leading-snug">
+                              <Check size={16} className="text-[#D4AF37]/50 shrink-0 mt-0.5" />
+                              <span>{b}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               <a

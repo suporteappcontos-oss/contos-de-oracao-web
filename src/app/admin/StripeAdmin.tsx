@@ -27,12 +27,12 @@ export function StripeAdmin() {
   const [loading, setLoading] = useState(true)
 
   const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', etiqueta: 'Premium', precoMensal: '29,90', precoAnual: '290,00', max_telas: 1 })
-  const [beneficiosCheck, setBeneficiosCheck] = useState<string[]>([
-    'Acesso a todos os filmes', 
-    'Materiais didáticos inclusos (HQ, atividades, jogos e mais)',
-    'Novos lançamentos mensais',
-    'Download de materiais',
-    'Suporte por e-mail'
+  const [beneficiosCheck, setBeneficiosCheck] = useState<{nome: string, destaque: boolean}[]>([
+    { nome: 'Acesso a todos os filmes', destaque: true }, 
+    { nome: 'Materiais didáticos inclusos (HQ, atividades, jogos e mais)', destaque: true },
+    { nome: 'Novos lançamentos mensais', destaque: false },
+    { nome: 'Download de materiais', destaque: false },
+    { nome: 'Suporte por e-mail', destaque: false }
   ])
   const [beneficioCustom, setBeneficioCustom] = useState('')
 
@@ -64,25 +64,31 @@ export function StripeAdmin() {
 
   const toggleBeneficio = (b: string) => {
     let novos = [...beneficiosCheck]
-    if (novos.includes(b)) {
-      novos = novos.filter(item => item !== b)
+    const existe = novos.find(item => item.nome === b)
+    if (existe) {
+      novos = novos.filter(item => item.nome !== b)
     } else {
-      novos.push(b)
+      novos.push({ nome: b, destaque: false })
       // Lógica de exclusão mútua para Downloads
-      if (b === 'Download de materiais') novos = novos.filter(i => i !== 'Download ilimitado de materiais')
-      if (b === 'Download ilimitado de materiais') novos = novos.filter(i => i !== 'Download de materiais')
+      if (b === 'Download de materiais') novos = novos.filter(i => i.nome !== 'Download ilimitado de materiais')
+      if (b === 'Download ilimitado de materiais') novos = novos.filter(i => i.nome !== 'Download de materiais')
       
       // Lógica de exclusão mútua para Suportes
-      if (b === 'Suporte por e-mail') novos = novos.filter(i => i !== 'Suporte prioritário por e-mail' && i !== 'Suporte prioritário via e-mail e WhatsApp')
-      if (b === 'Suporte prioritário por e-mail') novos = novos.filter(i => i !== 'Suporte por e-mail' && i !== 'Suporte prioritário via e-mail e WhatsApp')
-      if (b === 'Suporte prioritário via e-mail e WhatsApp') novos = novos.filter(i => i !== 'Suporte por e-mail' && i !== 'Suporte prioritário por e-mail')
+      if (b === 'Suporte por e-mail') novos = novos.filter(i => i.nome !== 'Suporte prioritário por e-mail' && i.nome !== 'Suporte prioritário via e-mail e WhatsApp')
+      if (b === 'Suporte prioritário por e-mail') novos = novos.filter(i => i.nome !== 'Suporte por e-mail' && i.nome !== 'Suporte prioritário via e-mail e WhatsApp')
+      if (b === 'Suporte prioritário via e-mail e WhatsApp') novos = novos.filter(i => i.nome !== 'Suporte por e-mail' && i.nome !== 'Suporte prioritário por e-mail')
     }
     setBeneficiosCheck(novos)
   }
 
+  const toggleDestaque = (b: string, e: React.MouseEvent) => {
+    e.stopPropagation() // não desmarca o checkbox principal
+    setBeneficiosCheck(prev => prev.map(item => item.nome === b ? { ...item, destaque: !item.destaque } : item))
+  }
+
   const addBeneficioCustom = () => {
-    if (beneficioCustom.trim() && !beneficiosCheck.includes(beneficioCustom.trim())) {
-      setBeneficiosCheck(prev => [...prev, beneficioCustom.trim()])
+    if (beneficioCustom.trim() && !beneficiosCheck.find(i => i.nome === beneficioCustom.trim())) {
+      setBeneficiosCheck(prev => [...prev, { nome: beneficioCustom.trim(), destaque: false }])
       setBeneficioCustom('')
     }
   }
@@ -96,7 +102,7 @@ export function StripeAdmin() {
       ...novoProduto,
       precoMensal: parsePreco(novoProduto.precoMensal),
       precoAnual: novoProduto.precoAnual ? parsePreco(novoProduto.precoAnual) : null,
-      beneficios: beneficiosCheck.join(' | '),
+      beneficios: beneficiosCheck.map(b => b.destaque ? `⭐${b.nome}` : b.nome).join(' | '),
       max_telas: novoProduto.max_telas,
       etiqueta: novoProduto.etiqueta,
     }
@@ -255,18 +261,58 @@ export function StripeAdmin() {
               <div>
                 <label className={labelCls}>Benefícios do Plano</label>
                 <div className="bg-[#090B10] border border-white/5 rounded-2xl p-4 space-y-3 max-h-48 overflow-y-auto mb-3 shadow-inner">
-                  {BENEFICIOS_PADRAO.map(b => (
-                    <label key={b} className="flex items-center gap-3 text-sm text-white/70 cursor-pointer hover:text-white transition-colors">
-                      <input type="checkbox" checked={beneficiosCheck.includes(b)} onChange={() => toggleBeneficio(b)} className="accent-[#D4AF37] w-4 h-4 rounded" />
-                      {b}
-                    </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                  {BENEFICIOS_PADRAO.map(b => {
+                    const isChecked = beneficiosCheck.find(item => item.nome === b)
+                    return (
+                      <div 
+                        key={b}
+                        onClick={() => toggleBeneficio(b)}
+                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                          isChecked ? 'bg-[#D4AF37]/10 border-[#D4AF37]' : 'bg-[#050608] border-white/5 hover:border-white/20'
+                        }`}
+                      >
+                        <div className={`mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border shrink-0 ${isChecked ? 'bg-[#D4AF37] border-[#D4AF37]' : 'border-white/20'}`}>
+                          {isChecked && <Check className="w-3.5 h-3.5 text-black" />}
+                        </div>
+                        <div className="flex-1 flex flex-col gap-1">
+                          <span className={`text-sm ${isChecked ? 'text-white' : 'text-[#94A3B8]'}`}>{b}</span>
+                          {isChecked && (
+                            <button 
+                              type="button" 
+                              onClick={(e) => toggleDestaque(b, e)}
+                              className={`text-xs font-bold self-start px-2 py-0.5 rounded transition-all ${isChecked.destaque ? 'bg-[#D4AF37] text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                            >
+                              {isChecked.destaque ? '⭐ Destaque' : 'Marcar destaque'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                  
+                  {beneficiosCheck.filter(item => !BENEFICIOS_PADRAO.includes(item.nome)).map(item => (
+                    <div 
+                      key={item.nome}
+                      onClick={() => toggleBeneficio(item.nome)}
+                      className="flex items-start gap-3 p-3 rounded-xl border cursor-pointer bg-[#D4AF37]/10 border-[#D4AF37]"
+                    >
+                      <div className="mt-0.5 w-5 h-5 rounded-md flex items-center justify-center border shrink-0 bg-[#D4AF37] border-[#D4AF37]">
+                        <Check className="w-3.5 h-3.5 text-black" />
+                      </div>
+                      <div className="flex-1 flex flex-col gap-1">
+                        <span className="text-sm text-white">{item.nome}</span>
+                        <button 
+                          type="button" 
+                          onClick={(e) => toggleDestaque(item.nome, e)}
+                          className={`text-xs font-bold self-start px-2 py-0.5 rounded transition-all ${item.destaque ? 'bg-[#D4AF37] text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                        >
+                          {item.destaque ? '⭐ Destaque' : 'Marcar destaque'}
+                        </button>
+                      </div>
+                    </div>
                   ))}
-                  {beneficiosCheck.filter(b => !BENEFICIOS_PADRAO.includes(b)).map(b => (
-                    <label key={b} className="flex items-center gap-3 text-sm text-[#D4AF37] font-medium cursor-pointer">
-                      <input type="checkbox" checked={true} onChange={() => toggleBeneficio(b)} className="accent-[#D4AF37] w-4 h-4 rounded" />
-                      {b}
-                    </label>
-                  ))}
+                </div>
                 </div>
                 <div className="flex gap-2">
                   <input type="text" placeholder="Adicionar outro benefício..." value={beneficioCustom} onChange={e => setBeneficioCustom(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addBeneficioCustom())} className={inputCls} />
