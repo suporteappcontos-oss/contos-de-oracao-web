@@ -42,33 +42,48 @@ export default function PlanosPage() {
           />
 
           {/* Textos (Hero) */}
-          <div className="relative z-10 w-full max-w-3xl mx-auto px-6 text-center mt-12 mb-12">
+          <div className="relative z-10 w-full max-w-2xl mx-auto px-6 text-center mt-10 mb-8">
+            <p
+              style={{
+                fontFamily: '"Outfit", sans-serif',
+                fontSize: '0.75rem',
+                fontWeight: '700',
+                color: '#D4AF37',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                marginBottom: '12px'
+              }}
+            >
+              ✦ Assine e comece hoje
+            </p>
             <h1
               style={{
                 fontFamily: '"Outfit", sans-serif',
-                fontSize: 'clamp(32px, 6vw, 60px)',
-                fontWeight: '900',
+                fontSize: 'clamp(22px, 3.5vw, 38px)',
+                fontWeight: '800',
                 color: '#FFFFFF',
-                lineHeight: '1.1',
+                lineHeight: '1.2',
                 textTransform: 'uppercase',
                 textShadow: '0px 4px 20px rgba(0,0,0,0.8)'
               }}
             >
-              ESCOLHA O <br/>
-              <span style={{ color: '#D4AF37' }}>PLANO IDEAL</span><br/>
-              PARA SUA FAMÍLIA<br/>
-              E MINISTÉRIO
+              Escolha o <span style={{ color: '#D4AF37' }}>plano ideal</span> para sua família e ministério
             </h1>
             
-            <div className="flex flex-row justify-center items-center gap-6 mt-6">
-               <div className="flex items-center gap-2">
-                  <span className="text-[#D4AF37] text-xl">▶</span>
-                  <span className="text-white/80 font-medium text-sm md:text-base">Filmes que educam na fé.</span>
+            <div className="flex flex-row justify-center items-center gap-5 mt-5">
+               <div className="flex items-center gap-1.5">
+                  <span className="text-[#D4AF37] text-base">▶</span>
+                  <span className="text-white/60 text-xs">Filmes que educam na fé</span>
                </div>
-               <div className="w-[1px] h-8 bg-white/20"></div>
-               <div className="flex items-center gap-2">
-                  <span className="text-[#D4AF37] text-xl">📖</span>
-                  <span className="text-white/80 font-medium text-sm md:text-base">Materiais formativos.</span>
+               <div className="w-[1px] h-5 bg-white/15"></div>
+               <div className="flex items-center gap-1.5">
+                  <span className="text-[#D4AF37] text-base">📖</span>
+                  <span className="text-white/60 text-xs">Materiais formativos</span>
+               </div>
+               <div className="w-[1px] h-5 bg-white/15"></div>
+               <div className="flex items-center gap-1.5">
+                  <span className="text-[#D4AF37] text-base">❤️</span>
+                  <span className="text-white/60 text-xs">Cancele quando quiser</span>
                </div>
             </div>
           </div>
