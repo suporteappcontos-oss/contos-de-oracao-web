@@ -136,7 +136,7 @@ export async function salvarConfiguracao(formData: FormData) {
 
     // 2. Atualiza o config.json apontando para a nova imagem
     const timestamp = Date.now();
-    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json?t=${timestamp}`, {
+    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
       method: 'PUT',
       headers: {
         'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
