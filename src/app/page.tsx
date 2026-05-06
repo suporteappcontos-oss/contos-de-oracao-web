@@ -1,15 +1,69 @@
 import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
+import HeroBento from "@/components/HeroBento";
 import Carousel from "@/components/Carousel";
 import AppBanner from "@/components/AppBanner";
 import Footer from "@/components/Footer";
+import { stripe } from '@/lib/stripe';
 
 type Props = {
   searchParams: Promise<{ acesso?: string }>
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function Home({ searchParams }: Props) {
   const { acesso } = await searchParams
+
+  // Busca dos Planos do Stripe
+  const prices = await stripe.prices.list({ active: true, limit: 10, expand: ['data.product'] })
+  const groupedProducts = new Map<string, any>()
+
+  if (prices.data.length > 0) {
+    prices.data
+      .filter((price) => (price.product as any).active === true)
+      .forEach((price) => {
+        const prod = price.product as any
+        const isAnual = price.recurring?.interval === 'year'
+        
+        if (!groupedProducts.has(prod.id)) {
+          groupedProducts.set(prod.id, {
+            id: prod.id,
+            nome: prod.name,
+            descricao: prod.description || 'Acesso completo à plataforma',
+            badge: prod.metadata?.etiqueta || null,
+            cor: prod.metadata?.cor || (isAnual ? 'text-[#D4AF37]' : 'text-[#8197a4]'),
+            destaque: isAnual || false,
+            maxTelas: Number(prod.metadata?.max_telas || 1),
+            beneficios: prod.metadata?.beneficios
+              ? prod.metadata.beneficios.split(/\|/).map((b: string) => b.trim()).filter(Boolean)
+              : [
+                  '⭐ Acesso ilimitado ao catálogo',
+                  '⭐ Assista em qualquer dispositivo',
+                  'Vídeos em Full HD (1080p)',
+                  'Suporte prioritário'
+                ],
+            priceMensal: null,
+            priceAnual: null,
+          })
+        }
+        
+        const g = groupedProducts.get(prod.id)
+        const valor = price.unit_amount! / 100
+        
+        if (isAnual) {
+           g.priceAnual = { id: price.id, valor }
+           g.destaque = true 
+           g.cor = 'text-[#D4AF37]'
+           if (!g.badge) g.badge = 'Mais Popular'
+        } else {
+           g.priceMensal = { id: price.id, valor }
+        }
+      })
+  }
+
+  let produtosArray = Array.from(groupedProducts.values())
+  produtosArray.sort((a, b) => (a.destaque === b.destaque ? 0 : a.destaque ? 1 : -1))
 
   const movieImages = [
     'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=500&h=280&fit=crop',
@@ -59,7 +113,8 @@ export default async function Home({ searchParams }: Props) {
         </div>
       )}
 
-      <Hero />
+      <HeroBento produtos={produtosArray} />
+
       <div className={`relative z-10 mt-[-80px] ${acesso === 'expirado' ? 'pt-12' : ''}`}>
         <Carousel title="Lançamentos" images={movieImages} />
         <Carousel title="Em Alta" images={trendingImages} />
