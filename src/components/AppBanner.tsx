@@ -25,57 +25,40 @@ export default function AppBanner() {
   }, []);
 
   return (
-    <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-10">
-      <div
-        className="relative overflow-hidden rounded-3xl flex flex-col md:flex-row items-center gap-8 p-8 md:p-12"
-        style={{ background: 'linear-gradient(135deg,#0e1015 0%,#16180f 50%,#0e1015 100%)', border: '1px solid rgba(212,175,55,0.25)' }}
+    <div className="flex justify-center px-4 py-12">
+      <a
+        href={apkUrl}
+        download={versao ? `ContosDeOracao_v${versao}.apk` : 'ContosDeOracao.apk'}
+        className="group relative flex items-center gap-4 bg-[#15243E] border border-white/10 rounded-full p-2 pr-6 transition-all hover:scale-105 hover:border-[#D4AF37]/50 shadow-2xl hover:shadow-[#D4AF37]/20"
       >
-        {/* Glow */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(212,175,55,0.15),transparent 70%)' }} />
-        <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle,rgba(24,119,242,0.08),transparent 70%)' }} />
-
-        {/* Ícone do App */}
-        <div className="shrink-0 relative">
-          <div className="w-20 h-20 md:w-24 md:h-24 rounded-[22px] overflow-hidden shadow-2xl border-2 border-[#D4AF37]/30">
-            <Image src="/logo.png" alt="Contos de Oração" width={96} height={96} className="object-contain w-full h-full bg-[#090B10]" />
-          </div>
-          {/* Badge "NOVO" ou "ATUALIZAÇÃO" */}
-          <div className="absolute -top-2 -right-2 bg-[#D4AF37] text-black text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-[#090B10]">
-            {versao ? `NOVA ATUALIZAÇÃO v${versao}` : 'NOVO'}
-          </div>
+        {/* Ícone */}
+        <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-lg"
+             style={{ background: 'linear-gradient(135deg,#FFD700,#D4AF37)' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#090B10" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
         </div>
 
-        {/* Texto */}
-        <div className="flex-1 text-center md:text-left">
-          <p className="text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-2">📱 Aplicativo Oficial Android</p>
-          <h2 className="text-white text-2xl md:text-3xl font-black leading-tight mb-2">
-            Contos de Oração<br />
-            <span className="text-[#D4AF37]">na palma da mão</span>
-          </h2>
-          <p className="text-white/50 text-sm mb-5 max-w-md">
-            {versao 
-              ? 'Temos melhorias fresquinhas no nosso app! Baixe agora a versão mais recente e aproveite a experiência sem travamentos.' 
-              : 'Assista aos vídeos exclusivos, receba notificações de novos lançamentos e viva a fé em qualquer lugar.'}
-          </p>
-          {/* Stars */}
-          <div className="flex items-center justify-center md:justify-start gap-1.5 mb-5">
-            {[1,2,3,4,5].map(i => (
-              <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#D4AF37"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            ))}
-            <span className="text-white/40 text-xs ml-1">100% Gratuito</span>
+        {/* Textos */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <h3 className="text-white text-sm font-extrabold tracking-wide" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              Aplicativo Android
+            </h3>
+            {versao && (
+              <span className="text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded-sm" style={{ background: 'rgba(212,175,55,0.2)', color: '#D4AF37' }}>
+                v{versao}
+              </span>
+            )}
           </div>
-          <a
-            href={apkUrl}
-            download={versao ? `ContosDeOracao_v${versao}.apk` : 'ContosDeOracao.apk'}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm transition-all hover:scale-105 shadow-lg"
-            style={{ background: 'linear-gradient(135deg,#FFD700,#D4AF37)', color: '#090B10' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            {versao ? 'Atualizar App Agora' : 'Baixar para Android — Grátis'}
-          </a>
+          <p className="text-[#94A3B8] text-xs font-medium">Assista em qualquer lugar</p>
         </div>
 
-      </div>
+        {/* Call to action */}
+        <div className="ml-4 pl-4 border-l border-white/10 text-[#D4AF37] text-sm font-bold tracking-tight group-hover:translate-x-1 transition-transform">
+          Baixar grátis →
+        </div>
+      </a>
     </div>
   );
 }
