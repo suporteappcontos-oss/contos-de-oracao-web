@@ -133,9 +133,11 @@ export async function salvarConfiguracao(formData: FormData) {
     // 1. Faz upload usando o helper seguro
     const bgUrl = await uploadToBunny(file, 'background');
     const config = { background_url: bgUrl };
+    console.log("✅ Nova imagem de fundo salva no Storage:", bgUrl);
 
     // 2. Atualiza o config.json apontando para a nova imagem
     const timestamp = Date.now();
+    console.log("Enviando PUT para o config.json no Bunny Storage...");
     const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
       method: 'PUT',
       headers: {
@@ -147,6 +149,7 @@ export async function salvarConfiguracao(formData: FormData) {
     });
 
     if (!resConf.ok) throw new Error(`Erro config.json: ${resConf.statusText}`);
+    console.log("✅ config.json atualizado com sucesso no Storage!");
 
     revalidatePath('/', 'layout');
   } catch (error: any) {
