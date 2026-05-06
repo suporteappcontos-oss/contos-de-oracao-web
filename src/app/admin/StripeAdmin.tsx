@@ -393,7 +393,10 @@ export function StripeAdmin() {
                 {beneficiosCheck.map((b, i) => (
                   <li key={i} className="flex items-start gap-3 text-white/80 text-[0.9rem] font-medium">
                     <Check size={16} className="text-[#D4AF37] mt-0.5 shrink-0" strokeWidth={3} />
-                    <span className="leading-tight">{b}</span>
+                    <span className="leading-tight">
+                      {b.destaque && <span className="mr-1">⭐</span>}
+                      {b.nome}
+                    </span>
                   </li>
                 ))}
                 {beneficiosCheck.length === 0 && (
