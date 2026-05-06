@@ -63,11 +63,21 @@ export function StripeAdmin() {
   }, [])
 
   const toggleBeneficio = (b: string) => {
-    if (beneficiosCheck.includes(b)) {
-      setBeneficiosCheck(prev => prev.filter(item => item !== b))
+    let novos = [...beneficiosCheck]
+    if (novos.includes(b)) {
+      novos = novos.filter(item => item !== b)
     } else {
-      setBeneficiosCheck(prev => [...prev, b])
+      novos.push(b)
+      // Lógica de exclusão mútua para Downloads
+      if (b === 'Download de materiais') novos = novos.filter(i => i !== 'Download ilimitado de materiais')
+      if (b === 'Download ilimitado de materiais') novos = novos.filter(i => i !== 'Download de materiais')
+      
+      // Lógica de exclusão mútua para Suportes
+      if (b === 'Suporte por e-mail') novos = novos.filter(i => i !== 'Suporte prioritário por e-mail' && i !== 'Suporte prioritário via e-mail e WhatsApp')
+      if (b === 'Suporte prioritário por e-mail') novos = novos.filter(i => i !== 'Suporte por e-mail' && i !== 'Suporte prioritário via e-mail e WhatsApp')
+      if (b === 'Suporte prioritário via e-mail e WhatsApp') novos = novos.filter(i => i !== 'Suporte por e-mail' && i !== 'Suporte prioritário por e-mail')
     }
+    setBeneficiosCheck(novos)
   }
 
   const addBeneficioCustom = () => {
@@ -86,7 +96,7 @@ export function StripeAdmin() {
       ...novoProduto,
       precoMensal: parsePreco(novoProduto.precoMensal),
       precoAnual: novoProduto.precoAnual ? parsePreco(novoProduto.precoAnual) : null,
-      beneficios: beneficiosCheck.join(', '),
+      beneficios: beneficiosCheck.join(' | '),
       max_telas: novoProduto.max_telas,
       etiqueta: novoProduto.etiqueta,
     }
