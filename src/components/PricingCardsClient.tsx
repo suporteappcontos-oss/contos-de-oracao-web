@@ -70,7 +70,7 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch flex-wrap gap-6 md:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
         {produtos.map((plano) => {
           const isAnual = ciclo === 'anual' && plano.priceAnual ? true : !plano.priceMensal;
           const precoExibido = isAnual ? plano.priceAnual : plano.priceMensal;
@@ -80,9 +80,9 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
           return (
             <div
               key={plano.id}
-              className={`relative flex flex-col p-8 rounded-[24px] w-full max-w-[340px] transition-all duration-300 border-2 hover:-translate-y-2 ${
+              className={`relative flex flex-col p-8 rounded-[24px] w-full transition-all duration-300 border-2 hover:-translate-y-1 ${
                 plano.destaque
-                  ? 'bg-gradient-to-b from-[#1a1a2e] to-[#0f1423] border-[#D4AF37] shadow-[0_15px_50px_rgba(212,175,55,0.15)] md:scale-105 z-10'
+                  ? 'bg-gradient-to-b from-[#1a1a2e] to-[#0f1423] border-[#D4AF37] shadow-[0_15px_50px_rgba(212,175,55,0.15)] scale-[1.02] z-10'
                   : 'bg-[#111827] border-white/5 hover:border-white/20'
               }`}
             >
