@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
+import HeroParticles from "@/components/HeroParticles";
 
 export const metadata = {
   title: "Planos e Preços — Contos de Oração",
@@ -41,8 +42,13 @@ export default function PlanosPage() {
             style={{ backgroundImage: "url('/mulher-orando.png')" }}
           />
 
-          {/* Textos (Hero) */}
+          {/* Textos (Hero) com fundo animado */}
           <div className="relative z-10 w-full max-w-2xl mx-auto px-6 text-center mt-10 mb-8">
+            {/* Canvas de partículas douradas no fundo do título */}
+            <div className="absolute inset-0 -mx-20 -my-6 rounded-2xl overflow-hidden pointer-events-none">
+              <HeroParticles />
+            </div>
+
             <p
               style={{
                 fontFamily: '"Outfit", sans-serif',
@@ -51,7 +57,8 @@ export default function PlanosPage() {
                 color: '#D4AF37',
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',
-                marginBottom: '12px'
+                marginBottom: '12px',
+                position: 'relative'
               }}
             >
               ✦ Assine e comece hoje
@@ -64,13 +71,14 @@ export default function PlanosPage() {
                 color: '#FFFFFF',
                 lineHeight: '1.2',
                 textTransform: 'uppercase',
-                textShadow: '0px 4px 20px rgba(0,0,0,0.8)'
+                textShadow: '0px 4px 20px rgba(0,0,0,0.8)',
+                position: 'relative'
               }}
             >
               Escolha o <span style={{ color: '#D4AF37' }}>plano ideal</span> para sua família e ministério
             </h1>
             
-            <div className="flex flex-row justify-center items-center gap-5 mt-5">
+            <div className="flex flex-row justify-center items-center gap-5 mt-5" style={{ position: 'relative' }}>
                <div className="flex items-center gap-1.5">
                   <span className="text-[#D4AF37] text-base">▶</span>
                   <span className="text-white/60 text-xs">Filmes que educam na fé</span>
