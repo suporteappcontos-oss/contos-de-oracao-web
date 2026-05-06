@@ -135,13 +135,15 @@ export async function salvarConfiguracao(formData: FormData) {
     const config = { background_url: bgUrl };
 
     // 2. Atualiza o config.json apontando para a nova imagem
-    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
+    const timestamp = Date.now();
+    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json?t=${timestamp}`, {
       method: 'PUT',
       headers: {
         'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(config)
+      body: JSON.stringify(config),
+      cache: 'no-store'
     });
 
     if (!resConf.ok) throw new Error(`Erro config.json: ${resConf.statusText}`);

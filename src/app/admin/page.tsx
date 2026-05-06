@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
+import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -375,11 +376,12 @@ export default async function AdminPage({
                   </div>
                 </div>
                 <div className="mt-8 flex justify-end">
-                  <button type="submit"
-                    className="flex items-center gap-2 text-black px-8 py-3.5 rounded-xl font-black text-sm transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_20px_rgba(212,175,55,0.3)]"
+                  <SubmitButton 
+                    textLoading="Publicando..."
+                    className="flex items-center justify-center gap-2 text-black px-8 py-3.5 rounded-xl font-black text-sm transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_20px_rgba(212,175,55,0.3)] disabled:opacity-70 disabled:cursor-not-allowed"
                     style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' }}>
                     <Plus size={18} strokeWidth={3} /> Publicar Vídeo
-                  </button>
+                  </SubmitButton>
                 </div>
               </form>
             </div>
@@ -443,9 +445,12 @@ export default async function AdminPage({
                                 <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
                               </div>
                             </div>
-                            <button type="submit" className="w-full mt-2 bg-[#D4AF37] text-black font-black py-3 rounded-xl hover:brightness-110">
+                            <SubmitButton 
+                              textLoading="Salvando..."
+                              className="w-full mt-2 bg-[#D4AF37] text-black font-black flex justify-center items-center gap-2 py-3 rounded-xl hover:brightness-110 disabled:opacity-70"
+                              style={{}}>
                               Salvar
-                            </button>
+                            </SubmitButton>
                           </form>
                         </div>
                       ) : (
@@ -614,9 +619,9 @@ export default async function AdminPage({
                   <p className="text-white/40 text-xs mt-3">Faça o upload de uma imagem do seu computador. Esta imagem será sincronizada automaticamente em <b>fundo de todas as telas</b> tanto no site quanto no aplicativo Android.</p>
                 </div>
                 <div className="pt-4 border-t border-white/5">
-                  <button type="submit" className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-black px-6 py-3.5 rounded-xl font-black transition-all hover:scale-[1.02] shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                  <SubmitButton textLoading="Sincronizando Fundo...">
                     Salvar e Sincronizar Fundo
-                  </button>
+                  </SubmitButton>
                 </div>
               </form>
             </div>
