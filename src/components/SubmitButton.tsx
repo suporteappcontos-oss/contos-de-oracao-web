@@ -6,7 +6,9 @@ import { Infinity as InfinityIcon } from 'lucide-react'
 export default function SubmitButton({ 
   children, 
   formAction,
-  textLoading = "Carregando..."
+  textLoading = "Carregando...",
+  className,
+  style
 }: { 
   children: React.ReactNode
   formAction?: (payload: FormData) => void
