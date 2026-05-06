@@ -24,7 +24,7 @@ export default function DynamicBackground() {
 
   return (
     <div 
-      className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+      className="fixed inset-0 z-[-1] bg-cover bg-center transition-opacity duration-1000"
       style={{ 
         backgroundImage: `url('${backgroundUrl}')`, 
         opacity: 0.12 

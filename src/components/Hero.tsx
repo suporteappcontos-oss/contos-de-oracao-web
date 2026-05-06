@@ -21,7 +21,7 @@ export default function Hero() {
     <section
       id="home"
       className="relative flex items-center justify-center text-center overflow-hidden"
-      style={{ minHeight: '100vh', background: '#090B10' }}
+      style={{ minHeight: '100vh', background: 'transparent' }}
     >
 
 

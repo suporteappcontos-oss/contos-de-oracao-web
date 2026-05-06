@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import CategoryCarousel from "@/components/CategoryCarousel";
 import VideoCard from "@/components/VideoCard";
 import { createClient } from "@/utils/supabase/server";
+import DynamicBackground from "@/components/DynamicBackground";
 
 type Props = {
   searchParams: Promise<{ acesso?: string }>
@@ -26,6 +27,7 @@ export default async function Home({ searchParams }: Props) {
 
   return (
     <main>
+      <DynamicBackground />
       <Navbar />
 
       {/* Banner de acesso expirado */}
