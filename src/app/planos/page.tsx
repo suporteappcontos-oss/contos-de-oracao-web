@@ -7,6 +7,9 @@ export const metadata = {
   description: "Escolha o plano ideal e tenha acesso ilimitado a toda a plataforma católica do Brasil. Assine agora e comece a assistir hoje mesmo.",
 };
 
+export const dynamic = 'force-dynamic'; // Desativa o cache para mostrar os planos criados no Admin em tempo real
+export const revalidate = 0;
+
 export default function PlanosPage() {
   return (
     <main>

@@ -41,35 +41,26 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
     <>
       {temPlanoAnual && temPlanoMensal && (
         <div className="flex justify-center mb-12">
-          <div className="bg-[#111827] p-1.5 rounded-full border border-white/10 flex items-center shadow-lg relative">
+          <div className="bg-[#111827] p-1.5 rounded-full border border-white/10 flex items-center shadow-lg gap-1">
             <button
               onClick={() => setCiclo('mensal')}
-              className={`relative z-10 px-8 py-3 rounded-full text-sm font-bold transition-colors ${
-                ciclo === 'mensal' ? 'text-black' : 'text-white/60 hover:text-white'
+              className={`px-8 py-2.5 rounded-full text-sm font-bold transition-all ${
+                ciclo === 'mensal' ? 'bg-[#D4AF37] text-black shadow-md' : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
             >
               Mensal
             </button>
             <button
               onClick={() => setCiclo('anual')}
-              className={`relative z-10 px-8 py-3 rounded-full text-sm font-bold transition-colors flex items-center gap-2 ${
-                ciclo === 'anual' ? 'text-black' : 'text-white/60 hover:text-white'
+              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${
+                ciclo === 'anual' ? 'bg-[#D4AF37] text-black shadow-md' : 'text-white/60 hover:text-white hover:bg-white/5'
               }`}
             >
               Anual
-              <span className={`text-[0.65rem] px-2.5 py-0.5 rounded-full font-black ${ciclo === 'anual' ? 'bg-black text-white' : 'bg-[#22c55e] text-white'}`}>
+              <span className={`text-[0.65rem] px-2 py-0.5 rounded-full font-black tracking-wide ${ciclo === 'anual' ? 'bg-black text-white' : 'bg-[#22c55e] text-white'}`}>
                 + Econômico
               </span>
             </button>
-            
-            {/* Fundo Animado do Switch */}
-            <div 
-              className={`absolute top-1.5 bottom-1.5 bg-[#D4AF37] rounded-full transition-transform duration-300 ease-out`}
-              style={{ 
-                width: 'calc(50% - 6px)',
-                transform: ciclo === 'mensal' ? 'translateX(0)' : 'translateX(100%)' 
-              }}
-            />
           </div>
         </div>
       )}
@@ -115,7 +106,7 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 </div>
                 {isAnual && plano.priceMensal && (
                   <div className="text-[#D4AF37] text-[0.8rem] font-bold mt-2">
-                    Equivale a R$ {(precoExibido.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} /mês
+                    Equivale a R$ {(precoExibido.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} /mês
                   </div>
                 )}
               </div>
