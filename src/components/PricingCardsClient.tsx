@@ -70,8 +70,15 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
         </div>
       )}
 
+  // Ordena do mais barato para o mais caro: BÁSICO → ESSENCIAL → PRO
+  const produtosOrdenados = [...produtos].sort((a, b) => {
+    const precoA = a.priceMensal?.valor ?? a.priceAnual?.valor ?? 0;
+    const precoB = b.priceMensal?.valor ?? b.priceAnual?.valor ?? 0;
+    return precoA - precoB;
+  });
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-        {produtos.map((plano) => {
+        {produtosOrdenados.map((plano) => {
           const isAnual = ciclo === 'anual' && plano.priceAnual ? true : !plano.priceMensal;
           const precoExibido = isAnual ? plano.priceAnual : plano.priceMensal;
           
@@ -130,50 +137,35 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
 
               {/* Lista de Benefícios */}
               <div className="text-left mb-8 flex-1">
+                {/* Sempre mostra os 3 primeiros por padrão */}
                 <ul className="space-y-3.5">
-                  {/* Benefícios Destaque */}
-                  {plano.beneficios.filter(b => b.startsWith('⭐')).map((b, i) => (
-                    <li key={`dest-${i}`} className="flex items-start gap-3 text-white/90 text-[0.9rem] leading-snug font-medium">
-                      <Check size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
-                      <span>{b.replace('⭐', '')}</span>
-                    </li>
-                  ))}
-                  
-                  {/* Caso não tenha nenhum destaque configurado no admin, mostra pelo menos os 3 primeiros normais para o card não ficar vazio */}
-                  {!plano.beneficios.some(b => b.startsWith('⭐')) && plano.beneficios.slice(0, 3).map((b, i) => (
-                    <li key={`fallback-${i}`} className="flex items-start gap-3 text-white/90 text-[0.9rem] leading-snug">
+                  {plano.beneficios.slice(0, 3).map((b, i) => (
+                    <li key={`vis-${i}`} className="flex items-start gap-3 text-white/90 text-[0.9rem] leading-snug">
                       <Check size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
                       <span>{b.replace('⭐', '')}</span>
                     </li>
                   ))}
                 </ul>
 
-                {/* Benefícios Normais (Ocultos no Ver Detalhes) */}
-                {(() => {
-                  const normais = plano.beneficios.some(b => b.startsWith('⭐')) 
-                    ? plano.beneficios.filter(b => !b.startsWith('⭐'))
-                    : plano.beneficios.slice(3); // se não tiver destaque, o resto vai pro detalhes
-
-                  if (normais.length === 0) return null;
-
+                {/* "Ver detalhes" mostra TODOS os beneficios */}
+                {plano.beneficios.length > 0 && (() => {
                   const isExpanded = expandedCards[plano.id];
-
                   return (
                     <div className="mt-4 border-t border-white/5 pt-4">
                       <button 
                         onClick={() => toggleExpand(plano.id)}
                         className="flex items-center justify-between w-full text-sm font-bold text-white/60 hover:text-[#D4AF37] transition-colors"
                       >
-                        <span>{isExpanded ? 'Ocultar detalhes' : 'Ver detalhes'}</span>
+                        <span>{isExpanded ? 'Ocultar detalhes' : `Ver todos (${plano.beneficios.length})`}</span>
                         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </button>
                       
                       {isExpanded && (
-                        <ul className="space-y-3.5 mt-4 pt-2 border-t border-white/5">
-                          {normais.map((b, i) => (
-                            <li key={`norm-${i}`} className="flex items-start gap-3 text-white/60 text-[0.85rem] leading-snug">
-                              <Check size={16} className="text-[#D4AF37]/50 shrink-0 mt-0.5" />
-                              <span>{b}</span>
+                        <ul className="space-y-3 mt-4 pt-2 border-t border-white/5">
+                          {plano.beneficios.map((b, i) => (
+                            <li key={`all-${i}`} className="flex items-start gap-3 text-white/70 text-[0.85rem] leading-snug">
+                              <Check size={16} className="text-[#D4AF37]/70 shrink-0 mt-0.5" />
+                              <span>{b.replace('⭐', '')}</span>
                             </li>
                           ))}
                         </ul>
