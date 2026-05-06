@@ -11,10 +11,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="flex flex-wrap gap-6 mb-8">
-        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Perguntas frequentes</a>
-        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Suporte</a>
-        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Termos de uso</a>
-        <a href="#" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Privacidade</a>
+        <a href="/faq" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Perguntas frequentes</a>
+        <a href="mailto:contato@contosdeoracao.com.br" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Suporte</a>
+        <a href="/termos" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Termos de uso</a>
+        <a href="/privacidade" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Privacidade</a>
       </div>
       <p className="text-[#94A3B8] text-xs">© 2026 Contos de Oração Brasil. Todos os direitos reservados.</p>
     </footer>

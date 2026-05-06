@@ -66,45 +66,6 @@ export default async function Home({ searchParams }: Props) {
       </div>
       <AppBanner />
 
-      {/* Banner CTA → página de planos */}
-      <section
-        style={{
-          background: 'linear-gradient(135deg, #0d1117 0%, #111827 100%)',
-          padding: '80px 24px',
-          textAlign: 'center',
-          borderTop: '1px solid rgba(212,175,55,0.12)',
-        }}
-      >
-        <p style={{ fontFamily: 'Outfit, sans-serif', color: '#D4AF37', fontSize: '13px', fontWeight: '700', letterSpacing: '2px', marginBottom: '16px', textTransform: 'uppercase' }}>
-          ✝ Assine agora
-        </p>
-        <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: 'clamp(28px, 4vw, 46px)', color: '#FFF', marginBottom: '16px', lineHeight: '1.2' }}>
-          Acesso completo ao melhor<br />
-          <span style={{ color: '#D4AF37' }}>conteúdo católico do Brasil</span>
-        </h2>
-        <p style={{ fontFamily: 'Outfit, sans-serif', color: 'rgba(255,255,255,0.5)', fontSize: '16px', marginBottom: '36px', maxWidth: '480px', margin: '0 auto 36px' }}>
-          Planos a partir de R$ 9,90/mês. Cancele quando quiser.
-        </p>
-        <a
-          href="/planos"
-          style={{
-            display: 'inline-block',
-            background: 'linear-gradient(90deg, #D4AF37, #F5C842)',
-            color: '#090B10',
-            fontFamily: 'Outfit, sans-serif',
-            fontWeight: '800',
-            fontSize: '16px',
-            padding: '16px 48px',
-            borderRadius: '50px',
-            textDecoration: 'none',
-            letterSpacing: '0.5px',
-            boxShadow: '0 8px 30px rgba(212,175,55,0.35)',
-            transition: 'all 0.2s',
-          }}
-        >
-          Ver planos e preços →
-        </a>
-      </section>
 
       <Footer />
     </main>

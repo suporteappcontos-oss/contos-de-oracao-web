@@ -80,78 +80,7 @@ export default function PlanosPage() {
         </div>
       </section>
 
-      {/* FAQ rápido */}
-      <div className="w-full bg-[#090B10]">
-        <section
-          style={{
-            padding: '60px 24px',
-            maxWidth: '700px',
-            margin: '0 auto',
-          }}
-        >
-        <h2
-          style={{
-            fontFamily: '"Playfair Display", serif',
-            fontSize: '28px',
-            color: '#FFF',
-            textAlign: 'center',
-            marginBottom: '40px',
-          }}
-        >
-          Perguntas Frequentes
-        </h2>
 
-        {[
-          {
-            q: 'Posso cancelar quando quiser?',
-            a: 'Sim! Não há multa ou fidelidade. Cancele a qualquer momento diretamente pelo site.',
-          },
-          {
-            q: 'Funciona no celular e TV?',
-            a: 'Sim. Temos aplicativo para Android e você pode assistir pelo navegador em qualquer dispositivo.',
-          },
-          {
-            q: 'O conteúdo é atualizado?',
-            a: 'Sim! Adicionamos novos vídeos regularmente para manter o catálogo sempre fresco.',
-          },
-          {
-            q: 'Quantas telas posso usar ao mesmo tempo?',
-            a: 'Depende do plano escolhido. O plano Família permite múltiplas telas simultâneas.',
-          },
-        ].map((item, i) => (
-          <div
-            key={i}
-            style={{
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
-              paddingBottom: '24px',
-              marginBottom: '24px',
-            }}
-          >
-            <p
-              style={{
-                fontFamily: 'Outfit, sans-serif',
-                fontWeight: '700',
-                fontSize: '16px',
-                color: '#FFF',
-                marginBottom: '8px',
-              }}
-            >
-              {item.q}
-            </p>
-            <p
-              style={{
-                fontFamily: 'Outfit, sans-serif',
-                fontSize: '14px',
-                color: 'rgba(255,255,255,0.5)',
-                lineHeight: '1.6',
-              }}
-            >
-              {item.a}
-            </p>
-          </div>
-        ))}
-        </section>
-      </div>
 
       <Footer />
     </main>
