@@ -24,19 +24,6 @@ export default async function Home({ searchParams }: Props) {
     .eq('ativo', true)
     .order('criado_em', { ascending: false });
 
-  // Agrupa por categoria para as linhas por categoria (como o App)
-  const videosPorCategoria: Record<string, typeof videos> = {};
-  const categorias: string[] = [];
-  if (videos && videos.length > 0) {
-    videos.forEach(v => {
-      if (!videosPorCategoria[v.categoria]) {
-        videosPorCategoria[v.categoria] = [];
-        categorias.push(v.categoria);
-      }
-      videosPorCategoria[v.categoria]!.push(v);
-    });
-  }
-
   return (
     <main>
       <Navbar />
@@ -69,23 +56,11 @@ export default async function Home({ searchParams }: Props) {
 
       <div className={`relative z-10 mt-[-80px] pb-10 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
         {videos && videos.length > 0 ? (
-          <>
-            {/* 🎬 Lançamentos — TODOS os vídeos, scroll horizontal */}
-            <CategoryCarousel title="Lançamentos" count={videos.length}>
-              {videos.map(video => (
-                <VideoCard key={video.id} video={video} />
-              ))}
-            </CategoryCarousel>
-
-            {/* 📂 Linhas por Categoria (igual ao App) */}
-            {categorias.map(cat => (
-              <CategoryCarousel key={cat} title={cat} count={videosPorCategoria[cat]!.length}>
-                {videosPorCategoria[cat]!.map(video => (
-                  <VideoCard key={video.id} video={video} />
-                ))}
-              </CategoryCarousel>
+          <CategoryCarousel title="Portfólio" count={videos.length}>
+            {videos.map(video => (
+              <VideoCard key={video.id} video={video} />
             ))}
-          </>
+          </CategoryCarousel>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-white/30 gap-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
             <span className="text-4xl">✝</span>

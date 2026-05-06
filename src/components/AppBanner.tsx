@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 export default function AppBanner() {
-  const [visible, setVisible] = useState(false);
-
   const [versao, setVersao] = useState<string | null>(null);
   const [apkUrl, setApkUrl] = useState('https://contos-apks.b-cdn.net/contos-de-oracao.apk');
 
@@ -16,36 +14,15 @@ export default function AppBanner() {
         
         if (res.ok) {
           const data = await res.json();
-          const lastSeenVersion = localStorage.getItem('app_banner_seen_version');
-          
-          // Guarda a URL real do APK versionado (ex: contos-de-oracao-v1.0.6.apk)
           if (data.link_download) setApkUrl(data.link_download);
-
-          // Se a versão for nova, mostra o banner!
-          if (data.versao_atual && data.versao_atual !== lastSeenVersion) {
-            setVersao(data.versao_atual);
-            setVisible(true);
-          }
-        } else {
-          // Fallback caso não consiga acessar o JSON (exibe na primeira vez)
-          if (!localStorage.getItem('app_banner_v2')) setVisible(true);
+          if (data.versao_atual) setVersao(data.versao_atual);
         }
       } catch (e) {
-        if (!localStorage.getItem('app_banner_v2')) setVisible(true);
+        console.error("Erro ao buscar versão do APK", e);
       }
     };
     checkUpdate();
   }, []);
-
-  if (!visible) return null;
-
-  const handleClose = () => {
-    if (versao) {
-      localStorage.setItem('app_banner_seen_version', versao);
-    }
-    localStorage.setItem('app_banner_v2', '1');
-    setVisible(false);
-  };
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-10">
@@ -98,13 +75,6 @@ export default function AppBanner() {
           </a>
         </div>
 
-        {/* Fechar */}
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 transition-all text-xl leading-none"
-        >
-          ×
-        </button>
       </div>
     </div>
   );
