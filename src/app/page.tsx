@@ -1,35 +1,39 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Carousel from "@/components/Carousel";
 import AppBanner from "@/components/AppBanner";
 import Footer from "@/components/Footer";
+import CategoryCarousel from "@/components/CategoryCarousel";
+import VideoCard from "@/components/VideoCard";
+import { createClient } from "@/utils/supabase/server";
 
 type Props = {
   searchParams: Promise<{ acesso?: string }>
 }
 
-export default async function Home({ searchParams }: Props) {
-  const { acesso } = await searchParams
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-  const movieImages = [
-    'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1600289031464-74d374b64991?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1460881680858-30d872d5b530?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=500&h=280&fit=crop'
-  ];
-  
-  const trendingImages = [
-    'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1513106580091-1d82408b8cd6?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1572177259160-0a37ff1e9bb1?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1627873649417-c67f701f1949?w=500&h=280&fit=crop',
-    'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=500&h=280&fit=crop'
-  ];
+export default async function Home({ searchParams }: Props) {
+  const { acesso } = await searchParams;
+
+  // Busca vídeos reais do Supabase (igual ao App)
+  const supabase = await createClient();
+  const { data: videos } = await supabase
+    .from('videos')
+    .select('id, titulo, categoria, duracao, bunny_library_id, bunny_video_id, thumbnail_url')
+    .eq('ativo', true)
+    .order('criado_em', { ascending: false });
+
+  // Agrupa por categoria (igual ao App)
+  const videosPorCategoria: Record<string, typeof videos> = {};
+  if (videos && videos.length > 0) {
+    videos.forEach(v => {
+      if (!videosPorCategoria[v.categoria]) videosPorCategoria[v.categoria] = [];
+      videosPorCategoria[v.categoria]!.push(v);
+    });
+  }
+
+  const categorias = Object.keys(videosPorCategoria);
 
   return (
     <main>
@@ -60,13 +64,28 @@ export default async function Home({ searchParams }: Props) {
       )}
 
       <Hero />
-      <div className={`relative z-10 mt-[-80px] ${acesso === 'expirado' ? 'pt-12' : ''}`}>
-        <Carousel title="Lançamentos" images={movieImages} />
-        <Carousel title="Em Alta" images={trendingImages} />
+
+      {/* Carrosséis de vídeos por categoria — exatamente como no App */}
+      <div className={`relative z-10 mt-[-80px] pb-10 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
+        {categorias.length > 0 ? (
+          categorias.map(cat => (
+            <CategoryCarousel key={cat} title={cat} count={videosPorCategoria[cat]!.length}>
+              {videosPorCategoria[cat]!.map(video => (
+                <VideoCard key={video.id} video={video} />
+              ))}
+            </CategoryCarousel>
+          ))
+        ) : (
+          // Fallback caso não haja vídeos cadastrados ainda
+          <div className="flex flex-col items-center justify-center py-20 text-white/30 gap-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
+            <span className="text-4xl">✝</span>
+            <p className="text-base">Nenhum conteúdo disponível no momento.</p>
+            <p className="text-sm">Acesse o <a href="/admin" className="text-[#D4AF37] hover:underline">painel Admin</a> para adicionar vídeos.</p>
+          </div>
+        )}
       </div>
+
       <AppBanner />
-
-
       <Footer />
     </main>
   );

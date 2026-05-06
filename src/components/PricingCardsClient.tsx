@@ -99,9 +99,19 @@ const ParticlesBanner = ({ destaque }: { destaque: boolean }) => {
 export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo[] }) {
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  const [allExpanded, setAllExpanded] = useState(false);
 
   const toggleExpand = (id: string) => {
     setExpandedCards(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Expande ou recolhe todos de uma vez
+  const toggleAll = () => {
+    const next = !allExpanded;
+    setAllExpanded(next);
+    const newState: Record<string, boolean> = {};
+    produtos.forEach(p => { newState[p.id] = next; });
+    setExpandedCards(newState);
   };
 
   if (produtos.length === 0) {
@@ -151,6 +161,16 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        {/* Botão global — expande/recolhe todos */}
+        <div className="col-span-full flex justify-center mb-2">
+          <button
+            onClick={toggleAll}
+            className="flex items-center gap-2 text-sm font-bold text-white/50 hover:text-[#D4AF37] transition-colors border border-white/10 hover:border-[#D4AF37]/40 px-5 py-2 rounded-full"
+          >
+            {allExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+            {allExpanded ? 'Recolher todos os detalhes' : 'Ver detalhes de todos os planos'}
+          </button>
+        </div>
         {produtosOrdenados.map((plano) => {
           const isAnual = ciclo === 'anual' && plano.priceAnual ? true : !plano.priceMensal;
           const precoExibido = isAnual ? plano.priceAnual : plano.priceMensal;

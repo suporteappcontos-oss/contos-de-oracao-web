@@ -55,9 +55,20 @@ export default async function PerfilPage() {
       .order('criado_em', { ascending: false })
     favoritos = data ?? []
   } catch {
-    // Tabela ainda não existe no banco — ignore o erro
     favoritos = []
   }
+
+  // Busca URL e versão do APK no Bunny CDN
+  let apkUrl = 'https://contos-apks.b-cdn.net/contos-de-oracao.apk';
+  let apkNome = 'ContosDeOracao.apk';
+  try {
+    const versaoRes = await fetch(`https://contos-apks.b-cdn.net/versao.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (versaoRes.ok) {
+      const versaoData = await versaoRes.json();
+      if (versaoData.link_download) apkUrl = versaoData.link_download;
+      if (versaoData.versao_atual) apkNome = `ContosDeOracao_v${versaoData.versao_atual}.apk`;
+    }
+  } catch { /* usa valores padrão */ }
 
   async function logout() {
     'use server'
@@ -233,7 +244,7 @@ export default async function PerfilPage() {
               </div>
             </div>
             <div className="flex flex-col gap-3 w-full sm:w-auto shrink-0">
-              <a href="https://contos-apks.b-cdn.net/contos-de-oracao.apk" className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
+              <a href={apkUrl} download={apkNome} className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
                  style={{ background: '#D4AF37', color: '#090B10' }}>
                 <Download size={16} />
                 Baixar App (.APK)

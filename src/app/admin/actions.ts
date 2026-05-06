@@ -20,7 +20,6 @@ async function verificarAdmin() {
   const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
   if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') redirect('/')
   return { supabase, user }
-  return { supabase, user }
 }
 
 // ─── Helper de Upload pro Bunny.net ───

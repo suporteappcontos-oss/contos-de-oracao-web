@@ -6,6 +6,7 @@ export default function AppBanner() {
   const [visible, setVisible] = useState(false);
 
   const [versao, setVersao] = useState<string | null>(null);
+  const [apkUrl, setApkUrl] = useState('https://contos-apks.b-cdn.net/contos-de-oracao.apk');
 
   useEffect(() => {
     const checkUpdate = async () => {
@@ -17,6 +18,9 @@ export default function AppBanner() {
           const data = await res.json();
           const lastSeenVersion = localStorage.getItem('app_banner_seen_version');
           
+          // Guarda a URL real do APK versionado (ex: contos-de-oracao-v1.0.6.apk)
+          if (data.link_download) setApkUrl(data.link_download);
+
           // Se a versão for nova, mostra o banner!
           if (data.versao_atual && data.versao_atual !== lastSeenVersion) {
             setVersao(data.versao_atual);
@@ -84,7 +88,8 @@ export default function AppBanner() {
             <span className="text-white/40 text-xs ml-1">100% Gratuito</span>
           </div>
           <a
-            href="https://contos-apks.b-cdn.net/contos-de-oracao.apk"
+            href={apkUrl}
+            download={versao ? `ContosDeOracao_v${versao}.apk` : 'ContosDeOracao.apk'}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm transition-all hover:scale-105 shadow-lg"
             style={{ background: 'linear-gradient(135deg,#FFD700,#D4AF37)', color: '#090B10' }}
           >
