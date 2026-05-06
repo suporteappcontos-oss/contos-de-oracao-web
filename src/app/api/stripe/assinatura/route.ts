@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.com.br'
 
     // Em vez de manipular faturas manualmente, usamos o novo "Checkout Embutido" do Stripe
-    const session = await stripe.checkout.sessions.create({
+    const stripeSession = await stripe.checkout.sessions.create({
       ui_mode: 'embedded_page' as any,
       mode: 'subscription',
       customer_email: email,
@@ -82,12 +82,12 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
     })
 
-    if (!session.client_secret) {
-       console.error("DEBUG STRIPE SESSION:", JSON.stringify(session, null, 2));
+    if (!stripeSession.client_secret) {
+       console.error("DEBUG STRIPE SESSION:", JSON.stringify(stripeSession, null, 2));
        return NextResponse.json({ error: 'Não foi possível gerar a sessão de checkout embutida.' }, { status: 500 })
     }
 
-    return NextResponse.json({ clientSecret: session.client_secret })
+    return NextResponse.json({ clientSecret: stripeSession.client_secret })
   } catch (error: any) {
     console.error('❌ Erro ao criar sessão Stripe Embutida:', error)
     return NextResponse.json({ error: error.message || 'Erro interno ao processar assinatura' }, { status: 500 })
