@@ -58,6 +58,14 @@
 - [x] Portal do cliente (gerenciar/cancelar assinatura)
 - [x] API pública de planos: `GET /api/stripe/planos-publicos` (consumida pelo App)
 
+### **🚨 Pendências e Próximos Passos**
+1. [x] **Carrossel do App:** Alterar a lógica para usar thumbs reais de vídeos, duplicando caso existam menos de 6, removendo o fallback de imagens falsas no OnboardingScreen.js.
+2. [x] **Logo do App:** Incluir `icon.png` no `OnboardingScreen.js` em vez de texto.
+3. [x] **Erro 403 do Bunny Stream:** 
+    - Criada a rota `api/bunny/token/route.ts` no backend Web para buscar a variável de ambiente e gerar o token SHA-256 do Bunny.
+    - Modificada a tela `VideoPlayerScreen.js` do App para buscar esse token da web antes de abrir o WebView, garantindo a permissão.
+4. [ ] **Testar Fluxo Completo:** Executar o `mandar_pro_ar.bat` (Web) e, logo em seguida, o `gerar-apk-local.bat` (App).
+
 ### ⚙️ Painel Admin (`/admin`)
 - [x] Protegido por role `admin` na tabela `perfis`
 - [x] CRUD completo de vídeos (título, categoria, thumbnail, Bunny ID, duração)
