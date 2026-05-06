@@ -130,13 +130,27 @@ export async function salvarConfiguracao(formData: FormData) {
       return;
     }
 
-    // 1. Faz upload usando o helper seguro
-    const bgUrl = await uploadToBunny(file, 'background');
+    // 1. Faz upload usando nome de arquivo fixo exigido
+    const fileName = 'background_1777927708063.png';
+    const arrayBuffer = await file.arrayBuffer();
+    
+    console.log("Fazendo upload da imagem fixa pro Bunny...");
+    const resImage = await fetch(`https://br.storage.bunnycdn.com/contos-apks/${fileName}`, {
+      method: 'PUT',
+      headers: {
+        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+        'Content-Type': file.type || 'image/png',
+      },
+      body: arrayBuffer
+    });
+
+    if (!resImage.ok) throw new Error(`Falha no upload da imagem: ${resImage.statusText}`);
+
+    const bgUrl = `https://contos-apks.b-cdn.net/${fileName}`;
     const config = { background_url: bgUrl };
     console.log("✅ Nova imagem de fundo salva no Storage:", bgUrl);
 
-    // 2. Atualiza o config.json apontando para a nova imagem
-    const timestamp = Date.now();
+    // 2. Atualiza o config.json apontando para a imagem
     console.log("Enviando PUT para o config.json no Bunny Storage...");
     const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
       method: 'PUT',
