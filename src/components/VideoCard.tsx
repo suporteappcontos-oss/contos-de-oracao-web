@@ -110,39 +110,6 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
           </div>
         </div>
       </div>
-
-      {/* Info abaixo do card — aparece no hover */}
-      <div
-        className="overflow-hidden max-h-0 group-hover:max-h-24 transition-all duration-300 rounded-b-xl px-3 pb-0 group-hover:pb-3 pt-0 group-hover:pt-2"
-        style={{
-          background: '#15243E',
-          border: '1px solid rgba(212,175,55,0.15)',
-          borderTop: 'none',
-        }}
-      >
-        <div className="flex items-center gap-2 mb-1.5">
-          {/* Botão favoritar */}
-          <button
-            onClick={handleFavorito}
-            disabled={loadingFav}
-            className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 flex-shrink-0"
-            style={{ border: '1.5px solid rgba(255,255,255,0.2)' }}
-            title={favoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-          >
-            <Heart
-              size={12}
-              fill={favoritado ? '#ef4444' : 'none'}
-              style={{ color: favoritado ? '#ef4444' : 'white' }}
-            />
-          </button>
-        </div>
-        <h3 className="text-white font-bold text-xs leading-tight mb-0.5 truncate">
-          {video.titulo}
-        </h3>
-        <span className="text-[0.6rem] font-extrabold uppercase tracking-wider" style={{ color: '#D4AF37' }}>
-          {video.categoria}
-        </span>
-      </div>
     </Link>
   )
 }

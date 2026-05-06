@@ -23,11 +23,7 @@ export default function Hero() {
       className="relative flex items-center justify-center text-center overflow-hidden"
       style={{ minHeight: '100vh', background: '#090B10' }}
     >
-      {/* Imagem de fundo espiritual */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat ken-burns"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1920&q=80')" }}
-      />
+
 
       {/* Gradientes em camadas (igual ao app) */}
       <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(9,11,16,0.65) 0%, rgba(9,11,16,0.6) 50%, #090B10 100%)' }} />
