@@ -8,6 +8,7 @@ import { Check, ChevronRight, Shield, Play, Heart, Download, Monitor, Lock, Eye,
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { createClient } from '@/utils/supabase/client'
+import DynamicBackground from '@/components/DynamicBackground'
 
 // Carrega o Stripe public key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
@@ -147,8 +148,7 @@ export default function AssinarPage() {
       style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif', color: '#fff' }}>
 
       {/* Fundo */}
-      <div className="absolute inset-0 bg-cover bg-center opacity-10"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1920&q=60')" }} />
+      <DynamicBackground />
       <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-transparent" />
 
       {/* Estilos globais para animações exclusivas */}

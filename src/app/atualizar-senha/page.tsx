@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { atualizarSenha } from './actions'
 import PasswordField from '@/components/PasswordField'
+import DynamicBackground from '@/components/DynamicBackground'
 
 type Props = {
   searchParams: Promise<{ erro?: string }>
@@ -32,13 +33,7 @@ export default async function AtualizarSenhaPage({ searchParams }: Props) {
       background: '#090B10', fontFamily: 'Outfit, sans-serif', position: 'relative'
     }}>
 
-      {/* Fundo com blur suave */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: "url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1920&q=60')",
-        backgroundSize: 'cover', backgroundPosition: 'center',
-        opacity: 0.12
-      }} />
+      <DynamicBackground />
 
       {/* Navbar com logo */}
       <header style={{ position: 'absolute', top: 0, width: '100%', padding: '1rem 4%', zIndex: 10, display: 'flex', alignItems: 'center', gap: '12px' }}>

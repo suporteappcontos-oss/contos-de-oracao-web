@@ -43,32 +43,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let backgroundUrl = '';
-  try {
-    const res = await fetch('https://contos-apks.b-cdn.net/config.json', { next: { revalidate: 60 } });
-    if (res.ok) {
-      const config = await res.json();
-      backgroundUrl = config.background_url || '';
-    }
-  } catch (e) {
-    console.error('Erro ao buscar configuração global:', e);
-  }
+
 
   return (
     <html lang="pt-BR" className="antialiased">
       <body className="min-h-full flex flex-col scroll-smooth relative" style={{ background: '#090B10' }}>
-        {/* Fundo dinâmico global configurado no Admin */}
-        {backgroundUrl && (
-          <div 
-            className="fixed inset-0 z-[-1] opacity-20 pointer-events-none" 
-            style={{ 
-              backgroundImage: `url(${backgroundUrl})`, 
-              backgroundSize: 'cover', 
-              backgroundPosition: 'center',
-              backgroundAttachment: 'fixed',
-            }} 
-          />
-        )}
+
         <GlobalLoader />
         {children}
         <WhatsAppButton />

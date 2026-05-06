@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { login } from './actions';
 import PasswordField from '@/components/PasswordField';
 import SubmitButton from '@/components/SubmitButton';
+import DynamicBackground from '@/components/DynamicBackground';
 
 export default async function LoginPage(props: { searchParams: Promise<{ error?: string, redirect?: string }> }) {
   const searchParams = await props.searchParams;
@@ -13,9 +14,8 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-20"
       style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
 
-      {/* Fundo sutil */}
-      <div className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1920&q=60')", opacity: 0.12 }} />
+      {/* Fundo dinâmico gerenciado pelo Admin */}
+      <DynamicBackground />
       <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-transparent to-[#090B10]/70" />
 
       {/* Logo no topo */}

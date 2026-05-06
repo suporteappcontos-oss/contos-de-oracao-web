@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Infinity as InfinityIcon } from 'lucide-react'
+import DynamicBackground from '@/components/DynamicBackground'
 
 export default function EsqueciSenhaPage() {
   const [loading, setLoading] = useState(false)
@@ -48,10 +49,7 @@ export default function EsqueciSenhaPage() {
       style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* Fundo sutil */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1512070679279-8988d32161be?w=1920&q=60')", opacity: 0.1 }}
-      />
+      <DynamicBackground />
       <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-transparent to-[#090B10]/70" />
 
       {/* Logo no topo */}
