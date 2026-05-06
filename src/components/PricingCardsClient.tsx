@@ -98,20 +98,11 @@ const ParticlesBanner = ({ destaque }: { destaque: boolean }) => {
 
 export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo[] }) {
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
-  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [allExpanded, setAllExpanded] = useState(false);
-
-  const toggleExpand = (id: string) => {
-    setExpandedCards(prev => ({ ...prev, [id]: !prev[id] }));
-  };
 
   // Expande ou recolhe todos de uma vez
   const toggleAll = () => {
-    const next = !allExpanded;
-    setAllExpanded(next);
-    const newState: Record<string, boolean> = {};
-    produtos.forEach(p => { newState[p.id] = next; });
-    setExpandedCards(newState);
+    setAllExpanded(!allExpanded);
   };
 
   if (produtos.length === 0) {
@@ -243,18 +234,17 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 </ul>
 
                 {plano.beneficios.length > 0 && (() => {
-                  const isExpanded = expandedCards[plano.id];
                   return (
                     <div className="mt-4 border-t border-white/5 pt-4">
                       <button
-                        onClick={() => toggleExpand(plano.id)}
+                        onClick={toggleAll}
                         className="flex items-center justify-between w-full text-sm font-bold text-white/60 hover:text-[#D4AF37] transition-colors"
                       >
-                        <span>{isExpanded ? 'Ocultar detalhes' : `Ver todos (${plano.beneficios.length})`}</span>
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        <span>{allExpanded ? 'Ocultar detalhes' : `Ver todos (${plano.beneficios.length})`}</span>
+                        {allExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </button>
 
-                      {isExpanded && (
+                      {allExpanded && (
                         <ul className="space-y-3 mt-4 pt-2 border-t border-white/5">
                           {plano.beneficios.map((b, i) => (
                             <li key={`all-${i}`} className="flex items-start gap-3 text-white/70 text-[0.85rem] leading-snug">
