@@ -12,7 +12,7 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-20"
-      style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
+      style={{ background: 'transparent', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* Fundo dinâmico gerenciado pelo Admin */}
       <DynamicBackground />

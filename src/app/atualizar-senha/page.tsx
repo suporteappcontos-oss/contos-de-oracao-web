@@ -30,7 +30,7 @@ export default async function AtualizarSenhaPage({ searchParams }: Props) {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#090B10', fontFamily: 'Outfit, sans-serif', position: 'relative'
+      background: 'transparent', fontFamily: 'Outfit, sans-serif', position: 'relative'
     }}>
 
       <DynamicBackground />

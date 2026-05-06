@@ -54,7 +54,7 @@ export default async function SucessoPage(props: any) {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#090B10', fontFamily: 'Outfit, sans-serif', position: 'relative'
+      background: 'transparent', fontFamily: 'Outfit, sans-serif', position: 'relative'
     }}>
       {/* Fundo com blur suave */}
       <DynamicBackground />

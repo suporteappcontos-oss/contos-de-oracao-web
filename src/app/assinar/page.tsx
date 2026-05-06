@@ -145,7 +145,7 @@ export default function AssinarPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden"
-      style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif', color: '#fff' }}>
+      style={{ background: 'transparent', fontFamily: 'Outfit, sans-serif', color: '#fff' }}>
 
       {/* Fundo */}
       <DynamicBackground />

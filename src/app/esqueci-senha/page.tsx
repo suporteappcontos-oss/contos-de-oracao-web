@@ -46,7 +46,7 @@ export default function EsqueciSenhaPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
+      style={{ background: 'transparent', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* Fundo sutil */}
       <DynamicBackground />
