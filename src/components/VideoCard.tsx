@@ -78,26 +78,12 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
           style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.85) 0%, transparent 55%)' }}
         />
 
-        {/* Badge CDO */}
-        <div className="absolute top-2 left-2 z-10">
-          <div
-            className="text-[0.5rem] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-widest"
-            style={{ background: 'rgba(212,175,55,0.85)', color: '#090B10' }}
-          >
-            ✦ CDO
-          </div>
+        {/* Título do Vídeo no canto inferior esquerdo */}
+        <div className="absolute bottom-2 left-2 right-2 z-10">
+          <p className="text-white text-[0.65rem] md:text-xs font-bold leading-tight drop-shadow-md line-clamp-2">
+            {video.titulo}
+          </p>
         </div>
-
-        {/* Duração */}
-        {video.duracao && (
-          <div
-            className="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded-md px-1.5 py-0.5 text-white text-[0.6rem] font-semibold"
-            style={{ background: 'rgba(9,11,16,0.75)', backdropFilter: 'blur(4px)' }}
-          >
-            <Clock size={9} />
-            {video.duracao}
-          </div>
-        )}
 
       </div>
     </div>

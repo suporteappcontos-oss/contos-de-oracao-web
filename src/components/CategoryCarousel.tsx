@@ -45,9 +45,6 @@ export default function CategoryCarousel({
             {title}
           </h2>
         )}
-        <span className="ml-auto text-[#94A3B8] text-[0.7rem]">
-          {count} {count === 1 ? 'título' : 'títulos'}
-        </span>
       </div>
 
       <div className="relative">

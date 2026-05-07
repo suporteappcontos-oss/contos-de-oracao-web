@@ -31,12 +31,10 @@ export default function AppBanner() {
       className="fixed bottom-6 right-[90px] z-[98] flex items-center gap-3 bg-[#15243E] border border-white/10 rounded-full py-2 px-4 transition-all hover:scale-105 hover:-translate-y-1 hover:border-[#D4AF37]/50 shadow-2xl group"
       title="Baixar Aplicativo Android"
     >
-      {/* Ícone */}
-      <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg"
-           style={{ background: 'linear-gradient(135deg,#FFD700,#D4AF37)' }}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#090B10" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
+      {/* Ícone com Logo */}
+      <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg overflow-hidden"
+           style={{ background: '#090B10', border: '2px solid #D4AF37' }}>
+        <img src="/logo_stripe.png" alt="Logo" className="w-full h-full object-cover" />
       </div>
 
       {/* Textos (Some em telas muito pequenas para não encavalar) */}
