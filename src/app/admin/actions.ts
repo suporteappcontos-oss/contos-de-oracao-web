@@ -118,6 +118,17 @@ export async function togglePlanoUsuario(userId: string, planoAtual: boolean) {
   revalidatePath('/admin')
 }
 
+// ─── Alterar o Plano Manualmente (Básico, Essencial, Pro) ───
+export async function alterarPlanoUsuario(userId: string, novoMaxTelas: number, novaEtiqueta: string) {
+  await verificarAdmin()
+  const admin = getAdminClient()
+  const { error } = await admin.auth.admin.updateUserById(userId, {
+    user_metadata: { max_telas: novoMaxTelas, etiqueta_plano: novaEtiqueta, plano_ativo: true },
+  })
+  if (error) console.error('❌ Erro ao alterar plano do usuário:', error.message)
+  revalidatePath('/admin')
+}
+
 // ─── Salvar Configuração Global (Fundo do app/site) ───
 export async function salvarConfiguracao(formData: FormData) {
   await verificarAdmin();

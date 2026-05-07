@@ -72,18 +72,18 @@ export default function Hero() {
                 <Link href="/esqueci-senha" className="text-center text-white/40 text-sm hover:text-[#D4AF37] transition-colors no-underline font-medium">
                   Esqueci minha senha
                 </Link>
-
-                <div className="w-full h-[1px] bg-white/10 my-2"></div>
-
-                <Link
-                  href="/assinar"
-                  className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] no-underline text-center"
-                  style={{ background: 'transparent', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.4)' }}
-                >
-                  Criar Conta e Assinar
-                </Link>
               </div>
             </form>
+
+            <div className="w-full h-[1px] bg-white/10 my-4"></div>
+
+            <Link
+              href="/assinar"
+              className="block w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] no-underline text-center"
+              style={{ background: 'transparent', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.4)' }}
+            >
+              Criar Conta e Assinar
+            </Link>
           </div>
         </div>
 

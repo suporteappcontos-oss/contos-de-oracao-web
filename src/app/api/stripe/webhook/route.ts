@@ -139,5 +139,31 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // ── REEMBOLSO (REFUND) ──
+  if (event.type === 'charge.refunded') {
+    const charge = event.data.object as import('stripe').Stripe.Charge
+    let email = charge.billing_details?.email || charge.receipt_email || ''
+
+    // Se não tiver e-mail direto na cobrança, busca pelo customer
+    if (!email && charge.customer) {
+      try {
+        const customer = await stripe.customers.retrieve(charge.customer as string) as import('stripe').Stripe.Customer
+        email = customer.email || ''
+      } catch (e) {
+        console.error('Erro ao buscar customer do refund')
+      }
+    }
+
+    if (email) {
+      const usuario = await buscarUsuarioPorEmail(email)
+      if (usuario) {
+        await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
+          user_metadata: { plano_ativo: false },
+        })
+        console.log(`💸 Reembolso Stripe. Acesso bloqueado: ${email}`)
+      }
+    }
+  }
+
   return NextResponse.json({ received: true })
 }
