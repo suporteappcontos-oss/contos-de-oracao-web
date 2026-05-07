@@ -1,19 +1,13 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import path from 'path';
-import fs from 'fs';
+
+// Lendo o arquivo diretamente pelo import obriga a Vercel a copiá-lo para o servidor final
+import credentials from '../../../../credentials.json';
 
 export async function GET() {
   try {
-    const credsPath = path.join(process.cwd(), 'credentials.json');
-    
-    // Tratamento ninja para Vercel: Se o arquivo não existir lá (porque não foi upado), a gente retorna o motivo certinho!
-    if (!fs.existsSync(credsPath)) {
-        return NextResponse.json({ error: 'Credenciais ausentes no Vercel (arquivo não foi enviado via GIT)' }, { status: 500 });
-    }
-
     const auth = new google.auth.GoogleAuth({
-      keyFile: credsPath,
+      credentials,
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
     
