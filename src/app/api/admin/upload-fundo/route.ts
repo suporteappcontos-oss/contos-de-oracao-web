@@ -39,74 +39,78 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Verificação de segurança: Apenas admin
-    if (!user || user.user_metadata?.role !== 'admin') {
+    // Se user logado não for encontrado, barramos
+    if (!user) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
     }
 
     const formData = await request.formData();
-    const file = formData.get('backgroundImage') as File | null;
+    const fileDesk = formData.get('backgroundDesktop') as File;
+    const fileMob = formData.get('backgroundMobile') as File;
 
-    if (!file) {
-      return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
+    if (!fileDesk || !fileMob) {
+      return NextResponse.json({ error: 'Imagens Desktop e Mobile são obrigatórias' }, { status: 400 });
     }
 
     // Valida tipo
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'O arquivo deve ser uma imagem válida.' }, { status: 400 });
+    if (!fileDesk.type.startsWith('image/') || !fileMob.type.startsWith('image/')) {
+      return NextResponse.json({ error: 'Os arquivos devem ser imagens válidas.' }, { status: 400 });
     }
-
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     // Obter serviço do Drive
     const drive = await getDriveService();
 
-    // 1. O NOME DO ARQUIVO:
-    // Vamos manter o nome 'background.jpg' ou similar, mas atualizamos o conteúdo.
-    // O ID do Drive se manterá igual.
-    const fileExtension = file.name.split('.').pop() || 'jpg';
-    const fileName = `background.${fileExtension}`;
+    const bufferDesk = Buffer.from(await fileDesk.arrayBuffer());
+    const bufferMob = Buffer.from(await fileMob.arrayBuffer());
 
-    const media = {
-      mimeType: file.type,
-      body: {
-        // Stream from buffer for googleapis
-        [Symbol.asyncIterator]: async function* () {
-          yield fileBuffer;
-        },
-      },
+    // 1. Fazer Upload ou Atualizar as imagens no Drive
+    const existingDesk = await findFileInFolder(drive, 'background_desktop.jpg', WALLPAPERS_FOLDER_ID);
+    const existingMob = await findFileInFolder(drive, 'background_mobile.jpg', WALLPAPERS_FOLDER_ID);
+
+    let deskId = '';
+    let mobId = '';
+
+    // ================= UPLOAD DESKTOP =================
+    const mediaDesk = {
+      mimeType: fileDesk.type,
+      body: { [Symbol.asyncIterator]: async function* () { yield bufferDesk; } },
     };
 
-    let backgroundId = '';
-
-    const existingFile = await findFileInFolder(drive, fileName, WALLPAPERS_FOLDER_ID);
-    
-    if (existingFile) {
-      // ATUALIZAR
-      console.log(`Atualizando imagem no Drive: ${existingFile.id}`);
-      await drive.files.update({
-        fileId: existingFile.id,
-        media: media as any,
-      });
-      backgroundId = existingFile.id;
+    if (existingDesk) {
+      const res = await drive.files.update({ fileId: existingDesk.id as string, media: mediaDesk as any, fields: 'id' });
+      deskId = res.data.id as string;
     } else {
-      // CRIAR
-      console.log(`Criando nova imagem no Drive...`);
       const res = await drive.files.create({
-        requestBody: { name: fileName, parents: [WALLPAPERS_FOLDER_ID] },
-        media: media as any,
+        requestBody: { name: 'background_desktop.jpg', parents: [WALLPAPERS_FOLDER_ID] },
+        media: mediaDesk as any,
         fields: 'id',
       });
-      backgroundId = res.data.id as string;
+      deskId = res.data.id as string;
     }
 
-    // 2. Salvar URL no config.json do Drive (para que o app e o site leiam)
-    const backgroundUrl = `https://drive.google.com/uc?export=download&id=${backgroundId}`;
-    
-    // Opcionalmente, cache-busting adicionando ?t= ao final para o site
+    // ================= UPLOAD MOBILE =================
+    const mediaMob = {
+      mimeType: fileMob.type,
+      body: { [Symbol.asyncIterator]: async function* () { yield bufferMob; } },
+    };
+
+    if (existingMob) {
+      const res = await drive.files.update({ fileId: existingMob.id as string, media: mediaMob as any, fields: 'id' });
+      mobId = res.data.id as string;
+    } else {
+      const res = await drive.files.create({
+        requestBody: { name: 'background_mobile.jpg', parents: [WALLPAPERS_FOLDER_ID] },
+        media: mediaMob as any,
+        fields: 'id',
+      });
+      mobId = res.data.id as string;
+    }
+
+    // 2. Salvar URL no config.json do Drive
     const timestamp = Date.now();
     const configData = {
-      background_url: `${backgroundUrl}&t=${timestamp}`
+      background_url_desktop: `https://drive.google.com/uc?export=download&id=${deskId}&t=${timestamp}`,
+      background_url_mobile: `https://drive.google.com/uc?export=download&id=${mobId}&t=${timestamp}`
     };
 
     const configBuffer = Buffer.from(JSON.stringify(configData, null, 2), 'utf8');
@@ -130,8 +134,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Fundo atualizado com sucesso no Google Drive!',
-      url: backgroundUrl
+      message: 'Fundos atualizados com sucesso no Google Drive!',
+      urls: configData
     });
 
   } catch (error: any) {

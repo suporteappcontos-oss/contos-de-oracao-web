@@ -6,36 +6,49 @@ import { Upload, CheckCircle, AlertCircle, ImageIcon } from 'lucide-react';
 export default function UploadFundoClient() {
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [fileSize, setFileSize] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Desktop
+  const [previewDesk, setPreviewDesk] = useState<string | null>(null);
+  const [fileNameDesk, setFileNameDesk] = useState<string | null>(null);
+  const inputDeskRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Mobile
+  const [previewMob, setPreviewMob] = useState<string | null>(null);
+  const [fileNameMob, setFileNameMob] = useState<string | null>(null);
+  const inputMobRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, isMobile: boolean) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setFileName(file.name);
-    setFileSize((file.size / 1024 / 1024).toFixed(2));
-    setPreviewUrl(URL.createObjectURL(file));
+    if (isMobile) {
+      setFileNameMob(file.name);
+      setPreviewMob(URL.createObjectURL(file));
+    } else {
+      setFileNameDesk(file.name);
+      setPreviewDesk(URL.createObjectURL(file));
+    }
     setStatus('idle');
     setMessage('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const file = inputRef.current?.files?.[0];
-    if (!file) {
+    const fileDesk = inputDeskRef.current?.files?.[0];
+    const fileMob = inputMobRef.current?.files?.[0];
+
+    if (!fileDesk || !fileMob) {
       setStatus('error');
-      setMessage('Selecione uma imagem primeiro.');
+      setMessage('Selecione AS DUAS imagens (Desktop e Mobile) primeiro.');
       return;
     }
 
     setStatus('uploading');
-    setMessage('Enviando imagem para o servidor...');
+    setMessage('Enviando imagens para o servidor...');
 
     try {
       const formData = new FormData();
-      formData.append('backgroundImage', file);
+      formData.append('backgroundDesktop', fileDesk);
+      formData.append('backgroundMobile', fileMob);
 
       const res = await fetch('/api/admin/upload-fundo', {
         method: 'POST',
@@ -50,10 +63,10 @@ export default function UploadFundoClient() {
       }
 
       setStatus('success');
-      setMessage('Fundo sincronizado com sucesso! O novo fundo já está ativo no site e no app. ✓');
+      setMessage('Fundos sincronizados com sucesso! Já estão ativos.');
 
-      // Limpar seleção após sucesso
-      if (inputRef.current) inputRef.current.value = '';
+      if (inputDeskRef.current) inputDeskRef.current.value = '';
+      if (inputMobRef.current) inputMobRef.current.value = '';
 
     } catch (err: any) {
       setStatus('error');
@@ -65,51 +78,40 @@ export default function UploadFundoClient() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-      {/* Área de seleção de arquivo */}
-      <div>
-        <label className={labelCls}>Upload do Plano de Fundo (Bíblia, Textura, etc) *</label>
-
-        {/* Preview da imagem selecionada */}
-        {previewUrl && (
-          <div className="mb-4 relative rounded-xl overflow-hidden border border-white/10 aspect-video max-h-40">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={previewUrl}
-              alt="Preview do fundo"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
-              <div>
-                <p className="text-white text-xs font-bold truncate">{fileName}</p>
-                <p className="text-white/50 text-[0.65rem]">{fileSize} MB</p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* DESKTOP */}
+        <div>
+          <label className={labelCls}>Fundo Desktop (16:9)</label>
+          {previewDesk && (
+            <div className="mb-4 relative rounded-xl overflow-hidden border border-white/10 aspect-video max-h-40">
+              <img src={previewDesk} alt="Preview Desktop" className="w-full h-full object-cover" />
             </div>
-          </div>
-        )}
+          )}
+          <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 hover:border-[#D4AF37]/40 rounded-xl cursor-pointer bg-[#0f171e] hover:bg-[#D4AF37]/5 transition-all group">
+            <div className="flex flex-col items-center gap-2 text-white/30 group-hover:text-white/60 transition-colors">
+              <ImageIcon size={24} />
+              <span className="text-xs font-medium">{fileNameDesk || 'Selecionar imagem Desktop'}</span>
+            </div>
+            <input ref={inputDeskRef} type="file" accept="image/*" onChange={(e) => handleFileChange(e, false)} className="hidden" required />
+          </label>
+        </div>
 
-        {/* Input de arquivo estilizado */}
-        <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 hover:border-[#D4AF37]/40 rounded-xl cursor-pointer bg-[#0f171e] hover:bg-[#D4AF37]/5 transition-all group">
-          <div className="flex flex-col items-center gap-2 text-white/30 group-hover:text-white/60 transition-colors">
-            <ImageIcon size={24} />
-            <span className="text-xs font-medium">
-              {fileName ? fileName : 'Clique para selecionar uma imagem'}
-            </span>
-            <span className="text-[0.65rem] text-white/20">JPG, PNG, WEBP — sem limite de tamanho</span>
-          </div>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="hidden"
-            required
-          />
-        </label>
-
-        <p className="text-white/40 text-xs mt-3">
-          Esta imagem será sincronizada automaticamente como{' '}
-          <b>fundo de todas as telas</b> — site e app Android.
-        </p>
+        {/* MOBILE */}
+        <div>
+          <label className={labelCls}>Fundo Mobile/App (9:16)</label>
+          {previewMob && (
+            <div className="mb-4 relative rounded-xl overflow-hidden border border-white/10 aspect-[9/16] max-h-40 mx-auto w-fit">
+              <img src={previewMob} alt="Preview Mobile" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 hover:border-[#D4AF37]/40 rounded-xl cursor-pointer bg-[#0f171e] hover:bg-[#D4AF37]/5 transition-all group">
+            <div className="flex flex-col items-center gap-2 text-white/30 group-hover:text-white/60 transition-colors">
+              <ImageIcon size={24} />
+              <span className="text-xs font-medium">{fileNameMob || 'Selecionar imagem Mobile'}</span>
+            </div>
+            <input ref={inputMobRef} type="file" accept="image/*" onChange={(e) => handleFileChange(e, true)} className="hidden" required />
+          </label>
+        </div>
       </div>
 
       {/* Feedback de status */}

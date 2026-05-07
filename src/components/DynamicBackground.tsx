@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 
 export default function DynamicBackground() {
-  const [backgroundUrl, setBackgroundUrl] = useState('https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1920&q=60');
+  const [bgDesk, setBgDesk] = useState<string | null>(null);
+  const [bgMob, setBgMob] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -11,24 +12,32 @@ export default function DynamicBackground() {
         const res = await fetch(`/api/config-fundo?t=${timestamp}`, { cache: 'no-store' });
         if (res.ok) {
           const config = await res.json();
-          if (config.background_url) {
-            setBackgroundUrl(config.background_url);
+          if (config.background_url_desktop) setBgDesk(config.background_url_desktop);
+          if (config.background_url_mobile) setBgMob(config.background_url_mobile);
+          // Fallback caso ainda tenha a versão antiga
+          if (config.background_url && !config.background_url_desktop) {
+            setBgDesk(config.background_url);
+            setBgMob(config.background_url);
           }
         }
       } catch (e) {
-        // Fallback já definido
+        console.error(e);
       }
     };
     fetchConfig();
   }, []);
 
   return (
-    <div 
-      className="fixed inset-0 z-[-1] bg-cover bg-center transition-opacity duration-1000"
-      style={{ 
-        backgroundImage: `url('${backgroundUrl}')`, 
-        opacity: 0.12 
-      }} 
-    />
+    <div className="fixed inset-0 z-[-1] bg-[#090B10]">
+      {bgDesk && bgMob && (
+        <>
+          {/* Imagem Mobile */}
+          <img src={bgMob} alt="background" className="w-full h-full object-cover opacity-[0.12] mix-blend-screen md:hidden" />
+          {/* Imagem Desktop */}
+          <img src={bgDesk} alt="background" className="w-full h-full object-cover opacity-[0.12] mix-blend-screen hidden md:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-transparent" />
+        </>
+      )}
+    </div>
   );
 }
