@@ -59,7 +59,7 @@ export default function UploadFundoClient() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Erro desconhecido no servidor.');
+        throw new Error(data.details ? `${data.error}: ${data.details}` : data.error || 'Erro desconhecido no servidor.');
       }
 
       setStatus('success');
