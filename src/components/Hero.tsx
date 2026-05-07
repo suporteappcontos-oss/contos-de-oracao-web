@@ -13,8 +13,8 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative w-full flex items-center justify-center overflow-hidden px-[5%] md:px-[10%]"
-      style={{ minHeight: '100vh', background: 'transparent' }}
+      className="relative w-full flex items-center justify-center overflow-hidden px-[5%] md:px-[10%] pt-24 pb-12"
+      style={{ minHeight: '80vh', background: 'transparent' }}
     >
       <div className="relative z-10 w-full max-w-7xl flex flex-col md:flex-row items-center justify-between gap-12 mt-20 md:mt-0">
         
@@ -76,27 +76,22 @@ export default function Hero() {
                 <span className="font-extrabold tracking-wide text-base">Entrar na Plataforma</span>
               </SubmitButton>
 
-              <div className="text-center mt-3">
-                <Link href="/esqueci-senha" className="text-white/40 text-sm hover:text-[#D4AF37] transition-colors no-underline font-medium">
+              <div className="flex flex-col gap-3 mt-2">
+                <Link href="/esqueci-senha" className="text-center text-white/40 text-sm hover:text-[#D4AF37] transition-colors no-underline font-medium">
                   Esqueci minha senha
+                </Link>
+
+                <div className="w-full h-[1px] bg-white/10 my-2"></div>
+
+                <Link
+                  href="/assinar"
+                  className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] no-underline text-center"
+                  style={{ background: 'transparent', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.4)' }}
+                >
+                  Criar Conta e Assinar
                 </Link>
               </div>
             </form>
-          </div>
-
-          {/* Guia Novos Assinantes mais sutil */}
-          <div className="p-6 rounded-3xl backdrop-blur-md flex flex-col items-center gap-4 transition-all hover:bg-white/5"
-            style={{ border: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)' }}>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-              Novo por aqui?
-            </p>
-            <Link
-              href="/assinar"
-              className="w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] no-underline text-center"
-              style={{ background: 'transparent', color: '#D4AF37', border: '1px solid #D4AF37' }}
-            >
-              Criar Conta e Assinar
-            </Link>
           </div>
         </div>
 
