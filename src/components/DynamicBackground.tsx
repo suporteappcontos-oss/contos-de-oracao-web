@@ -31,11 +31,19 @@ export default function DynamicBackground() {
     <div className="fixed inset-0 z-[-1] bg-[#090B10]">
       {bgDesk && bgMob && (
         <>
-          {/* Imagem Mobile */}
-          <img src={bgMob} alt="background" className="w-full h-full object-cover opacity-[0.12] mix-blend-screen md:hidden" />
-          {/* Imagem Desktop */}
-          <img src={bgDesk} alt="background" className="w-full h-full object-cover opacity-[0.12] mix-blend-screen hidden md:block" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-transparent" />
+          {/* Fundo Mobile */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center md:hidden opacity-[0.12] transition-opacity duration-1000 mix-blend-screen"
+            style={{ backgroundImage: `url('${bgMob}')` }}
+          />
+          {/* Fundo Desktop */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center hidden md:block opacity-[0.12] transition-opacity duration-1000 mix-blend-screen"
+            style={{ backgroundImage: `url('${bgDesk}')` }}
+          />
+          
+          {/* Overlay Escuro / Gradiente */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-transparent pointer-events-none" />
         </>
       )}
     </div>

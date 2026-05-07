@@ -107,6 +107,10 @@ export async function POST(request: Request) {
       mobId = res.data.id as string;
     }
 
+    // Tornar ambos os arquivos públicos na web para que o <img src> ou css background funcione
+    await drive.permissions.create({ fileId: deskId, requestBody: { role: 'reader', type: 'anyone' } });
+    await drive.permissions.create({ fileId: mobId, requestBody: { role: 'reader', type: 'anyone' } });
+
     // 2. Salvar URL no config.json do Drive
     const timestamp = Date.now();
     const configData = {
