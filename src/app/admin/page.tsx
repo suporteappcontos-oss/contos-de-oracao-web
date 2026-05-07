@@ -11,7 +11,7 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Settings, Clock, Heart, BarChart3, MonitorSmartphone
+  Settings, Clock, Heart, BarChart3, MonitorSmartphone, Trophy
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -26,7 +26,7 @@ type VideoType = {
 }
 type UsuarioType = {
   id: string; email: string; nome: string
-  plano_ativo: boolean; criado_em: string
+  plano_ativo: boolean; plano_nome: string; criado_em: string
 }
 
 const CATEGORIAS = ['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho']
@@ -81,6 +81,7 @@ export default async function AdminPage({
         email: u.email || '',
         nome: u.user_metadata?.nome || u.user_metadata?.name || '—',
         plano_ativo: u.user_metadata?.plano_ativo === true,
+        plano_nome: u.user_metadata?.etiqueta_plano || 'Básico',
         criado_em: u.created_at,
       }))
       .sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
@@ -92,6 +93,16 @@ export default async function AdminPage({
   const videosAtivos = videos?.filter(v => v.ativo).length ?? 0
   const totalMembros = usuarios.length
   const membrosAtivos = usuarios.filter(u => u.plano_ativo).length
+
+  // Planos mais comprados
+  const vendasPorPlano: Record<string, number> = {}
+  usuarios.filter(u => u.plano_ativo).forEach(u => {
+    const p = u.plano_nome || 'Básico'
+    vendasPorPlano[p] = (vendasPorPlano[p] || 0) + 1
+  })
+  
+  const planoMaisComprado = Object.entries(vendasPorPlano)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || 'Nenhum'
 
   const editingVideo = editId ? (videos as VideoType[])?.find(v => v.id === editId) : null
 
@@ -206,7 +217,7 @@ export default async function AdminPage({
           {[
             { label: 'Total de Vídeos', value: totalVideos, icon: Film, color: 'from-[#00a8e1] to-[#007ba6]' },
             { label: 'Vídeos Ativos', value: videosAtivos, icon: Eye, color: 'from-[#10b981] to-[#047857]' },
-            { label: 'Vídeos Ocultos', value: totalVideos - videosAtivos, icon: EyeOff, color: 'from-[#ef4444] to-[#b91c1c]' },
+            { label: 'Plano Mais Vendido', value: planoMaisComprado, icon: Trophy, color: 'from-[#ef4444] to-[#b91c1c]', textSm: true },
             { label: 'Assinantes Ativos', value: membrosAtivos, icon: UserCheck, color: 'from-[#FFD700] to-[#D4AF37]', darkText: true },
             { label: 'Total de Cadastros', value: totalMembros, icon: Users, color: 'from-[#8b5cf6] to-[#6d28d9]' },
           ].map(s => (
@@ -216,7 +227,7 @@ export default async function AdminPage({
               <div className="flex items-start justify-between relative z-10">
                 <div>
                   <div className="text-white/50 text-[0.7rem] uppercase tracking-widest font-bold mb-2">{s.label}</div>
-                  <div className="text-white text-4xl font-black tracking-tighter">{s.value}</div>
+                  <div className={`text-white font-black tracking-tighter ${s.textSm ? 'text-2xl mt-1' : 'text-4xl'}`}>{s.value}</div>
                 </div>
                 <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg transform -rotate-3 group-hover:rotate-0 transition-all`}>
                   <s.icon size={20} className={s.darkText ? 'text-black' : 'text-white'} />
@@ -574,6 +585,11 @@ export default async function AdminPage({
                           <div className={`w-1.5 h-1.5 rounded-full ${u.plano_ativo ? 'bg-[#10b981]' : 'bg-[#D4AF37]'}`} />
                           {u.plano_ativo ? 'Ativo' : 'Lead (Pendente)'}
                         </span>
+                        {u.plano_ativo && (
+                          <div className="text-white/40 text-[0.6rem] uppercase tracking-widest font-black mt-1.5 truncate">
+                            Plano: {u.plano_nome}
+                          </div>
+                        )}
                       </div>
 
                       {/* Botão ação */}
