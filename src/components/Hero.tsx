@@ -25,8 +25,7 @@ export default function Hero() {
     >
 
 
-      {/* Gradientes em camadas (igual ao app) */}
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(9,11,16,0.65) 0%, rgba(9,11,16,0.6) 50%, #090B10 100%)' }} />
+      {/* Removido o gradiente em camadas que escurecia demais o Hero */}
 
       {/* Conteúdo centralizado */}
       <div className="relative z-10 max-w-3xl px-5 flex flex-col items-center w-full">
