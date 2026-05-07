@@ -1,127 +1,143 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js';
+import { google } from 'googleapis';
+import fs from 'fs';
+import path from 'path';
 
-const BUNNY_STORAGE_KEY = '5513bf80-0970-4a66-a4e06d748364-2d6f-4522';
-const BUNNY_STORAGE_URL = 'https://br.storage.bunnycdn.com/contos-apks';
-const BUNNY_CDN_URL = 'https://contos-apks.b-cdn.net';
-// Chave da API do Bunny (Account API Key) — usada para Purge
-// Mesma chave do storage serve para purge via API pública
-const BUNNY_API_KEY = BUNNY_STORAGE_KEY;
+// ============================================================================
+// ⚙️ CONFIGURAÇÕES DO GOOGLE DRIVE
+// ============================================================================
+const WALLPAPERS_FOLDER_ID = '1B0syJyqgyNrE2RYovxuSA3pfKvq07Ze9'; // ID da pasta Wallpapers no Drive
 
-async function verificarAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+async function getDriveService() {
+  const clientId = process.env.DRIVE_CLIENT_ID;
+  const clientSecret = process.env.DRIVE_CLIENT_SECRET;
+  const refreshToken = process.env.DRIVE_REFRESH_TOKEN;
 
-  const adminClient = createSupabaseAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
-  const { data: perfil } = await adminClient
-    .from('perfis')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') return null;
-  return user;
-}
-
-export async function POST(req: NextRequest) {
-  // 1. Verificar autenticação de admin
-  const user = await verificarAdmin();
-  if (!user) {
-    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error('As chaves do Google Drive não foram configuradas nas Variáveis de Ambiente (Vercel).');
   }
 
+  const oAuth2Client = new google.auth.OAuth2(clientId, clientSecret, 'http://localhost');
+  oAuth2Client.setCredentials({ refresh_token: refreshToken });
+  
+  return google.drive({ version: 'v3', auth: oAuth2Client });
+}
+
+// Procura um arquivo pelo nome na pasta
+async function findFileInFolder(drive: any, fileName: string, folderId: string) {
+  const res = await drive.files.list({
+    q: `'${folderId}' in parents and name='${fileName}' and trashed=false`,
+    fields: 'files(id, name, webContentLink)',
+    spaces: 'drive',
+  });
+  return res.data.files.length > 0 ? res.data.files[0] : null;
+}
+
+export async function POST(request: Request) {
   try {
-    // 2. Ler o arquivo do FormData (API Routes suportam até 100MB no Vercel)
-    const formData = await req.formData();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Verificação de segurança: Apenas admin
+    if (!user || user.user_metadata?.role !== 'admin') {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
+    }
+
+    const formData = await request.formData();
     const file = formData.get('backgroundImage') as File | null;
 
-    if (!file || file.size === 0) {
-      return NextResponse.json({ error: 'Nenhum arquivo recebido.' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: 'Nenhum arquivo enviado' }, { status: 400 });
     }
 
-    // 3. Gerar nome ÚNICO com timestamp — resolve o cache do CDN!
-    const extensao = file.name.split('.').pop() || 'jpg';
-    const fileName = `background_${Date.now()}.${extensao}`;
-    const arrayBuffer = await file.arrayBuffer();
+    // Valida tipo
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json({ error: 'O arquivo deve ser uma imagem válida.' }, { status: 400 });
+    }
 
-    console.log(`[upload-fundo] Enviando ${fileName} (${(file.size / 1024).toFixed(1)} KB) para Bunny...`);
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    // 4. Fazer upload da imagem nova para o Bunny Storage
-    const resImage = await fetch(`${BUNNY_STORAGE_URL}/${fileName}`, {
-      method: 'PUT',
-      headers: {
-        'AccessKey': BUNNY_STORAGE_KEY,
-        'Content-Type': file.type || 'image/jpeg',
+    // Obter serviço do Drive
+    const drive = await getDriveService();
+
+    // 1. O NOME DO ARQUIVO:
+    // Vamos manter o nome 'background.jpg' ou similar, mas atualizamos o conteúdo.
+    // O ID do Drive se manterá igual.
+    const fileExtension = file.name.split('.').pop() || 'jpg';
+    const fileName = `background.${fileExtension}`;
+
+    const media = {
+      mimeType: file.type,
+      body: {
+        // Stream from buffer for googleapis
+        [Symbol.asyncIterator]: async function* () {
+          yield fileBuffer;
+        },
       },
-      body: arrayBuffer,
-    });
-
-    if (!resImage.ok) {
-      const errText = await resImage.text();
-      throw new Error(`Falha no upload da imagem [${resImage.status}]: ${errText}`);
-    }
-
-    const bgUrl = `${BUNNY_CDN_URL}/${fileName}`;
-    console.log(`[upload-fundo] ✅ Imagem enviada: ${bgUrl}`);
-
-    // 5. Atualizar o config.json apontando para o novo arquivo
-    const config = {
-      background_url: bgUrl,
-      updated_at: new Date().toISOString(),
     };
 
-    const resConf = await fetch(`${BUNNY_STORAGE_URL}/config.json`, {
-      method: 'PUT',
-      headers: {
-        'AccessKey': BUNNY_STORAGE_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(config),
-    });
+    let backgroundId = '';
 
-    if (!resConf.ok) {
-      const errText = await resConf.text();
-      throw new Error(`Falha ao atualizar config.json [${resConf.status}]: ${errText}`);
-    }
-
-    console.log(`[upload-fundo] ✅ config.json atualizado`);
-
-    // 6. Invalidar o cache do Bunny CDN para o config.json
-    // Isso força o CDN a servir a versão nova imediatamente
-    try {
-      const purgeUrl = `https://api.bunny.net/purge?url=${encodeURIComponent(`${BUNNY_CDN_URL}/config.json`)}&async=false`;
-      const resPurge = await fetch(purgeUrl, {
-        method: 'POST',
-        headers: {
-          'AccessKey': BUNNY_API_KEY,
-        },
+    const existingFile = await findFileInFolder(drive, fileName, WALLPAPERS_FOLDER_ID);
+    
+    if (existingFile) {
+      // ATUALIZAR
+      console.log(`Atualizando imagem no Drive: ${existingFile.id}`);
+      await drive.files.update({
+        fileId: existingFile.id,
+        media: media as any,
       });
-      if (resPurge.ok) {
-        console.log(`[upload-fundo] ✅ Cache do config.json purgado com sucesso`);
-      } else {
-        // Não falha se o purge não funcionar — o timestamp no fileName já resolve
-        console.warn(`[upload-fundo] ⚠️ Purge retornou ${resPurge.status} — mas o timestamp no nome do arquivo já evita cache`);
-      }
-    } catch (purgeErr) {
-      console.warn('[upload-fundo] ⚠️ Erro no purge (não crítico):', purgeErr);
+      backgroundId = existingFile.id;
+    } else {
+      // CRIAR
+      console.log(`Criando nova imagem no Drive...`);
+      const res = await drive.files.create({
+        requestBody: { name: fileName, parents: [WALLPAPERS_FOLDER_ID] },
+        media: media as any,
+        fields: 'id',
+      });
+      backgroundId = res.data.id;
     }
 
-    return NextResponse.json({
-      success: true,
-      background_url: bgUrl,
-      message: 'Fundo atualizado com sucesso!',
+    // 2. Salvar URL no config.json do Drive (para que o app e o site leiam)
+    const backgroundUrl = `https://drive.google.com/uc?export=download&id=${backgroundId}`;
+    
+    // Opcionalmente, cache-busting adicionando ?t= ao final para o site
+    const timestamp = Date.now();
+    const configData = {
+      background_url: `${backgroundUrl}&t=${timestamp}`
+    };
+
+    const configBuffer = Buffer.from(JSON.stringify(configData, null, 2), 'utf8');
+    const configMedia = {
+      mimeType: 'application/json',
+      body: {
+        [Symbol.asyncIterator]: async function* () { yield configBuffer; },
+      },
+    };
+
+    const existingConfig = await findFileInFolder(drive, 'config.json', WALLPAPERS_FOLDER_ID);
+
+    if (existingConfig) {
+      await drive.files.update({ fileId: existingConfig.id, media: configMedia as any });
+    } else {
+      await drive.files.create({
+        requestBody: { name: 'config.json', parents: [WALLPAPERS_FOLDER_ID] },
+        media: configMedia as any,
+      });
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Fundo atualizado com sucesso no Google Drive!',
+      url: backgroundUrl
     });
 
   } catch (error: any) {
-    console.error('[upload-fundo] ❌ Erro:', error.message || error);
+    console.error('Erro no upload para o Drive:', error);
     return NextResponse.json(
-      { error: error.message || 'Erro interno no servidor' },
+      { error: 'Erro ao fazer upload', details: error.message },
       { status: 500 }
     );
   }

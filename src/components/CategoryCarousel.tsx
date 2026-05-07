@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 export default function CategoryCarousel({ 
   title, count, children 
 }: { 
-  title: string, count: number, children: React.ReactNode 
+  title?: string, count: number, children: React.ReactNode 
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showLeft, setShowLeft] = useState(false)
@@ -40,12 +40,11 @@ export default function CategoryCarousel({
 
       {/* Título (estilo App: bold branco + ação dourada) */}
       <div className="flex items-baseline gap-3 mb-4 px-5 md:px-10 lg:px-16">
-        <h2 className="text-white font-extrabold text-base md:text-xl tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          {title}
-        </h2>
-        <span className="text-[#D4AF37] text-xs font-semibold hidden md:inline cursor-pointer hover:underline">
-          Ver tudo →
-        </span>
+        {title && (
+          <h2 className="text-white font-extrabold text-base md:text-xl tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
+            {title}
+          </h2>
+        )}
         <span className="ml-auto text-[#94A3B8] text-[0.7rem]">
           {count} {count === 1 ? 'título' : 'títulos'}
         </span>

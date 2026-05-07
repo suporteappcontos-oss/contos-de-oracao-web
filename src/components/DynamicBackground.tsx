@@ -8,7 +8,7 @@ export default function DynamicBackground() {
     const fetchConfig = async () => {
       try {
         const timestamp = new Date().getTime();
-        const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${timestamp}`, { cache: 'no-store' });
+        const res = await fetch(`/api/config-fundo?t=${timestamp}`, { cache: 'no-store' });
         if (res.ok) {
           const config = await res.json();
           if (config.background_url) {
