@@ -6,6 +6,8 @@ export default function AppBanner() {
   const [versao, setVersao] = useState<string | null>(null);
   const [apkUrl, setApkUrl] = useState('#');
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const checkUpdate = async () => {
       try {
@@ -19,10 +21,14 @@ export default function AppBanner() {
         }
       } catch (e) {
         console.error("Erro ao buscar versão do APK", e);
+      } finally {
+        setLoading(false);
       }
     };
     checkUpdate();
   }, []);
+
+  if (loading || apkUrl === '#') return null;
 
   return (
     <a
