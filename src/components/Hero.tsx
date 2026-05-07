@@ -13,20 +13,13 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative w-full flex items-center justify-center overflow-hidden px-[5%] md:px-[10%] pt-24 pb-12"
-      style={{ minHeight: '80vh', background: 'transparent' }}
+      className="relative w-full flex items-start justify-center overflow-hidden px-[5%] md:px-[6%] pt-[85px] pb-10"
+      style={{ minHeight: '65vh', background: 'transparent' }}
     >
-      <div className="relative z-10 w-full max-w-7xl flex flex-col md:flex-row items-center justify-between gap-12 mt-20 md:mt-0">
+      <div className="relative z-10 w-full max-w-7xl flex flex-col md:flex-row items-start justify-between gap-12 mt-4">
         
-        {/* Lado Esquerdo - Identidade Visual (oculta no mobile ou reduzida) */}
-        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left animate-fade-in w-full">
-          <Image
-            src="/logo.png"
-            alt="Contos de Oração"
-            width={140}
-            height={140}
-            className="object-contain drop-shadow-2xl mb-6 md:mb-8"
-          />
+        {/* Lado Esquerdo - Texto principal subindo pra dar visão ao portfólio */}
+        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left animate-fade-in w-full mt-4 md:mt-10">
           <h1
             className="text-white font-black leading-tight mb-4"
             style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontFamily: 'Outfit, sans-serif', textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}
@@ -41,10 +34,10 @@ export default function Hero() {
           <div className="hidden md:block w-16 h-1 bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full mt-8 opacity-80"></div>
         </div>
 
-        {/* Lado Direito - Card de Login Glassmorphism */}
-        <div className="w-full max-w-[420px] flex flex-col gap-5 animate-fade-in delay-200">
+        {/* Lado Direito - Card de Login Glassmorphism Menor e no topo */}
+        <div className="w-full max-w-[340px] flex flex-col gap-5 animate-fade-in delay-200">
           
-          <div className="p-8 md:p-10 rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl relative overflow-hidden group"
+          <div className="p-7 md:p-8 rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl relative overflow-hidden group"
             style={{ 
               background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)', 
               border: '1px solid rgba(255,255,255,0.1)' 
@@ -53,8 +46,8 @@ export default function Hero() {
             {/* Brilho interno do card */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
             
-            <h2 className="text-white text-3xl font-black mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>Acessar</h2>
-            <p className="text-white/50 text-sm mb-8 font-light">Entre para continuar assistindo.</p>
+            <h2 className="text-white text-2xl font-black mb-1" style={{ fontFamily: 'Outfit, sans-serif' }}>Acessar</h2>
+            <p className="text-white/50 text-xs mb-6 font-light">Entre para continuar assistindo.</p>
 
             <form className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">

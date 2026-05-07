@@ -23,11 +23,11 @@ export default function Navbar() {
         <Image
           src="/logo.png"
           alt="Contos de Oração"
-          width={44}
-          height={44}
+          width={54}
+          height={54}
           className="object-contain drop-shadow-lg"
         />
-        <span className="text-white font-black text-lg hidden sm:inline" style={{ fontFamily: 'Outfit, sans-serif' }}>
+        <span className="text-white font-black text-2xl hidden sm:inline tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
           Contos de Oração
         </span>
       </Link>
