@@ -97,7 +97,7 @@ export async function POST(request: Request) {
         media: media as any,
         fields: 'id',
       });
-      backgroundId = res.data.id;
+      backgroundId = res.data.id as string;
     }
 
     // 2. Salvar URL no config.json do Drive (para que o app e o site leiam)
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
     const existingConfig = await findFileInFolder(drive, 'config.json', WALLPAPERS_FOLDER_ID);
 
     if (existingConfig) {
-      await drive.files.update({ fileId: existingConfig.id, media: configMedia as any });
+      await drive.files.update({ fileId: existingConfig.id as string, media: configMedia as any });
     } else {
       await drive.files.create({
         requestBody: { name: 'config.json', parents: [WALLPAPERS_FOLDER_ID] },
