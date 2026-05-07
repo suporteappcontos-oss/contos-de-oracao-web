@@ -15,7 +15,7 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 w-full flex justify-between items-center py-3 px-[4%] transition-all duration-400 z-[100] ${
-        scrolled ? "bg-[#090B10]/95 shadow-lg shadow-black/70 backdrop-blur-md border-b border-white/5" : "bg-transparent"
+        scrolled ? "bg-[#090B10]/90 shadow-2xl backdrop-blur-md" : "bg-transparent"
       }`}
     >
       {/* Logo + Nome (sem badge de plano — landing page é pública) */}
