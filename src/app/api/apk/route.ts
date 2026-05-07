@@ -1,60 +1,61 @@
 import { NextResponse } from 'next/server';
-import { google } from 'googleapis';
 
 export async function GET() {
   try {
-    // Agora o sistema busca as senhas diretamente do cofre secreto do servidor!
-    const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
-    const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+    // Configurações do Bunny CDN
+    const bunnyKey = process.env.BUNNY_API_KEY;
+    const bunnyStorageUrl = process.env.BUNNY_STORAGE_URL;
+    const bunnyPullZone = process.env.BUNNY_PULL_ZONE;
 
-    if (!clientEmail || !privateKey) {
-        return NextResponse.json({ error: 'Credenciais secretas nao configuradas na Vercel ou no .env.local' }, { status: 500 });
+    if (!bunnyKey || !bunnyStorageUrl || !bunnyPullZone) {
+      return NextResponse.json({ error: 'Configuracoes do Bunny CDN nao encontradas na Vercel' }, { status: 500 });
     }
 
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: clientEmail,
-        // Esse replace converte as quebras de linha de texto da Vercel para o padrão de criptografia real e remove os erros do Windows
-        private_key: privateKey.replace(/\\n/g, '\n').replace(/\r/g, ''),
+    // Faz a listagem dos arquivos da pasta do Bunny
+    const response = await fetch(bunnyStorageUrl, {
+      method: 'GET',
+      headers: {
+        'AccessKey': bunnyKey,
+        'Accept': 'application/json'
       },
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      cache: 'no-store' // Sempre busca o mais atualizado
     });
+
+    if (!response.ok) {
+       return NextResponse.json({ error: 'Falha ao acessar BunnyCDN: ' + response.statusText }, { status: response.status });
+    }
+
+    const files = await response.json();
     
-    const drive = google.drive({ version: 'v3', auth });
-    
-    // Pasta de APKs que você enviou
-    const folderId = '1ENFT7pQbQIvLCmqeq6SiZptddF9CdLJQ';
-    
-    const response = await drive.files.list({
-      q: `'${folderId}' in parents and mimeType='application/vnd.android.package-archive'`,
-      fields: 'files(id, name, webContentLink, createdTime)',
-      orderBy: 'createdTime desc',
-      pageSize: 5,
-    });
-    
-    const files = response.data.files;
-    
-    if (files && files.length > 0) {
-      // Prioriza o arquivo que tem 'v' e números no nome para garantir que é o com versão (ex: -v1.0.5.apk)
-      const latestApk = files.find(f => /v\d+\.\d+\.\d+/.test(f.name || '')) || files[0];
+    // Filtra para pegar apenas os arquivos que terminam com .apk
+    const apks = files.filter((f: any) => !f.IsDirectory && f.ObjectName.endsWith('.apk'));
+
+    if (apks && apks.length > 0) {
+      // Ordena pelos mais recentes (se houver mais de um)
+      apks.sort((a: any, b: any) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
       
-      // Extrair versão do nome (ex: ContosDeOracao_v1.0.4.apk -> 1.0.4)
+      const latestApk = apks[0];
+      
+      // Extrair versão do nome (ex: ContosDeOracao-v1.0.5.apk -> 1.0.5)
       let versao = "1.0.0";
-      const versaoMatch = latestApk.name?.match(/v?(\d+\.\d+\.\d+)/);
+      const versaoMatch = latestApk.ObjectName?.match(/v?(\d+\.\d+\.\d+)/);
       if (versaoMatch) {
         versao = versaoMatch[1];
       }
       
+      // O link final maravilhoso para o usuário!
       return NextResponse.json({
-        link_download: `https://drive.google.com/uc?export=download&confirm=t&id=${latestApk.id}`,
+        link_download: `${bunnyPullZone}/${latestApk.ObjectName}`,
         versao_atual: versao,
-        nome: latestApk.name
+        nome: latestApk.ObjectName
       });
     }
     
-    return NextResponse.json({ error: 'Nenhum APK encontrado' }, { status: 404 });
+    return NextResponse.json({ error: 'Nenhum APK encontrado no Bunny' }, { status: 404 });
   } catch (error: any) {
-    console.error("Erro ao listar APKs no Google Drive:", error);
+    console.error("Erro na API do Bunny APK:", error);
     return NextResponse.json({ error: 'Erro interno', details: error?.message || String(error) }, { status: 500 });
   }
 }
+    
+
