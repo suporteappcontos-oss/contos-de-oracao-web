@@ -27,7 +27,8 @@ export default function AppBanner() {
   return (
     <a
       href={apkUrl}
-      download={versao ? `ContosDeOracao_v${versao}.apk` : 'ContosDeOracao.apk'}
+      target="_blank"
+      rel="noopener noreferrer"
       className="fixed bottom-6 right-[90px] z-[98] flex items-center gap-3 bg-[#15243E] border border-white/10 rounded-full py-2 px-4 transition-all hover:scale-105 hover:-translate-y-1 hover:border-[#D4AF37]/50 shadow-2xl group"
       title="Baixar Aplicativo Android"
     >
