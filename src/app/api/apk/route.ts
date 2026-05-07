@@ -1,16 +1,21 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
-// Lendo o arquivo diretamente pelo import obriga a Vercel a copiá-lo para o servidor final
-import credentials from '../../../../credentials.json';
-
 export async function GET() {
   try {
+    // Agora o sistema busca as senhas diretamente do cofre secreto do servidor!
+    const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+
+    if (!clientEmail || !privateKey) {
+        return NextResponse.json({ error: 'Credenciais secretas nao configuradas na Vercel ou no .env.local' }, { status: 500 });
+    }
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        client_email: credentials.client_email,
-        // Limpa os caracteres do Windows (\r) que corrompem a assinatura da chave
-        private_key: credentials.private_key.replace(/\r/g, '').replace(/\\n/g, '\n'),
+        client_email: clientEmail,
+        // Esse replace converte as quebras de linha de texto da Vercel para o padrão de criptografia real e remove os erros do Windows
+        private_key: privateKey.replace(/\\n/g, '\n').replace(/\r/g, ''),
       },
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });

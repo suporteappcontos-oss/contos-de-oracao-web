@@ -32,16 +32,7 @@ export default function AppBanner() {
     checkUpdate();
   }, []);
 
-  if (loading) return null;
-
-  if (apkUrl === '#') {
-    // Modo Debug visual para ajudar a descobrir
-    return (
-       <div className="fixed bottom-6 right-6 z-[99] bg-red-600 text-white p-4 rounded-xl text-xs max-w-sm">
-         <b>🔴 DEBUG APK:</b><br/>{debugInfo || 'Nenhum arquivo encontrado (API sem link_download)'}
-       </div>
-    );
-  }
+  if (loading || apkUrl === '#') return null;
 
   return (
     <a
