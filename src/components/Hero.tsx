@@ -13,7 +13,7 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative w-full flex items-start justify-between overflow-visible px-[5%] md:px-[6%] pt-[85px]"
+      className="relative z-20 w-full flex items-start justify-between overflow-visible px-[5%] md:px-[6%] pt-[85px]"
     >
       <div className="relative z-10 w-full flex flex-col md:flex-row items-start justify-between gap-6">
         
