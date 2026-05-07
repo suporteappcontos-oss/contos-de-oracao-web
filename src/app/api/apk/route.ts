@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import path from 'path';
+
+// Lendo o arquivo diretamente pelo import obriga a Vercel a copiá-lo para o servidor final
+import credentials from '../../../../credentials.json';
 
 export async function GET() {
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: path.join(process.cwd(), 'credentials.json'),
+      credentials,
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
     
