@@ -122,8 +122,24 @@ export async function togglePlanoUsuario(userId: string, planoAtual: boolean) {
 export async function alterarPlanoUsuario(userId: string, novoMaxTelas: number, novaEtiqueta: string) {
   await verificarAdmin()
   const admin = getAdminClient()
+  
+  // Primeiro, busca o usuário atual para não perder nenhum dado antigo do user_metadata
+  const { data: userResponse, error: fetchError } = await admin.auth.admin.getUserById(userId)
+  if (fetchError || !userResponse.user) {
+    console.error('❌ Erro ao buscar usuário para alterar plano:', fetchError?.message)
+    return
+  }
+
+  const currentMetadata = userResponse.user.user_metadata || {}
+
+  // Mescla os novos dados com os antigos
   const { error } = await admin.auth.admin.updateUserById(userId, {
-    user_metadata: { max_telas: novoMaxTelas, etiqueta_plano: novaEtiqueta, plano_ativo: true },
+    user_metadata: { 
+      ...currentMetadata, 
+      max_telas: novoMaxTelas, 
+      etiqueta_plano: novaEtiqueta, 
+      plano_ativo: true 
+    },
   })
   if (error) console.error('❌ Erro ao alterar plano do usuário:', error.message)
   revalidatePath('/admin')

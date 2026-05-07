@@ -59,19 +59,15 @@
 - [x] API pública de planos: `GET /api/stripe/planos-publicos` (consumida pelo App)
 
 ### **🚨 Pendências e Próximos Passos**
-1. [x] **Carrossel do App:** Alterar a lógica para usar thumbs reais de vídeos, duplicando caso existam menos de 6, removendo o fallback de imagens falsas no OnboardingScreen.js.
+
 2. [x] **Logo do App:** Incluir `icon.png` no `OnboardingScreen.js` em vez de texto.
-3. [x] **Erro 403 do Bunny Stream:** 
-    - Criada a rota `api/bunny/token/route.ts` no backend Web para buscar a variável de ambiente e gerar o token SHA-256 do Bunny.
-    - Modificada a tela `VideoPlayerScreen.js` do App para buscar esse token da web antes de abrir o WebView, garantindo a permissão.
-4. [ ] **Testar Fluxo Completo:** Executar o `mandar_pro_ar.bat` (Web) e, logo em seguida, o `gerar-apk-local.bat` (App).
+
 
 ### ⚙️ Painel Admin (`/admin`)
 - [x] Protegido por role `admin` na tabela `perfis`
 - [x] CRUD completo de vídeos (título, categoria, thumbnail, Bunny ID, duração)
 - [x] Ativar/desativar vídeos sem deletar
 - [x] Ver e gerenciar assinantes
-- [x] **NOVO:** Upload direto de imagens do computador para Thumbnails de Vídeos e Fundo Global do App para a Bunny.net, suportando imagens sem corte forçado no app.
 
 ### 🛡️ SEO & Performance
 - [x] Meta tags completas (título, descrição, Open Graph, Twitter Card)
@@ -103,13 +99,6 @@
 
 ### 📝 Status Atual das Tarefas (06/05/2026)
 
-### ✅ Finalizado Hoje:
-- **Melhoria UX no Painel Admin:** Substituição dos botões nativos por um `<SubmitButton>` inteligente com estado de "loading" (spin) e desativação contra duplo clique durante o envio de formulários e uploads de imagem.
-- **Fundo Dinâmico (Tentativa 1 - BunnyCDN):** Criado o sistema global de fundo de tela dinâmico (`DynamicBackground.tsx`) que cobriu páginas essenciais (`/login`, `/assinar`, `/esqueci-senha`, etc.), mantendo a página `/watch` limpa com fundo escuro original.
-- **Correção de Fundo Sólido CSS:** Removidas as instruções estáticas de `background: '#090B10'` nos containers das telas de login/cadastro para permitir a exibição do fundo transparente com a imagem enviada pelo admin.
-
-### 🚨 Bugs para Corrigir / Pendências (Para Amanhã)
-- [ ] **Novo Sistema de Fundo Dinâmico (Via Google Drive):** Abandonar o uso do BunnyCDN para a imagem de fundo devido a (1) Limite de upload de 4.5MB da Vercel Server Actions causando erro 413 "An unexpected response" e (2) Agressivo cache de Borda (Edge) que impede a atualização imediata da imagem no app e nos browsers. Planejado para amanhã: integrar o Google Drive como repositório rápido da imagem de fundo.
 - [ ] **Atualizador Automático (OTA):** O aplicativo não detectou nova versão. Provavelmente o APK instalado no celular do usuário ainda tinha a lógica antiga (com bug). Ele precisará baixar o `.apk` novo manualmente 1 vez para que as *próximas* atualizações funcionem.
 
 ### 📌 Melhorias Futuras
