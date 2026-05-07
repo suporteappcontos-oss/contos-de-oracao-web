@@ -18,13 +18,14 @@ export async function GET() {
       q: `'${folderId}' in parents and mimeType='application/vnd.android.package-archive'`,
       fields: 'files(id, name, webContentLink, createdTime)',
       orderBy: 'createdTime desc',
-      pageSize: 1,
+      pageSize: 5,
     });
     
     const files = response.data.files;
     
     if (files && files.length > 0) {
-      const latestApk = files[0];
+      // Prioriza o arquivo que tem 'v' e números no nome para garantir que é o com versão (ex: -v1.0.5.apk)
+      const latestApk = files.find(f => /v\d+\.\d+\.\d+/.test(f.name || '')) || files[0];
       
       // Extrair versão do nome (ex: ContosDeOracao_v1.0.4.apk -> 1.0.4)
       let versao = "1.0.0";
