@@ -7,7 +7,11 @@ import credentials from '../../../../credentials.json';
 export async function GET() {
   try {
     const auth = new google.auth.GoogleAuth({
-      credentials,
+      credentials: {
+        client_email: credentials.client_email,
+        // Limpa os caracteres do Windows (\r) que corrompem a assinatura da chave
+        private_key: credentials.private_key.replace(/\r/g, '').replace(/\\n/g, '\n'),
+      },
       scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     });
     
