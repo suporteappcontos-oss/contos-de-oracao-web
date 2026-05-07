@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { google } from 'googleapis';
 import fs from 'fs';
 import path from 'path';
+import { Readable } from 'stream';
 
 // ============================================================================
 // ⚙️ CONFIGURAÇÕES DO GOOGLE DRIVE
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
     // ================= UPLOAD DESKTOP =================
     const mediaDesk = {
       mimeType: fileDesk.type,
-      body: { [Symbol.asyncIterator]: async function* () { yield bufferDesk; } },
+      body: Readable.from(bufferDesk),
     };
 
     if (existingDesk) {
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
     // ================= UPLOAD MOBILE =================
     const mediaMob = {
       mimeType: fileMob.type,
-      body: { [Symbol.asyncIterator]: async function* () { yield bufferMob; } },
+      body: Readable.from(bufferMob),
     };
 
     if (existingMob) {
@@ -116,9 +117,7 @@ export async function POST(request: Request) {
     const configBuffer = Buffer.from(JSON.stringify(configData, null, 2), 'utf8');
     const configMedia = {
       mimeType: 'application/json',
-      body: {
-        [Symbol.asyncIterator]: async function* () { yield configBuffer; },
-      },
+      body: Readable.from(configBuffer),
     };
 
     const existingConfig = await findFileInFolder(drive, 'config.json', WALLPAPERS_FOLDER_ID);
