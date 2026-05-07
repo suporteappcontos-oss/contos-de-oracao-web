@@ -33,17 +33,14 @@ export default function DynamicBackground() {
         <>
           {/* Fundo Mobile */}
           <div 
-            className="absolute inset-0 bg-cover bg-center md:hidden opacity-[0.12] transition-opacity duration-1000 mix-blend-screen"
-            style={{ backgroundImage: `url('${bgMob}')` }}
+            className="absolute inset-0 bg-cover bg-center md:hidden transition-opacity duration-1000"
+            style={{ backgroundImage: `url('${bgMob}')`, opacity: 0.12 }}
           />
           {/* Fundo Desktop */}
           <div 
-            className="absolute inset-0 bg-cover bg-center hidden md:block opacity-[0.12] transition-opacity duration-1000 mix-blend-screen"
-            style={{ backgroundImage: `url('${bgDesk}')` }}
+            className="absolute inset-0 bg-cover bg-center hidden md:block transition-opacity duration-1000"
+            style={{ backgroundImage: `url('${bgDesk}')`, opacity: 0.12 }}
           />
-          
-          {/* Overlay Escuro / Gradiente */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-transparent pointer-events-none" />
         </>
       )}
     </div>
