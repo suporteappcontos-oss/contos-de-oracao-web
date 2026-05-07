@@ -58,7 +58,7 @@ export default async function Home({ searchParams }: Props) {
 
       <div className={`relative z-10 mt-[-80px] pb-10 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
         {videos && videos.length > 0 ? (
-          <CategoryCarousel count={videos.length}>
+          <CategoryCarousel title="Portfólio" count={videos.length}>
             {videos.map(video => (
               <VideoCard key={video.id} video={video} />
             ))}

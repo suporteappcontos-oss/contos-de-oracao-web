@@ -50,9 +50,8 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
     : getFallback(video.id)
 
   return (
-    <Link
-      href={`/watch/${video.id}`}
-      className="group relative flex-shrink-0 block outline-none"
+    <div
+      className="group relative flex-shrink-0 block outline-none cursor-default"
       style={{ width: 'clamp(155px, 20vw, 240px)' }}
     >
       {/* Thumbnail */}
@@ -100,16 +99,7 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
           </div>
         )}
 
-        {/* Play Central (aparece no hover) */}
-        <div className="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center shadow-2xl"
-            style={{ background: 'rgba(255,255,255,0.92)' }}
-          >
-            <Play fill="#090B10" size={20} className="ml-0.5 text-[#090B10]" />
-          </div>
-        </div>
       </div>
-    </Link>
+    </div>
   )
 }
