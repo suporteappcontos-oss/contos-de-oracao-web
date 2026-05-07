@@ -101,15 +101,15 @@
 2. **Parser de Benefícios**: O `Pricing.tsx` e `SubscriptionScreen.js` (App) fazem split dos benefícios via **barra vertical (`|`)**. Isso é definitivo para não conflitar com vírgulas em textos longos.
 3. **Mecanismo de Update do App**: A função `isNewerVersion` está **TRAVADA** como `remote > local` (Ex: "1.0.4" > "1.0.2"). Ela consulta o Bunny.
 
-## 📝 Status Atual das Tarefas (06/05/2026)
+### 📝 Status Atual das Tarefas (06/05/2026)
 
-### ✅ Finalizado:
-- **Botão Real do Portal Stripe:** Adicionado o botão "Gerenciar na Stripe" ao site na página `perfil/page.tsx` para permitir aos usuários trocar de plano ou cancelar suas assinaturas usando o Customer Portal da Stripe.
-- **Redirecionamento do App para Perfil:** Quando o usuário clica em "Gerenciar" no App, ele agora é redirecionado para o perfil do site. Assim, o fluxo não tenta abrir um novo checkout indevidamente.
-- **Melhoria no Erro de Email Existente (Checkout):** Agora, o passo 1 já faz um "pre-check" de e-mail ao clicar em "Continuar para Pagamento". Se o e-mail existir no Supabase, a UI já aciona o botão de Login. Isso salva o usuário de ter que clicar de novo no botão final para descobrir o erro.
-- **Correção da renderização dos benefícios na tela de planos:** O sistema de separação de frases estava quebrando na vírgula e colocando símbolos misturados. O código foi limpo. **Agora, para separar os benefícios no painel da Stripe, o cliente deve usar o caractere `|`**.
+### ✅ Finalizado Hoje:
+- **Melhoria UX no Painel Admin:** Substituição dos botões nativos por um `<SubmitButton>` inteligente com estado de "loading" (spin) e desativação contra duplo clique durante o envio de formulários e uploads de imagem.
+- **Fundo Dinâmico (Tentativa 1 - BunnyCDN):** Criado o sistema global de fundo de tela dinâmico (`DynamicBackground.tsx`) que cobriu páginas essenciais (`/login`, `/assinar`, `/esqueci-senha`, etc.), mantendo a página `/watch` limpa com fundo escuro original.
+- **Correção de Fundo Sólido CSS:** Removidas as instruções estáticas de `background: '#090B10'` nos containers das telas de login/cadastro para permitir a exibição do fundo transparente com a imagem enviada pelo admin.
 
-### 🚨 Bugs para Corrigir
+### 🚨 Bugs para Corrigir / Pendências (Para Amanhã)
+- [ ] **Novo Sistema de Fundo Dinâmico (Via Google Drive):** Abandonar o uso do BunnyCDN para a imagem de fundo devido a (1) Limite de upload de 4.5MB da Vercel Server Actions causando erro 413 "An unexpected response" e (2) Agressivo cache de Borda (Edge) que impede a atualização imediata da imagem no app e nos browsers. Planejado para amanhã: integrar o Google Drive como repositório rápido da imagem de fundo.
 - [ ] **Atualizador Automático (OTA):** O aplicativo não detectou nova versão. Provavelmente o APK instalado no celular do usuário ainda tinha a lógica antiga (com bug). Ele precisará baixar o `.apk` novo manualmente 1 vez para que as *próximas* atualizações funcionem.
 
 ### 📌 Melhorias Futuras

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   adicionarVideo, editarVideo, toggleVideoAtivo,
-  deletarVideo, togglePlanoUsuario, salvarConfiguracao
+  deletarVideo, togglePlanoUsuario
 } from './actions'
 
 import {
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
+import UploadFundoClient from './UploadFundoClient'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -609,21 +610,11 @@ export default async function AdminPage({
                 <p className="text-white/40 text-sm">Defina imagens e temas para o site e o aplicativo mobile.</p>
               </div>
             </div>
-            
+
             <div className="bg-[#111827] border border-white/5 rounded-[2rem] p-8 shadow-2xl max-w-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/5 to-transparent rounded-bl-full pointer-events-none" />
-              <form action={salvarConfiguracao} encType="multipart/form-data" className="space-y-6 relative z-10">
-                <div>
-                  <label className={labelCls}>Upload do Plano de Fundo (Bíblia, Textura, etc) *</label>
-                  <input type="file" name="backgroundImage" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" required />
-                  <p className="text-white/40 text-xs mt-3">Faça o upload de uma imagem do seu computador. Esta imagem será sincronizada automaticamente em <b>fundo de todas as telas</b> tanto no site quanto no aplicativo Android.</p>
-                </div>
-                <div className="pt-4 border-t border-white/5">
-                  <SubmitButton textLoading="Sincronizando Fundo...">
-                    Salvar e Sincronizar Fundo
-                  </SubmitButton>
-                </div>
-              </form>
+              {/* Componente client-side — resolve erro 413 da Vercel e invalida cache do Bunny */}
+              <UploadFundoClient />
             </div>
           </div>
         )}
