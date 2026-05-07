@@ -26,7 +26,7 @@ export default function SubmitButton({
       style={style || { background: '#D4AF37', color: '#090B10', fontFamily: 'Outfit, sans-serif' }}
     >
       {pending ? (
-        <><InfinityIcon className="animate-spin" size={18} /> {textLoading}</>
+        <><InfinityIcon className="premium-trace" size={18} /> {textLoading}</>
       ) : (
         children
       )}

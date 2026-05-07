@@ -4,13 +4,13 @@ import Image from 'next/image';
 
 export default function AppBanner() {
   const [versao, setVersao] = useState<string | null>(null);
-  const [apkUrl, setApkUrl] = useState('https://contos-apks.b-cdn.net/contos-de-oracao.apk');
+  const [apkUrl, setApkUrl] = useState('#');
 
   useEffect(() => {
     const checkUpdate = async () => {
       try {
         const timestamp = new Date().getTime();
-        const res = await fetch(`https://contos-apks.b-cdn.net/versao.json?t=${timestamp}`, { cache: 'no-store' });
+        const res = await fetch(`/api/apk?t=${timestamp}`, { cache: 'no-store' });
         
         if (res.ok) {
           const data = await res.json();
