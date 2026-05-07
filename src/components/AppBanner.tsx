@@ -7,6 +7,7 @@ export default function AppBanner() {
   const [apkUrl, setApkUrl] = useState('#');
 
   const [loading, setLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<any>('');
 
   useEffect(() => {
     const checkUpdate = async () => {
@@ -14,12 +15,15 @@ export default function AppBanner() {
         const timestamp = new Date().getTime();
         const res = await fetch(`/api/apk?t=${timestamp}`, { cache: 'no-store' });
         
+        const data = await res.json();
         if (res.ok) {
-          const data = await res.json();
           if (data.link_download) setApkUrl(data.link_download);
           if (data.versao_atual) setVersao(data.versao_atual);
+        } else {
+          setDebugInfo('Erro da API: ' + JSON.stringify(data));
         }
-      } catch (e) {
+      } catch (e: any) {
+        setDebugInfo('CATCH ERROR: ' + e.toString());
         console.error("Erro ao buscar versão do APK", e);
       } finally {
         setLoading(false);
@@ -28,7 +32,16 @@ export default function AppBanner() {
     checkUpdate();
   }, []);
 
-  if (loading || apkUrl === '#') return null;
+  if (loading) return null;
+
+  if (apkUrl === '#') {
+    // Modo Debug visual para ajudar a descobrir
+    return (
+       <div className="fixed bottom-6 right-6 z-[99] bg-red-600 text-white p-4 rounded-xl text-xs max-w-sm">
+         <b>🔴 DEBUG APK:</b><br/>{debugInfo || 'Nenhum arquivo encontrado (API sem link_download)'}
+       </div>
+    );
+  }
 
   return (
     <a
