@@ -42,8 +42,8 @@ export async function GET() {
     }
     
     return NextResponse.json({ error: 'Nenhum APK encontrado' }, { status: 404 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao listar APKs no Google Drive:", error);
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro interno', details: error?.message || String(error) }, { status: 500 });
   }
 }
