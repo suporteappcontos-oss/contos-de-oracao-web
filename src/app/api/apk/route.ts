@@ -35,7 +35,7 @@ export async function GET() {
       }
       
       return NextResponse.json({
-        link_download: latestApk.webContentLink,
+        link_download: `https://drive.google.com/uc?export=download&confirm=t&id=${latestApk.id}`,
         versao_atual: versao,
         nome: latestApk.name
       });
