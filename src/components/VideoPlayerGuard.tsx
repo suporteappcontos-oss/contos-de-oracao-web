@@ -39,23 +39,6 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     const token = getDeviceToken()
     deviceToken.current = token
 
-    // 🔒 VERIFICAÇÃO DE PLANO ATIVO
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      router.push('/login')
-      return
-    }
-
-    const planoAtivo = user.user_metadata?.plano_ativo === true
-    const isAdmin = user.email === 'suporte.appcontos@gmail.com'
-
-    if (!isAdmin && !planoAtivo) {
-      updateStatus('bloqueado')
-      return
-    }
-
     try {
       const res = await fetch('/api/sessoes', {
         method: 'POST',

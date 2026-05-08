@@ -5,7 +5,6 @@ import Image from 'next/image'
 import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
-import AppBanner from '@/components/AppBanner'
 import NotificationBell from '@/components/NotificationBell'
 import { LogOut, Settings, User } from 'lucide-react'
 
@@ -218,10 +217,6 @@ export default async function WatchPage() {
                   ))}
                 </CategoryCarousel>
               ))}
-            </div>
-
-            <div className="mt-12 px-2 md:px-6 lg:px-12">
-              <AppBanner />
             </div>
 
             {/* Rodapé */}

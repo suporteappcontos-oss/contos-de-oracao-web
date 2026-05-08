@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import AppBanner from "@/components/AppBanner";
 import Footer from "@/components/Footer";
 import CategoryCarousel from "@/components/CategoryCarousel";
 import VideoCard from "@/components/VideoCard";
@@ -72,7 +71,6 @@ export default async function Home({ searchParams }: Props) {
         )}
       </div>
 
-      <AppBanner />
       <Footer />
     </main>
   );
