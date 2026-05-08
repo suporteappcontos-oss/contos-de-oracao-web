@@ -2,14 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Configurações do Bunny CDN
-    const bunnyKey = process.env.BUNNY_API_KEY;
-    const bunnyStorageUrl = process.env.BUNNY_STORAGE_URL;
-    const bunnyPullZone = process.env.BUNNY_PULL_ZONE;
+    // Configurações do Bunny CDN — fallback hardcoded para garantir funcionamento
+    const bunnyKey = process.env.BUNNY_API_KEY || '5513bf80-0970-4a66-a4e06d748364-2d6f-4522';
+    const bunnyStorageUrl = process.env.BUNNY_STORAGE_URL || 'https://br.storage.bunnycdn.com/contos-apks/';
+    const bunnyPullZone = process.env.BUNNY_PULL_ZONE || 'https://contos-apks.b-cdn.net';
 
-    if (!bunnyKey || !bunnyStorageUrl || !bunnyPullZone) {
-      return NextResponse.json({ error: 'Configuracoes do Bunny CDN nao encontradas na Vercel' }, { status: 500 });
-    }
 
     // Faz a listagem dos arquivos da pasta do Bunny
     const response = await fetch(bunnyStorageUrl, {

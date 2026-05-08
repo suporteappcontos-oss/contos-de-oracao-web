@@ -57,7 +57,31 @@ export default async function Home({ searchParams }: Props) {
 
       <div className={`relative z-10 md:mt-[-80px] mt-8 pb-10 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
         {videos && videos.length > 0 ? (
-          <CategoryCarousel title="Portfólio" count={videos.length}>
+          <CategoryCarousel title="Portfólio" count={videos.length + 1}>
+            {/* Card especial da HQ — sempre primeiro */}
+            <a
+              href="/hq/nossa-senhora-fatima"
+              className="group relative shrink-0 w-[160px] md:w-[180px] rounded-xl overflow-hidden border border-white/10 hover:border-[#D4AF37]/50 transition-all duration-300"
+              style={{ display: 'block' }}
+            >
+              <div className="aspect-[2/3] relative overflow-hidden">
+                <img
+                  src="https://contos-apks.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png"
+                  alt="HQ Nossa Senhora de Fátima"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                {/* Badge HQ */}
+                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider"
+                  style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)', color: '#000' }}>
+                  📖 HQ
+                </div>
+                <div className="absolute bottom-2 left-0 right-0 px-2">
+                  <p className="text-white text-xs font-bold leading-tight">Nossa Senhora de Fátima</p>
+                </div>
+              </div>
+            </a>
+
             {videos.map(video => (
               <VideoCard key={video.id} video={video} />
             ))}

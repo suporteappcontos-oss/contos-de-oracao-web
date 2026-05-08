@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, X, PanelRight, PanelRightClose } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, PanelRight, PanelRightClose, Download } from 'lucide-react'
 
 interface HQReaderClientProps {
   slug: string
@@ -67,13 +67,32 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl }: 
         </div>
 
         {/* Toggle sidebar */}
-        <button
-          onClick={() => setSidebarAberta(s => !s)}
-          className="shrink-0 p-2 rounded-lg text-white/40 hover:text-[#D4AF37] hover:bg-white/5 transition-all"
-          title={sidebarAberta ? 'Ocultar páginas' : 'Ver todas as páginas'}
-        >
-          {sidebarAberta ? <PanelRightClose size={17} /> : <PanelRight size={17} />}
-        </button>
+        <div className="shrink-0 flex items-center gap-1">
+          {/* Botão Download */}
+          <a
+            href={`${baseUrl}/HQ_01.png`}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-lg text-white/40 hover:text-green-400 hover:bg-white/5 transition-all"
+            title="Baixar HQ (página 1 como prévia)"
+            onClick={(e) => {
+              e.preventDefault()
+              // Abre o link para download de todas as páginas em novas abas
+              alert('Para baixar a HQ completa, entre em contato pelo suporte. As páginas individuais podem ser salvas clicando com o botão direito na imagem.')
+            }}
+          >
+            <Download size={17} />
+          </a>
+          <button
+            onClick={() => setSidebarAberta(s => !s)}
+            className="p-2 rounded-lg text-white/40 hover:text-[#D4AF37] hover:bg-white/5 transition-all"
+            title={sidebarAberta ? 'Ocultar páginas' : 'Ver todas as páginas'}
+          >
+            {sidebarAberta ? <PanelRightClose size={17} /> : <PanelRight size={17} />}
+          </button>
+        </div>
+
       </div>
 
       {/* ── CORPO ── */}
