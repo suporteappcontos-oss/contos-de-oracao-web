@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 
 function getAdminClient() {
@@ -20,14 +19,20 @@ export async function POST(req: NextRequest) {
     const authHeader = req.headers.get('authorization')
     const jwtToken = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null
 
-    const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser(jwtToken || undefined)
-    
-    if (authError || !user) return NextResponse.json({ error: 'Não autenticado no App' }, { status: 401 })
+    if (!jwtToken) {
+      return NextResponse.json({ error: 'Token de autorização ausente' }, { status: 401 })
+    }
 
     const admin = getAdminClient()
 
-    // Busca a sessão
+    // Valida o JWT diretamente com o admin (não usa cookies — funciona com o App mobile)
+    const { data: { user }, error: authError } = await admin.auth.getUser(jwtToken)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Sessão inválida. Faça login novamente no App.' }, { status: 401 })
+    }
+
+    // Busca a sessão QR no banco
     const { data: session, error: sessionError } = await admin
       .from('qr_sessions')
       .select('*')
