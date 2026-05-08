@@ -13,30 +13,30 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative z-10 w-full flex items-start justify-center overflow-visible px-[4%] md:px-[6%] pt-[80px] md:pt-[100px] pb-4"
+      className="relative z-20 w-full flex items-start justify-between overflow-visible px-[5%] md:px-[6%] pt-[85px]"
     >
-      <div className="relative z-10 w-full max-w-6xl flex flex-col md:flex-row items-start justify-between gap-6 md:gap-12">
+      <div className="relative z-10 w-full flex flex-col md:flex-row items-start justify-between gap-6">
 
-        {/* Lado Esquerdo - Texto principal */}
-        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left animate-fade-in order-2 md:order-1 w-full">
+        {/* Lado Esquerdo - Texto principal colado na linha dourada do Portfólio */}
+        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left animate-fade-in mt-4 md:mt-10">
           <h1
-            className="text-white font-black leading-tight mb-2"
-            style={{ fontSize: 'clamp(1.5rem, 4vw, 3.5rem)', fontFamily: 'Outfit, sans-serif', textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}
+            className="text-white font-black leading-tight mb-4"
+            style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontFamily: 'Outfit, sans-serif', textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}
           >
             Sua fé,
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">em todo lugar.</span>
           </h1>
-          <p className="text-white/70 text-xs md:text-xl max-w-lg leading-relaxed font-light mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
+          <p className="text-white/70 text-base md:text-xl max-w-lg leading-relaxed font-light" style={{ fontFamily: 'Outfit, sans-serif' }}>
             Acesso exclusivo às mais belas orações, novenas e retiros espirituais.
           </p>
-          <div className="hidden md:block w-16 h-1 bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full mt-4 opacity-80"></div>
+          <div className="hidden md:block w-16 h-1 bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full mt-8 opacity-80"></div>
         </div>
 
-        {/* Lado Direito - Card de Login */}
-        <div className="w-full md:w-[340px] flex flex-col gap-3 animate-fade-in delay-200 shrink-0 relative z-20 order-1 md:order-2">
+        {/* Lado Direito - Card de Login Totalmente no Canto e solto pra não dar espaço de fundo */}
+        <div className="w-full md:w-[340px] flex flex-col gap-5 animate-fade-in delay-200 mt-2 shrink-0 relative z-50">
 
-          <div className="p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] backdrop-blur-xl relative overflow-hidden group"
+          <div className="p-7 md:p-8 rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl relative overflow-hidden group"
             style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
               border: '1px solid rgba(255,255,255,0.1)'
