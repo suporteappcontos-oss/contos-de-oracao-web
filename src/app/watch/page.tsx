@@ -192,10 +192,34 @@ export default async function WatchPage() {
             <HeroBanner video={videos[0] as Video} />
 
             {/* Separador com estilo ouro */}
-            <div className="flex items-center gap-4 px-5 md:px-10 lg:px-16 mt-10 mb-8">
+            <div className="flex items-center gap-4 px-5 md:px-10 lg:px-16 mt-10 mb-6">
               <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
               <span className="text-[#D4AF37] text-[0.6rem] font-extrabold tracking-[0.2em] uppercase">Catálogo</span>
               <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            </div>
+
+            {/* Banner HQ */}
+            <div className="px-5 md:px-10 lg:px-16 mb-8">
+              <Link
+                href="/hq"
+                className="group flex items-center justify-between gap-4 rounded-2xl border px-6 py-4 transition-all hover:brightness-110"
+                style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03))', borderColor: 'rgba(212,175,55,0.2)' }}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(212,175,55,0.15)' }}>
+                    <span className="text-xl">📖</span>
+                  </div>
+                  <div>
+                    <div className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-0.5">Novidade</div>
+                    <div className="text-white font-bold text-sm">Histórias em Quadrinhos</div>
+                    <div className="text-white/40 text-xs mt-0.5">HQs católicas exclusivas para você e sua família</div>
+                  </div>
+                </div>
+                <div className="text-[#D4AF37] font-bold text-sm whitespace-nowrap flex items-center gap-1.5">
+                  Ver HQs
+                  <span className="text-lg group-hover:translate-x-1 transition-transform inline-block">→</span>
+                </div>
+              </Link>
             </div>
 
             {/* Carrosséis */}
