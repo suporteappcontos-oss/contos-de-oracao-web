@@ -51,7 +51,6 @@ export default async function RootLayout({
 
         <GlobalLoader />
         {children}
-        <WhatsAppButton />
       </body>
     </html>
   );
