@@ -198,26 +198,63 @@ export default async function WatchPage() {
               <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
             </div>
 
-            {/* Banner HQ */}
-            <div className="px-5 md:px-10 lg:px-16 mb-8">
-              <Link
-                href="/hq"
-                className="group flex items-center justify-between gap-4 rounded-2xl border px-6 py-4 transition-all hover:brightness-110"
-                style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03))', borderColor: 'rgba(212,175,55,0.2)' }}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(212,175,55,0.15)' }}>
-                    <span className="text-xl">📖</span>
-                  </div>
-                  <div>
-                    <div className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-0.5">Novidade</div>
-                    <div className="text-white font-bold text-sm">Histórias em Quadrinhos</div>
-                    <div className="text-white/40 text-xs mt-0.5">HQs católicas exclusivas para você e sua família</div>
-                  </div>
+            {/* ── SEÇÃO HQ — destaque visual ── */}
+            <div className="px-5 md:px-10 lg:px-16 mt-10 mb-2">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                <span className="text-[#D4AF37] text-[0.6rem] font-extrabold tracking-[0.2em] uppercase">📖 Histórias em Quadrinhos</span>
+                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              </div>
+
+              {/* Card destaque da HQ */}
+              <Link href="/hq/nossa-senhora-fatima" className="group block relative overflow-hidden rounded-2xl border border-white/10 hover:border-[#D4AF37]/40 transition-all duration-500">
+                {/* Background — imagem da capa com blur */}
+                <div className="absolute inset-0">
+                  <Image
+                    src="https://contos-apks.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png"
+                    alt="Capa HQ"
+                    fill
+                    className="object-cover object-top opacity-30 group-hover:opacity-40 transition-opacity duration-500 scale-105 group-hover:scale-100"
+                    style={{ filter: 'blur(8px)' }}
+                    unoptimized
+                  />
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(9,11,16,0.9) 0%, rgba(9,11,16,0.6) 60%, rgba(9,11,16,0.3) 100%)' }} />
                 </div>
-                <div className="text-[#D4AF37] font-bold text-sm whitespace-nowrap flex items-center gap-1.5">
-                  Ver HQs
-                  <span className="text-lg group-hover:translate-x-1 transition-transform inline-block">→</span>
+
+                {/* Conteúdo */}
+                <div className="relative flex items-center gap-6 px-6 py-6 md:px-10 md:py-8">
+
+                  {/* Capa em miniatura */}
+                  <div className="relative shrink-0 w-[90px] h-[135px] md:w-[110px] md:h-[165px] rounded-xl overflow-hidden shadow-2xl border border-white/20 group-hover:shadow-[#D4AF37]/20 group-hover:border-[#D4AF37]/30 transition-all duration-500">
+                    <Image
+                      src="https://contos-apks.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png"
+                      alt="Nossa Senhora de Fátima"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
+                    />
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[#D4AF37] text-[0.6rem] font-extrabold uppercase tracking-[0.2em]">Nova HQ</span>
+                      <span className="w-1 h-1 rounded-full bg-[#D4AF37]/40" />
+                      <span className="text-white/40 text-[0.6rem] font-semibold uppercase tracking-wider">15 páginas</span>
+                    </div>
+                    <h3 className="text-white font-black text-xl md:text-2xl leading-tight mb-2 group-hover:text-[#D4AF37] transition-colors duration-300">
+                      Nossa Senhora de Fátima
+                    </h3>
+                    <p className="text-white/50 text-sm leading-relaxed line-clamp-2 mb-4">
+                      A história das aparições de Nossa Senhora às três pastorinhas em Fátima, Portugal. Uma jornada de fé, esperança e conversão.
+                    </p>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all duration-300"
+                      style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)', color: '#000' }}>
+                      <span>📖</span>
+                      <span>Ler agora</span>
+                      <span className="group-hover:translate-x-1 transition-transform inline-block">→</span>
+                    </div>
+                  </div>
                 </div>
               </Link>
             </div>
