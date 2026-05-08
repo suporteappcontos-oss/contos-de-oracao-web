@@ -4,8 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   Heart, LogOut, Key, ChevronLeft, Calendar,
-  Crown, XCircle, CheckCircle2, Play, Mail,
-  AlertTriangle, Shield, Smartphone, Download, MessageCircle
+  Crown, XCircle, CheckCircle2, Play,
+  AlertTriangle, Smartphone, Download, MessageCircle
 } from 'lucide-react'
 import ClientEditableName from './ClientEditableName'
 import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
