@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
     type: 'magiclink',
     email: userEmail,
-    options: { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.contosdeoracao.com.br'}/watch` }
+    options: { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.com.br'}/watch` }
   })
 
   if (linkError || !linkData) {
