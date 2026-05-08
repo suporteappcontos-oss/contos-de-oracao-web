@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import GlobalLoader from "@/components/GlobalLoader";
+import AuthHashHandler from "@/components/AuthHashHandler";
 
 export const metadata: Metadata = {
   title: {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   keywords: ['orações', 'novenas', 'católico', 'streaming', 'retiro espiritual', 'terço', 'santos', 'fé', 'contos de oração'],
   authors: [{ name: 'Contos de Oração' }],
   creator: 'Contos de Oração',
-  metadataBase: new URL('https://www.contosdeoracao.com.br'),
+  metadataBase: new URL('https://contosdeoracao.com.br'),
   alternates: { canonical: '/' },
   manifest: '/manifest.json',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Contos de Oração — Streaming Católico',
     description: 'Orações, novenas, terços e histórias de santos. A maior plataforma de espiritualidade católica do Brasil.',
-    url: 'https://www.contosdeoracao.com.br',
+    url: 'https://contosdeoracao.com.br',
     siteName: 'Contos de Oração',
     images: [{ url: '/logo_stripe.png', width: 512, height: 512, alt: 'Contos de Oração' }],
     locale: 'pt_BR',
@@ -58,6 +59,7 @@ export default async function RootLayout({
       </head>
       <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
         <GlobalLoader />
+        <AuthHashHandler />
         {children}
       </body>
     </html>
