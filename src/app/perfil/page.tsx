@@ -112,103 +112,126 @@ export default async function PerfilPage() {
       <main className="pt-[80px] px-4 md:px-8 max-w-4xl mx-auto">
 
         {/* ── CABEÇALHO ── */}
-        <div className="relative rounded-2xl overflow-hidden mb-6 p-6 md:p-8"
-          style={{ background: 'linear-gradient(135deg, #15243E 0%, #1a2d4a 100%)', border: '1px solid rgba(212,175,55,0.15)' }}>
+        <div className="relative rounded-[2.5rem] overflow-hidden mb-8 p-8 md:p-10 shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+          style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)' }}>
 
-          {/* Fundo decorativo */}
-          <div className="absolute inset-0 opacity-5"
-            style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, #D4AF37 0%, transparent 60%)' }} />
+          {/* Fundo decorativo (Glow) */}
+          <div className="absolute -top-20 -right-20 w-80 h-80 bg-[#D4AF37]/15 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#15243E]/50 blur-[100px] rounded-full pointer-events-none" />
 
-          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-5">
-            {/* Avatar DiceBear */}
-            <div className="relative shrink-0">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 shadow-xl bg-[#D4AF37]/10"
-                style={{ borderColor: 'rgba(212,175,55,0.4)' }}>
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+          <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8 z-10 text-center md:text-left">
+            {/* Avatar */}
+            <div className="relative shrink-0 group">
+              <div className="absolute inset-0 bg-[#D4AF37] blur-md opacity-20 group-hover:opacity-40 transition-opacity rounded-[2rem]" />
+              <div className="relative w-28 h-28 rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-[#090B10]">
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
               </div>
               {/* Badge de status */}
-              <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-[#090B10] ${planoAtivo ? 'bg-emerald-500' : 'bg-red-500'}`} />
+              <div className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-xl border-4 border-[#090B10] flex items-center justify-center ${planoAtivo ? 'bg-emerald-500' : 'bg-red-500'}`}>
+                {planoAtivo ? <CheckCircle2 size={12} className="text-[#090B10]" /> : <XCircle size={12} className="text-[#090B10]" />}
+              </div>
             </div>
 
             {/* Info */}
-            <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2 mb-1">
+            <div className="flex-1 flex flex-col items-center md:items-start">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
                 <ClientEditableName initialName={nome} defaultName={displayName} />
-                <span className={`flex items-center gap-1 text-[0.6rem] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                <span className={`flex items-center gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full ${
                   planoAtivo
-                    ? 'text-emerald-400 border border-emerald-500/25 bg-emerald-500/10'
-                    : 'text-red-400 border border-red-500/25 bg-red-500/10'
+                    ? 'text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                    : 'text-red-400 border border-red-500/30 bg-red-500/10 shadow-[0_0_15px_rgba(239,68,68,0.15)]'
                 }`}>
-                  {planoAtivo ? <CheckCircle2 size={9} /> : <XCircle size={9} />}
-                  {planoAtivo ? 'Ativo' : 'Expirado'}
+                  {planoAtivo ? 'Acesso Ativo' : 'Acesso Expirado'}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-[#64748B] text-xs mb-3">
-                <Mail size={11} /> {email}
+              
+              <div className="flex items-center gap-2 text-[#94A3B8] text-sm mb-5 font-light">
+                <Mail size={14} className="text-white/30" /> {email}
               </div>
-              <div className="flex flex-wrap gap-4 text-xs text-[#64748B]">
-                <span className="flex items-center gap-1"><Calendar size={10} /> Membro desde {dataCriacao}</span>
-                <span className="flex items-center gap-1"><Crown size={10} /> <b style={{ color: '#D4AF37' }}>{planoLabel}</b></span>
-                <span className="flex items-center gap-1"><Heart size={10} fill="#D4AF37" style={{ color: '#D4AF37' }} /> {favoritos?.length ?? 0} favorito(s)</span>
+              
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-xs text-[#94A3B8]">
+                <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                  <Calendar size={12} className="text-white/40" /> 
+                  Membro desde <span className="text-white font-medium">{dataCriacao}</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-[#D4AF37]/5 px-3 py-1.5 rounded-lg border border-[#D4AF37]/10">
+                  <Crown size={12} className="text-[#D4AF37]" /> 
+                  <span className="text-[#D4AF37] font-bold">{planoLabel}</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                  <Heart size={12} fill="#ef4444" className="text-red-500" /> 
+                  <span className="text-white font-medium">{favoritos?.length ?? 0}</span> favoritos
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── GERENCIAMENTO EM LINHA ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-8">
+        {/* ── GERENCIAMENTO BENTO GRID ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           
-          {/* Box 1: Status do Plano */}
-          <div className="rounded-xl p-5 flex flex-col justify-between"
+          {/* Box 1: Status do Plano (Ocupa 2 colunas no desktop) */}
+          <div className="lg:col-span-2 rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group"
             style={{
-              background: planoAtivo ? 'rgba(16,185,129,0.04)' : 'rgba(239,68,68,0.04)',
-              border: `1px solid ${planoAtivo ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'}`,
+              background: planoAtivo ? 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.02) 100%)' : 'linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(239,68,68,0.02) 100%)',
+              border: `1px solid ${planoAtivo ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
             }}>
-            <div>
-              <div className="flex items-center gap-2 font-bold mb-1" style={{ color: planoAtivo ? '#10B981' : '#ef4444' }}>
-                {planoAtivo ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
-                {planoAtivo ? 'Assinatura Ativa' : 'Assinatura Inativa'}
+            <div className={`absolute -right-10 -top-10 w-40 h-40 rounded-full blur-3xl transition-opacity opacity-0 group-hover:opacity-100 ${planoAtivo ? 'bg-emerald-500/10' : 'bg-red-500/10'}`} />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${planoAtivo ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                   {planoAtivo ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+                </div>
+                <span className="font-black text-lg" style={{ color: planoAtivo ? '#34d399' : '#f87171' }}>
+                  {planoAtivo ? 'Assinatura Ativa' : 'Assinatura Inativa'}
+                </span>
               </div>
-              <p className="text-[#64748B] text-xs mb-4">
-                {planoAtivo ? 'Acesso liberado a todos os conteúdos exclusivos.' : 'Sua assinatura expirou. Renove para continuar.'}
+              <p className="text-[#94A3B8] text-sm mb-6 max-w-[80%] leading-relaxed font-light">
+                {planoAtivo ? 'Você tem acesso ilimitado a todos os conteúdos exclusivos, novenas e retiros espirituais.' : 'Sua assinatura expirou e seu acesso foi suspenso. Renove agora para continuar assistindo.'}
               </p>
             </div>
-            {planoAtivo && !isAdmin ? (
-              <div className="flex gap-2 mt-2">
+            <div className="relative z-10">
+              {planoAtivo && !isAdmin ? (
                 <GerenciarStripeBtn />
-              </div>
-            ) : !planoAtivo && (
-              <Link href="/#planos" className="w-full text-center px-5 py-2.5 rounded-xl font-extrabold text-sm transition-all hover:brightness-110" style={{ background: '#D4AF37', color: '#090B10' }}>
-                Renovar →
-              </Link>
-            )}
+              ) : !planoAtivo && (
+                <Link href="/#planos" className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.3)]" style={{ background: '#D4AF37', color: '#090B10' }}>
+                  Renovar Assinatura <Crown size={16} />
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Box 2: Alterar Senha */}
           <Link href="/esqueci-senha"
-            className="flex flex-col justify-center gap-3 p-5 rounded-xl transition-all hover:scale-[1.02]"
-            style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.2)' }}>
-              <Key size={18} style={{ color: '#D4AF37' }} />
-            </div>
+            className="rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group transition-all hover:-translate-y-1 hover:shadow-xl"
+            style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
             <div>
-              <div className="text-white font-bold text-sm">Alterar Senha</div>
-              <div className="text-[#64748B] text-xs mt-0.5">Redefina sua senha de acesso a qualquer momento.</div>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-white/5 border border-white/10 text-white/70 group-hover:bg-white/10 group-hover:text-white transition-all">
+                <Key size={22} />
+              </div>
+              <div className="text-white font-bold text-base mb-1">Segurança</div>
+              <div className="text-[#64748B] text-xs leading-relaxed">Altere sua senha de acesso a qualquer momento.</div>
+            </div>
+            <div className="mt-4 flex items-center gap-1 text-[0.7rem] font-bold uppercase tracking-widest text-white/40 group-hover:text-white/80 transition-colors">
+              Alterar Senha <ChevronLeft size={12} className="rotate-180" />
             </div>
           </Link>
 
-          {/* Box 3: Suporte (WhatsApp João Pires) */}
+          {/* Box 3: Suporte */}
           <a href="https://wa.me/5566997182760" target="_blank" rel="noopener noreferrer"
-            className="flex flex-col justify-center gap-3 p-5 rounded-xl transition-all hover:scale-[1.02] group"
-            style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-[#25D366]/20"
-              style={{ background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.2)' }}>
-              <MessageCircle size={18} style={{ color: '#25D366' }} />
-            </div>
+            className="rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group transition-all hover:-translate-y-1 hover:shadow-xl"
+            style={{ background: 'linear-gradient(135deg, rgba(37,211,102,0.05) 0%, rgba(37,211,102,0) 100%)', border: '1px solid rgba(37,211,102,0.15)' }}>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#25D366]/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             <div>
-              <div className="text-white font-bold text-sm">Suporte Técnico</div>
-              <div className="text-[#64748B] text-xs mt-0.5">Atendimento rápido e especializado via WhatsApp.</div>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] group-hover:bg-[#25D366] group-hover:text-[#090B10] transition-all">
+                <MessageCircle size={22} />
+              </div>
+              <div className="text-white font-bold text-base mb-1">Suporte</div>
+              <div className="text-[#64748B] text-xs leading-relaxed">Fale conosco via WhatsApp para tirar dúvidas.</div>
+            </div>
+            <div className="mt-4 flex items-center gap-1 text-[0.7rem] font-bold uppercase tracking-widest text-[#25D366]/60 group-hover:text-[#25D366] transition-colors">
+              Chamar no Zap <ChevronLeft size={12} className="rotate-180" />
             </div>
           </a>
 
@@ -228,31 +251,35 @@ export default async function PerfilPage() {
           <Pricing />
         </div>
 
-        {/* ── APLICATIVO ANDROID ── */}
-        <div className="mb-12 bg-[#D4AF37]/5 border border-[#D4AF37]/20 rounded-2xl p-6 relative overflow-hidden group">
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#D4AF37]/10 blur-3xl rounded-full pointer-events-none transition-all group-hover:bg-[#D4AF37]/20" />
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
-            <div className="flex items-center gap-5 text-center sm:text-left">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] flex items-center justify-center p-[1px] shadow-lg shrink-0">
-                <div className="w-full h-full bg-[#090B10] rounded-2xl flex items-center justify-center">
-                  <Smartphone size={24} className="text-[#D4AF37]" />
+        {/* ── APLICATIVO ANDROID PREMIUM ── */}
+        <div className="mb-12 rounded-[2rem] p-8 md:p-10 relative overflow-hidden group shadow-[0_20px_50px_rgba(212,175,55,0.08)]"
+             style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.01) 100%)', border: '1px solid rgba(212,175,55,0.2)' }}>
+          <div className="absolute top-0 right-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent opacity-50" />
+          <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#D4AF37]/10 blur-[80px] rounded-full pointer-events-none transition-transform duration-700 group-hover:scale-125" />
+          
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+            <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-6">
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 bg-[#D4AF37] blur-lg opacity-40 rounded-3xl animate-pulse" />
+                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] flex items-center justify-center p-[2px] shadow-xl relative z-10">
+                  <div className="w-full h-full bg-[#090B10] rounded-[22px] flex items-center justify-center">
+                    <Smartphone size={32} className="text-[#D4AF37]" />
+                  </div>
                 </div>
               </div>
               <div>
-                <h4 className="text-white font-bold text-lg mb-1">Aplicativo Android</h4>
-                <p className="text-[#94A3B8] text-sm max-w-md">Instale o nosso aplicativo oficial para ter as orações sempre no seu bolso, com uma experiência super rápida e limpa.</p>
+                <h4 className="text-white font-black text-2xl mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>App Oficial Contos de Oração</h4>
+                <p className="text-[#94A3B8] text-sm md:text-base max-w-lg font-light leading-relaxed">
+                  Acesse pelo celular, na TV, ou onde quiser. Tenha as orações e retiros no seu bolso com navegação fluida e Login por QR Code.
+                </p>
               </div>
             </div>
-            <div className="flex flex-col gap-3 w-full sm:w-auto shrink-0">
-              <a href={apkUrl} download={apkNome} className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
+            <div className="flex flex-col gap-3 w-full md:w-auto shrink-0">
+              <a href={apkUrl} download={apkNome} className="flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-black text-sm transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(212,175,55,0.4)]"
                  style={{ background: '#D4AF37', color: '#090B10' }}>
-                <Download size={16} />
-                Baixar App (.APK)
+                <Download size={18} />
+                Baixar para Android (.APK)
               </a>
-              <div className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm bg-white/5 border border-white/10 text-white/40 cursor-not-allowed select-none"
-                 title="Lançamento em Breve na Google Play Store">
-                Google Play (Em breve)
-              </div>
             </div>
           </div>
         </div>
