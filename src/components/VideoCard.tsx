@@ -78,6 +78,12 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
           style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.85) 0%, transparent 55%)' }}
         />
 
+        {/* Badge Vídeo */}
+        <div className="absolute top-2 left-2 z-10 px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider"
+          style={{ background: 'linear-gradient(135deg, #1a6dff, #4d9fff)', color: '#fff' }}>
+          📺 Vídeo
+        </div>
+
         {/* Título do Vídeo no canto inferior esquerdo */}
         <div className="absolute bottom-2 left-2 right-2 z-10">
           <p className="text-white text-[0.65rem] md:text-xs font-bold leading-tight drop-shadow-md line-clamp-2">
