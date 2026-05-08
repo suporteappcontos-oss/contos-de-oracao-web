@@ -52,12 +52,17 @@ export default async function HQPage({ params }: Props) {
   const temAcesso = isAdmin || hq.planos.includes(etiqueta)
   if (!temAcesso) redirect('/planos')
 
+  // Planos que podem baixar HQ (Essencial e Pro)
+  const PLANOS_DOWNLOAD = ['Essencial', 'Pro', 'essencial', 'pro']
+  const podeDownload = isAdmin || PLANOS_DOWNLOAD.includes(etiqueta)
+
   return (
     <HQReaderClient
       slug={slug}
       titulo={hq.titulo}
       totalPaginas={hq.totalPaginas}
       baseUrl={`${BUNNY_BASE}/${slug}`}
+      podeDownload={podeDownload}
     />
   )
 }

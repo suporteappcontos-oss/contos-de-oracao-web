@@ -3,19 +3,23 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, X, PanelRight, PanelRightClose, Download } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, PanelRight, PanelRightClose, Download, Lock, CheckCircle2 } from 'lucide-react'
 
 interface HQReaderClientProps {
   slug: string
   titulo: string
   totalPaginas: number
   baseUrl: string
+  podeDownload: boolean
 }
 
-export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl }: HQReaderClientProps) {
+export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, podeDownload }: HQReaderClientProps) {
   const [pagina, setPagina] = useState(1)
   const [sidebarAberta, setSidebarAberta] = useState(true)
   const [imgError, setImgError] = useState(false)
+  const [modalDownload, setModalDownload] = useState(false)
+  const [baixando, setBaixando] = useState(false)
+  const [progBaixar, setProgBaixar] = useState(0)
   const thumbAtiva = useRef<HTMLButtonElement>(null)
 
   const irPara = useCallback((n: number) => {
@@ -30,6 +34,7 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl }: 
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') irPara(pagina + 1)
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') irPara(pagina - 1)
+      if (e.key === 'Escape') setModalDownload(false)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -43,6 +48,39 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl }: 
   const numFormatado = String(pagina).padStart(2, '0')
   const urlImagem = `${baseUrl}/HQ_${numFormatado}.png`
   const progresso = Math.round((pagina / totalPaginas) * 100)
+
+  // Baixar página atual
+  function baixarPaginaAtual() {
+    const link = document.createElement('a')
+    link.href = urlImagem
+    link.download = `${titulo.replace(/\s+/g, '-')}-pagina-${pagina}.png`
+    link.target = '_blank'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  // Baixar todas as páginas (uma a uma com intervalo)
+  async function baixarTodasPaginas() {
+    setBaixando(true)
+    setProgBaixar(0)
+    for (let i = 1; i <= totalPaginas; i++) {
+      const num = String(i).padStart(2, '0')
+      const url = `${baseUrl}/HQ_${num}.png`
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${titulo.replace(/\s+/g, '-')}-pagina-${i}.png`
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      setProgBaixar(Math.round((i / totalPaginas) * 100))
+      // Aguarda entre downloads para o browser aceitar
+      await new Promise(r => setTimeout(r, 800))
+    }
+    setBaixando(false)
+    setProgBaixar(100)
+  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: '#0A0C11' }}>
@@ -66,24 +104,31 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl }: 
           <span className="text-white/30 text-[10px]">Página {pagina} de {totalPaginas}</span>
         </div>
 
-        {/* Toggle sidebar */}
-        <div className="shrink-0 flex items-center gap-1">
-          {/* Botão Download */}
-          <a
-            href={`${baseUrl}/HQ_01.png`}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-lg text-white/40 hover:text-green-400 hover:bg-white/5 transition-all"
-            title="Baixar HQ (página 1 como prévia)"
-            onClick={(e) => {
-              e.preventDefault()
-              // Abre o link para download de todas as páginas em novas abas
-              alert('Para baixar a HQ completa, entre em contato pelo suporte. As páginas individuais podem ser salvas clicando com o botão direito na imagem.')
-            }}
-          >
-            <Download size={17} />
-          </a>
+        {/* Direita: Download + Toggle */}
+        <div className="shrink-0 flex items-center gap-2">
+
+          {/* Botão Download — ouro se pode baixar, cadeado se não pode */}
+          {podeDownload ? (
+            <button
+              onClick={() => setModalDownload(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[11px] transition-all hover:brightness-110 active:scale-95 shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)', color: '#000' }}
+              title="Baixar HQ"
+            >
+              <Download size={13} />
+              <span className="hidden sm:inline">Baixar HQ</span>
+            </button>
+          ) : (
+            <Link
+              href="/planos"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[11px] transition-all border border-white/10 hover:border-[#D4AF37]/40 text-white/40 hover:text-white/70"
+              title="Faça upgrade para Essencial ou Pro para baixar"
+            >
+              <Lock size={13} />
+              <span className="hidden sm:inline">Download</span>
+            </Link>
+          )}
+
           <button
             onClick={() => setSidebarAberta(s => !s)}
             className="p-2 rounded-lg text-white/40 hover:text-[#D4AF37] hover:bg-white/5 transition-all"
@@ -196,7 +241,6 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl }: 
                     }`}
                   title={`Página ${n}`}
                 >
-                  {/* Número da página */}
                   <div className={`absolute top-1 left-1 z-10 w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-black
                     ${isAtiva ? 'bg-[#D4AF37] text-black' : 'bg-black/70 text-white/60'}`}>
                     {n}
@@ -217,6 +261,84 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl }: 
           </div>
         </div>
       </div>
+
+      {/* ── MODAL DE DOWNLOAD ── */}
+      {modalDownload && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setModalDownload(false) }}
+        >
+          <div
+            className="relative w-full max-w-md rounded-2xl border border-white/10 overflow-hidden shadow-2xl"
+            style={{ background: 'linear-gradient(145deg, #111827, #0D1117)' }}
+          >
+            {/* Header do modal */}
+            <div className="px-6 pt-6 pb-4 border-b border-white/5 flex items-center justify-between">
+              <div>
+                <h2 className="text-white font-black text-lg">Baixar HQ</h2>
+                <p className="text-white/40 text-xs mt-0.5">{titulo} · {totalPaginas} páginas</p>
+              </div>
+              <button onClick={() => setModalDownload(false)} className="p-2 rounded-xl hover:bg-white/5 text-white/40 hover:text-white transition-all">
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Opções */}
+            <div className="p-6 space-y-3">
+
+              {/* Baixar página atual */}
+              <button
+                onClick={baixarPaginaAtual}
+                className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-[#D4AF37]/30 bg-white/2 hover:bg-[#D4AF37]/5 transition-all group"
+              >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)' }}>
+                  <Download size={18} className="text-black" />
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-bold text-sm group-hover:text-[#D4AF37] transition-colors">Baixar Página Atual</div>
+                  <div className="text-white/40 text-xs">Apenas a página {pagina} (PNG)</div>
+                </div>
+              </button>
+
+              {/* Baixar todas as páginas */}
+              <button
+                onClick={baixarTodasPaginas}
+                disabled={baixando}
+                className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-emerald-400/30 bg-white/2 hover:bg-emerald-400/5 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                  {baixando ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <CheckCircle2 size={18} className="text-white" />
+                  )}
+                </div>
+                <div className="text-left flex-1">
+                  <div className="text-white font-bold text-sm group-hover:text-emerald-400 transition-colors">
+                    {baixando ? `Baixando... ${progBaixar}%` : 'Baixar Todas as Páginas'}
+                  </div>
+                  <div className="text-white/40 text-xs">{totalPaginas} arquivos PNG individuais</div>
+                  {baixando && (
+                    <div className="mt-2 w-full h-1 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full rounded-full bg-emerald-400 transition-all duration-500" style={{ width: `${progBaixar}%` }} />
+                    </div>
+                  )}
+                </div>
+              </button>
+            </div>
+
+            {/* Rodapé */}
+            <div className="px-6 pb-5">
+              <p className="text-white/20 text-[10px] text-center leading-relaxed">
+                ⚠️ Use apenas para uso pessoal. A reprodução e distribuição são proibidas pelos Termos de Uso.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
