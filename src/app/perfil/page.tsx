@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   Heart, LogOut, Key, ChevronLeft, Calendar,
-  Crown, XCircle, CheckCircle2, Play,
+  Crown, XCircle, CheckCircle2, Play, Mail,
   AlertTriangle, Smartphone, Download, MessageCircle
 } from 'lucide-react'
 import ClientEditableName from './ClientEditableName'
