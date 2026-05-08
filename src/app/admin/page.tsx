@@ -195,7 +195,6 @@ export default async function AdminPage({
               { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
               { id: 'relatorios', label: 'Relatórios', icon: BarChart3, count: null },
               { id: 'stripe', label: 'Planos', icon: Settings, count: null },
-              { id: 'config', label: 'App', icon: MonitorSmartphone, count: null },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
                 className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
@@ -619,27 +618,6 @@ export default async function AdminPage({
         {/* ════════ ABA STRIPE ════════ */}
         {activeTab === 'stripe' && (
           <StripeAdmin />
-        )}
-
-        {/* ════════ ABA CONFIGURAÇÕES GERAIS ════════ */}
-        {activeTab === 'config' && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
-                <MonitorSmartphone size={20} className="text-[#D4AF37]" />
-              </div>
-              <div>
-                <h2 className="text-white text-2xl font-black tracking-tight">Personalização</h2>
-                <p className="text-white/40 text-sm">Defina imagens e temas para o site e o aplicativo mobile.</p>
-              </div>
-            </div>
-
-            <div className="bg-[#111827] border border-white/5 rounded-[2rem] p-8 shadow-2xl max-w-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/5 to-transparent rounded-bl-full pointer-events-none" />
-              {/* Componente client-side — resolve erro 413 da Vercel e invalida cache do Bunny */}
-              <UploadFundoClient />
-            </div>
-          </div>
         )}
 
       </main>
