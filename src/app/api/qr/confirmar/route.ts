@@ -16,10 +16,14 @@ export async function POST(req: NextRequest) {
     const { token } = await req.json()
     if (!token) return NextResponse.json({ error: 'Token obrigatório' }, { status: 400 })
 
-    // Pega o usuário logado no app (via cookie/bearer)
+    // Pega o token do header Authorization enviado pelo App
+    const authHeader = req.headers.get('authorization')
+    const jwtToken = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null
+
     const supabase = await createClient()
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+    const { data: { user }, error: authError } = await supabase.auth.getUser(jwtToken || undefined)
+    
+    if (authError || !user) return NextResponse.json({ error: 'Não autenticado no App' }, { status: 401 })
 
     const admin = getAdminClient()
 
