@@ -11,11 +11,10 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Settings, Clock, Heart, BarChart3, MonitorSmartphone, Trophy
+  Settings, Clock, Heart, BarChart3, Trophy
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
-import UploadFundoClient from './UploadFundoClient'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {

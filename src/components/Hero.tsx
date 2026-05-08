@@ -34,9 +34,9 @@ export default function Hero() {
           <div className="hidden md:block w-16 h-1 bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full mt-8 opacity-80" />
 
           {/* Dica para usuários de TV */}
-          <p className="hidden xl:flex items-center gap-2 mt-6 text-white/30 text-sm">
-            <span>📺</span>
-            <span>Na TV? Use <strong className="text-[#D4AF37]">Celular / TV</strong> para escanear o QR Code.</span>
+          <p className="hidden xl:flex items-center gap-2 mt-6 text-white/80 text-sm bg-black/40 px-4 py-2.5 rounded-xl backdrop-blur-md w-fit border border-white/10 shadow-lg">
+            <span className="text-xl">📺</span>
+            <span>Na TV? Use a aba <strong className="text-[#D4AF37]">Celular / TV</strong> para escanear o QR Code de login.</span>
           </p>
         </div>
 
@@ -121,7 +121,7 @@ export default function Hero() {
 
             <div className="p-5">
               <Link
-                href="/assinar"
+                href="/planos"
                 className="relative z-[100] flex items-center justify-center w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] no-underline text-center cursor-pointer"
                 style={{ background: 'transparent', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.4)' }}
               >

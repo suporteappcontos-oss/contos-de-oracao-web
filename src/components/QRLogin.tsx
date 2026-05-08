@@ -25,16 +25,7 @@ export default function QRLogin() {
       setToken(data.token)
       setStatus('waiting')
 
-      // Gera o QR Code no canvas
-      // A URL que o app vai escanear é a rota de confirmação direto
-      const qrUrl = `CONTOSQR:${data.token}`
-      if (canvasRef.current) {
-        await QRCode.toCanvas(canvasRef.current, qrUrl, {
-          width: 200,
-          margin: 2,
-          color: { dark: '#FFFFFF', light: '#00000000' },
-        })
-      }
+
 
       // Inicia polling a cada 2s
       if (pollingRef.current) clearInterval(pollingRef.current)
@@ -84,6 +75,17 @@ export default function QRLogin() {
       if (timerRef.current) clearInterval(timerRef.current)
     }
   }, [])
+
+  // Efeito para desenhar o QR Code assim que o canvas for montado na tela
+  useEffect(() => {
+    if (status === 'waiting' && token && canvasRef.current) {
+      QRCode.toCanvas(canvasRef.current, `CONTOSQR:${token}`, {
+        width: 200,
+        margin: 2,
+        color: { dark: '#FFFFFF', light: '#00000000' },
+      }).catch(e => console.error('Erro ao gerar QR:', e))
+    }
+  }, [status, token])
 
   const minutos = Math.floor(timeLeft / 60).toString().padStart(2, '0')
   const segundos = (timeLeft % 60).toString().padStart(2, '0')
