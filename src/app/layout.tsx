@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   creator: 'Contos de Oração',
   metadataBase: new URL('https://www.contosdeoracao.com.br'),
   alternates: { canonical: '/' },
+  manifest: '/manifest.json',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: {
     icon: '/logo_stripe.png',
@@ -51,8 +52,11 @@ export default async function RootLayout({
 
 
   return (
-    <html lang="pt-BR" className="antialiased">
-      <body className="min-h-full flex flex-col scroll-smooth relative" style={{ background: '#090B10' }}>
+    <html lang="pt-BR" className="antialiased overflow-x-hidden">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+      </head>
+      <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
         <GlobalLoader />
         {children}
       </body>

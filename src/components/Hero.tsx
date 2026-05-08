@@ -14,21 +14,21 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="relative z-20 w-full flex items-start justify-between overflow-visible px-[5%] md:px-[6%] pt-[85px]"
+      className="relative z-20 w-full flex items-start justify-between overflow-visible px-[5%] md:px-[6%] pt-[65px] md:pt-[85px]"
     >
       <div className="relative z-10 w-full flex flex-col md:flex-row items-start justify-between gap-6 xl:gap-16">
 
         {/* Lado Esquerdo */}
-        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left animate-fade-in mt-4 md:mt-10">
+        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left animate-fade-in mt-1 md:mt-10">
           <h1
-            className="text-white font-black leading-tight mb-4"
+            className="text-white font-black leading-tight mb-2 md:mb-4"
             style={{ fontSize: 'clamp(2.5rem, 5vw, 5.5rem)', fontFamily: 'Outfit, sans-serif', textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}
           >
             Sua fé,
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">em todo lugar.</span>
           </h1>
-          <p className="text-white/70 text-base md:text-xl xl:text-2xl max-w-lg xl:max-w-2xl leading-relaxed font-light" style={{ fontFamily: 'Outfit, sans-serif' }}>
+          <p className="text-white/70 text-sm md:text-xl xl:text-2xl max-w-lg xl:max-w-2xl leading-relaxed font-light" style={{ fontFamily: 'Outfit, sans-serif' }}>
             Acesso exclusivo às mais belas orações, novenas e retiros espirituais.
           </p>
           <div className="hidden md:block w-16 h-1 bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full mt-8 opacity-80" />
@@ -79,11 +79,11 @@ export default function Hero() {
 
             {/* Tab: Login com senha */}
             {tab === 'login' && (
-              <div className="p-7 md:p-8">
+              <div className="p-5 md:p-8">
                 <h2 className="text-white text-2xl font-black mb-1" style={{ fontFamily: 'Outfit, sans-serif' }}>Acessar</h2>
-                <p className="text-white/50 text-xs mb-6 font-light">Entre para continuar assistindo.</p>
+                <p className="text-white/50 text-xs mb-4 font-light">Entre para continuar assistindo.</p>
 
-                <form className="flex flex-col gap-5">
+                <form className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
                     <input
                       type="email" name="email" placeholder="E-mail de acesso" required
@@ -100,7 +100,7 @@ export default function Hero() {
                   <PasswordField name="password" label="" placeholder="Sua Senha" />
 
                   <SubmitButton formAction={login}>
-                    <span className="font-extrabold tracking-wide text-base">Entrar na Plataforma</span>
+                    <span className="font-extrabold tracking-wide text-sm md:text-base">Entrar na Plataforma</span>
                   </SubmitButton>
 
                   <Link href="/esqueci-senha" className="text-center text-white/40 text-sm hover:text-[#D4AF37] transition-colors no-underline font-medium mt-1">
@@ -112,14 +112,14 @@ export default function Hero() {
 
             {/* Tab: QR Code */}
             {tab === 'qr' && (
-              <div className="p-4">
+              <div className="p-2 md:p-4">
                 <QRLogin />
               </div>
             )}
 
             <div className="w-full h-[1px] bg-white/10" />
 
-            <div className="p-5">
+            <div className="p-4 md:p-5">
               <Link
                 href="/planos"
                 className="relative z-[100] flex items-center justify-center w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] no-underline text-center cursor-pointer"
