@@ -34,20 +34,20 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 w-full flex justify-between items-center py-3 px-[4%] transition-all duration-400 z-[100] ${
-        scrolled ? "bg-[#090B10]/95 shadow-2xl backdrop-blur-md" : "bg-[#090B10]/95"
+      className={`fixed top-0 w-full flex justify-between items-center py-2 px-[4%] transition-all duration-400 z-[100] ${
+        scrolled ? "bg-[#090B10]/98 shadow-2xl backdrop-blur-md" : "bg-[#090B10]/98"
       }`}
     >
       {/* Logo + Nome */}
-      <Link href="/" className="flex items-center gap-2 no-underline shrink-0">
+      <Link href="/" className="flex items-center gap-2 no-underline shrink-0 z-10">
         <Image
           src="/logo.png"
           alt="Contos de Oração"
-          width={44}
-          height={44}
+          width={40}
+          height={40}
           className="object-contain drop-shadow-lg"
         />
-        <span className="text-white font-black text-xl hidden sm:inline tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
+        <span className="text-white font-black text-lg hidden sm:inline tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
           Contos de Oração
         </span>
       </Link>
@@ -117,7 +117,7 @@ export default function Navbar() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="sm:hidden flex flex-col gap-1.5 p-2"
+        className="sm:hidden flex flex-col gap-1.5 p-2 z-10"
         aria-label="Menu"
       >
         <span className={`block w-6 h-0.5 bg-white transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
@@ -127,7 +127,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-[#090B10]/98 backdrop-blur-md border-t border-white/10 p-4 sm:hidden">
+        <div className="absolute top-full left-0 right-0 bg-[#090B10]/98 backdrop-blur-md border-t border-white/10 p-4 sm:hidden z-50">
           <div className="flex flex-col gap-4">
             <Link href="/planos" className="text-white/70 hover:text-white text-sm transition-colors no-underline font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Planos</Link>
 

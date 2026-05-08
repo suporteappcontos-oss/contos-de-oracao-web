@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import GlobalLoader from "@/components/GlobalLoader";
-import { TVNavigation } from "@/components/TVNavigation";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
 
 export const metadata: Metadata = {
   title: {
@@ -49,10 +47,8 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className="antialiased">
       <body className="min-h-full flex flex-col scroll-smooth relative" style={{ background: '#090B10' }}>
-        <TVNavigation>
-          <GlobalLoader />
-          {children}
-        </TVNavigation>
+        <GlobalLoader />
+        {children}
       </body>
     </html>
   );

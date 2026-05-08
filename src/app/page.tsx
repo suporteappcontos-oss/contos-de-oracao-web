@@ -25,7 +25,7 @@ export default async function Home({ searchParams }: Props) {
     .order('criado_em', { ascending: false });
 
   return (
-    <main>
+    <main className="relative min-h-screen">
       <DynamicBackground />
       <Navbar />
 
@@ -55,7 +55,7 @@ export default async function Home({ searchParams }: Props) {
 
       <Hero />
 
-      <div className={`relative z-10 mt-[-80px] pb-10 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
+      <div className={`relative z-10 mt-4 md:mt-[-80px] pb-10 px-4 md:px-0 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
         {videos && videos.length > 0 ? (
           <CategoryCarousel title="Portfólio" count={videos.length}>
             {videos.map(video => (

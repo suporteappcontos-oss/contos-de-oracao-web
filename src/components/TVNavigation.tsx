@@ -29,9 +29,11 @@ export function TVNavigation({ children }: TVNavigationProps) {
           break;
         case 'Back':
         case 'Escape':
-          // Voltar (específico de TV)
-          window.history.back();
-          e.preventDefault();
+          // Voltar (específico de TV) - apenas se for TV
+          if (isTV()) {
+            window.history.back();
+            e.preventDefault();
+          }
           break;
       }
     };
@@ -43,21 +45,22 @@ export function TVNavigation({ children }: TVNavigationProps) {
   return <>{children}</>;
 }
 
+// Função para detectar se está em TV
+function isTV(): boolean {
+  const userAgent = navigator.userAgent;
+  return /Android.*TV|GoogleTV/.test(userAgent) ||
+         (!('ontouchstart' in window) && window.innerWidth > 1000);
+}
+
 // Hook para detectar se está em TV
 export function useIsTV(): boolean {
-  const [isTV, setIsTV] = useState(false);
+  const [isTVState, setIsTV] = useState(false);
 
   useEffect(() => {
-    // Detectar se está em Android TV ou Google TV
-    const userAgent = navigator.userAgent;
-    const tvDetected = /Android.*TV|GoogleTV/.test(userAgent) ||
-                        // Detectar se não tem touch (indica TV)
-                        (!('ontouchstart' in window) && window.innerWidth > 1000);
-
-    setIsTV(tvDetected);
+    setIsTV(isTV());
   }, []);
 
-  return isTV;
+  return isTVState;
 }
 
 // Componente para adicionar foco visual aprimorado
