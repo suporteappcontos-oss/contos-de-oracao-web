@@ -57,7 +57,7 @@ export default async function WatchPage() {
   try {
     // Usa o próprio endpoint /api/apk que já lê do versao.json corretamente
     const [resApk, resConf] = await Promise.all([
-      fetch(`https://contos-apks.b-cdn.net/versao.json?t=${Date.now()}`, { cache: 'no-store' }),
+      fetch(`https://contosdeoracao.com.br/versao.json?t=${Date.now()}`, { cache: 'no-store' }),
       fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' }),
     ])
     if (resApk.ok) {

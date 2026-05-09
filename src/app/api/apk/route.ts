@@ -1,22 +1,14 @@
 import { NextResponse } from 'next/server';
-
-const BUNNY_CDN = 'https://contos-apks.b-cdn.net';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 export async function GET() {
   try {
-    // Lê o versao.json — fonte única de verdade, atualizada pelo painel Admin
-    const res = await fetch(`${BUNNY_CDN}/versao.json?t=${Date.now()}`, {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
-    });
+    // Lê o versao.json do próprio site (public/versao.json)
+    // Atualizado automaticamente pelo gerar-apk-local.bat via git push
+    const versaoPath = join(process.cwd(), 'public', 'versao.json');
+    const data = JSON.parse(readFileSync(versaoPath, 'utf-8'));
 
-    if (!res.ok) {
-      throw new Error(`Bunny CDN retornou ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    // Garante que temos os campos esperados
     if (!data.versao_atual || !data.link_download) {
       throw new Error('versao.json inválido ou incompleto');
     }
@@ -26,20 +18,17 @@ export async function GET() {
       link_download: data.link_download,
       mensagem: data.mensagem || '',
       obrigatorio: data.obrigatorio || false,
-      nome: `contos-de-oracao-v${data.versao_atual}.apk`,
+      nome: `ContosDeOracao_v${data.versao_atual}.apk`,
     }, {
-      headers: {
-        'Cache-Control': 'no-store, max-age=0',
-      }
+      headers: { 'Cache-Control': 'no-store, max-age=0' }
     });
 
   } catch (error: any) {
     console.error('Erro na API /api/apk:', error);
-    // Fallback para não quebrar o botão de download
     return NextResponse.json({
-      versao_atual: '1.0.26',
-      link_download: `${BUNNY_CDN}/contos-de-oracao-v1.0.26.apk`,
-      nome: 'contos-de-oracao-v1.0.26.apk',
+      versao_atual: '1.0.27',
+      link_download: 'https://contos-apks.b-cdn.net/contos-de-oracao-v1.0.27.apk',
+      nome: 'ContosDeOracao_v1.0.27.apk',
     });
   }
 }

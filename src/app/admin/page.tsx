@@ -156,7 +156,7 @@ export default async function AdminPage({
       if (res.ok) configCDN = await res.json();
     } catch (e) { console.error('Erro ao buscar configCDN:', e) }
     try {
-      const resV = await fetch(`https://contos-apks.b-cdn.net/versao.json?t=${Date.now()}`, { cache: 'no-store' });
+      const resV = await fetch(`https://contosdeoracao.com.br/versao.json?t=${Date.now()}`, { cache: 'no-store' });
       if (resV.ok) versaoApk = await resV.json();
     } catch (e) { console.error('Erro ao buscar versaoApk:', e) }
   }
