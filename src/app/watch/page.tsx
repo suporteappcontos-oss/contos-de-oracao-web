@@ -198,37 +198,22 @@ export default async function WatchPage() {
               <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
             </div>
 
-            <div className="px-5 md:px-10 lg:px-16 mb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
-                <span className="text-[#D4AF37] text-[0.6rem] font-extrabold tracking-[0.2em] uppercase">📖 Histórias em Quadrinhos</span>
-                <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
-              </div>
-
-              <Link href="/hq/nossa-senhora-fatima" className="group flex items-center gap-4 rounded-xl border border-white/8 hover:border-[#D4AF37]/40 transition-all duration-300 p-3"
-                style={{ background: 'rgba(255,255,255,0.02)' }}>
-                {/* Capa pequena */}
-                <div className="relative shrink-0 w-[56px] h-[80px] rounded-lg overflow-hidden border border-white/15">
-                  <Image
-                    src="https://contos-apks.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png"
-                    alt="Capa HQ"
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    unoptimized
-                  />
+            <div className="px-5 md:px-10 lg:px-16 mb-8 mt-4">
+              <Link href="/material-catequese" className="group flex items-center justify-between rounded-xl border border-white/10 hover:border-[#D4AF37]/50 transition-all duration-300 p-4"
+                style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.08), rgba(0,0,0,0.4))' }}>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#D4AF37]/15 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#090B10] transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-lg leading-tight group-hover:text-[#D4AF37] transition-colors">
+                      Material Catequese
+                    </h3>
+                    <p className="text-white/50 text-xs mt-1">Histórias em Quadrinhos e materiais exclusivos para download</p>
+                  </div>
                 </div>
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest mb-1">Nova HQ · 15 páginas</div>
-                  <h3 className="text-white font-bold text-sm leading-tight group-hover:text-[#D4AF37] transition-colors truncate">
-                    Nossa Senhora de Fátima
-                  </h3>
-                  <p className="text-white/40 text-xs mt-0.5 line-clamp-1">Aparições em Fátima, Portugal</p>
-                </div>
-                {/* Botão Ler */}
-                <div className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
-                  style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)', color: '#000' }}>
-                  Ler →
+                <div className="shrink-0 text-xs font-bold px-4 py-2 rounded-lg transition-all border border-[#D4AF37]/30 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#090B10]">
+                  Acessar →
                 </div>
               </Link>
             </div>

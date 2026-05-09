@@ -111,12 +111,12 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
           {podeDownload ? (
             <button
               onClick={() => setModalDownload(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[11px] transition-all hover:brightness-110 active:scale-95 shadow-lg"
-              style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)', color: '#000' }}
+              className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite]"
+              style={{ background: 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000' }}
               title="Baixar HQ"
             >
-              <Download size={13} />
-              <span className="hidden sm:inline">Baixar HQ</span>
+              <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+              <span className="hidden sm:inline tracking-wide">BAIXAR HQ</span>
             </button>
           ) : (
             <Link

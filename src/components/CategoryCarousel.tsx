@@ -62,13 +62,12 @@ export default function CategoryCarousel({
           </button>
         )}
 
-        {/* Scroll Container */}
         <div
           ref={scrollRef}
-          className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-8 px-5 md:px-10 lg:px-16"
+          className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-8 px-5 md:px-10 lg:px-16 snap-x snap-mandatory"
         >
           {React.Children.map(children, child => (
-            <div className="flex-shrink-0">{child}</div>
+            <div className="flex-shrink-0 snap-start">{child}</div>
           ))}
         </div>
 

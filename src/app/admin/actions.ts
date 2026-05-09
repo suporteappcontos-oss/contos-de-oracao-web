@@ -197,3 +197,45 @@ export async function salvarConfiguracao(formData: FormData) {
     console.error('❌ Erro no salvarConfiguracao:', error.message || error);
   }
 }
+
+// ─── Atualizar Permissões de Acesso (Config.json) ───
+export async function salvarPermissoesPlanos(planosApp: string[], planosHq: string[]) {
+  await verificarAdmin();
+  try {
+    // 1. Fetch current config
+    let config = {};
+    try {
+      const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`);
+      if (res.ok) {
+        config = await res.json();
+      }
+    } catch (e) {
+      console.log('Nenhum config.json existente encontrado, criando um novo...');
+    }
+
+    // 2. Merge with new permissions
+    config = {
+      ...config,
+      planos_app: planosApp,
+      planos_hq: planosHq
+    };
+
+    // 3. Upload back to Bunny
+    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
+      method: 'PUT',
+      headers: {
+        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(config),
+      cache: 'no-store'
+    });
+
+    if (!resConf.ok) throw new Error(`Erro ao salvar config.json: ${resConf.statusText}`);
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (error: any) {
+    console.error('❌ Erro no salvarPermissoesPlanos:', error.message || error);
+    return { success: false, error: error.message };
+  }
+}

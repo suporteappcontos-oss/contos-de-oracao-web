@@ -58,34 +58,7 @@ export default async function Home({ searchParams }: Props) {
       <div className={`relative z-10 md:mt-[-80px] mt-8 pb-10 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
         {videos && videos.length > 0 ? (
           <CategoryCarousel title="Portfólio" count={videos.length + 1}>
-            {/* Card especial da HQ — sempre primeiro */}
-            <a
-              href="/hq/nossa-senhora-fatima"
-              className="group relative shrink-0 outline-none"
-              style={{ width: 'clamp(155px, 20vw, 240px)', display: 'block' }}
-            >
-              <div className="relative aspect-video rounded-xl overflow-hidden transition-all duration-300 group-hover:scale-[1.06] group-hover:-translate-y-1"
-                style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 6px 25px rgba(0,0,0,0.4)' }}>
-                <img
-                  src="https://contos-apks.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png"
-                  alt="HQ Nossa Senhora de Fátima"
-                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500"
-                />
-                {/* Overlay gradiente igual ao VideoCard */}
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.85) 0%, transparent 55%)' }} />
-                {/* Badge HQ */}
-                <div className="absolute top-2 left-2 z-10 px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider"
-                  style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)', color: '#000' }}>
-                  📖 HQ
-                </div>
-                {/* Título */}
-                <div className="absolute bottom-2 left-2 right-2 z-10">
-                  <p className="text-white text-[0.65rem] md:text-xs font-bold leading-tight drop-shadow-md line-clamp-2">
-                    Nossa Senhora de Fátima
-                  </p>
-                </div>
-              </div>
-            </a>
+
 
             {videos.map(video => (
               <VideoCard key={video.id} video={video} />

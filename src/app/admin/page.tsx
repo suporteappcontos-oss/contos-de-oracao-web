@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
+import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -145,6 +146,14 @@ export default async function AdminPage({
 
   const chartData = Object.entries(viewsByDay).map(([dia, count]) => ({ dia, count }))
   const maxViews = Math.max(...chartData.map(d => d.count), 1) // Prevent division by 0
+
+  let configCDN = null;
+  if (activeTab === 'configuracoes') {
+    try {
+      const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (res.ok) configCDN = await res.json();
+    } catch (e) { console.error('Erro ao buscar configCDN:', e) }
+  }
 
   return (
     <div className="min-h-screen text-white pb-20 selection:bg-[#D4AF37] selection:text-black" style={{ background: 'radial-gradient(circle at top, #111827 0%, #090B10 100%)', fontFamily: 'Outfit, sans-serif' }}>
@@ -622,97 +631,7 @@ export default async function AdminPage({
 
         {/* ════════ ABA CONFIGURAÇÕES DE ACESSO ════════ */}
         {activeTab === 'configuracoes' && (
-          <div className="space-y-8 max-w-3xl">
-            <div>
-              <h2 className="text-white text-2xl font-black mb-1">Controle de Acessos</h2>
-              <p className="text-white/40 text-sm">Configure quais planos têm acesso ao App e podem baixar conteúdos.</p>
-            </div>
-
-            {/* Card: Acesso ao App */}
-            <div className="bg-[#111827] border border-white/5 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a6dff, #4d9fff)' }}>
-                  <Smartphone size={20} className="text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-black text-base">Acesso ao Aplicativo</h3>
-                  <p className="text-white/40 text-xs">Planos que podem usar o app mobile</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                {[{nome: 'Básico', color: 'bg-white/10 text-white/70', desc: 'Acesso apenas ao perfil (sem conteúdo)', checked: true, locked: true},
-                  {nome: 'Essencial', color: 'bg-[#D4AF37]/10 text-[#D4AF37]', desc: 'Acesso completo ao app', checked: true, locked: false},
-                  {nome: 'Pro', color: 'bg-emerald-500/10 text-emerald-400', desc: 'Acesso completo ao app + recursos exclusivos', checked: true, locked: false},
-                ].map(p => (
-                  <div key={p.nome} className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/2">
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs font-black px-2.5 py-1 rounded-lg ${p.color}`}>{p.nome}</span>
-                      <span className="text-white/40 text-xs">{p.desc}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {p.locked && <span className="text-[10px] text-white/20 font-bold">Obrigatório</span>}
-                      <div className={`w-10 h-5 rounded-full flex items-center transition-all ${ p.checked ? 'bg-[#D4AF37]' : 'bg-white/10'}`}
-                        style={{ justifyContent: p.checked ? 'flex-end' : 'flex-start', padding: '2px' }}>
-                        <div className="w-4 h-4 rounded-full bg-white shadow-md" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 p-3 rounded-xl border border-[#D4AF37]/20 bg-[#D4AF37]/5">
-                <p className="text-[#D4AF37] text-xs font-semibold">ℹ️ Plano Básico sempre tem acesso ao app, mas é redirecionado para o perfil automaticamente. Os planos Essencial e Pro têm acesso total.</p>
-              </div>
-            </div>
-
-            {/* Card: Download de HQs */}
-            <div className="bg-[#111827] border border-white/5 rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)' }}>
-                  <BookOpen size={20} className="text-black" />
-                </div>
-                <div>
-                  <h3 className="text-white font-black text-base">Download de HQs</h3>
-                  <p className="text-white/40 text-xs">Planos que podem baixar as histórias em quadrinhos</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                {[{nome: 'Básico', color: 'bg-white/10 text-white/70', desc: 'Sem acesso ao download', checked: false},
-                  {nome: 'Essencial', color: 'bg-[#D4AF37]/10 text-[#D4AF37]', desc: 'Pode baixar todas as HQs', checked: true},
-                  {nome: 'Pro', color: 'bg-emerald-500/10 text-emerald-400', desc: 'Pode baixar todas as HQs', checked: true},
-                ].map(p => (
-                  <div key={p.nome} className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/2">
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs font-black px-2.5 py-1 rounded-lg ${p.color}`}>{p.nome}</span>
-                      <span className="text-white/40 text-xs">{p.desc}</span>
-                    </div>
-                    <div className={`w-10 h-5 rounded-full flex items-center transition-all ${ p.checked ? 'bg-[#D4AF37]' : 'bg-white/10'}`}
-                      style={{ justifyContent: p.checked ? 'flex-end' : 'flex-start', padding: '2px' }}>
-                      <div className="w-4 h-4 rounded-full bg-white shadow-md" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
-                <p className="text-emerald-400 text-xs font-semibold">✅ Configuração atual: apenas Essencial e Pro podem baixar HQs. Para alterar, edite o arquivo <code className="bg-white/10 px-1 rounded">/hq/[slug]/page.tsx</code></p>
-              </div>
-            </div>
-
-            {/* Card: Download de Vídeos */}
-            <div className="bg-[#111827] border border-white/5 rounded-2xl p-6 opacity-60">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/10">
-                  <ShieldCheck size={20} className="text-white/50" />
-                </div>
-                <div>
-                  <h3 className="text-white font-black text-base">Download de Vídeos</h3>
-                  <p className="text-white/40 text-xs">Em breve — atualmente não disponível</p>
-                </div>
-              </div>
-              <div className="text-center py-6 text-white/20">
-                <p className="text-sm">🔒 Funcionalidade em desenvolvimento</p>
-              </div>
-            </div>
-          </div>
+          <ConfiguracoesAcesso initialConfig={configCDN} />
         )}
 
       </main>

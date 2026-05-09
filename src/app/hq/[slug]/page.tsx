@@ -48,13 +48,23 @@ export default async function HQPage({ params }: Props) {
   // Sem plano → redireciona para expirado
   if (!isAdmin && !planoAtivo) redirect('/?acesso=expirado')
 
+  let planosHq = ['Essencial', 'Pro']
+  try {
+    const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' })
+    if (res.ok) {
+      const config = await res.json()
+      if (config.planos_hq) planosHq = config.planos_hq
+    }
+  } catch (e) {}
+
+  const normalizedPlanosHq = planosHq.map(p => p.toLowerCase())
+
   // Plano sem acesso à HQ → redireciona para planos
-  const temAcesso = isAdmin || hq.planos.includes(etiqueta)
+  const temAcesso = isAdmin || normalizedPlanosHq.includes(etiqueta.toLowerCase())
   if (!temAcesso) redirect('/planos')
 
-  // Planos que podem baixar HQ (Essencial e Pro)
-  const PLANOS_DOWNLOAD = ['Essencial', 'Pro', 'essencial', 'pro']
-  const podeDownload = isAdmin || PLANOS_DOWNLOAD.includes(etiqueta)
+  // Planos que podem baixar HQ
+  const podeDownload = temAcesso
 
   return (
     <HQReaderClient
