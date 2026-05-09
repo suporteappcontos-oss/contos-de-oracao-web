@@ -37,9 +37,9 @@ export async function GET() {
     console.error('Erro na API /api/apk:', error);
     // Fallback para não quebrar o botão de download
     return NextResponse.json({
-      versao_atual: '1.0.25',
-      link_download: `${BUNNY_CDN}/contos-de-oracao-v1.0.25.apk`,
-      nome: 'contos-de-oracao-v1.0.25.apk',
+      versao_atual: '1.0.26',
+      link_download: `${BUNNY_CDN}/contos-de-oracao-v1.0.26.apk`,
+      nome: 'contos-de-oracao-v1.0.26.apk',
     });
   }
 }
