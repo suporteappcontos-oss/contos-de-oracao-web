@@ -16,6 +16,7 @@ import {
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
 import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
+import { GerenciadorApk } from './GerenciadorApk'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -148,11 +149,16 @@ export default async function AdminPage({
   const maxViews = Math.max(...chartData.map(d => d.count), 1) // Prevent division by 0
 
   let configCDN = null;
+  let versaoApk = null;
   if (activeTab === 'configuracoes') {
     try {
       const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) configCDN = await res.json();
     } catch (e) { console.error('Erro ao buscar configCDN:', e) }
+    try {
+      const resV = await fetch(`https://contos-apks.b-cdn.net/versao.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (resV.ok) versaoApk = await resV.json();
+    } catch (e) { console.error('Erro ao buscar versaoApk:', e) }
   }
 
   return (
@@ -631,7 +637,10 @@ export default async function AdminPage({
 
         {/* ════════ ABA CONFIGURAÇÕES DE ACESSO ════════ */}
         {activeTab === 'configuracoes' && (
-          <ConfiguracoesAcesso initialConfig={configCDN} />
+          <div className="space-y-8 max-w-3xl">
+            <GerenciadorApk versaoAtual={versaoApk} />
+            <ConfiguracoesAcesso initialConfig={configCDN} />
+          </div>
         )}
 
       </main>

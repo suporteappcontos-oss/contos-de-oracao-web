@@ -239,3 +239,34 @@ export async function salvarPermissoesPlanos(planosApp: string[], planosHq: stri
     return { success: false, error: error.message };
   }
 }
+
+// ─── Atualizar versao.json (Controle de APK) ───
+export async function salvarVersaoApk(versao: string, linkDownload: string, mensagem: string, obrigatorio: boolean) {
+  await verificarAdmin();
+  try {
+    const dados = {
+      versao_atual: versao,
+      link_download: linkDownload,
+      obrigatorio: obrigatorio,
+      mensagem: mensagem,
+      data_lancamento: new Date().toISOString(),
+    };
+
+    const res = await fetch(`https://br.storage.bunnycdn.com/contos-apks/versao.json`, {
+      method: 'PUT',
+      headers: {
+        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dados),
+      cache: 'no-store'
+    });
+
+    if (!res.ok) throw new Error(`Erro ao salvar versao.json: ${res.statusText}`);
+    revalidatePath('/admin');
+    return { success: true };
+  } catch (error: any) {
+    console.error('❌ Erro no salvarVersaoApk:', error.message || error);
+    return { success: false, error: error.message };
+  }
+}

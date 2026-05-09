@@ -6,7 +6,7 @@ import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import NotificationBell from '@/components/NotificationBell'
-import { LogOut, Settings, User } from 'lucide-react'
+import { LogOut, Settings, Smartphone } from 'lucide-react'
 
 type Video = {
   id: string
@@ -50,6 +50,32 @@ export default async function WatchPage() {
   const { data: favoritosData } = await supabase
     .from('favoritos').select('video_id').eq('user_id', user!.id)
   const favoritosSet = new Set((favoritosData ?? []).map(f => f.video_id))
+
+  // Busca link de download do APK e planos permitidos
+  let apkDownloadUrl: string | null = null
+  let planosApp: string[] = ['Essencial', 'Pro']
+  try {
+    // Usa o próprio endpoint /api/apk que já lê do versao.json corretamente
+    const [resApk, resConf] = await Promise.all([
+      fetch(`https://contos-apks.b-cdn.net/versao.json?t=${Date.now()}`, { cache: 'no-store' }),
+      fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' }),
+    ])
+    if (resApk.ok) {
+      const versaoData = await resApk.json()
+      apkDownloadUrl = versaoData.link_download || null
+    }
+    if (resConf.ok) {
+      const conf = await resConf.json()
+      if (conf.planos_app) planosApp = conf.planos_app
+    }
+  } catch (e) {
+    // Fallback se o CDN falhar
+    apkDownloadUrl = 'https://contos-apks.b-cdn.net/contos-de-oracao-v1.0.25.apk'
+  }
+
+  // Admin SEMPRE vê o botão. Outros usuários: apenas se o plano estiver na lista
+  const etiquetaPlano = user.user_metadata?.etiqueta_plano || ''
+  const podeDownloadApk = isAdmin || planosApp.map(p => p.toLowerCase()).includes(etiquetaPlano.toLowerCase())
 
   // 🕒 HISTÓRICO DE VISUALIZAÇÕES (Continue Assistindo)
   const { data: historico } = await supabase
@@ -135,6 +161,21 @@ export default async function WatchPage() {
 
           {/* Sino de Notificações */}
           <NotificationBell />
+
+          {/* Botão de Download do APK (baseado no plano) */}
+          {podeDownloadApk && apkDownloadUrl && (
+            <a
+              href={apkDownloadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Baixar App Android"
+              className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105 shadow-[0_0_10px_rgba(16,185,129,0.2)] hover:shadow-[0_0_16px_rgba(16,185,129,0.4)]"
+              style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#10b981' }}
+            >
+              <Smartphone size={13} className="group-hover:-translate-y-0.5 transition-transform" />
+              <span className="hidden md:inline tracking-wide">App</span>
+            </a>
+          )}
 
           {isAdmin && (
             <Link

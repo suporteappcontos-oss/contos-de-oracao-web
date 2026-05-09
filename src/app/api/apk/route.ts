@@ -1,58 +1,45 @@
 import { NextResponse } from 'next/server';
 
+const BUNNY_CDN = 'https://contos-apks.b-cdn.net';
+
 export async function GET() {
   try {
-    // Configurações do Bunny CDN — fallback hardcoded para garantir funcionamento
-    const bunnyKey = process.env.BUNNY_API_KEY || '5513bf80-0970-4a66-a4e06d748364-2d6f-4522';
-    const bunnyStorageUrl = process.env.BUNNY_STORAGE_URL || 'https://br.storage.bunnycdn.com/contos-apks/';
-    const bunnyPullZone = process.env.BUNNY_PULL_ZONE || 'https://contos-apks.b-cdn.net';
-
-
-    // Faz a listagem dos arquivos da pasta do Bunny
-    const response = await fetch(bunnyStorageUrl, {
-      method: 'GET',
-      headers: {
-        'AccessKey': bunnyKey,
-        'Accept': 'application/json'
-      },
-      cache: 'no-store' // Sempre busca o mais atualizado
+    // Lê o versao.json — fonte única de verdade, atualizada pelo painel Admin
+    const res = await fetch(`${BUNNY_CDN}/versao.json?t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
     });
 
-    if (!response.ok) {
-       return NextResponse.json({ error: 'Falha ao acessar BunnyCDN: ' + response.statusText }, { status: response.status });
+    if (!res.ok) {
+      throw new Error(`Bunny CDN retornou ${res.status}`);
     }
 
-    const files = await response.json();
-    
-    // Filtra para pegar apenas os arquivos que terminam com .apk
-    const apks = files.filter((f: any) => !f.IsDirectory && f.ObjectName.endsWith('.apk'));
+    const data = await res.json();
 
-    if (apks && apks.length > 0) {
-      // Ordena pelos mais recentes (se houver mais de um)
-      apks.sort((a: any, b: any) => new Date(b.DateCreated).getTime() - new Date(a.DateCreated).getTime());
-      
-      const latestApk = apks[0];
-      
-      // Extrair versão do nome (ex: ContosDeOracao-v1.0.5.apk -> 1.0.5)
-      let versao = "1.0.0";
-      const versaoMatch = latestApk.ObjectName?.match(/v?(\d+\.\d+\.\d+)/);
-      if (versaoMatch) {
-        versao = versaoMatch[1];
+    // Garante que temos os campos esperados
+    if (!data.versao_atual || !data.link_download) {
+      throw new Error('versao.json inválido ou incompleto');
+    }
+
+    return NextResponse.json({
+      versao_atual: data.versao_atual,
+      link_download: data.link_download,
+      mensagem: data.mensagem || '',
+      obrigatorio: data.obrigatorio || false,
+      nome: `contos-de-oracao-v${data.versao_atual}.apk`,
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
       }
-      
-      // O link final maravilhoso para o usuário!
-      return NextResponse.json({
-        link_download: `${bunnyPullZone}/${latestApk.ObjectName}`,
-        versao_atual: versao,
-        nome: latestApk.ObjectName
-      });
-    }
-    
-    return NextResponse.json({ error: 'Nenhum APK encontrado no Bunny' }, { status: 404 });
+    });
+
   } catch (error: any) {
-    console.error("Erro na API do Bunny APK:", error);
-    return NextResponse.json({ error: 'Erro interno', details: error?.message || String(error) }, { status: 500 });
+    console.error('Erro na API /api/apk:', error);
+    // Fallback para não quebrar o botão de download
+    return NextResponse.json({
+      versao_atual: '1.0.25',
+      link_download: `${BUNNY_CDN}/contos-de-oracao-v1.0.25.apk`,
+      nome: 'contos-de-oracao-v1.0.25.apk',
+    });
   }
 }
-    
-
