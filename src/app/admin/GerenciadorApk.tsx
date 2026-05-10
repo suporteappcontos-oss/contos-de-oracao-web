@@ -6,41 +6,38 @@ import { salvarVersaoApk } from './actions'
 
 const BUNNY_BASE_URL = 'https://contos-apks.b-cdn.net'
 
-// APKs disponíveis no CDN (conforme listado pelo usuário)
-const APKS_DISPONIVEIS = [
-  'contos-de-oracao-v1.0.25.apk',
-  'contos-de-oracao-v1.0.23.apk',
-  'contos-de-oracao-v1.0.22.apk',
-  'contos-de-oracao-v1.0.20.apk',
-  'contos-de-oracao-v1.0.18.apk',
-  'contos-de-oracao-v1.0.17.apk',
-  'contos-de-oracao-v1.0.16.apk',
-]
-
 export function GerenciadorApk({ versaoAtual }: { versaoAtual: any }) {
   const [isPending, startTransition] = useTransition()
   const [mensagem, setMensagem] = useState('')
   const [erro, setErro] = useState('')
 
-  const [versao, setVersao] = useState(versaoAtual?.versao_atual || '1.0.25')
-  const [apkSelecionado, setApkSelecionado] = useState(versaoAtual?.link_download || `${BUNNY_BASE_URL}/contos-de-oracao-v1.0.25.apk`)
-  const [msgUpdate, setMsgUpdate] = useState(versaoAtual?.mensagem || '🙏 Nova versão disponível! Melhorias e correções para sua experiência.')
+  const [versao, setVersao] = useState(versaoAtual?.versao_atual || '1.0.27')
+  const [apkLink, setApkLink] = useState(
+    versaoAtual?.link_download || `${BUNNY_BASE_URL}/contos-de-oracao-v1.0.27.apk`
+  )
+  const [msgUpdate, setMsgUpdate] = useState(
+    versaoAtual?.mensagem || '🙏 Nova versão disponível! Melhorias e correções para sua experiência.'
+  )
   const [obrigatorio, setObrigatorio] = useState(versaoAtual?.obrigatorio || false)
+
+  // Auto-preenche o link quando o número de versão muda
+  const handleVersaoChange = (v: string) => {
+    setVersao(v)
+    setApkLink(`${BUNNY_BASE_URL}/contos-de-oracao-v${v}.apk`)
+  }
 
   const handleSalvar = () => {
     setMensagem('')
     setErro('')
     startTransition(async () => {
-      const res = await salvarVersaoApk(versao, apkSelecionado, msgUpdate, obrigatorio)
+      const res = await salvarVersaoApk(versao, apkLink, msgUpdate, obrigatorio)
       if (res.success) {
-        setMensagem('✅ versao.json atualizado! O app vai detectar a nova versão automaticamente.')
+        setMensagem('✅ versao.json atualizado! O app vai detectar a nova versão em instantes.')
       } else {
         setErro(`❌ Erro: ${res.error}`)
       }
     })
   }
-
-  const versaoNoLink = apkSelecionado.match(/v(\d+\.\d+\.\d+)/)?.[1] || versao
 
   return (
     <div className="bg-[#111827] border border-white/5 rounded-2xl p-6 shadow-lg">
@@ -50,7 +47,7 @@ export function GerenciadorApk({ versaoAtual }: { versaoAtual: any }) {
         </div>
         <div>
           <h3 className="text-white font-black text-base">Publicar Nova Versão do App</h3>
-          <p className="text-white/40 text-xs">Atualiza o versao.json para os usuários receberem a notificação de atualização</p>
+          <p className="text-white/40 text-xs">Atualiza o versao.json — site e app detectam automaticamente</p>
         </div>
       </div>
 
@@ -74,42 +71,43 @@ export function GerenciadorApk({ versaoAtual }: { versaoAtual: any }) {
       )}
 
       <div className="space-y-4">
-        {/* Seleção do APK */}
+        {/* Número da Versão */}
         <div>
-          <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">APK no Bunny CDN</label>
-          <select
-            value={apkSelecionado}
-            onChange={(e) => {
-              const file = e.target.value
-              setApkSelecionado(file)
-              const v = file.match(/v(\d+\.\d+\.\d+)/)?.[1]
-              if (v) setVersao(v)
-            }}
-            className="w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white focus:outline-none transition-all text-sm font-mono"
-          >
-            {APKS_DISPONIVEIS.map(apk => (
-              <option key={apk} value={`${BUNNY_BASE_URL}/${apk}`}>
-                {apk}
-              </option>
-            ))}
-          </select>
-          <p className="text-white/25 text-[10px] mt-1.5">Link gerado: <span className="text-white/40 font-mono">{apkSelecionado}</span></p>
-        </div>
-
-        {/* Versão */}
-        <div>
-          <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Número da Versão</label>
+          <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">
+            Número da Nova Versão
+          </label>
           <input
             value={versao}
-            onChange={(e) => setVersao(e.target.value)}
-            placeholder="ex: 1.0.25"
+            onChange={(e) => handleVersaoChange(e.target.value)}
+            placeholder="ex: 1.0.28"
             className="w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all text-sm font-mono"
           />
+          <p className="text-white/25 text-[10px] mt-1.5">
+            O link de download será preenchido automaticamente abaixo
+          </p>
+        </div>
+
+        {/* Link do APK */}
+        <div>
+          <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">
+            Link do APK no Bunny CDN
+          </label>
+          <input
+            value={apkLink}
+            onChange={(e) => setApkLink(e.target.value)}
+            placeholder="https://contos-apks.b-cdn.net/contos-de-oracao-v1.0.28.apk"
+            className="w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all text-sm font-mono"
+          />
+          <p className="text-white/25 text-[10px] mt-1.5 break-all">
+            Link atual: <span className="text-white/40">{apkLink}</span>
+          </p>
         </div>
 
         {/* Mensagem */}
         <div>
-          <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Mensagem para o Usuário</label>
+          <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">
+            Mensagem para o Usuário
+          </label>
           <textarea
             value={msgUpdate}
             onChange={(e) => setMsgUpdate(e.target.value)}

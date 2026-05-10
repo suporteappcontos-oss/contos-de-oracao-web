@@ -244,6 +244,9 @@ export async function salvarPermissoesPlanos(planosApp: string[], planosHq: stri
 export async function salvarVersaoApk(versao: string, linkDownload: string, mensagem: string, obrigatorio: boolean) {
   await verificarAdmin();
   try {
+    const { writeFileSync } = await import('fs');
+    const { join } = await import('path');
+
     const dados = {
       versao_atual: versao,
       link_download: linkDownload,
@@ -252,21 +255,15 @@ export async function salvarVersaoApk(versao: string, linkDownload: string, mens
       data_lancamento: new Date().toISOString(),
     };
 
-    const res = await fetch(`https://br.storage.bunnycdn.com/contos-apks/versao.json`, {
-      method: 'PUT',
-      headers: {
-        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dados),
-      cache: 'no-store'
-    });
+    const versaoPath = join(process.cwd(), 'public', 'versao.json');
+    writeFileSync(versaoPath, JSON.stringify(dados, null, 2), 'utf-8');
 
-    if (!res.ok) throw new Error(`Erro ao salvar versao.json: ${res.statusText}`);
     revalidatePath('/admin');
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (error: any) {
     console.error('❌ Erro no salvarVersaoApk:', error.message || error);
     return { success: false, error: error.message };
   }
 }
+
