@@ -20,12 +20,39 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
   const [imgError, setImgError] = useState(false)
   const thumbAtiva = useRef<HTMLButtonElement>(null)
 
+  const [baixandoPdf, setBaixandoPdf] = useState(false)
+
   const irPara = useCallback((n: number) => {
     if (n < 1 || n > totalPaginas) return
     setPagina(n)
     setImgError(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [totalPaginas])
+
+  const forceDownloadPDF = async () => {
+    if (!pdfUrl || baixandoPdf) return
+    try {
+      setBaixandoPdf(true)
+      const res = await fetch(pdfUrl)
+      if (!res.ok) throw new Error('Erro ao baixar PDF')
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      // Determina o nome do arquivo a partir da URL, fallback para o slug
+      const fileName = pdfUrl.split('/').pop() || `${slug}.pdf`
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (e) {
+      alert('Não foi possível baixar o PDF no momento. Tente novamente mais tarde.')
+      console.error(e)
+    } finally {
+      setBaixandoPdf(false)
+    }
+  }
 
   // Navegar com teclado
   useEffect(() => {
@@ -74,18 +101,20 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
           {/* Botão Download — ouro se pode baixar, cadeado se não pode */}
           {podeDownload ? (
             pdfUrl ? (
-              <a
-                href={pdfUrl}
-                target="_blank"
-                download
-                rel="noopener noreferrer"
-                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite]"
+              <button
+                onClick={forceDownloadPDF}
+                disabled={baixandoPdf}
+                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite] disabled:opacity-50 disabled:animate-none disabled:hover:scale-100 disabled:shadow-none"
                 style={{ background: 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000' }}
                 title="Baixar PDF"
               >
-                <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
-                <span className="hidden sm:inline tracking-wide">BAIXAR PDF</span>
-              </a>
+                {baixandoPdf ? (
+                  <span className="animate-spin text-black">⭮</span>
+                ) : (
+                  <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+                )}
+                <span className="hidden sm:inline tracking-wide">{baixandoPdf ? 'BAIXANDO...' : 'BAIXAR PDF'}</span>
+              </button>
             ) : (
               <button
                 className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs border border-white/20 text-white/40 cursor-not-allowed"

@@ -343,6 +343,7 @@ export async function adicionarPdfHq(formData: FormData) {
 
     revalidatePath('/material-catequese');
     revalidatePath('/admin');
+    revalidatePath('/hq/[slug]', 'page');
     return { success: true };
   } catch (error: any) {
     console.error('❌ Erro no adicionarPdfHq:', error.message || error);
