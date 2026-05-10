@@ -55,7 +55,6 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
     if (!titulo.trim()) { setErro('❌ Informe o título da HQ.'); return }
     if (!capaFile) { setErro('❌ Selecione a imagem de capa.'); return }
 
-    setMostrarForm(false)
     startTransition(async () => {
       try {
         const slug = titulo.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -113,6 +112,7 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
           setMensagem('✅ HQ publicada com sucesso! Disponível para os assinantes.')
           setTitulo(''); setDescricao(''); setPdfFile(null); setCapaFile(null); setLinkPdf(''); setPngFiles([])
           setTotalPaginas('1')
+          setMostrarForm(false)
           if (res.hq) setHqs(prev => [res.hq!, ...prev])
         } else {
           setErro(`❌ Erro: ${res.error}`)

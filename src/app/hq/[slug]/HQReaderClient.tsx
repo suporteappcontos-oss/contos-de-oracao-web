@@ -78,7 +78,7 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
 
       {/* ── TOPBAR ── */}
       <div className="shrink-0 z-50 border-b border-white/5 bg-[#0A0C11]/98 backdrop-blur-sm px-4 py-2.5 flex items-center justify-between gap-4">
-        <Link href="/watch" className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm shrink-0">
+        <Link href="/material-catequese" className="flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm shrink-0">
           <X size={15} />
           <span className="hidden sm:inline text-xs">Fechar</span>
         </Link>
