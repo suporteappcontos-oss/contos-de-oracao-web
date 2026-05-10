@@ -201,7 +201,7 @@ export default async function AdminPage({
           {/* Tabs - Estilo Pill Moderno */}
           <div className="flex bg-[#111827] border border-white/5 rounded-2xl p-1.5 w-fit shadow-2xl">
             {[
-              { id: 'videos', label: 'Catálogo', icon: Film, count: totalVideos },
+              { id: 'videos', label: 'Vídeos', icon: Film, count: totalVideos },
               { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
               { id: 'relatorios', label: 'Relatórios', icon: BarChart3, count: null },
               { id: 'hqs', label: 'HQs', icon: BookOpen, count: hqsData?.length ?? 0 },

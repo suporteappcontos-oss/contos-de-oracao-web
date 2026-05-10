@@ -16,6 +16,7 @@ type HqType = {
   planos_acesso: string[]
   planos_pdf: string[]
   tem_pdf: boolean
+  link_pdf: string | null
   ativo: boolean
 }
 
@@ -30,12 +31,15 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
   const [descricao, setDescricao] = useState('')
   const [planosAcesso, setPlanosAcesso] = useState(['Essencial', 'Pro'])
   const [planosPdf, setPlanosPdf] = useState(['Essencial', 'Pro'])
+  const [linkPdf, setLinkPdf] = useState('')
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [capaFile, setCapaFile] = useState<File | null>(null)
+  const [pngFiles, setPngFiles] = useState<File[]>([])
   const [totalPaginas, setTotalPaginas] = useState('1')
 
   const pdfRef = useRef<HTMLInputElement>(null)
   const capaRef = useRef<HTMLInputElement>(null)
+  const pngsRef = useRef<HTMLInputElement>(null)
 
   const togglePlano = (plano: string, lista: string[], setLista: (v: string[]) => void) => {
     if (lista.includes(plano)) {
@@ -57,15 +61,32 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
         const slug = titulo.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
         const accessKey = '5513bf80-0970-4a66-a4e06d748364-2d6f-4522'
 
-        // 1. Upload da Capa (Client-side para evitar limite da Vercel)
-        const capaRes = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/HQ_01.png`, {
-          method: 'PUT',
-          headers: { 'AccessKey': accessKey, 'Content-Type': capaFile.type || 'image/png' },
-          body: capaFile,
-        })
-        if (!capaRes.ok) throw new Error('Falha no upload da capa')
+        // 1. Upload da Capa (Client-side)
+        if (capaFile) {
+          const capaRes = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/HQ_01.png`, {
+            method: 'PUT',
+            headers: { 'AccessKey': accessKey, 'Content-Type': capaFile.type || 'image/png' },
+            body: capaFile,
+          })
+          if (!capaRes.ok) throw new Error('Falha no upload da capa')
+        }
 
-        // 2. Upload do PDF se existir
+        // 2. Upload das Páginas PNG (se selecionadas)
+        if (pngFiles.length > 0) {
+          // Ordena pelo nome para garantir a ordem das páginas
+          const sortedPngs = [...pngFiles].sort((a, b) => a.name.localeCompare(b.name))
+          for (let i = 0; i < sortedPngs.length; i++) {
+            const num = String(i + 1).padStart(2, '0')
+            const pngRes = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/HQ_${num}.png`, {
+              method: 'PUT',
+              headers: { 'AccessKey': accessKey, 'Content-Type': 'image/png' },
+              body: sortedPngs[i],
+            })
+            if (!pngRes.ok) throw new Error(`Falha no upload da página HQ_${num}.png`)
+          }
+        }
+
+        // 3. Upload do PDF (se selecionado o arquivo)
         if (pdfFile) {
           const pdfRes = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/pdf/${slug}.pdf`, {
             method: 'PUT',
@@ -75,20 +96,22 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
           if (!pdfRes.ok) throw new Error('Falha no upload do PDF')
         }
 
-        // 3. Salvar no Supabase via Server Action
+        // 4. Salvar no Supabase via Server Action
         const fd = new FormData()
         fd.append('titulo', titulo.trim())
         fd.append('descricao', descricao.trim())
-        fd.append('total_paginas', totalPaginas)
+        const paginas = pngFiles.length > 0 ? String(pngFiles.length) : totalPaginas
+        fd.append('total_paginas', paginas)
         fd.append('planos_acesso', JSON.stringify(planosAcesso))
         fd.append('planos_pdf', JSON.stringify(planosPdf))
         fd.append('slug_gerado', slug)
-        if (pdfFile) fd.append('tem_pdf', 'true')
+        if (pdfFile || linkPdf.trim()) fd.append('tem_pdf', 'true')
+        if (linkPdf.trim()) fd.append('link_pdf', linkPdf.trim())
 
         const res = await publicarHq(fd)
         if (res.success) {
           setMensagem('✅ HQ publicada com sucesso! Disponível para os assinantes.')
-          setTitulo(''); setDescricao(''); setPdfFile(null); setCapaFile(null)
+          setTitulo(''); setDescricao(''); setPdfFile(null); setCapaFile(null); setLinkPdf(''); setPngFiles([])
           setTotalPaginas('1')
           if (res.hq) setHqs(prev => [res.hq!, ...prev])
         } else {
@@ -321,28 +344,58 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
 
           {/* Capa */}
           <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Imagem de Capa</label>
+            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Imagem de Capa (Obrigatório)</label>
             <div
               onClick={() => capaRef.current?.click()}
               className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
             >
               <ImageIcon size={18} className="text-white/40" />
-              <span className="text-white/40 text-sm">{capaFile ? capaFile.name : 'Clique para selecionar a capa (HQ_01.png)'}</span>
+              <span className="text-white/40 text-sm">{capaFile ? capaFile.name : 'Clique para selecionar a capa (ex: capa.png)'}</span>
             </div>
             <input ref={capaRef} type="file" accept="image/*" className="hidden" onChange={e => setCapaFile(e.target.files?.[0] || null)} />
           </div>
 
-          {/* PDF */}
+          {/* Páginas PNG */}
           <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Arquivo PDF (opcional)</label>
+            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Páginas da HQ (.png)</label>
             <div
-              onClick={() => pdfRef.current?.click()}
+              onClick={() => pngsRef.current?.click()}
               className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
             >
-              <FileText size={18} className="text-white/40" />
-              <span className="text-white/40 text-sm">{pdfFile ? pdfFile.name : 'Clique para selecionar o PDF para download'}</span>
+              <ImageIcon size={18} className="text-white/40" />
+              <span className="text-white/40 text-sm">
+                {pngFiles.length > 0 ? `${pngFiles.length} página(s) selecionada(s)` : 'Selecione todas as imagens PNG (HQ_01, HQ_02...)'}
+              </span>
             </div>
-            <input ref={pdfRef} type="file" accept=".pdf" className="hidden" onChange={e => setPdfFile(e.target.files?.[0] || null)} />
+            <input ref={pngsRef} type="file" accept="image/png" multiple className="hidden" onChange={e => setPngFiles(Array.from(e.target.files || []))} />
+            <p className="text-white/25 text-[10px] mt-1">Ao selecionar arquivos, o "Total de Páginas" será atualizado automaticamente.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Arquivo PDF */}
+            <div>
+              <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Arquivo PDF (opcional)</label>
+              <div
+                onClick={() => pdfRef.current?.click()}
+                className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
+              >
+                <FileText size={18} className="text-white/40 shrink-0" />
+                <span className="text-white/40 text-sm truncate">{pdfFile ? pdfFile.name : 'Upload do arquivo .pdf'}</span>
+              </div>
+              <input ref={pdfRef} type="file" accept=".pdf" className="hidden" onChange={e => setPdfFile(e.target.files?.[0] || null)} />
+            </div>
+
+            {/* PDF Link */}
+            <div>
+              <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Link Direto do PDF (opcional)</label>
+              <input
+                type="url"
+                placeholder="Ex: https://br.storage.bunnycdn.com/.../?download"
+                value={linkPdf}
+                onChange={e => setLinkPdf(e.target.value)}
+                className="w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white focus:outline-none text-sm h-full"
+              />
+            </div>
           </div>
 
           {/* Planos com acesso à leitura */}

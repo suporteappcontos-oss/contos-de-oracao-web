@@ -279,6 +279,7 @@ export async function publicarHq(formData: FormData) {
     const planosPdf = JSON.parse(formData.get('planos_pdf') as string) as string[];
     const slug = formData.get('slug_gerado') as string;
     const temPdf = formData.get('tem_pdf') === 'true';
+    const linkPdf = formData.get('link_pdf') as string | null;
 
     const capaUrl = `https://contos-apks.b-cdn.net/hq/${slug}/HQ_01.png`;
 
@@ -292,6 +293,7 @@ export async function publicarHq(formData: FormData) {
       planos_acesso: planosAcesso,
       planos_pdf: planosPdf,
       tem_pdf: temPdf,
+      link_pdf: linkPdf,
       ativo: true,
     }, { onConflict: 'slug' }).select().single();
 
