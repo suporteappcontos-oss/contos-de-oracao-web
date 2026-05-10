@@ -36,11 +36,16 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
       const res = await fetch(pdfUrl)
       if (!res.ok) throw new Error('Erro ao baixar PDF')
       const blob = await res.blob()
-      const url = window.URL.createObjectURL(blob)
+      // Truque para impedir que o Chrome/Edge intercepte e abra o PDF: 
+      // Mudamos o MIME type do arquivo para octet-stream (dados brutos)
+      const forceBlob = new Blob([blob], { type: 'application/octet-stream' })
+      const url = window.URL.createObjectURL(forceBlob)
+      
       const a = document.createElement('a')
       a.href = url
       // Determina o nome do arquivo a partir da URL, fallback para o slug
-      const fileName = pdfUrl.split('/').pop() || `${slug}.pdf`
+      let fileName = pdfUrl.split('/').pop() || `${slug}.pdf`
+      if (!fileName.endsWith('.pdf')) fileName += '.pdf'
       a.download = fileName
       document.body.appendChild(a)
       a.click()
