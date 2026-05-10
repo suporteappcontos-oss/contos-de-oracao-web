@@ -279,7 +279,16 @@ export async function publicarHq(formData: FormData) {
     const planosPdf = JSON.parse(formData.get('planos_pdf') as string) as string[];
     const slug = formData.get('slug_gerado') as string;
     const temPdf = formData.get('tem_pdf') === 'true';
-    const linkPdf = formData.get('link_pdf') as string | null;
+    let linkPdf = formData.get('link_pdf') as string | null;
+    if (linkPdf && linkPdf.trim() !== '') {
+      linkPdf = linkPdf.trim();
+      if (linkPdf.includes('br.storage.bunnycdn.com')) {
+        linkPdf = linkPdf.split('?')[0];
+        linkPdf = linkPdf.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net');
+      }
+    } else {
+      linkPdf = null;
+    }
 
     const capaUrl = `https://contos-apks.b-cdn.net/hq/${slug}/HQ_01.png`;
 
