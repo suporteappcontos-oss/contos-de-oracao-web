@@ -45,30 +45,57 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
     }
   }
 
-  const handlePublicar = () => {
+  const handlePublicar = async () => {
     setMensagem('')
     setErro('')
     if (!titulo.trim()) { setErro('❌ Informe o título da HQ.'); return }
     if (!capaFile) { setErro('❌ Selecione a imagem de capa.'); return }
 
-    const fd = new FormData()
-    fd.append('titulo', titulo.trim())
-    fd.append('descricao', descricao.trim())
-    fd.append('total_paginas', totalPaginas)
-    fd.append('planos_acesso', JSON.stringify(planosAcesso))
-    fd.append('planos_pdf', JSON.stringify(planosPdf))
-    fd.append('capa', capaFile)
-    if (pdfFile) fd.append('pdf', pdfFile)
-
+    setMostrarForm(false)
     startTransition(async () => {
-      const res = await publicarHq(fd)
-      if (res.success) {
-        setMensagem('✅ HQ publicada com sucesso! Disponível para os assinantes.')
-        setTitulo(''); setDescricao(''); setPdfFile(null); setCapaFile(null)
-        setTotalPaginas('1'); setMostrarForm(false)
-        if (res.hq) setHqs(prev => [res.hq!, ...prev])
-      } else {
-        setErro(`❌ Erro: ${res.error}`)
+      try {
+        const slug = titulo.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+        const accessKey = '5513bf80-0970-4a66-a4e06d748364-2d6f-4522'
+
+        // 1. Upload da Capa (Client-side para evitar limite da Vercel)
+        const capaRes = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/HQ_01.png`, {
+          method: 'PUT',
+          headers: { 'AccessKey': accessKey, 'Content-Type': capaFile.type || 'image/png' },
+          body: capaFile,
+        })
+        if (!capaRes.ok) throw new Error('Falha no upload da capa')
+
+        // 2. Upload do PDF se existir
+        if (pdfFile) {
+          const pdfRes = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/pdf/${slug}.pdf`, {
+            method: 'PUT',
+            headers: { 'AccessKey': accessKey, 'Content-Type': 'application/pdf' },
+            body: pdfFile,
+          })
+          if (!pdfRes.ok) throw new Error('Falha no upload do PDF')
+        }
+
+        // 3. Salvar no Supabase via Server Action
+        const fd = new FormData()
+        fd.append('titulo', titulo.trim())
+        fd.append('descricao', descricao.trim())
+        fd.append('total_paginas', totalPaginas)
+        fd.append('planos_acesso', JSON.stringify(planosAcesso))
+        fd.append('planos_pdf', JSON.stringify(planosPdf))
+        fd.append('slug_gerado', slug)
+        if (pdfFile) fd.append('tem_pdf', 'true')
+
+        const res = await publicarHq(fd)
+        if (res.success) {
+          setMensagem('✅ HQ publicada com sucesso! Disponível para os assinantes.')
+          setTitulo(''); setDescricao(''); setPdfFile(null); setCapaFile(null)
+          setTotalPaginas('1')
+          if (res.hq) setHqs(prev => [res.hq!, ...prev])
+        } else {
+          setErro(`❌ Erro: ${res.error}`)
+        }
+      } catch (e: any) {
+        setErro(`❌ Erro de upload: ${e.message}`)
       }
     })
   }
@@ -93,22 +120,40 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
     setUploadingPdf(true)
     setErro('')
     setMensagem('')
-    const fd = new FormData()
-    fd.append('id', hq.id)
-    fd.append('slug', hq.slug)
-    fd.append('pdf', pdfUploadFile)
-    startTransition(async () => {
-      const res = await adicionarPdfHq(fd)
-      if (res.success) {
-        setMensagem(`✅ PDF da "${hq.titulo}" adicionado com sucesso!`)
-        setHqs(prev => prev.map(h => h.id === hq.id ? { ...h, tem_pdf: true } : h))
-        setUploadPdfId(null)
-        setPdfUploadFile(null)
-      } else {
-        setErro(`❌ Erro: ${res.error}`)
-      }
+    
+    try {
+      // 1. Upload direto pro Bunny via Client (Bypassa limite de 4.5MB da Vercel)
+      const resBunny = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${hq.slug}/pdf/${hq.slug}.pdf`, {
+        method: 'PUT',
+        headers: {
+          'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+          'Content-Type': 'application/pdf',
+        },
+        body: pdfUploadFile
+      })
+
+      if (!resBunny.ok) throw new Error(`BunnyCDN: ${resBunny.statusText}`)
+
+      // 2. Atualizar banco via Server Action
+      const fd = new FormData()
+      fd.append('id', hq.id)
+      
+      startTransition(async () => {
+        const res = await adicionarPdfHq(fd)
+        if (res.success) {
+          setMensagem(`✅ PDF da "${hq.titulo}" adicionado com sucesso!`)
+          setHqs(prev => prev.map(h => h.id === hq.id ? { ...h, tem_pdf: true } : h))
+          setUploadPdfId(null)
+          setPdfUploadFile(null)
+        } else {
+          setErro(`❌ Erro: ${res.error}`)
+        }
+        setUploadingPdf(false)
+      })
+    } catch (e: any) {
+      setErro(`❌ Falha no upload: ${e.message}`)
       setUploadingPdf(false)
-    })
+    }
   }
 
   return (

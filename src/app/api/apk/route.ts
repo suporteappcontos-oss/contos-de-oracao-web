@@ -26,8 +26,8 @@ export async function GET() {
   } catch (error: any) {
     console.error('Erro na API /api/apk:', error);
     return NextResponse.json({
-      versao_atual: '1.0.27',
-      link_download: 'https://contos-apks.b-cdn.net/contos-de-oracao-v1.0.27.apk',
+      versao_atual: '1.0.28',
+      link_download: 'https://contos-apks.b-cdn.net/contos-de-oracao-v1.0.28.apk',
       nome: 'ContosDeOracao_v1.0.27.apk',
     });
   }

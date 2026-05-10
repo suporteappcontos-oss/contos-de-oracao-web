@@ -267,7 +267,7 @@ export async function salvarVersaoApk(versao: string, linkDownload: string, mens
   }
 }
 
-// ─── Publicar HQ (upload capa + PDF para Bunny + salvar no Supabase) ───
+// ─── Publicar HQ (salvar no Supabase, upload foi feito no cliente) ───
 export async function publicarHq(formData: FormData) {
   await verificarAdmin();
   try {
@@ -277,55 +277,17 @@ export async function publicarHq(formData: FormData) {
     const totalPaginas = parseInt(formData.get('total_paginas') as string) || 1;
     const planosAcesso = JSON.parse(formData.get('planos_acesso') as string) as string[];
     const planosPdf = JSON.parse(formData.get('planos_pdf') as string) as string[];
-    const capaFile = formData.get('capa') as File | null;
-    const pdfFile = formData.get('pdf') as File | null;
+    const slug = formData.get('slug_gerado') as string;
+    const temPdf = formData.get('tem_pdf') === 'true';
 
-    // Gera slug automático a partir do título
-    const slug = titulo
-      .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-
-    // Upload da capa para Bunny: hq/{slug}/HQ_01.png
-    let capaUrl = '';
-    if (capaFile && capaFile.size > 0) {
-      const capaBuffer = await capaFile.arrayBuffer();
-      const ext = capaFile.name.split('.').pop() || 'png';
-      const resCapa = await fetch(
-        `https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/HQ_01.${ext}`,
-        {
-          method: 'PUT',
-          headers: { 'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522', 'Content-Type': capaFile.type || 'image/png' },
-          body: capaBuffer,
-        }
-      );
-      if (!resCapa.ok) throw new Error(`Falha no upload da capa: ${resCapa.statusText}`);
-      capaUrl = `https://contos-apks.b-cdn.net/hq/${slug}/HQ_01.${ext}`;
-    }
-
-    // Upload do PDF para Bunny: hq/{slug}/pdf/{slug}.pdf
-    let temPdf = false;
-    if (pdfFile && pdfFile.size > 0) {
-      const pdfBuffer = await pdfFile.arrayBuffer();
-      const resPdf = await fetch(
-        `https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/pdf/${slug}.pdf`,
-        {
-          method: 'PUT',
-          headers: { 'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522', 'Content-Type': 'application/pdf' },
-          body: pdfBuffer,
-        }
-      );
-      if (!resPdf.ok) throw new Error(`Falha no upload do PDF: ${resPdf.statusText}`);
-      temPdf = true;
-    }
+    const capaUrl = `https://contos-apks.b-cdn.net/hq/${slug}/HQ_01.png`;
 
     // Salva metadados no Supabase
     const { data: hq, error } = await supabase.from('hqs').upsert({
       slug,
       titulo,
       descricao: descricao || null,
-      capa_url: capaUrl || null,
+      capa_url: capaUrl,
       total_paginas: totalPaginas,
       planos_acesso: planosAcesso,
       planos_pdf: planosPdf,
@@ -364,25 +326,6 @@ export async function adicionarPdfHq(formData: FormData) {
   try {
     const supabase = await createClient();
     const id = formData.get('id') as string;
-    const slug = formData.get('slug') as string;
-    const pdfFile = formData.get('pdf') as File;
-
-    if (!pdfFile || pdfFile.size === 0) throw new Error('Nenhum arquivo PDF enviado.');
-
-    // Upload do PDF para Bunny: hq/{slug}/pdf/{slug}.pdf
-    const pdfBuffer = await pdfFile.arrayBuffer();
-    const res = await fetch(
-      `https://br.storage.bunnycdn.com/contos-apks/hq/${slug}/pdf/${slug}.pdf`,
-      {
-        method: 'PUT',
-        headers: {
-          'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
-          'Content-Type': 'application/pdf',
-        },
-        body: pdfBuffer,
-      }
-    );
-    if (!res.ok) throw new Error(`Falha no upload do PDF: ${res.statusText}`);
 
     // Atualiza Supabase: tem_pdf = true
     const { error } = await supabase.from('hqs').update({ tem_pdf: true }).eq('id', id);
