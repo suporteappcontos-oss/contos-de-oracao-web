@@ -53,8 +53,8 @@ export default async function MaterialCatequesePage() {
         {/* Grid de HQs */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
           {(hqs ?? []).map((item) => {
-            const temAcessoLeitura = isAdmin || item.planos_acesso.map((p: string) => p.toLowerCase()).includes(etiqueta)
-            const temAcessoPdf = isAdmin || item.planos_pdf.map((p: string) => p.toLowerCase()).includes(etiqueta)
+            const temAcessoLeitura = isAdmin || (item.planos_acesso && item.planos_acesso.some((p: string) => etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)))
+            const temAcessoPdf = isAdmin || (item.planos_pdf && item.planos_pdf.some((p: string) => etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)))
             const pdfUrl = `https://contos-apks.b-cdn.net/hq/${item.slug}/pdf/${item.slug}.pdf`
 
             return (

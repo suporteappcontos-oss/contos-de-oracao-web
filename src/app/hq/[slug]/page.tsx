@@ -36,11 +36,11 @@ export default async function HQPage({ params }: Props) {
   if (!isAdmin && !planoAtivo) redirect('/?acesso=expirado')
 
   // Verifica acesso à leitura
-  const temAcesso = isAdmin || hq.planos_acesso.map((p: string) => p.toLowerCase()).includes(etiqueta)
+  const temAcesso = isAdmin || (hq.planos_acesso && hq.planos_acesso.some((p: string) => etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)))
   if (!temAcesso) redirect('/planos')
 
   // Verifica acesso ao PDF
-  const podeBaixarPdf = isAdmin || hq.planos_pdf.map((p: string) => p.toLowerCase()).includes(etiqueta)
+  const podeBaixarPdf = isAdmin || (hq.planos_pdf && hq.planos_pdf.some((p: string) => etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)))
   const pdfUrl = hq.tem_pdf
     ? `https://contos-apks.b-cdn.net/hq/${slug}/pdf/${slug}.pdf`
     : null
@@ -51,7 +51,7 @@ export default async function HQPage({ params }: Props) {
       titulo={hq.titulo}
       totalPaginas={hq.total_paginas}
       baseUrl={`${BUNNY_BASE}/${slug}`}
-      podeDownload={podeBaixarPdf && !!pdfUrl}
+      podeDownload={podeBaixarPdf}
       pdfUrl={podeBaixarPdf ? pdfUrl : null}
     />
   )
