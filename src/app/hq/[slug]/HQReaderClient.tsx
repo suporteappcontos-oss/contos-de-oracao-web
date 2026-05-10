@@ -43,6 +43,9 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
   }, [pagina])
 
   const numFormatado = String(pagina).padStart(2, '0')
+  const urlImagem = `${baseUrl}/HQ_${numFormatado}.png`
+  const progresso = Math.round((pagina / totalPaginas) * 100)
+
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: '#0A0C11' }}>
 
