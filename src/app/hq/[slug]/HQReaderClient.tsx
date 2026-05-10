@@ -46,6 +46,30 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
   const urlImagem = `${baseUrl}/HQ_${numFormatado}.png`
   const progresso = Math.round((pagina / totalPaginas) * 100)
 
+  const [baixandoPdf, setBaixandoPdf] = useState(false)
+  const handleDownloadPDF = async () => {
+    if (!pdfUrl || baixandoPdf) return
+    setBaixandoPdf(true)
+    try {
+      const response = await fetch(pdfUrl)
+      if (!response.ok) throw new Error('Falha na rede')
+      const blob = await response.blob()
+      const urlBlob = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = urlBlob
+      a.download = `${titulo.replace(/\s+/g, '-')}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(urlBlob)
+    } catch (err) {
+      console.error(err)
+      alert("Não foi possível baixar o PDF. Verifique se o arquivo existe.")
+    } finally {
+      setBaixandoPdf(false)
+    }
+  }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: '#0A0C11' }}>
 
@@ -74,18 +98,20 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
           {/* Botão Download — ouro se pode baixar, cadeado se não pode */}
           {podeDownload ? (
             pdfUrl ? (
-              <a
-                href={pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite]"
-                style={{ background: 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000' }}
+              <button
+                onClick={handleDownloadPDF}
+                disabled={baixandoPdf}
+                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)]"
+                style={{ background: 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000', animation: baixandoPdf ? 'none' : 'pulse 3s ease-in-out infinite' }}
                 title="Baixar PDF"
               >
-                <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
-                <span className="hidden sm:inline tracking-wide">BAIXAR PDF</span>
-              </a>
+                {baixandoPdf ? (
+                  <span className="animate-spin tracking-wide">⌛</span>
+                ) : (
+                  <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+                )}
+                <span className="hidden sm:inline tracking-wide">{baixandoPdf ? 'BAIXANDO...' : 'BAIXAR PDF'}</span>
+              </button>
             ) : (
               <button
                 className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs border border-white/20 text-white/40 cursor-not-allowed"

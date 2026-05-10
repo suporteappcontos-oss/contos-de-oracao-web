@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useTransition, useRef } from 'react'
-import { BookOpen, Upload, Loader2, CheckCircle2, Trash2, FileText, Image as ImageIcon, Plus } from 'lucide-react'
+import { BookOpen, Upload, Loader2, CheckCircle2, Trash2, FileText, Image as ImageIcon, Plus, Link as LinkIcon } from 'lucide-react'
 import { publicarHq, deletarHq, adicionarPdfHq } from './actions'
 
 const PLANOS_DISPONIVEIS = ['Básico', 'Essencial', 'Pro']
@@ -206,6 +206,20 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {hq.tem_pdf && (
+                  <button
+                    onClick={() => {
+                      const link = `https://contos-apks.b-cdn.net/hq/${hq.slug}/pdf/${hq.slug}.pdf`
+                      navigator.clipboard.writeText(link)
+                      alert('Link do PDF copiado para a área de transferência!')
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-blue-500/30 text-blue-400 bg-blue-500/10 hover:bg-blue-500/20"
+                    title="Copiar Link Direto do PDF"
+                  >
+                    <LinkIcon size={12} />
+                    Copiar Link
+                  </button>
+                )}
                 {/* Botão adicionar/trocar PDF */}
                 <button
                   onClick={() => {
