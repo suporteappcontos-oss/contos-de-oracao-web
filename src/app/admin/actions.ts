@@ -328,9 +328,17 @@ export async function adicionarPdfHq(formData: FormData) {
   try {
     const supabase = await createClient();
     const id = formData.get('id') as string;
+    const linkPdf = formData.get('link_pdf') as string | null;
 
-    // Atualiza Supabase: tem_pdf = true
-    const { error } = await supabase.from('hqs').update({ tem_pdf: true }).eq('id', id);
+    // Atualiza Supabase: tem_pdf = true e o link personalizado (se houver)
+    const updateData: any = { tem_pdf: true };
+    if (linkPdf && linkPdf.trim() !== '') {
+      updateData.link_pdf = linkPdf.trim();
+    } else {
+      updateData.link_pdf = null;
+    }
+
+    const { error } = await supabase.from('hqs').update(updateData).eq('id', id);
     if (error) throw new Error(error.message);
 
     revalidatePath('/material-catequese');

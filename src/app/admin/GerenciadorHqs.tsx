@@ -135,39 +135,44 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
   // Estado de upload de PDF por HQ
   const [uploadPdfId, setUploadPdfId] = useState<string | null>(null)
   const [pdfUploadFile, setPdfUploadFile] = useState<File | null>(null)
+  const [editLinkPdf, setEditLinkPdf] = useState('')
   const [uploadingPdf, setUploadingPdf] = useState(false)
   const pdfUploadRef = useRef<HTMLInputElement>(null)
 
   const handleAdicionarPdf = async (hq: HqType) => {
-    if (!pdfUploadFile) return
+    if (!pdfUploadFile && !editLinkPdf.trim()) return
     setUploadingPdf(true)
     setErro('')
     setMensagem('')
     
     try {
-      // 1. Upload direto pro Bunny via Client (Bypassa limite de 4.5MB da Vercel)
-      const resBunny = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${hq.slug}/pdf/${hq.slug}.pdf`, {
-        method: 'PUT',
-        headers: {
-          'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
-          'Content-Type': 'application/pdf',
-        },
-        body: pdfUploadFile
-      })
-
-      if (!resBunny.ok) throw new Error(`BunnyCDN: ${resBunny.statusText}`)
+      if (pdfUploadFile) {
+        // 1. Upload direto pro Bunny via Client (Bypassa limite de 4.5MB da Vercel)
+        const resBunny = await fetch(`https://br.storage.bunnycdn.com/contos-apks/hq/${hq.slug}/pdf/${hq.slug}.pdf`, {
+          method: 'PUT',
+          headers: {
+            'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+            'Content-Type': 'application/pdf',
+          },
+          body: pdfUploadFile
+        })
+  
+        if (!resBunny.ok) throw new Error(`BunnyCDN: ${resBunny.statusText}`)
+      }
 
       // 2. Atualizar banco via Server Action
       const fd = new FormData()
       fd.append('id', hq.id)
+      if (editLinkPdf.trim()) fd.append('link_pdf', editLinkPdf.trim())
       
       startTransition(async () => {
         const res = await adicionarPdfHq(fd)
         if (res.success) {
-          setMensagem(`✅ PDF da "${hq.titulo}" adicionado com sucesso!`)
-          setHqs(prev => prev.map(h => h.id === hq.id ? { ...h, tem_pdf: true } : h))
+          setMensagem(`✅ Link PDF / Arquivo de "${hq.titulo}" atualizado com sucesso!`)
+          setHqs(prev => prev.map(h => h.id === hq.id ? { ...h, tem_pdf: true, link_pdf: editLinkPdf.trim() || null } : h))
           setUploadPdfId(null)
           setPdfUploadFile(null)
+          setEditLinkPdf('')
         } else {
           setErro(`❌ Erro: ${res.error}`)
         }
@@ -232,7 +237,7 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
                 {hq.tem_pdf && (
                   <button
                     onClick={() => {
-                      const link = `https://contos-apks.b-cdn.net/hq/${hq.slug}/pdf/${hq.slug}.pdf`
+                      const link = hq.link_pdf || `https://contos-apks.b-cdn.net/hq/${hq.slug}/pdf/${hq.slug}.pdf`
                       navigator.clipboard.writeText(link)
                       alert('Link do PDF copiado para a área de transferência!')
                     }}
@@ -246,7 +251,12 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
                 {/* Botão adicionar/trocar PDF */}
                 <button
                   onClick={() => {
-                    setUploadPdfId(uploadPdfId === hq.id ? null : hq.id)
+                    if (uploadPdfId === hq.id) {
+                      setUploadPdfId(null)
+                    } else {
+                      setUploadPdfId(hq.id)
+                      setEditLinkPdf(hq.link_pdf || '')
+                    }
                     setPdfUploadFile(null)
                     setErro('')
                     setMensagem('')
@@ -255,7 +265,7 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
                   style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)', color: '#D4AF37' }}
                 >
                   <FileText size={12} />
-                  {hq.tem_pdf ? 'Trocar PDF' : 'Add PDF'}
+                  {hq.tem_pdf ? 'Editar Link / PDF' : 'Add PDF'}
                 </button>
                 <button onClick={() => handleDeletar(hq.id, hq.titulo)} className="text-red-400/50 hover:text-red-400 transition-colors p-2">
                   <Trash2 size={15} />
@@ -263,34 +273,43 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
               </div>
             </div>
 
-            {/* Painel de upload de PDF (expansível) */}
+            {/* Painel de edição de PDF (expansível) */}
             {uploadPdfId === hq.id && (
-              <div className="border-t border-white/5 bg-[#0f171e] px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                <div
-                  onClick={() => pdfUploadRef.current?.click()}
-                  className="flex-1 flex items-center gap-3 p-3 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
-                >
-                  <FileText size={16} className="text-white/40 shrink-0" />
-                  <span className="text-white/40 text-sm truncate">
-                    {pdfUploadFile ? pdfUploadFile.name : 'Clique para selecionar o PDF'}
-                  </span>
+              <div className="border-t border-white/5 bg-[#0f171e] px-4 py-4 flex flex-col gap-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div
+                    onClick={() => pdfUploadRef.current?.click()}
+                    className="flex-1 flex items-center gap-3 p-3 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors w-full"
+                  >
+                    <FileText size={16} className="text-white/40 shrink-0" />
+                    <span className="text-white/40 text-sm truncate">
+                      {pdfUploadFile ? pdfUploadFile.name : 'Subir novo arquivo .pdf (opcional)'}
+                    </span>
+                  </div>
+                  <input
+                    ref={pdfUploadRef}
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    onChange={e => setPdfUploadFile(e.target.files?.[0] || null)}
+                  />
+                  <input
+                    type="url"
+                    placeholder="Ou cole o Link Direto do PDF aqui"
+                    value={editLinkPdf}
+                    onChange={(e) => setEditLinkPdf(e.target.value)}
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37]/50 w-full"
+                  />
+                  <button
+                    onClick={() => handleAdicionarPdf(hq)}
+                    disabled={(!pdfUploadFile && !editLinkPdf.trim()) || uploadingPdf}
+                    className="shrink-0 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black transition-all disabled:opacity-40 w-full sm:w-auto"
+                    style={{ background: 'linear-gradient(135deg, #D4AF37, #8b7322)', color: '#000' }}
+                  >
+                    {uploadingPdf ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                    {uploadingPdf ? 'Salvando...' : 'Salvar Alteração'}
+                  </button>
                 </div>
-                <input
-                  ref={pdfUploadRef}
-                  type="file"
-                  accept=".pdf"
-                  className="hidden"
-                  onChange={e => setPdfUploadFile(e.target.files?.[0] || null)}
-                />
-                <button
-                  onClick={() => handleAdicionarPdf(hq)}
-                  disabled={!pdfUploadFile || uploadingPdf}
-                  className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-black transition-all disabled:opacity-40"
-                  style={{ background: 'linear-gradient(135deg, #D4AF37, #8b7322)', color: '#000' }}
-                >
-                  {uploadingPdf ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                  {uploadingPdf ? 'Enviando...' : 'Enviar PDF'}
-                </button>
               </div>
             )}
           </div>
