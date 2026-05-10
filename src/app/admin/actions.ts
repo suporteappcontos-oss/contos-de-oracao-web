@@ -333,7 +333,13 @@ export async function adicionarPdfHq(formData: FormData) {
     // Atualiza Supabase: tem_pdf = true e o link personalizado (se houver)
     const updateData: any = { tem_pdf: true };
     if (linkPdf && linkPdf.trim() !== '') {
-      updateData.link_pdf = linkPdf.trim();
+      let finalLink = linkPdf.trim();
+      // Corrige automaticamente se o admin colar o link interno do painel do Bunny (Storage Zone)
+      if (finalLink.includes('br.storage.bunnycdn.com')) {
+        finalLink = finalLink.split('?')[0]; // remove ?accessKey=... se tiver
+        finalLink = finalLink.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net');
+      }
+      updateData.link_pdf = finalLink;
     } else {
       updateData.link_pdf = null;
     }
