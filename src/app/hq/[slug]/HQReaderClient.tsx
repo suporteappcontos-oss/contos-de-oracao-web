@@ -18,9 +18,6 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
   const [pagina, setPagina] = useState(1)
   const [sidebarAberta, setSidebarAberta] = useState(true)
   const [imgError, setImgError] = useState(false)
-  const [modalDownload, setModalDownload] = useState(false)
-  const [baixando, setBaixando] = useState(false)
-  const [progBaixar, setProgBaixar] = useState(0)
   const thumbAtiva = useRef<HTMLButtonElement>(null)
 
   const irPara = useCallback((n: number) => {
@@ -50,39 +47,6 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
   const urlImagem = `${baseUrl}/HQ_${numFormatado}.png`
   const progresso = Math.round((pagina / totalPaginas) * 100)
 
-  // Baixar página atual
-  function baixarPaginaAtual() {
-    const link = document.createElement('a')
-    link.href = urlImagem
-    link.download = `${titulo.replace(/\s+/g, '-')}-pagina-${pagina}.png`
-    link.target = '_blank'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  // Baixar todas as páginas (uma a uma com intervalo)
-  async function baixarTodasPaginas() {
-    setBaixando(true)
-    setProgBaixar(0)
-    for (let i = 1; i <= totalPaginas; i++) {
-      const num = String(i).padStart(2, '0')
-      const url = `${baseUrl}/HQ_${num}.png`
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${titulo.replace(/\s+/g, '-')}-pagina-${i}.png`
-      link.target = '_blank'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      setProgBaixar(Math.round((i / totalPaginas) * 100))
-      // Aguarda entre downloads para o browser aceitar
-      await new Promise(r => setTimeout(r, 800))
-    }
-    setBaixando(false)
-    setProgBaixar(100)
-  }
-
   return (
     <div className="flex flex-col h-screen overflow-hidden" style={{ background: '#0A0C11' }}>
 
@@ -110,15 +74,28 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
 
           {/* Botão Download — ouro se pode baixar, cadeado se não pode */}
           {podeDownload ? (
-            <button
-              onClick={() => setModalDownload(true)}
-              className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite]"
-              style={{ background: 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000' }}
-              title="Baixar HQ"
-            >
-              <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
-              <span className="hidden sm:inline tracking-wide">BAIXAR HQ</span>
-            </button>
+            pdfUrl ? (
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite]"
+                style={{ background: 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000' }}
+                title="Baixar PDF"
+              >
+                <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+                <span className="hidden sm:inline tracking-wide">BAIXAR PDF</span>
+              </a>
+            ) : (
+              <button
+                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs border border-white/20 text-white/40 cursor-not-allowed"
+                title="PDF não disponível para esta HQ"
+              >
+                <Download size={16} />
+                <span className="hidden sm:inline tracking-wide">PDF INDISPONÍVEL</span>
+              </button>
+            )
           ) : (
             <Link
               href="/planos"
@@ -263,103 +240,6 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
         </div>
       </div>
 
-      {/* ── MODAL DE DOWNLOAD ── */}
-      {modalDownload && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)' }}
-          onClick={(e) => { if (e.target === e.currentTarget) setModalDownload(false) }}
-        >
-          <div
-            className="relative w-full max-w-md rounded-2xl border border-white/10 overflow-hidden shadow-2xl"
-            style={{ background: 'linear-gradient(145deg, #111827, #0D1117)' }}
-          >
-            {/* Header do modal */}
-            <div className="px-6 pt-6 pb-4 border-b border-white/5 flex items-center justify-between">
-              <div>
-                <h2 className="text-white font-black text-lg">Baixar HQ</h2>
-                <p className="text-white/40 text-xs mt-0.5">{titulo} · {totalPaginas} páginas</p>
-              </div>
-              <button onClick={() => setModalDownload(false)} className="p-2 rounded-xl hover:bg-white/5 text-white/40 hover:text-white transition-all">
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Opções */}
-            <div className="p-6 space-y-3">
-
-              {/* Baixar página atual */}
-              <button
-                onClick={baixarPaginaAtual}
-                className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-[#D4AF37]/30 bg-white/2 hover:bg-[#D4AF37]/5 transition-all group"
-              >
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #D4AF37, #F5D67B)' }}>
-                  <Download size={18} className="text-black" />
-                </div>
-                <div className="text-left">
-                  <div className="text-white font-bold text-sm group-hover:text-[#D4AF37] transition-colors">Baixar Página Atual</div>
-                  <div className="text-white/40 text-xs">Apenas a página {pagina} (PNG)</div>
-                </div>
-              </button>
-
-              {/* Baixar todas as páginas */}
-              <button
-                onClick={baixarTodasPaginas}
-                disabled={baixando}
-                className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-emerald-400/30 bg-white/2 hover:bg-emerald-400/5 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
-                  {baixando ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <CheckCircle2 size={18} className="text-white" />
-                  )}
-                </div>
-                <div className="text-left flex-1">
-                  <div className="text-white font-bold text-sm group-hover:text-emerald-400 transition-colors">
-                    {baixando ? `Baixando... ${progBaixar}%` : 'Baixar Todas as Páginas'}
-                  </div>
-                  <div className="text-white/40 text-xs">{totalPaginas} arquivos PNG individuais</div>
-                  {baixando && (
-                    <div className="mt-2 w-full h-1 rounded-full bg-white/10 overflow-hidden">
-                      <div className="h-full rounded-full bg-emerald-400 transition-all duration-500" style={{ width: `${progBaixar}%` }} />
-                    </div>
-                  )}
-                </div>
-              </button>
-
-              {/* Baixar PDF — se disponível */}
-              {pdfUrl && (
-                <a
-                  href={pdfUrl}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-[#D4AF37]/30 bg-white/2 hover:bg-[#D4AF37]/5 transition-all group"
-                >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: 'linear-gradient(135deg, #D4AF37, #8b7322)' }}>
-                    <Download size={18} className="text-black" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-white font-bold text-sm group-hover:text-[#D4AF37] transition-colors">Baixar PDF Completo</div>
-                    <div className="text-white/40 text-xs">Todas as {totalPaginas} páginas em 1 arquivo</div>
-                  </div>
-                </a>
-              )}
-            </div>
-
-            {/* Rodapé */}
-            <div className="px-6 pb-5">
-              <p className="text-white/20 text-[10px] text-center leading-relaxed">
-                ⚠️ Use apenas para uso pessoal. A reprodução e distribuição são proibidas pelos Termos de Uso.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
