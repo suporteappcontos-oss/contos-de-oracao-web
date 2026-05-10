@@ -32,7 +32,6 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') irPara(pagina + 1)
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') irPara(pagina - 1)
-      if (e.key === 'Escape') setModalDownload(false)
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
