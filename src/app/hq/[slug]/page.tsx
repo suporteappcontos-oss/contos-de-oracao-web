@@ -3,28 +3,14 @@ import { redirect, notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import HQReaderClient from './HQReaderClient'
 
-// ⚠️ ATENÇÃO: Quando adicionar novas HQs, cadastre aqui também!
-const HQS: Record<string, {
-  titulo: string
-  totalPaginas: number
-  planos: string[]
-}> = {
-  'nossa-senhora-fatima': {
-    titulo: 'Nossa Senhora de Fátima',
-    totalPaginas: 15,
-    planos: ['Essencial', 'Pro', 'essencial', 'pro'],
-  },
-  // Adicione outras HQs aqui:
-  // 'nome-da-hq': { titulo: '...', totalPaginas: X, planos: [...] },
-}
-
 const BUNNY_BASE = 'https://contos-apks.b-cdn.net/hq'
 
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const hq = HQS[slug]
+  const supabase = await createClient()
+  const { data: hq } = await supabase.from('hqs').select('titulo').eq('slug', slug).single()
   if (!hq) return { title: 'HQ não encontrada' }
   return {
     title: `${hq.titulo} | HQ | Contos de Oração`,
@@ -34,45 +20,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function HQPage({ params }: Props) {
   const { slug } = await params
-  const hq = HQS[slug]
-  if (!hq) notFound()
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // Busca dados da HQ no Supabase
+  const { data: hq } = await supabase.from('hqs').select('*').eq('slug', slug).eq('ativo', true).single()
+  if (!hq) notFound()
+
   const planoAtivo = user.user_metadata?.plano_ativo === true
-  const etiqueta = user.user_metadata?.etiqueta_plano || ''
+  const etiqueta = (user.user_metadata?.etiqueta_plano || '').toLowerCase()
   const isAdmin = user.email === 'suporte.appcontos@gmail.com'
 
-  // Sem plano → redireciona para expirado
   if (!isAdmin && !planoAtivo) redirect('/?acesso=expirado')
 
-  let planosHq = ['Essencial', 'Pro']
-  try {
-    const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' })
-    if (res.ok) {
-      const config = await res.json()
-      if (config.planos_hq) planosHq = config.planos_hq
-    }
-  } catch (e) {}
-
-  const normalizedPlanosHq = planosHq.map(p => p.toLowerCase())
-
-  // Plano sem acesso à HQ → redireciona para planos
-  const temAcesso = isAdmin || normalizedPlanosHq.includes(etiqueta.toLowerCase())
+  // Verifica acesso à leitura
+  const temAcesso = isAdmin || hq.planos_acesso.map((p: string) => p.toLowerCase()).includes(etiqueta)
   if (!temAcesso) redirect('/planos')
 
-  // Planos que podem baixar HQ
-  const podeDownload = temAcesso
+  // Verifica acesso ao PDF
+  const podeBaixarPdf = isAdmin || hq.planos_pdf.map((p: string) => p.toLowerCase()).includes(etiqueta)
+  const pdfUrl = hq.tem_pdf
+    ? `https://contos-apks.b-cdn.net/hq/${slug}/pdf/${slug}.pdf`
+    : null
 
   return (
     <HQReaderClient
       slug={slug}
       titulo={hq.titulo}
-      totalPaginas={hq.totalPaginas}
+      totalPaginas={hq.total_paginas}
       baseUrl={`${BUNNY_BASE}/${slug}`}
-      podeDownload={podeDownload}
+      podeDownload={podeBaixarPdf && !!pdfUrl}
+      pdfUrl={podeBaixarPdf ? pdfUrl : null}
     />
   )
 }

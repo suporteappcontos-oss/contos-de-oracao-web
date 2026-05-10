@@ -11,9 +11,10 @@ interface HQReaderClientProps {
   totalPaginas: number
   baseUrl: string
   podeDownload: boolean
+  pdfUrl?: string | null
 }
 
-export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, podeDownload }: HQReaderClientProps) {
+export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, podeDownload, pdfUrl }: HQReaderClientProps) {
   const [pagina, setPagina] = useState(1)
   const [sidebarAberta, setSidebarAberta] = useState(true)
   const [imgError, setImgError] = useState(false)
@@ -328,6 +329,26 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
                   )}
                 </div>
               </button>
+
+              {/* Baixar PDF — se disponível */}
+              {pdfUrl && (
+                <a
+                  href={pdfUrl}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/8 hover:border-[#D4AF37]/30 bg-white/2 hover:bg-[#D4AF37]/5 transition-all group"
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: 'linear-gradient(135deg, #D4AF37, #8b7322)' }}>
+                    <Download size={18} className="text-black" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-white font-bold text-sm group-hover:text-[#D4AF37] transition-colors">Baixar PDF Completo</div>
+                    <div className="text-white/40 text-xs">Todas as {totalPaginas} páginas em 1 arquivo</div>
+                  </div>
+                </a>
+              )}
             </div>
 
             {/* Rodapé */}
