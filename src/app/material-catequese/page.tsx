@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, Lock, Download } from 'lucide-react'
+import { BookOpen, Lock } from 'lucide-react'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -30,23 +30,14 @@ export default async function MaterialCatequesePage() {
     .order('criado_em', { ascending: false })
 
   return (
-    <main className="min-h-screen" style={{ background: '#090B10' }}>
-      {/* Header */}
-      <div className="border-b border-white/5 px-6 py-4 flex items-center gap-4">
-        <Link href="/watch" className="text-white/40 hover:text-white/70 transition-colors text-sm">
-          ← Voltar
-        </Link>
-        <div className="w-px h-4 bg-white/10" />
-        <h1 className="text-white/80 text-sm font-semibold">Material Catequese</h1>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 py-12">
+    <main className="min-h-screen pt-24 pb-16 bg-[#090B10]">
+      <div className="max-w-[1200px] mx-auto px-6">
         <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
-            <BookOpen className="text-[#D4AF37]" size={22} />
-            <span className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">Exclusivo</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 mb-4">
+            <BookOpen size={14} className="text-[#D4AF37]" />
+            <span className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase">Exclusivo</span>
           </div>
-          <h2 className="text-white text-3xl font-bold">Material de Catequese</h2>
+          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">Material de Catequese</h1>
           <p className="text-white/40 mt-2 text-sm">Histórias em Quadrinhos e materiais de apoio para download</p>
         </div>
 
@@ -54,8 +45,6 @@ export default async function MaterialCatequesePage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
           {(hqs ?? []).map((item) => {
             const temAcessoLeitura = isAdmin || (item.planos_acesso && item.planos_acesso.some((p: string) => etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)))
-            const temAcessoPdf = isAdmin || (item.planos_pdf && item.planos_pdf.some((p: string) => etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)))
-            const pdfUrl = `https://contos-apks.b-cdn.net/hq/${item.slug}/pdf/${item.slug}.pdf`
 
             return (
               <div key={item.slug} className="group relative flex flex-col">
