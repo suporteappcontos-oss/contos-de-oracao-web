@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, Gamepad2, Pencil, Library, ArrowLeft, ChevronRight, GraduationCap } from 'lucide-react'
+import { BookOpen, Gamepad2, Pencil, Library, ArrowLeft, ChevronRight } from 'lucide-react'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -15,10 +15,12 @@ export const CATEGORIAS_CONFIG = [
     value: 'hq',
     label: 'Histórias em\nQuadrinhos',
     labelFlat: 'Histórias em Quadrinhos',
-    descricao: 'HQs religiosas em PDF para baixar e compartilhar com a família.',
+    descricao: 'HQs religiosas em PDF, prontas para baixar e compartilhar com a família.',
     icon: BookOpen,
     color: '#D4AF37',
-    glow: 'rgba(212,175,55,0.2)',
+    gradient: 'from-[#D4AF37]/25 via-[#D4AF37]/10 to-transparent',
+    border: 'border-[#D4AF37]/20 hover:border-[#D4AF37]/50',
+    glow: 'rgba(212,175,55,0.4)',
   },
   {
     value: 'jogo',
@@ -27,7 +29,9 @@ export const CATEGORIAS_CONFIG = [
     descricao: 'Atividades lúdicas e pedagógicas para crianças aprenderem brincando.',
     icon: Gamepad2,
     color: '#10b981',
-    glow: 'rgba(16,185,129,0.2)',
+    gradient: 'from-[#10b981]/25 via-[#10b981]/10 to-transparent',
+    border: 'border-[#10b981]/20 hover:border-[#10b981]/50',
+    glow: 'rgba(16,185,129,0.4)',
   },
   {
     value: 'desenho',
@@ -36,7 +40,9 @@ export const CATEGORIAS_CONFIG = [
     descricao: 'Ilustrações religiosas para imprimir e colorir, perfeitas para catequese.',
     icon: Pencil,
     color: '#818cf8',
-    glow: 'rgba(129,140,248,0.2)',
+    gradient: 'from-[#818cf8]/25 via-[#818cf8]/10 to-transparent',
+    border: 'border-[#818cf8]/20 hover:border-[#818cf8]/50',
+    glow: 'rgba(129,140,248,0.4)',
   },
   {
     value: 'livro',
@@ -45,7 +51,9 @@ export const CATEGORIAS_CONFIG = [
     descricao: 'Leituras formativas e espirituais exclusivas em formato PDF.',
     icon: Library,
     color: '#f97316',
-    glow: 'rgba(249,115,22,0.2)',
+    gradient: 'from-[#f97316]/25 via-[#f97316]/10 to-transparent',
+    border: 'border-[#f97316]/20 hover:border-[#f97316]/50',
+    glow: 'rgba(249,115,22,0.4)',
   },
 ]
 
@@ -74,64 +82,58 @@ export default async function MateriaisPage() {
     }
   }
 
-  const totalItens = Object.values(contagemMap).reduce((s, v) => s + v.count, 0)
-
   return (
-    <main className="min-h-screen bg-[#07090E] text-white overflow-x-hidden">
+    <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
 
-      {/* Fundo decorativo */}
+      {/* Navbar Oficial - Contos de Oração */}
+      <header
+        className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-[60px] md:h-[68px] backdrop-blur-xl border-b"
+        style={{ borderColor: 'rgba(255,255,255,0.05)', backgroundColor: 'rgba(10, 13, 20, 0.7)' }}
+      >
+        <Link href="/watch" className="flex items-center gap-3 transition-transform hover:scale-105">
+          <Image src="/logo.png" alt="Contos de Oração" width={38} height={38} className="rounded-lg shadow-lg" />
+          <span className="font-bold text-[17px] tracking-tight hidden sm:block">
+            Contos de <span className="text-[#D4AF37]">Oração</span>
+          </span>
+        </Link>
+        <Link href="/watch"
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:bg-white/10"
+          style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+          <ArrowLeft size={14} /> Voltar ao Início
+        </Link>
+      </header>
+
+      {/* Fundo Decorativo Vibrante */}
       <div className="fixed inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[500px] opacity-25"
-          style={{ background: 'radial-gradient(ellipse, rgba(212,175,55,0.12) 0%, transparent 65%)', filter: 'blur(80px)' }} />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] opacity-10"
-          style={{ background: 'radial-gradient(ellipse, rgba(129,140,248,0.3) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[500px] rounded-full opacity-[0.15]"
+          style={{ background: 'radial-gradient(circle, #D4AF37 0%, transparent 70%)', filter: 'blur(100px)' }} />
+        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full opacity-[0.12]"
+          style={{ background: 'radial-gradient(circle, #818cf8 0%, transparent 70%)', filter: 'blur(100px)' }} />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full opacity-[0.1]"
+          style={{ background: 'radial-gradient(circle, #10b981 0%, transparent 70%)', filter: 'blur(100px)' }} />
       </div>
 
       {/* ── HERO ── */}
-      <div className="relative pt-20 pb-14 px-6">
-        <div className="max-w-[920px] mx-auto">
-
-          <Link href="/watch"
-            className="inline-flex items-center gap-2 text-white/25 hover:text-white/55 text-[11px] font-bold mb-10 transition-colors tracking-[0.15em] uppercase">
-            <ArrowLeft size={12} /> Voltar ao Início
-          </Link>
-
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5"
-                style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.22)' }}>
-                <GraduationCap size={12} className="text-[#D4AF37]" />
-                <span className="text-[#D4AF37] text-[10px] font-black tracking-[0.2em] uppercase">Área Exclusiva</span>
-              </div>
-
-              <h1 className="text-5xl md:text-[3.6rem] font-black tracking-tight leading-[1.03]">
-                Material<br />
-                <span className="text-transparent bg-clip-text"
-                  style={{ backgroundImage: 'linear-gradient(130deg, #FFD700 0%, #D4AF37 50%, #B8941E 100%)' }}>
-                  Pedagógico
-                </span>
-              </h1>
-              <p className="text-white/35 mt-4 text-sm max-w-sm leading-relaxed">
-                Olá, <span className="text-white/65 font-semibold">{nome}</span>! Escolha uma categoria para ver e baixar os materiais disponíveis.
-              </p>
-            </div>
-
-            {/* Stat total */}
-            {totalItens > 0 && (
-              <div className="flex flex-col items-center px-6 py-4 rounded-2xl shrink-0"
-                style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.15)' }}>
-                <span className="text-4xl font-black text-[#D4AF37]">{totalItens}</span>
-                <span className="text-white/30 text-xs mt-1 text-center">materiais<br />disponíveis</span>
-              </div>
-            )}
+      <div className="relative pt-36 pb-12 px-6">
+        <div className="max-w-[1200px] mx-auto text-center flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 shadow-lg"
+            style={{ background: 'linear-gradient(90deg, rgba(212,175,55,0.2) 0%, rgba(212,175,55,0.05) 100%)', border: '1px solid rgba(212,175,55,0.3)' }}>
+            <BookOpen size={14} className="text-[#D4AF37]" />
+            <span className="text-[#D4AF37] text-xs font-black tracking-widest uppercase">Área Exclusiva</span>
           </div>
+
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-4">
+            Material Pedagógico
+          </h1>
+          <p className="text-white/60 text-base md:text-lg max-w-2xl leading-relaxed">
+            Olá, <strong className="text-white">{nome}</strong>! Explore nossa biblioteca de materiais formativos. Escolha uma categoria abaixo para visualizar e baixar.
+          </p>
         </div>
       </div>
 
-      {/* ── GRID 2x2 ── */}
-      <div className="max-w-[920px] mx-auto px-6 pb-28">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      {/* ── GRID DE CARDS VERTICAIS (Como Antes) ── */}
+      <div className="relative max-w-[1200px] mx-auto px-6 pb-28">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {CATEGORIAS_CONFIG.map(cat => {
             const info = contagemMap[cat.value]
             const capas = info?.capas ?? []
@@ -142,78 +144,78 @@ export default async function MateriaisPage() {
               <Link
                 key={cat.value}
                 href={`/materiais/${cat.value}`}
-                className="group relative flex overflow-hidden rounded-[26px] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
-                style={{
-                  background: 'linear-gradient(145deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)',
-                  border: '1px solid rgba(255,255,255,0.07)',
-                  minHeight: '180px',
-                }}
+                className={`group relative flex flex-col rounded-[24px] border overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${cat.border}`}
+                style={{ backgroundColor: 'rgba(15, 20, 30, 0.6)', backdropFilter: 'blur(10px)' }}
               >
-                {/* Glow hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none rounded-[26px]"
-                  style={{ boxShadow: `0 0 50px ${cat.glow} inset, 0 0 0 1px ${cat.color}25` }} />
+                {/* Glow interno no hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{ boxShadow: `0 0 40px ${cat.glow} inset` }} />
 
-                {/* Linha colorida no topo */}
-                <div className="absolute top-0 left-8 right-8 h-[2px] rounded-b-full opacity-60 group-hover:opacity-100 transition-opacity"
-                  style={{ background: `linear-gradient(90deg, transparent, ${cat.color}, transparent)` }} />
-
-                {/* ── Layout horizontal ── */}
-                <div className="flex flex-1 gap-0">
-
-                  {/* Área de capas */}
-                  <div className="relative w-[140px] shrink-0 overflow-hidden flex items-center justify-center"
-                    style={{ background: `radial-gradient(ellipse at 50% 50%, ${cat.glow} 0%, transparent 80%)` }}>
-                    {capas.length > 0 ? (
-                      <div className="flex items-center justify-center gap-1.5 px-2 py-4">
-                        {capas.slice(0, 2).map((capa, i) => (
-                          <div key={i}
-                            className="relative rounded-lg overflow-hidden shadow-xl shrink-0 transition-transform duration-400 group-hover:scale-105"
+                {/* ── Mini-preview das capas (Parte superior do card) ── */}
+                <div className={`relative h-[200px] bg-gradient-to-b ${cat.gradient} overflow-hidden flex items-end justify-center pb-4`}>
+                  {capas.length > 0 ? (
+                    <div className="flex items-end justify-center w-full px-4 relative z-10">
+                      {capas.slice(0, 3).map((capa, i) => {
+                        const isCenter = i === 0
+                        const rot = [-8, 0, 8][i] ?? 0
+                        const scale = isCenter ? 1.05 : 0.85
+                        const z = isCenter ? 10 : 5
+                        return (
+                          <div
+                            key={i}
+                            className="relative rounded-xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.6)] shrink-0 transition-transform duration-500 group-hover:scale-110"
                             style={{
-                              width: i === 0 ? '68px' : '52px',
-                              height: i === 0 ? '92px' : '70px',
-                              transform: `rotate(${i === 0 ? -4 : 4}deg)`,
-                              zIndex: i === 0 ? 2 : 1,
+                              width: isCenter ? '96px' : '72px',
+                              height: isCenter ? '134px' : '100px',
+                              transform: `rotate(${rot}deg) scale(${scale})`,
+                              zIndex: z,
+                              order: i === 0 ? 2 : i === 1 ? 1 : 3,
+                              marginLeft: i !== 0 ? (i === 1 ? '10px' : '-20px') : '-20px',
                             }}
                           >
-                            <Image src={capa} alt="" fill className="object-cover" sizes="70px" />
+                            <Image src={capa} alt="" fill className="object-cover" sizes="96px" />
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <CatIcon size={44} style={{ color: cat.color, opacity: 0.1 }} />
-                    )}
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <CatIcon size={64} style={{ color: cat.color, opacity: 0.15 }} />
+                    </div>
+                  )}
+
+                  {/* Efeito de luz no fundo das capas */}
+                  <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-[#0A0D14] to-transparent z-20" />
+                </div>
+
+                {/* ── Informações (Parte inferior do card) ── */}
+                <div className="p-6 flex flex-col gap-3 flex-1 relative z-30 -mt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg"
+                      style={{ background: `${cat.color}20`, border: `1px solid ${cat.color}40` }}>
+                      <CatIcon size={20} style={{ color: cat.color }} />
+                    </div>
+                    <span className="text-xs font-black px-3 py-1.5 rounded-full shadow-lg"
+                      style={{ background: `${cat.color}20`, color: cat.color, border: `1px solid ${cat.color}30` }}>
+                      {count} {count === 1 ? 'item' : 'itens'}
+                    </span>
                   </div>
 
-                  {/* Info */}
-                  <div className="flex flex-col justify-between flex-1 p-5 pl-4">
-                    <div>
-                      {/* Ícone + Badge */}
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                          style={{ background: `${cat.color}18`, border: `1px solid ${cat.color}25` }}>
-                          <CatIcon size={15} style={{ color: cat.color }} />
-                        </div>
-                        <span className="text-[10px] font-black px-2.5 py-1 rounded-full"
-                          style={{ background: `${cat.color}18`, color: cat.color }}>
-                          {count} {count === 1 ? 'item' : 'itens'}
-                        </span>
-                      </div>
+                  <div className="mt-2">
+                    <h2 className="text-white font-black text-xl leading-tight mb-2 whitespace-pre-line group-hover:text-transparent group-hover:bg-clip-text transition-all"
+                      style={{ backgroundImage: `linear-gradient(135deg, #fff, ${cat.color})` }}>
+                      {cat.label}
+                    </h2>
+                    <p className="text-white/40 text-sm leading-relaxed">{cat.descricao}</p>
+                  </div>
 
-                      <h2 className="text-white font-black text-[1.05rem] leading-tight whitespace-pre-line mb-1.5">
-                        {cat.label}
-                      </h2>
-                      <p className="text-white/28 text-xs leading-relaxed line-clamp-2">{cat.descricao}</p>
-                    </div>
-
-                    {/* Rodapé */}
-                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
-                      <span className="text-xs font-bold" style={{ color: count === 0 ? 'rgba(255,255,255,0.2)' : cat.color }}>
-                        {count === 0 ? 'Em breve' : 'Ver todos →'}
-                      </span>
-                      <div className="w-7 h-7 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:translate-x-1"
-                        style={{ background: `${cat.color}18` }}>
-                        <ChevronRight size={13} style={{ color: cat.color }} />
-                      </div>
+                  <div className="mt-auto pt-5 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-sm font-bold transition-colors" style={{ color: count === 0 ? 'rgba(255,255,255,0.2)' : cat.color }}>
+                      {count === 0 ? 'Em breve' : 'Acessar Categoria'}
+                    </span>
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:translate-x-2"
+                      style={{ background: `${cat.color}20` }}>
+                      <ChevronRight size={16} style={{ color: cat.color }} />
                     </div>
                   </div>
                 </div>
@@ -221,10 +223,6 @@ export default async function MateriaisPage() {
             )
           })}
         </div>
-
-        <p className="text-center text-white/12 text-[11px] mt-10 tracking-wide">
-          Todos os materiais estão disponíveis em formato PDF • Área exclusiva para assinantes
-        </p>
       </div>
     </main>
   )
