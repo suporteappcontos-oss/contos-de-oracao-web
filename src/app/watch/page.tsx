@@ -6,7 +6,8 @@ import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import NotificationBell from '@/components/NotificationBell'
-import { LogOut, Settings, BookOpen } from 'lucide-react'
+import { LogOut, ShieldCheck, BookOpen, GraduationCap } from 'lucide-react'
+import DispositivosModal from '@/components/DispositivosModal'
 
 type Video = {
   id: string
@@ -139,35 +140,37 @@ export default async function WatchPage() {
           {/* Sino de Notificações */}
           <NotificationBell />
 
+          {/* Botão Dispositivos (modal com Android + TV) */}
+          <DispositivosModal />
+
           {/* Botão Material Catequese */}
           <a
             href="/material-catequese"
-            title="Material Catequese"
-            className="group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_rgba(212,175,55,0.3)] relative overflow-hidden"
-            style={{ 
-              background: 'linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 100%)', 
-              border: '1px solid rgba(212,175,55,0.4)', 
-              color: '#D4AF37' 
+            title="Material de Catequese"
+            className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, rgba(20,184,166,0.15), rgba(16,185,129,0.08))',
+              border: '1px solid rgba(20,184,166,0.35)',
+              color: '#2dd4bf',
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.2)] to-transparent -translate-x-full group-hover:animate-shimmer" />
-            <BookOpen size={14} className="group-hover:-translate-y-0.5 transition-transform drop-shadow-md" />
-            <span className="hidden md:inline tracking-wider uppercase text-[0.65rem]">Catequese</span>
+            <GraduationCap size={14} className="group-hover:-translate-y-0.5 transition-transform" />
+            <span className="hidden md:inline tracking-wide">Catequese</span>
           </a>
 
           {isAdmin && (
             <Link
               href="/admin"
-              className="group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] relative overflow-hidden"
-              style={{ 
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)', 
-                color: '#fff', 
-                border: '1px solid rgba(255,255,255,0.2)' 
+              title="Painel Administrativo"
+              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(220,38,38,0.08))',
+                border: '1px solid rgba(239,68,68,0.35)',
+                color: '#f87171',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.1)] to-transparent -translate-x-full group-hover:animate-shimmer" />
-              <Settings size={14} className="text-slate-300 group-hover:rotate-90 transition-transform duration-500" />
-              <span className="hidden sm:inline tracking-wider uppercase text-[0.65rem] text-slate-200">Admin</span>
+              <ShieldCheck size={14} className="group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline">Admin</span>
             </Link>
           )}
 
