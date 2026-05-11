@@ -32,13 +32,22 @@ export default async function MaterialCatequesePage() {
   return (
     <main className="min-h-screen pt-24 pb-16 bg-[#090B10]">
       <div className="max-w-[1200px] mx-auto px-6">
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 mb-4">
-            <BookOpen size={14} className="text-[#D4AF37]" />
-            <span className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase">Exclusivo</span>
+        <div className="mb-10 flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 mb-4">
+              <BookOpen size={14} className="text-[#D4AF37]" />
+              <span className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase">Exclusivo</span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">Material de Catequese</h1>
+            <p className="text-white/40 mt-2 text-sm">Histórias em Quadrinhos e materiais de apoio para download</p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">Material de Catequese</h1>
-          <p className="text-white/40 mt-2 text-sm">Histórias em Quadrinhos e materiais de apoio para download</p>
+
+          <Link 
+            href="/watch" 
+            className="inline-flex items-center justify-center px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white/70 hover:text-white text-sm font-semibold transition-all"
+          >
+            ← Voltar pro Início
+          </Link>
         </div>
 
         {/* Grid de HQs */}
