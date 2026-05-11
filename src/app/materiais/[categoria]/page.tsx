@@ -49,14 +49,20 @@ export default async function CategoriaPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-[#07090E] text-white">
 
-      {/* Fundo decorativo */}
-      <div className="fixed inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[350px] opacity-20"
-          style={{ background: `radial-gradient(ellipse, ${cat.color}30 0%, transparent 70%)`, filter: 'blur(70px)' }} />
+      {/* Fundo com Imagem */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <Image
+          src="/background.jpg"
+          alt="Background"
+          fill
+          className="object-cover opacity-25"
+          priority
+        />
+        <div className="absolute inset-0 bg-[#07090E]/85" />
       </div>
 
       {/* ── Header ── */}
-      <div className="relative pt-20 pb-10 px-6">
+      <div className="relative z-10 pt-20 pb-10 px-6">
         <div className="max-w-[1080px] mx-auto">
 
           <Link href="/materiais"
@@ -84,7 +90,7 @@ export default async function CategoriaPage({ params }: Props) {
       </div>
 
       {/* ── Grid ── */}
-      <div className="max-w-[1080px] mx-auto px-6 pb-24">
+      <div className="relative z-10 max-w-[1080px] mx-auto px-6 pb-24">
         {(!itens || itens.length === 0) ? (
 
           <div className="flex flex-col items-center justify-center py-32 gap-4 text-center">

@@ -103,18 +103,20 @@ export default async function MateriaisPage() {
         </Link>
       </header>
 
-      {/* Fundo Decorativo Vibrante */}
-      <div className="fixed inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/4 w-[600px] h-[500px] rounded-full opacity-[0.15]"
-          style={{ background: 'radial-gradient(circle, #D4AF37 0%, transparent 70%)', filter: 'blur(100px)' }} />
-        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full opacity-[0.12]"
-          style={{ background: 'radial-gradient(circle, #818cf8 0%, transparent 70%)', filter: 'blur(100px)' }} />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full opacity-[0.1]"
-          style={{ background: 'radial-gradient(circle, #10b981 0%, transparent 70%)', filter: 'blur(100px)' }} />
+      {/* Fundo com Imagem */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <Image
+          src="/background.jpg"
+          alt="Background"
+          fill
+          className="object-cover opacity-30"
+          priority
+        />
+        <div className="absolute inset-0 bg-[#0A0D14]/80" />
       </div>
 
       {/* ── HERO ── */}
-      <div className="relative pt-36 pb-12 px-6">
+      <div className="relative z-10 pt-36 pb-12 px-6">
         <div className="max-w-[1200px] mx-auto text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 shadow-lg"
             style={{ background: 'linear-gradient(90deg, rgba(212,175,55,0.2) 0%, rgba(212,175,55,0.05) 100%)', border: '1px solid rgba(212,175,55,0.3)' }}>
