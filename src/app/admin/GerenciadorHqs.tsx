@@ -325,15 +325,28 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
         <div className="bg-[#0f171e] border border-[#D4AF37]/20 rounded-2xl p-6 space-y-4">
           <h4 className="text-white font-bold text-sm uppercase tracking-widest text-[#D4AF37]">Publicar Nova HQ</h4>
 
-          {/* Título */}
-          <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Título</label>
-            <input
-              value={titulo}
-              onChange={e => setTitulo(e.target.value)}
-              placeholder="ex: São Francisco de Assis"
-              className="w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none text-sm"
-            />
+          {/* Linha 1: Título + Total de Páginas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="md:col-span-2">
+              <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Título</label>
+              <input
+                value={titulo}
+                onChange={e => setTitulo(e.target.value)}
+                placeholder="ex: São Francisco de Assis"
+                className="w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Total de Páginas</label>
+              <input
+                type="number"
+                min="1"
+                value={totalPaginas}
+                onChange={e => setTotalPaginas(e.target.value)}
+                className="w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
+              />
+              <p className="text-white/25 text-[10px] mt-1">Atualizado automático ao selecionar PNGs</p>
+            </div>
           </div>
 
           {/* Descrição */}
@@ -348,50 +361,39 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
             />
           </div>
 
-          {/* Total de páginas */}
-          <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Total de Páginas (imagens no Bunny)</label>
-            <input
-              type="number"
-              min="1"
-              value={totalPaginas}
-              onChange={e => setTotalPaginas(e.target.value)}
-              className="w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
-            />
-            <p className="text-white/25 text-[10px] mt-1">As imagens devem estar no Bunny: hq/{'{slug}'}/HQ_01.png, HQ_02.png...</p>
-          </div>
-
-          {/* Capa */}
-          <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Imagem de Capa (Obrigatório)</label>
-            <div
-              onClick={() => capaRef.current?.click()}
-              className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
-            >
-              <ImageIcon size={18} className="text-white/40" />
-              <span className="text-white/40 text-sm">{capaFile ? capaFile.name : 'Clique para selecionar a capa (ex: capa.png)'}</span>
-            </div>
-            <input ref={capaRef} type="file" accept="image/*" className="hidden" onChange={e => setCapaFile(e.target.files?.[0] || null)} />
-          </div>
-
-          {/* Páginas PNG */}
-          <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Páginas da HQ (.png)</label>
-            <div
-              onClick={() => pngsRef.current?.click()}
-              className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
-            >
-              <ImageIcon size={18} className="text-white/40" />
-              <span className="text-white/40 text-sm">
-                {pngFiles.length > 0 ? `${pngFiles.length} página(s) selecionada(s)` : 'Selecione todas as imagens PNG (HQ_01, HQ_02...)'}
-              </span>
-            </div>
-            <input ref={pngsRef} type="file" accept="image/png" multiple className="hidden" onChange={e => setPngFiles(Array.from(e.target.files || []))} />
-            <p className="text-white/25 text-[10px] mt-1">Ao selecionar arquivos, o "Total de Páginas" será atualizado automaticamente.</p>
-          </div>
-
+          {/* Linha 2: Capa + Páginas PNG lado a lado */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Arquivo PDF */}
+            {/* Capa */}
+            <div>
+              <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Imagem de Capa (Obrigatório)</label>
+              <div
+                onClick={() => capaRef.current?.click()}
+                className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
+              >
+                <ImageIcon size={18} className="text-white/40 shrink-0" />
+                <span className="text-white/40 text-sm truncate">{capaFile ? capaFile.name : 'Clique para selecionar a capa (ex: capa.png)'}</span>
+              </div>
+              <input ref={capaRef} type="file" accept="image/*" className="hidden" onChange={e => setCapaFile(e.target.files?.[0] || null)} />
+            </div>
+
+            {/* Páginas PNG */}
+            <div>
+              <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Páginas da HQ (.png)</label>
+              <div
+                onClick={() => pngsRef.current?.click()}
+                className="flex items-center gap-3 p-4 rounded-xl border border-dashed border-white/20 hover:border-[#D4AF37]/50 cursor-pointer transition-colors"
+              >
+                <ImageIcon size={18} className="text-white/40 shrink-0" />
+                <span className="text-white/40 text-sm truncate">
+                  {pngFiles.length > 0 ? `${pngFiles.length} página(s) selecionada(s)` : 'Selecione todas as imagens PNG (HQ_01, HQ_02...)'}
+                </span>
+              </div>
+              <input ref={pngsRef} type="file" accept="image/png" multiple className="hidden" onChange={e => setPngFiles(Array.from(e.target.files || []))} />
+            </div>
+          </div>
+
+          {/* PDF */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Arquivo PDF (opcional)</label>
               <div
@@ -403,8 +405,6 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
               </div>
               <input ref={pdfRef} type="file" accept=".pdf" className="hidden" onChange={e => setPdfFile(e.target.files?.[0] || null)} />
             </div>
-
-            {/* PDF Link */}
             <div>
               <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Link Direto do PDF (opcional)</label>
               <input
@@ -412,44 +412,30 @@ export function GerenciadorHqs({ hqsIniciais }: { hqsIniciais: HqType[] }) {
                 placeholder="Ex: https://br.storage.bunnycdn.com/.../?download"
                 value={linkPdf}
                 onChange={e => setLinkPdf(e.target.value)}
-                className="w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white focus:outline-none text-sm h-full"
+                className="w-full bg-[#090B10] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white focus:outline-none text-sm"
               />
             </div>
           </div>
 
-          {/* Planos com acesso à leitura */}
+          {/* Planos com acesso à leitura e download (unificado) */}
           <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Planos com acesso à leitura</label>
+            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Planos com acesso à leitura e download</label>
+            <p className="text-white/25 text-[10px] mb-3">Os planos selecionados terão acesso à leitura E ao download do PDF.</p>
             <div className="flex gap-2">
               {PLANOS_DISPONIVEIS.map(p => (
                 <button
                   key={p}
                   type="button"
-                  onClick={() => togglePlano(p, planosAcesso, setPlanosAcesso)}
+                  onClick={() => {
+                    togglePlano(p, planosAcesso, setPlanosAcesso);
+                    togglePlano(p, planosPdf, setPlanosPdf);
+                  }}
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${planosAcesso.includes(p) ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-[#D4AF37]' : 'border-white/10 text-white/40'}`}
                 >
                   {p}
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Planos com acesso ao PDF */}
-          <div>
-            <label className="block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold">Planos com download do PDF</label>
-            <div className="flex gap-2">
-              {PLANOS_DISPONIVEIS.map(p => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => togglePlano(p, planosPdf, setPlanosPdf)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${planosPdf.includes(p) ? 'border-green-400 bg-green-400/10 text-green-400' : 'border-white/10 text-white/40'}`}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-            <p className="text-white/25 text-[10px] mt-1">Planos não selecionados verão a HQ mas não poderão baixar o PDF</p>
           </div>
 
           {/* Feedback */}
