@@ -16,7 +16,7 @@ import {
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
 import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
-import { GerenciadorHqs } from './GerenciadorHqs'
+import { GerenciadorMateriais } from './GerenciadorMateriais'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -63,7 +63,7 @@ export default async function AdminPage({
 
   // Videos
   const { data: videos } = await supabase.from('videos').select('*').order('criado_em', { ascending: false })
-  const { data: hqsData } = await supabase.from('hqs').select('*').order('criado_em', { ascending: false })
+  const { data: materiaisData } = await supabase.from('materiais').select('*').order('criado_em', { ascending: false })
 
   // Users via Admin API
   let usuarios: UsuarioType[] = []
@@ -204,7 +204,7 @@ export default async function AdminPage({
               { id: 'videos', label: 'Vídeos', icon: Film, count: totalVideos },
               { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
               { id: 'relatorios', label: 'Relatórios', icon: BarChart3, count: null },
-              { id: 'hqs', label: 'HQs', icon: BookOpen, count: hqsData?.length ?? 0 },
+              { id: 'materiais', label: 'Materiais', icon: BookOpen, count: materiaisData?.length ?? 0 },
               { id: 'stripe', label: 'Planos', icon: Settings, count: null },
               { id: 'configuracoes', label: 'Acessos', icon: Sliders, count: null },
             ].map(tab => (
@@ -632,10 +632,10 @@ export default async function AdminPage({
           <StripeAdmin />
         )}
 
-        {/* ════════ ABA HQs ════════ */}
-        {activeTab === 'hqs' && (
-          <div className="max-w-3xl">
-            <GerenciadorHqs hqsIniciais={(hqsData ?? []) as any} />
+        {/* ════════ ABA MATERIAIS ════════ */}
+        {activeTab === 'materiais' && (
+          <div>
+            <GerenciadorMateriais materiaisIniciais={(materiaisData ?? []) as any} />
           </div>
         )}
 

@@ -267,67 +267,72 @@ export async function salvarVersaoApk(versao: string, linkDownload: string, mens
   }
 }
 
-// ─── Publicar HQ (salvar no Supabase, upload foi feito no cliente) ───
-export async function publicarHq(formData: FormData) {
+// ─── Publicar Material (HQ, Jogo, Desenho) ───
+export async function publicarMaterial(formData: FormData) {
   await verificarAdmin();
   try {
     const supabase = await createClient();
     const titulo = formData.get('titulo') as string;
-    const descricao = formData.get('descricao') as string;
-    const totalPaginas = parseInt(formData.get('total_paginas') as string) || 1;
+    const descricao = (formData.get('descricao') as string) || null;
+    const categoria = formData.get('categoria') as string; // 'hq' | 'jogo' | 'desenho'
     const planosAcesso = JSON.parse(formData.get('planos_acesso') as string) as string[];
-    const planosPdf = JSON.parse(formData.get('planos_pdf') as string) as string[];
-    const slug = formData.get('slug_gerado') as string;
-    const temPdf = formData.get('tem_pdf') === 'true';
-    let linkPdf = formData.get('link_pdf') as string | null;
-    if (linkPdf && linkPdf.trim() !== '') {
-      linkPdf = linkPdf.trim();
-      // Inteligência de Segurança MÁXIMA: 
-      // Se o usuário colar o link privado com AccessKey, nós limpamos e convertemos pro público!
+    const slug = titulo.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '').trim()
+      .replace(/\s+/g, '-');
+
+    // Link do PDF (limpa AccessKey se vier do Bunny privado)
+    let linkPdf = (formData.get('link_pdf') as string | null)?.trim() || null;
+    if (linkPdf) {
       if (linkPdf.includes('br.storage.bunnycdn.com')) {
-        linkPdf = linkPdf.split('?')[0]; // Arranca a senha (AccessKey)
-        // Converte o link de storage pro link público da vitrine
+        linkPdf = linkPdf.split('?')[0];
         linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
-        linkPdf = linkPdf.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net'); // Segurança extra
       }
-    } else {
-      linkPdf = null;
     }
 
-    const capaUrl = `https://contos-apks.b-cdn.net/hq/${slug}/HQ_01.png`;
+    // Upload da Capa
+    let capaUrl: string | null = null;
+    const capaFile = formData.get('capa_file') as File | null;
+    if (capaFile && capaFile.size > 0) {
+      capaUrl = await uploadToBunny(capaFile, `PDF/${categoria}/${slug}_capa`);
+    }
 
-    // Salva metadados no Supabase
-    const { data: hq, error } = await supabase.from('hqs').upsert({
+    // Upload do PDF
+    let pdfUrl: string | null = linkPdf;
+    const pdfFile = formData.get('pdf_file') as File | null;
+    if (pdfFile && pdfFile.size > 0) {
+      pdfUrl = await uploadToBunny(pdfFile, `PDF/${categoria}/${slug}`);
+    }
+
+    const { error } = await supabase.from('materiais').upsert({
       slug,
       titulo,
-      descricao: descricao || null,
+      descricao,
+      categoria,
       capa_url: capaUrl,
-      total_paginas: totalPaginas,
+      link_pdf: pdfUrl,
       planos_acesso: planosAcesso,
-      planos_pdf: planosPdf,
-      tem_pdf: temPdf,
-      link_pdf: linkPdf,
       ativo: true,
-    }, { onConflict: 'slug' }).select().single();
+    }, { onConflict: 'slug' });
 
     if (error) throw new Error(error.message);
-    revalidatePath('/material-catequese');
+    revalidatePath('/materiais');
     revalidatePath('/admin');
-    return { success: true, hq };
+    return { success: true };
   } catch (error: any) {
-    console.error('❌ Erro no publicarHq:', error.message || error);
+    console.error('❌ Erro no publicarMaterial:', error.message || error);
     return { success: false, error: error.message };
   }
 }
 
-// ─── Deletar HQ ───
-export async function deletarHq(id: string) {
+// ─── Deletar Material ───
+export async function deletarMaterial(id: string) {
   await verificarAdmin();
   try {
     const supabase = await createClient();
-    const { error } = await supabase.from('hqs').delete().eq('id', id);
+    const { error } = await supabase.from('materiais').delete().eq('id', id);
     if (error) throw new Error(error.message);
-    revalidatePath('/material-catequese');
+    revalidatePath('/materiais');
     revalidatePath('/admin');
     return { success: true };
   } catch (error: any) {
@@ -335,37 +340,5 @@ export async function deletarHq(id: string) {
   }
 }
 
-// ─── Adicionar/Trocar PDF de uma HQ existente ───
-export async function adicionarPdfHq(formData: FormData) {
-  await verificarAdmin();
-  try {
-    const supabase = await createClient();
-    const id = formData.get('id') as string;
-    const linkPdf = formData.get('link_pdf') as string | null;
 
-    // Atualiza Supabase: tem_pdf = true e o link personalizado (se houver)
-    const updateData: any = { tem_pdf: true };
-    if (linkPdf && linkPdf.trim() !== '') {
-      let finalLink = linkPdf.trim();
-      if (finalLink.includes('br.storage.bunnycdn.com')) {
-        finalLink = finalLink.split('?')[0]; // Arranca a senha
-        finalLink = finalLink.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
-        finalLink = finalLink.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net');
-      }
-      updateData.link_pdf = finalLink;
-    } else {
-      updateData.link_pdf = null;
-    }
 
-    const { error } = await supabase.from('hqs').update(updateData).eq('id', id);
-    if (error) throw new Error(error.message);
-
-    revalidatePath('/material-catequese');
-    revalidatePath('/admin');
-    revalidatePath('/hq/[slug]', 'page');
-    return { success: true };
-  } catch (error: any) {
-    console.error('❌ Erro no adicionarPdfHq:', error.message || error);
-    return { success: false, error: error.message };
-  }
-}

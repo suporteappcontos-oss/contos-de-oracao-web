@@ -139,15 +139,15 @@ export default async function WatchPage() {
           {/* Sino de Notificações */}
           <NotificationBell />
 
-          {/* Botão Material Catequese */}
+          {/* Botão Materiais Didáticos */}
           <a
-            href="/material-catequese"
-            title="Material Catequese"
+            href="/materiais"
+            title="Materiais Didáticos"
             className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
             style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }}
           >
             <BookOpen size={13} className="group-hover:-translate-y-0.5 transition-transform" />
-            <span className="hidden md:inline tracking-wide">Catequese</span>
+            <span className="hidden md:inline tracking-wide">Materiais</span>
           </a>
 
           {isAdmin && (
