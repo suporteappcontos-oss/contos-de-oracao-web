@@ -33,26 +33,21 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
     if (!pdfUrl || baixandoPdf) return
     try {
       setBaixandoPdf(true)
-      const res = await fetch(pdfUrl)
-      if (!res.ok) throw new Error('Erro ao baixar PDF')
-      const blob = await res.blob()
-      // Truque para impedir que o Chrome/Edge intercepte e abra o PDF: 
-      // Mudamos o MIME type do arquivo para octet-stream (dados brutos)
-      const forceBlob = new Blob([blob], { type: 'application/octet-stream' })
-      const url = window.URL.createObjectURL(forceBlob)
+      // Usamos a nossa própria API para driblar o CORS e forçar o cabeçalho 'attachment'
+      const proxyUrl = `/api/download-pdf?url=${encodeURIComponent(pdfUrl)}`
       
+      // Cria um link invisível para a nossa API proxy
       const a = document.createElement('a')
-      a.href = url
-      // Determina o nome do arquivo a partir da URL, fallback para o slug
-      let fileName = pdfUrl.split('/').pop() || `${slug}.pdf`
-      if (!fileName.endsWith('.pdf')) fileName += '.pdf'
-      a.download = fileName
+      a.href = proxyUrl
+      a.download = '' // O nome será definido pelo backend
       document.body.appendChild(a)
       a.click()
-      window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-    } catch (e) {
-      alert('Não foi possível baixar o PDF no momento. Tente novamente mais tarde.')
+      
+      // Um pequeno delay para o botão voltar ao normal
+      await new Promise(r => setTimeout(r, 1500))
+    } catch (e: any) {
+      alert(`Erro inesperado ao baixar o PDF: ${e.message}`)
       console.error(e)
     } finally {
       setBaixandoPdf(false)
