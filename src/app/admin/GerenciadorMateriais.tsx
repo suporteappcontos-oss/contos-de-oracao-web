@@ -1,14 +1,15 @@
 'use client'
 
 import React, { useState, useTransition, useRef } from 'react'
-import { BookOpen, Gamepad2, Pencil, Trash2, Plus, FileText, ImageIcon, Loader2, CheckCircle2, Download, X } from 'lucide-react'
+import { BookOpen, Gamepad2, Pencil, Library, Trash2, Plus, FileText, ImageIcon, Loader2, CheckCircle2, Download, X } from 'lucide-react'
 import { publicarMaterial, deletarMaterial } from './actions'
 
 const PLANOS_DISPONIVEIS = ['Básico', 'Essencial', 'Pro']
 const CATEGORIAS = [
-  { value: 'hq', label: 'HQ (História em Quadrinhos)', icon: BookOpen, color: '#D4AF37' },
-  { value: 'jogo', label: 'Jogo Educativo', icon: Gamepad2, color: '#10b981' },
-  { value: 'desenho', label: 'Desenho para Colorir', icon: Pencil, color: '#818cf8' },
+  { value: 'hq',      label: 'HQ (História em Quadrinhos)', icon: BookOpen, color: '#D4AF37' },
+  { value: 'jogo',    label: 'Jogo Educativo',              icon: Gamepad2, color: '#10b981' },
+  { value: 'desenho', label: 'Desenho para Colorir',        icon: Pencil,   color: '#818cf8' },
+  { value: 'livro',   label: 'Livro Digital',               icon: Library,  color: '#f97316' },
 ]
 
 // AccessKey do Bunny — usada apenas no browser do admin para fazer upload direto

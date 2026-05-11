@@ -139,15 +139,15 @@ export default async function WatchPage() {
           {/* Sino de Notificações */}
           <NotificationBell />
 
-          {/* Botão Materiais Didáticos */}
+          {/* Botão Material Pedagógico */}
           <a
             href="/materiais"
-            title="Materiais Didáticos"
-            className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
-            style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }}
+            title="Material Pedagógico"
+            className="group flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105 hover:brightness-110"
+            style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.18), rgba(212,175,55,0.08))', border: '1px solid rgba(212,175,55,0.4)', color: '#D4AF37' }}
           >
             <BookOpen size={13} className="group-hover:-translate-y-0.5 transition-transform" />
-            <span className="hidden md:inline tracking-wide">Materiais</span>
+            <span className="hidden md:inline tracking-wide font-black">Mat. Pedagógico</span>
           </a>
 
           {isAdmin && (
