@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition, useRef } from 'react'
 import { BookOpen, Upload, Loader2, CheckCircle2, Trash2, FileText, Image as ImageIcon, Plus, Link as LinkIcon } from 'lucide-react'
-import { publicarHq, deletarHq, adicionarPdfHq } from './actions'
+import { publicarMaterial, deletarMaterial } from './actions'
 
 const PLANOS_DISPONIVEIS = ['Básico', 'Essencial', 'Pro']
 
