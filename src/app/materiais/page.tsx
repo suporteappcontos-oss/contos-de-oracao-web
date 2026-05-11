@@ -196,7 +196,6 @@ function MaterialCard({
             download
             className="absolute bottom-3 left-3 right-3 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black text-black transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
             style={{ background: `linear-gradient(135deg, ${catColor}, ${catColor}cc)` }}
-            onClick={e => e.stopPropagation()}
           >
             <Download size={13} />
             Baixar PDF
