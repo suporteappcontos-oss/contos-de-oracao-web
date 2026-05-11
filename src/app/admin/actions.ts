@@ -282,13 +282,8 @@ export async function publicarHq(formData: FormData) {
     let linkPdf = formData.get('link_pdf') as string | null;
     if (linkPdf && linkPdf.trim() !== '') {
       linkPdf = linkPdf.trim();
-      if (linkPdf.includes('br.storage.bunnycdn.com')) {
-        linkPdf = linkPdf.split('?')[0];
-        // O link original vem como: br.storage.bunnycdn.com/contos-apks/hq/...
-        // O pull zone fica: contos-apks.b-cdn.net/hq/...
-        linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
-        linkPdf = linkPdf.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net'); // fallback
-      }
+      // O link colado será salvo exatamente como está, sem NENHUMA alteração
+      linkPdf = linkPdf.trim();
     } else {
       linkPdf = null;
     }
@@ -346,12 +341,7 @@ export async function adicionarPdfHq(formData: FormData) {
     const updateData: any = { tem_pdf: true };
     if (linkPdf && linkPdf.trim() !== '') {
       let finalLink = linkPdf.trim();
-      // Corrige automaticamente se o admin colar o link interno do painel do Bunny (Storage Zone)
-      if (finalLink.includes('br.storage.bunnycdn.com')) {
-        finalLink = finalLink.split('?')[0]; // remove ?accessKey=... se tiver
-        finalLink = finalLink.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
-        finalLink = finalLink.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net'); // fallback
-      }
+      // O link colado será salvo exatamente como está, sem NENHUMA alteração
       updateData.link_pdf = finalLink;
     } else {
       updateData.link_pdf = null;
