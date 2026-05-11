@@ -21,6 +21,7 @@ export async function GET(request: Request) {
     
     // Determina o nome do arquivo a partir da URL
     let fileName = fileUrl.split('/').pop() || 'hq.pdf'
+    fileName = fileName.split('?')[0] // Limpa qualquer sujeira da URL como ?accessKey
     if (!fileName.endsWith('.pdf')) fileName += '.pdf'
 
     // Retorna o arquivo forçando o download como anexo (attachment)

@@ -279,11 +279,16 @@ export async function publicarHq(formData: FormData) {
     const planosPdf = JSON.parse(formData.get('planos_pdf') as string) as string[];
     const slug = formData.get('slug_gerado') as string;
     const temPdf = formData.get('tem_pdf') === 'true';
-    let linkPdf = formData.get('link_pdf') as string | null;
     if (linkPdf && linkPdf.trim() !== '') {
       linkPdf = linkPdf.trim();
-      // O link colado será salvo exatamente como está, sem NENHUMA alteração
-      linkPdf = linkPdf.trim();
+      // Inteligência de Segurança MÁXIMA: 
+      // Se o usuário colar o link privado com AccessKey, nós limpamos e convertemos pro público!
+      if (linkPdf.includes('br.storage.bunnycdn.com')) {
+        linkPdf = linkPdf.split('?')[0]; // Arranca a senha (AccessKey)
+        // Converte o link de storage pro link público da vitrine
+        linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
+        linkPdf = linkPdf.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net'); // Segurança extra
+      }
     } else {
       linkPdf = null;
     }
@@ -341,7 +346,11 @@ export async function adicionarPdfHq(formData: FormData) {
     const updateData: any = { tem_pdf: true };
     if (linkPdf && linkPdf.trim() !== '') {
       let finalLink = linkPdf.trim();
-      // O link colado será salvo exatamente como está, sem NENHUMA alteração
+      if (finalLink.includes('br.storage.bunnycdn.com')) {
+        finalLink = finalLink.split('?')[0]; // Arranca a senha
+        finalLink = finalLink.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
+        finalLink = finalLink.replace('br.storage.bunnycdn.com', 'contos-apks.b-cdn.net');
+      }
       updateData.link_pdf = finalLink;
     } else {
       updateData.link_pdf = null;
