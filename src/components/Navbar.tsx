@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
+import { BookOpen } from 'lucide-react';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -64,7 +65,7 @@ export default function Navbar() {
         >
           <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
                style={{ background: '#090B10', border: '1px solid #D4AF37' }}>
-            <span className="text-[#D4AF37] font-black text-sm">?</span>
+            <BookOpen size={12} className="text-[#D4AF37]" />
           </div>
           <span className="text-white font-bold hidden sm:inline">Manual / App</span>
         </button>

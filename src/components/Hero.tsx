@@ -22,16 +22,18 @@ export default function Hero() {
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left animate-fade-in mt-1 md:mt-10">
           <h1
             className="text-white font-black leading-tight mb-2 md:mb-4"
-            style={{ fontSize: 'clamp(2.5rem, 5vw, 5.5rem)', fontFamily: 'Outfit, sans-serif', textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}
+            style={{ fontSize: 'clamp(2.2rem, 4.5vw, 4.5rem)', fontFamily: 'Outfit, sans-serif', textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}
           >
-            Sua fé,
+            Catequese Digital:
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">em todo lugar.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[clamp(1.5rem,3vw,2.5rem)] mt-2 block leading-snug">
+              Universo católico em um só lugar, de forma divertida e criativa.
+            </span>
           </h1>
-          <p className="text-white/70 text-sm md:text-xl xl:text-2xl max-w-lg xl:max-w-2xl leading-relaxed font-light" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Acesso exclusivo às mais belas orações, novenas e retiros espirituais.
+          <p className="text-white/70 text-sm md:text-lg xl:text-xl max-w-lg xl:max-w-2xl leading-relaxed font-light" style={{ fontFamily: 'Outfit, sans-serif' }}>
+            Vídeos, jogos, HQs, livros, atividades, apostilas e conteúdos exclusivos para ensinar a fé católica às crianças de maneira moderna, segura e encantadora.
           </p>
-          <div className="hidden md:block w-16 h-1 bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full mt-8 opacity-80" />
+          <div className="hidden md:block w-16 h-1 bg-gradient-to-r from-[#D4AF37] to-transparent rounded-full mt-6 opacity-80" />
 
           {/* Dica para usuários de TV */}
           <p className="hidden xl:flex items-center gap-2 mt-6 text-white/80 text-sm bg-black/40 px-4 py-2.5 rounded-xl backdrop-blur-md w-fit border border-white/10 shadow-lg">

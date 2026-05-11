@@ -77,7 +77,7 @@ export default function HeroBanner({ video }: { video: VideoData }) {
           </motion.p>
         )}
 
-        {/* Botões de Ação (estilo App: branco sólido + glass secundário) */}
+        {/* Botões de Ação */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -90,14 +90,6 @@ export default function HeroBanner({ video }: { video: VideoData }) {
           >
             <Play fill="currentColor" size={18} className="group-hover:scale-110 transition-transform" />
             Assistir Agora
-          </Link>
-
-          <Link
-            href={`/watch/${video.id}`}
-            className="flex items-center gap-2.5 glass border border-white/10 hover:border-white/20 text-white px-5 md:px-7 py-3.5 rounded-xl font-semibold text-sm md:text-base transition-all duration-200"
-          >
-            <Info size={17} />
-            Detalhes
           </Link>
         </motion.div>
       </div>
