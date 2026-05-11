@@ -204,7 +204,7 @@ export default async function MateriaisPage() {
                   </div>
 
                   <div className="mt-2">
-                    <h2 className="text-white font-black text-xl leading-tight mb-2 whitespace-pre-line group-hover:text-transparent group-hover:bg-clip-text transition-all"
+                    <h2 className="text-transparent bg-clip-text font-black text-xl leading-tight mb-2 whitespace-pre-line"
                       style={{ backgroundImage: `linear-gradient(135deg, #fff, ${cat.color})` }}>
                       {cat.label}
                     </h2>
