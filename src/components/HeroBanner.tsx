@@ -92,10 +92,13 @@ export default function HeroBanner({ video }: { video: VideoData }) {
             Assistir Agora
           </Link>
 
-          <button className="flex items-center gap-2.5 glass border border-white/10 hover:border-white/20 text-white px-5 md:px-7 py-3.5 rounded-xl font-semibold text-sm md:text-base transition-all duration-200">
+          <Link
+            href={`/hq/${video.id}`}
+            className="flex items-center gap-2.5 glass border border-white/10 hover:border-white/20 text-white px-5 md:px-7 py-3.5 rounded-xl font-semibold text-sm md:text-base transition-all duration-200"
+          >
             <Info size={17} />
             Detalhes
-          </button>
+          </Link>
         </motion.div>
       </div>
     </div>

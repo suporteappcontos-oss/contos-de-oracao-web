@@ -1,11 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Smartphone, Tv, Download, QrCode, Wifi, ChevronRight, Monitor } from 'lucide-react'
+
+const VERSAO_JSON_URL = 'https://contos-apks.b-cdn.net/versao.json'
+// Fallback: link fixo sem versão (caso o versao.json falhe)
+const APK_FALLBACK = 'https://contos-apks.b-cdn.net/contos-de-oracao.apk'
 
 export default function DispositivosModal() {
   const [open, setOpen] = useState(false)
   const [aba, setAba] = useState<'android' | 'tv'>('android')
+  const [apkUrl, setApkUrl] = useState<string>(APK_FALLBACK)
+
+  useEffect(() => {
+    fetch(VERSAO_JSON_URL + '?t=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        if (data?.link_download) setApkUrl(data.link_download)
+      })
+      .catch(() => {}) // mantém fallback em caso de erro
+  }, [])
 
   return (
     <>
@@ -87,7 +101,7 @@ export default function DispositivosModal() {
               <div className="px-6 py-5 space-y-4">
                 {/* Card destaque download */}
                 <a
-                  href="https://contos-apks.b-cdn.net/app/contos-de-oracao.apk"
+                  href={apkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 rounded-2xl transition-all hover:scale-[1.02] group cursor-pointer block"
