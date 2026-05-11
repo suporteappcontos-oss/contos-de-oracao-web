@@ -21,6 +21,7 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
   const thumbAtiva = useRef<HTMLButtonElement>(null)
 
   const [baixandoPdf, setBaixandoPdf] = useState(false)
+  const [downloadOk, setDownloadOk] = useState(false)
 
   const irPara = useCallback((n: number) => {
     if (n < 1 || n > totalPaginas) return
@@ -29,29 +30,23 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [totalPaginas])
 
-  const forceDownloadPDF = async () => {
-    if (!pdfUrl || baixandoPdf) return
-    try {
-      setBaixandoPdf(true)
-      // Usamos a nossa própria API para driblar o CORS e forçar o cabeçalho 'attachment'
-      const proxyUrl = `/api/download-pdf?url=${encodeURIComponent(pdfUrl)}`
-      
-      // Cria um link invisível para a nossa API proxy
-      const a = document.createElement('a')
-      a.href = proxyUrl
-      a.download = '' // O nome será definido pelo backend
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      
-      // Um pequeno delay para o botão voltar ao normal
-      await new Promise(r => setTimeout(r, 1500))
-    } catch (e: any) {
-      alert(`Erro inesperado ao baixar o PDF: ${e.message}`)
-      console.error(e)
-    } finally {
-      setBaixandoPdf(false)
-    }
+  const forceDownloadPDF = () => {
+    if (!pdfUrl) return
+
+    const proxyUrl = `/api/download-pdf?url=${encodeURIComponent(pdfUrl)}`
+
+    // Cria link invisível — o browser gerencia o download por conta própria
+    // Não usamos fetch/await pois o browser não notifica o JS quando termina
+    const a = document.createElement('a')
+    a.href = proxyUrl
+    a.download = ''
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+
+    // Feedback visual rápido de sucesso (não de loading)
+    setDownloadOk(true)
+    setTimeout(() => setDownloadOk(false), 3000)
   }
 
   // Navegar com teclado
@@ -103,17 +98,18 @@ export default function HQReaderClient({ slug, titulo, totalPaginas, baseUrl, po
             pdfUrl ? (
               <button
                 onClick={forceDownloadPDF}
-                disabled={baixandoPdf}
-                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite] disabled:opacity-50 disabled:animate-none disabled:hover:scale-100 disabled:shadow-none"
-                style={{ background: 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000' }}
+                className="group flex items-center gap-2 px-5 py-2 rounded-xl font-black text-xs transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(212,175,55,0.4)] hover:shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-[pulse_3s_ease-in-out_infinite]"
+                style={{ background: downloadOk ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 'linear-gradient(135deg, #FFD700, #D4AF37)', color: '#000' }}
                 title="Baixar PDF"
               >
-                {baixandoPdf ? (
-                  <span className="animate-spin text-black">⭮</span>
+                {downloadOk ? (
+                  <CheckCircle2 size={16} />
                 ) : (
                   <Download size={16} className="group-hover:-translate-y-0.5 transition-transform" />
                 )}
-                <span className="hidden sm:inline tracking-wide">{baixandoPdf ? 'BAIXANDO...' : 'BAIXAR PDF'}</span>
+                <span className="hidden sm:inline tracking-wide">
+                  {downloadOk ? 'PDF BAIXADO ✓' : 'BAIXAR PDF'}
+                </span>
               </button>
             ) : (
               <button
