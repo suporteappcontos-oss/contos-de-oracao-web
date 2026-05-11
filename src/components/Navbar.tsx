@@ -32,6 +32,7 @@ export default function Navbar() {
   }, []);
 
   return (
+    <>
     <header
       className={`fixed top-0 w-full flex justify-between items-center py-3 px-[4%] transition-all duration-400 z-[100] ${
         scrolled ? "bg-[#090B10]/90 shadow-2xl backdrop-blur-md" : "bg-transparent"
@@ -55,26 +56,59 @@ export default function Navbar() {
       <div className="flex items-center gap-3 sm:gap-4">
         <Link href="/planos" className="text-white/70 hover:text-white text-sm transition-colors no-underline font-semibold">Planos</Link>
 
-        {/* Botão Baixar App */}
+        {/* Botão Baixar App - Dropdown */}
         {apkUrl !== '#' && (
-          <a
-            href={apkUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-[#15243E] border border-white/10 rounded-full py-1.5 px-3 transition-all hover:scale-105 hover:border-[#D4AF37]/50 text-xs sm:text-sm"
-            title="Baixar Aplicativo Android"
-          >
-            <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
-                 style={{ background: '#090B10', border: '1px solid #D4AF37' }}>
-              <img src="/logo_stripe.png" alt="Logo" className="w-full h-full object-cover" />
+          <div className="relative group">
+            <button
+              className="flex items-center gap-2 bg-[#15243E] border border-white/10 rounded-full py-1.5 px-3 transition-all hover:scale-105 hover:border-[#D4AF37]/50 text-xs sm:text-sm cursor-pointer"
+              title="Opções do Aplicativo"
+            >
+              <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
+                   style={{ background: '#090B10', border: '1px solid #D4AF37' }}>
+                <img src="/logo_stripe.png" alt="Logo" className="w-full h-full object-cover" />
+              </div>
+              <span className="text-white font-bold hidden sm:inline">Baixar App</span>
+              {versao && (
+                <span className="text-[0.5rem] font-bold uppercase px-1 py-0.5 rounded-sm leading-none hidden sm:inline" style={{ background: 'rgba(212,175,55,0.2)', color: '#D4AF37' }}>
+                  v{versao}
+                </span>
+              )}
+            </button>
+
+            {/* Menu Dropdown */}
+            <div className="absolute right-0 mt-2 w-56 rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right group-hover:translate-y-0 translate-y-2 border shadow-2xl"
+                 style={{ background: 'rgba(10, 12, 17, 0.95)', backdropFilter: 'blur(10px)', borderColor: 'rgba(212,175,55,0.3)' }}>
+              <div className="p-2 flex flex-col gap-1">
+                <a 
+                  href={apkUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors text-white no-underline group/item"
+                >
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 group-hover/item:bg-[#D4AF37]/20 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold leading-none mb-1">Para Celular</span>
+                    <span className="text-[0.65rem] text-slate-400 leading-none">Baixar o APK Android</span>
+                  </div>
+                </a>
+                
+                <button 
+                  onClick={() => document.getElementById('modal-tv')?.classList.remove('hidden')}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors text-white text-left group/item"
+                >
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 group-hover/item:bg-[#D4AF37]/20 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold leading-none mb-1">Para TV</span>
+                    <span className="text-[0.65rem] text-slate-400 leading-none">Android TV, FireStick...</span>
+                  </div>
+                </button>
+              </div>
             </div>
-            <span className="text-white font-bold hidden sm:inline">Baixar App</span>
-            {versao && (
-              <span className="text-[0.5rem] font-bold uppercase px-1 py-0.5 rounded-sm leading-none hidden sm:inline" style={{ background: 'rgba(212,175,55,0.2)', color: '#D4AF37' }}>
-                v{versao}
-              </span>
-            )}
-          </a>
+          </div>
         )}
 
         {/* Botões Redes Sociais */}
@@ -113,5 +147,74 @@ export default function Navbar() {
         </a>
       </div>
     </header>
+
+    {/* Modal de Instruções TV */}
+    <div id="modal-tv" className="fixed inset-0 z-[999] hidden flex items-center justify-center p-4">
+      {/* Fundo escuro */}
+      <div 
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
+        onClick={() => document.getElementById('modal-tv')?.classList.add('hidden')}
+      />
+      
+      {/* Container Principal */}
+      <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border"
+           style={{ background: '#0A0C11', borderColor: 'rgba(212,175,55,0.3)' }}>
+        
+        {/* Cabeçalho Modal */}
+        <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'linear-gradient(135deg, rgba(212,175,55,0.1) 0%, transparent 100%)' }}>
+          <h3 className="text-white font-bold text-lg flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+            Como instalar na Smart TV
+          </h3>
+          <button 
+            onClick={() => document.getElementById('modal-tv')?.classList.add('hidden')}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Corpo */}
+        <div className="p-6 flex flex-col gap-5 text-slate-300 text-sm">
+          <p className="font-semibold text-white">É muito fácil instalar o Contos de Oração na sua Android TV, TV Box ou Fire TV Stick:</p>
+          
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center font-bold text-[#D4AF37] bg-[#D4AF37]/10">1</div>
+            <div>
+              <p>Abra a loja de aplicativos da sua TV (Play Store ou Amazon Appstore).</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center font-bold text-[#D4AF37] bg-[#D4AF37]/10">2</div>
+            <div>
+              <p>Busque e instale o aplicativo gratuito chamado <strong className="text-white">"Downloader"</strong> (tem o ícone laranja).</p>
+            </div>
+          </div>
+
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center font-bold text-[#D4AF37] bg-[#D4AF37]/10">3</div>
+            <div>
+              <p>Abra o Downloader, vá na barra de URL e digite exatamente o endereço do nosso site:</p>
+              <div className="mt-2 p-3 rounded-lg border border-white/10 bg-black/50 text-center">
+                <span className="font-mono text-lg text-[#D4AF37] tracking-wider">contosdeoracao.com.br</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-4 items-start">
+            <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center font-bold text-[#D4AF37] bg-[#D4AF37]/10">4</div>
+            <div>
+              <p>O site vai abrir na sua TV. É só clicar no botão de <strong className="text-white">Baixar App</strong> e a TV vai instalar o aplicativo automaticamente!</p>
+            </div>
+          </div>
+
+          <div className="mt-2 p-3 rounded-lg text-xs" style={{ background: 'rgba(212,175,55,0.05)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.1)' }}>
+            <strong>Dica:</strong> Se a sua TV pedir permissão para "instalar aplicativos de fontes desconhecidas", pode permitir com segurança.
+          </div>
+        </div>
+      </div>
+    </div>
+    </>
   );
 }

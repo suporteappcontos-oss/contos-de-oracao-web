@@ -143,21 +143,31 @@ export default async function WatchPage() {
           <a
             href="/material-catequese"
             title="Material Catequese"
-            className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
-            style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }}
+            className="group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_rgba(212,175,55,0.3)] relative overflow-hidden"
+            style={{ 
+              background: 'linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 100%)', 
+              border: '1px solid rgba(212,175,55,0.4)', 
+              color: '#D4AF37' 
+            }}
           >
-            <BookOpen size={13} className="group-hover:-translate-y-0.5 transition-transform" />
-            <span className="hidden md:inline tracking-wide">Catequese</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.2)] to-transparent -translate-x-full group-hover:animate-shimmer" />
+            <BookOpen size={14} className="group-hover:-translate-y-0.5 transition-transform drop-shadow-md" />
+            <span className="hidden md:inline tracking-wider uppercase text-[0.65rem]">Catequese</span>
           </a>
 
           {isAdmin && (
             <Link
               href="/admin"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
-              style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)' }}
+              className="group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] relative overflow-hidden"
+              style={{ 
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)', 
+                color: '#fff', 
+                border: '1px solid rgba(255,255,255,0.2)' 
+              }}
             >
-              <Settings size={13} />
-              <span className="hidden sm:inline">Admin</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.1)] to-transparent -translate-x-full group-hover:animate-shimmer" />
+              <Settings size={14} className="text-slate-300 group-hover:rotate-90 transition-transform duration-500" />
+              <span className="hidden sm:inline tracking-wider uppercase text-[0.65rem] text-slate-200">Admin</span>
             </Link>
           )}
 
