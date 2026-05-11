@@ -18,6 +18,7 @@ export const CATEGORIAS_CONFIG = [
     descricao: 'HQs religiosas em PDF, prontas para baixar e compartilhar com a família.',
     icon: BookOpen,
     color: '#D4AF37',
+    image: '/hq.png',
     gradient: 'from-[#D4AF37]/25 via-[#D4AF37]/10 to-transparent',
     border: 'border-[#D4AF37]/20 hover:border-[#D4AF37]/50',
     glow: 'rgba(212,175,55,0.4)',
@@ -29,6 +30,7 @@ export const CATEGORIAS_CONFIG = [
     descricao: 'Atividades lúdicas e pedagógicas para crianças aprenderem brincando.',
     icon: Gamepad2,
     color: '#10b981',
+    image: '/jogos.png',
     gradient: 'from-[#10b981]/25 via-[#10b981]/10 to-transparent',
     border: 'border-[#10b981]/20 hover:border-[#10b981]/50',
     glow: 'rgba(16,185,129,0.4)',
@@ -40,6 +42,7 @@ export const CATEGORIAS_CONFIG = [
     descricao: 'Ilustrações religiosas para imprimir e colorir, perfeitas para catequese.',
     icon: Pencil,
     color: '#818cf8',
+    image: '/desenho.png',
     gradient: 'from-[#818cf8]/25 via-[#818cf8]/10 to-transparent',
     border: 'border-[#818cf8]/20 hover:border-[#818cf8]/50',
     glow: 'rgba(129,140,248,0.4)',
@@ -51,6 +54,7 @@ export const CATEGORIAS_CONFIG = [
     descricao: 'Leituras formativas e espirituais exclusivas em formato PDF.',
     icon: Library,
     color: '#f97316',
+    image: '/livros.png',
     gradient: 'from-[#f97316]/25 via-[#f97316]/10 to-transparent',
     border: 'border-[#f97316]/20 hover:border-[#f97316]/50',
     glow: 'rgba(249,115,22,0.4)',
@@ -150,44 +154,22 @@ export default async function MateriaisPage() {
                 style={{ backgroundColor: 'rgba(15, 20, 30, 0.6)', backdropFilter: 'blur(10px)' }}
               >
                 {/* Glow interno no hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-40"
                   style={{ boxShadow: `0 0 40px ${cat.glow} inset` }} />
 
-                {/* ── Mini-preview das capas (Parte superior do card) ── */}
-                <div className={`relative h-[200px] bg-gradient-to-b ${cat.gradient} overflow-hidden flex items-end justify-center pb-4`}>
-                  {capas.length > 0 ? (
-                    <div className="flex items-end justify-center w-full px-4 relative z-10">
-                      {capas.slice(0, 3).map((capa, i) => {
-                        const isCenter = i === 0
-                        const rot = [-8, 0, 8][i] ?? 0
-                        const scale = isCenter ? 1.05 : 0.85
-                        const z = isCenter ? 10 : 5
-                        return (
-                          <div
-                            key={i}
-                            className="relative rounded-xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.6)] shrink-0 transition-transform duration-500 group-hover:scale-110"
-                            style={{
-                              width: isCenter ? '96px' : '72px',
-                              height: isCenter ? '134px' : '100px',
-                              transform: `rotate(${rot}deg) scale(${scale})`,
-                              zIndex: z,
-                              order: i === 0 ? 2 : i === 1 ? 1 : 3,
-                              marginLeft: i !== 0 ? (i === 1 ? '10px' : '-20px') : '-20px',
-                            }}
-                          >
-                            <Image src={capa} alt="" fill className="object-cover" sizes="96px" />
-                          </div>
-                        )
-                      })}
-                    </div>
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <CatIcon size={64} style={{ color: cat.color, opacity: 0.15 }} />
-                    </div>
-                  )}
-
-                  {/* Efeito de luz no fundo das capas */}
-                  <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-[#0A0D14] to-transparent z-20" />
+                {/* ── Imagem Fixa da Categoria (Parte superior do card) ── */}
+                <div className={`relative h-[200px] overflow-hidden flex items-end justify-center`}>
+                  <Image 
+                    src={cat.image} 
+                    alt={cat.labelFlat} 
+                    fill 
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.05]" 
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                  
+                  {/* Overlay gradiente escuro na parte de baixo da imagem para suavizar a transição */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(15,20,30,0.9)] via-transparent to-transparent z-10" />
+                  <div className="absolute bottom-0 w-full h-[80px] bg-gradient-to-t from-[#0A0D14] to-transparent z-20" />
                 </div>
 
                 {/* ── Informações (Parte inferior do card) ── */}
