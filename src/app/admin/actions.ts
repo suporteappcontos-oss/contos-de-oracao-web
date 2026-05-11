@@ -279,6 +279,7 @@ export async function publicarHq(formData: FormData) {
     const planosPdf = JSON.parse(formData.get('planos_pdf') as string) as string[];
     const slug = formData.get('slug_gerado') as string;
     const temPdf = formData.get('tem_pdf') === 'true';
+    let linkPdf = formData.get('link_pdf') as string | null;
     if (linkPdf && linkPdf.trim() !== '') {
       linkPdf = linkPdf.trim();
       // Inteligência de Segurança MÁXIMA: 
