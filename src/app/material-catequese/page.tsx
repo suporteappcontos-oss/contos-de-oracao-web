@@ -97,23 +97,6 @@ export default async function MaterialCatequesePage() {
                   </div>
                 </Link>
 
-                {/* Botão PDF — apenas se tem PDF e tem acesso */}
-                {item.tem_pdf && temAcessoLeitura && (
-                  <a
-                    href={temAcessoPdf ? pdfUrl : '/planos'}
-                    download={temAcessoPdf}
-                    target={temAcessoPdf ? '_blank' : undefined}
-                    rel="noopener noreferrer"
-                    className="mt-3 mx-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all border"
-                    style={temAcessoPdf
-                      ? { background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }
-                      : { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)' }
-                    }
-                  >
-                    {temAcessoPdf ? <Download size={13} /> : <Lock size={13} />}
-                    {temAcessoPdf ? 'Baixar PDF' : 'PDF — Upgrade para Pro'}
-                  </a>
-                )}
               </div>
             )
           })}
