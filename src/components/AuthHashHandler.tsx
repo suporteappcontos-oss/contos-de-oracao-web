@@ -36,12 +36,14 @@ export default function AuthHashHandler() {
         return
       }
 
-      // Força o navegador a limpar a URL e redirecionar
-      // window.location.replace limpa o histórico atual para não deixar o token vazado
+      // Remove o hash primeiro
+      window.history.replaceState(null, '', window.location.pathname)
+
+      // Usa o router do Next.js para redirecionar sem quebrar os cookies de sessão
       if (type === 'recovery') {
-        window.location.replace('/atualizar-senha')
+        router.replace('/atualizar-senha')
       } else {
-        window.location.replace('/watch')
+        router.replace('/watch')
       }
     })
   }, [router])
