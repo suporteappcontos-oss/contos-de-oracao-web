@@ -36,14 +36,12 @@ export default function AuthHashHandler() {
         return
       }
 
-      // Limpa o hash da URL para não vazar o token
-      window.history.replaceState(null, '', window.location.pathname)
-
-      // Redireciona para a área de conteúdo
+      // Força o navegador a limpar a URL e redirecionar
+      // window.location.replace limpa o histórico atual para não deixar o token vazado
       if (type === 'recovery') {
-        router.replace('/atualizar-senha')
+        window.location.replace('/atualizar-senha')
       } else {
-        router.replace('/watch')
+        window.location.replace('/watch')
       }
     })
   }, [router])
