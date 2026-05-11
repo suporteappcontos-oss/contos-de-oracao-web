@@ -6,8 +6,7 @@ import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import NotificationBell from '@/components/NotificationBell'
-import { LogOut, ShieldCheck, BookOpen, GraduationCap } from 'lucide-react'
-import DispositivosModal from '@/components/DispositivosModal'
+import { LogOut, Settings, BookOpen } from 'lucide-react'
 
 type Video = {
   id: string
@@ -140,36 +139,24 @@ export default async function WatchPage() {
           {/* Sino de Notificações */}
           <NotificationBell />
 
-          {/* Botão Dispositivos (modal com Android + TV) */}
-          <DispositivosModal />
-
           {/* Botão Material Catequese */}
           <a
             href="/material-catequese"
-            title="Material de Catequese"
+            title="Material Catequese"
             className="group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
-            style={{
-              background: 'linear-gradient(135deg, rgba(20,184,166,0.15), rgba(16,185,129,0.08))',
-              border: '1px solid rgba(20,184,166,0.35)',
-              color: '#2dd4bf',
-            }}
+            style={{ background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }}
           >
-            <GraduationCap size={14} className="group-hover:-translate-y-0.5 transition-transform" />
+            <BookOpen size={13} className="group-hover:-translate-y-0.5 transition-transform" />
             <span className="hidden md:inline tracking-wide">Catequese</span>
           </a>
 
           {isAdmin && (
             <Link
               href="/admin"
-              title="Painel Administrativo"
-              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
-              style={{
-                background: 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(220,38,38,0.08))',
-                border: '1px solid rgba(239,68,68,0.35)',
-                color: '#f87171',
-              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+              style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)' }}
             >
-              <ShieldCheck size={14} className="group-hover:scale-110 transition-transform" />
+              <Settings size={13} />
               <span className="hidden sm:inline">Admin</span>
             </Link>
           )}
