@@ -267,42 +267,31 @@ export async function salvarVersaoApk(versao: string, linkDownload: string, mens
   }
 }
 
-// ─── Publicar Material (HQ, Jogo, Desenho) ───
+// ─── Publicar Material (HQ, Jogo, Desenho) ─── Upload já foi feito no cliente
 export async function publicarMaterial(formData: FormData) {
   await verificarAdmin();
   try {
     const supabase = await createClient();
     const titulo = formData.get('titulo') as string;
     const descricao = (formData.get('descricao') as string) || null;
-    const categoria = formData.get('categoria') as string; // 'hq' | 'jogo' | 'desenho'
+    const categoria = formData.get('categoria') as string;
     const planosAcesso = JSON.parse(formData.get('planos_acesso') as string) as string[];
+
+    // URLs já prontas vindas do cliente (upload foi feito direto no Bunny)
+    const capaUrl = (formData.get('capa_url') as string | null) || null;
+    let linkPdf = (formData.get('link_pdf') as string | null)?.trim() || null;
+
+    // Segurança: limpa AccessKey se vier no link
+    if (linkPdf?.includes('br.storage.bunnycdn.com')) {
+      linkPdf = linkPdf.split('?')[0];
+      linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
+    }
+
+    // Gera slug
     const slug = titulo.toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9\s-]/g, '').trim()
       .replace(/\s+/g, '-');
-
-    // Link do PDF (limpa AccessKey se vier do Bunny privado)
-    let linkPdf = (formData.get('link_pdf') as string | null)?.trim() || null;
-    if (linkPdf) {
-      if (linkPdf.includes('br.storage.bunnycdn.com')) {
-        linkPdf = linkPdf.split('?')[0];
-        linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
-      }
-    }
-
-    // Upload da Capa
-    let capaUrl: string | null = null;
-    const capaFile = formData.get('capa_file') as File | null;
-    if (capaFile && capaFile.size > 0) {
-      capaUrl = await uploadToBunny(capaFile, `PDF/${categoria}/${slug}_capa`);
-    }
-
-    // Upload do PDF
-    let pdfUrl: string | null = linkPdf;
-    const pdfFile = formData.get('pdf_file') as File | null;
-    if (pdfFile && pdfFile.size > 0) {
-      pdfUrl = await uploadToBunny(pdfFile, `PDF/${categoria}/${slug}`);
-    }
 
     const { error } = await supabase.from('materiais').upsert({
       slug,
@@ -310,7 +299,7 @@ export async function publicarMaterial(formData: FormData) {
       descricao,
       categoria,
       capa_url: capaUrl,
-      link_pdf: pdfUrl,
+      link_pdf: linkPdf,
       planos_acesso: planosAcesso,
       ativo: true,
     }, { onConflict: 'slug' });
@@ -320,7 +309,7 @@ export async function publicarMaterial(formData: FormData) {
     revalidatePath('/admin');
     return { success: true };
   } catch (error: any) {
-    console.error('❌ Erro no publicarMaterial:', error.message || error);
+    console.error('❌ Erro no publicarMaterial:', error.message);
     return { success: false, error: error.message };
   }
 }
@@ -339,6 +328,7 @@ export async function deletarMaterial(id: string) {
     return { success: false, error: error.message };
   }
 }
+
 
 
 
