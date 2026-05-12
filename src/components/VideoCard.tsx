@@ -108,11 +108,6 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
           <p className="text-white text-[0.75rem] md:text-sm font-extrabold leading-tight drop-shadow-md line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
             {video.titulo}
           </p>
-          {video.categoria && (
-            <p className="text-white/50 text-[0.6rem] font-bold mt-1 uppercase tracking-wider">
-                {video.categoria}
-            </p>
-          )}
         </div>
 
       </div>
