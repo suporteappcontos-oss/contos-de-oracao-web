@@ -144,22 +144,39 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* TVs */}
+              {/* TVs - Android TV / Fire TV */}
+              <div className="mb-6 bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-3xl">🔥</span>
+                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Android TV e Fire TV Stick</h3>
+                </div>
+                <p className="text-white/70 text-sm md:text-base mb-4 leading-relaxed">
+                  Temos um aplicativo nativo e otimizado para sua TV! Instale usando o aplicativo <strong className="text-white">Downloader</strong>:
+                </p>
+                <ol className="text-white/80 text-sm md:text-base space-y-3 list-decimal list-outside ml-4">
+                  <li>Na sua TV, baixe o aplicativo <strong className="text-[#D4AF37]">Downloader</strong> (ícone laranja) na loja de apps.</li>
+                  <li>Abra o Downloader e vá na barra de pesquisa.</li>
+                  <li>Digite o código: <strong className="text-white bg-[#D4AF37]/20 px-2 py-1 rounded text-lg tracking-wider">4961214</strong> e clique em Go.</li>
+                  <li>O aplicativo será baixado. Ao terminar, clique em <strong className="text-white">Instalar</strong>.</li>
+                  <li>Ao abrir o App, selecione a opção <strong className="text-[#D4AF37]">Smart TV</strong>!</li>
+                </ol>
+              </div>
+
+              {/* TVs - Navegador */}
               <div className="bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl">📺</span>
-                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Smart TVs e TV Box (Fire Stick, Roku, etc)</h3>
+                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Roku, LG (WebOS), Samsung (Tizen) e outras</h3>
                 </div>
                 <p className="text-white/70 text-sm md:text-base mb-4 leading-relaxed">
-                  Não é necessário instalar nenhum aplicativo! Funciona diretamente pelo navegador da sua TV:
+                  Para TVs que não aceitam aplicativos Android, você pode assistir diretamente pelo navegador:
                 </p>
                 <ol className="text-white/80 text-sm md:text-base space-y-3 list-decimal list-outside ml-4">
                   <li>Abra o <strong className="text-white">Navegador de Internet</strong> da sua TV.</li>
                   <li>Acesse o site <strong className="text-[#D4AF37]">contosdeoracao.com.br</strong>.</li>
                   <li>Na caixa de login, clique na aba <strong className="text-white">📱 Celular / TV</strong>.</li>
                   <li>Um <strong>QR Code</strong> vai aparecer na tela da sua TV.</li>
-                  <li>Abra a câmera do seu celular (onde você já deve estar logado no site/app) e aponte para o QR Code da TV.</li>
-                  <li>A TV será logada automaticamente na sua conta!</li>
+                  <li>Abra a câmera do seu celular e aponte para o QR Code da TV. A TV será logada automaticamente!</li>
                 </ol>
               </div>
 
