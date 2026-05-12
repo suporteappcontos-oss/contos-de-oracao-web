@@ -65,7 +65,7 @@ export default function Navbar() {
         >
           <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 overflow-hidden"
                style={{ background: '#090B10', border: '1px solid #D4AF37' }}>
-            <BookOpen size={12} className="text-[#D4AF37]" />
+            <Image src="/logo.png" alt="Logo App" width={24} height={24} className="object-cover" />
           </div>
           <span className="text-white font-bold hidden sm:inline">Manual / App</span>
         </button>

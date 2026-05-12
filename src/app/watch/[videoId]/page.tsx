@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import FavoritoButton from '@/components/FavoritoButton'
+import CastButton from '@/components/CastButton'
+import ShareButton from '@/components/ShareButton'
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
 import { ChevronLeft, Clock, Tag, Share2, ChevronRight } from 'lucide-react'
 import crypto from 'crypto'
@@ -130,15 +132,8 @@ export default async function VideoPlayerPage({ params }: Props) {
             {/* Ações */}
             <div className="flex flex-wrap items-center gap-2 mb-6">
               <FavoritoButton videoId={video.id} initialFav={isFav} />
-              <button
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border border-white/10 text-white/50 hover:text-white hover:border-white/25 transition-all cursor-pointer"
-                style={{ background: 'rgba(255,255,255,0.04)' }}
-                onClick={undefined}
-                title="Compartilhar"
-              >
-                <Share2 size={15} />
-                Compartilhar
-              </button>
+              <ShareButton titulo={video.titulo} />
+              <CastButton />
             </div>
 
             {/* Descrição */}

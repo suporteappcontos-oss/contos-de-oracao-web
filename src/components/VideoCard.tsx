@@ -50,17 +50,18 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
     : getFallback(video.id)
 
   return (
-    <div
-      className="group relative flex-shrink-0 block outline-none cursor-default"
+    <Link
+      href={`/watch/${video.id}`}
+      className="group relative flex-shrink-0 block outline-none cursor-pointer"
       style={{ width: 'clamp(155px, 20vw, 240px)' }}
     >
       {/* Thumbnail */}
       <div
-        className="relative aspect-video rounded-xl overflow-hidden transition-all duration-300 group-hover:scale-[1.06] group-hover:-translate-y-1"
+        className="relative aspect-video rounded-xl overflow-hidden transition-all duration-300 group-hover:scale-[1.04] group-hover:-translate-y-1"
         style={{
           background: '#15243E',
           border: '1px solid rgba(255,255,255,0.06)',
-          boxShadow: '0 6px 25px rgba(0,0,0,0.4)',
+          boxShadow: '0 6px 20px rgba(0,0,0,0.5)',
         }}
       >
         {/* Imagem de capa (thumbnail do Bunny via admin) */}
@@ -68,25 +69,53 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
           src={imageUrl}
           alt={video.titulo}
           onError={() => setImgError(true)}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
 
         {/* Overlay gradiente */}
         <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.85) 0%, transparent 55%)' }}
+          className="absolute inset-0 transition-opacity duration-300"
+          style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.95) 0%, rgba(9,11,16,0.2) 50%, transparent 100%)' }}
         />
 
+        {/* Botão Play central (Visível no hover) */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+            <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                <Play fill="#090B10" className="w-5 h-5 text-[#090B10] ml-1" />
+            </div>
+        </div>
 
-        {/* Título do Vídeo no canto inferior esquerdo */}
-        <div className="absolute bottom-2 left-2 right-2 z-10">
-          <p className="text-white text-[0.65rem] md:text-xs font-bold leading-tight drop-shadow-md line-clamp-2">
+        {/* Informações superiores (Duração/Favorito) */}
+        <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
+          {video.duracao ? (
+            <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10 flex items-center gap-1">
+                <Clock className="w-3 h-3 text-white/80" />
+                <span className="text-[0.6rem] font-bold text-white/90 tracking-wide">{video.duracao}</span>
+            </div>
+          ) : <div />}
+          <button 
+            onClick={handleFavorito}
+            className="p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-black/60 transition-colors"
+          >
+            <Heart className={`w-3.5 h-3.5 ${favoritado ? 'fill-red-500 text-red-500' : 'text-white/80'}`} />
+          </button>
+        </div>
+
+
+        {/* Título do Vídeo no canto inferior */}
+        <div className="absolute bottom-3 left-3 right-3 z-10">
+          <p className="text-white text-[0.75rem] md:text-sm font-extrabold leading-tight drop-shadow-md line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
             {video.titulo}
           </p>
+          {video.categoria && (
+            <p className="text-white/50 text-[0.6rem] font-bold mt-1 uppercase tracking-wider">
+                {video.categoria}
+            </p>
+          )}
         </div>
 
       </div>
-    </div>
+    </Link>
   )
 }

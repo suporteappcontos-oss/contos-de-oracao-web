@@ -140,15 +140,17 @@ export default async function WatchPage() {
           <NotificationBell />
 
           {/* Botão Material Pedagógico */}
-          <a
+          <Link
             href="/materiais"
-            title="Material Pedagógico"
-            className="group flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(212,175,55,0.3)]"
-            style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.4)', color: '#D4AF37' }}
+            title="Material de Catequese"
+            className="group relative flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black transition-all hover:scale-105 shadow-[0_0_10px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #AA8A2A 100%)', color: '#090B10' }}
           >
-            <BookOpen size={14} className="group-hover:-translate-y-0.5 transition-transform" />
-            <span className="hidden md:inline tracking-widest uppercase text-[10px]">Material Pedagógico</span>
-          </a>
+            {/* Brilho interno animado */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[150%] group-hover:animate-[shimmer_1.5s_infinite]" />
+            <BookOpen size={14} className="group-hover:-translate-y-0.5 transition-transform relative z-10" />
+            <span className="hidden md:inline tracking-widest uppercase text-[10px] relative z-10">Mat. Catequese</span>
+          </Link>
 
           {isAdmin && (
             <Link
