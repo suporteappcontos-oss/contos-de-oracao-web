@@ -61,7 +61,7 @@ export default async function Home({ searchParams }: Props) {
 
 
             {videos.map(video => (
-              <VideoCard key={video.id} video={video} />
+              <VideoCard key={video.id} video={video} minimal={true} />
             ))}
           </CategoryCarousel>
         ) : (

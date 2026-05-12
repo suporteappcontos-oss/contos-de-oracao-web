@@ -29,7 +29,7 @@ type VideoData = {
   thumbnail_url: string | null
 }
 
-export default function VideoCard({ video, isFavoritado = false }: { video: VideoData, isFavoritado?: boolean }) {
+export default function VideoCard({ video, isFavoritado = false, minimal = false }: { video: VideoData, isFavoritado?: boolean, minimal?: boolean }) {
   const [imgError, setImgError] = useState(false)
   const [favoritado, setFavoritado] = useState(isFavoritado)
   const [loadingFav, setLoadingFav] = useState(false)
@@ -73,43 +73,45 @@ export default function VideoCard({ video, isFavoritado = false }: { video: Vide
           loading="lazy"
         />
 
-        {/* Overlay gradiente */}
-        <div
-          className="absolute inset-0 transition-opacity duration-300"
-          style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.95) 0%, rgba(9,11,16,0.2) 50%, transparent 100%)' }}
-        />
+        {!minimal && (
+          <>
+            {/* Overlay gradiente */}
+            <div
+              className="absolute inset-0 transition-opacity duration-300"
+              style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.95) 0%, rgba(9,11,16,0.2) 50%, transparent 100%)' }}
+            />
 
-        {/* Botão Play central (Visível no hover) */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-            <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
-                <Play fill="#090B10" className="w-5 h-5 text-[#090B10] ml-1" />
+            {/* Botão Play central (Visível no hover) */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                    <Play fill="#090B10" className="w-5 h-5 text-[#090B10] ml-1" />
+                </div>
             </div>
-        </div>
 
-        {/* Informações superiores (Duração/Favorito) */}
-        <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
-          {video.duracao ? (
-            <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10 flex items-center gap-1">
-                <Clock className="w-3 h-3 text-white/80" />
-                <span className="text-[0.6rem] font-bold text-white/90 tracking-wide">{video.duracao}</span>
+            {/* Informações superiores (Duração/Favorito) */}
+            <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
+              {video.duracao ? (
+                <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10 flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-white/80" />
+                    <span className="text-[0.6rem] font-bold text-white/90 tracking-wide">{video.duracao}</span>
+                </div>
+              ) : <div />}
+              <button 
+                onClick={handleFavorito}
+                className="p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-black/60 transition-colors"
+              >
+                <Heart className={`w-3.5 h-3.5 ${favoritado ? 'fill-red-500 text-red-500' : 'text-white/80'}`} />
+              </button>
             </div>
-          ) : <div />}
-          <button 
-            onClick={handleFavorito}
-            className="p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-black/60 transition-colors"
-          >
-            <Heart className={`w-3.5 h-3.5 ${favoritado ? 'fill-red-500 text-red-500' : 'text-white/80'}`} />
-          </button>
-        </div>
 
-
-        {/* Título do Vídeo no canto inferior */}
-        <div className="absolute bottom-3 left-3 right-3 z-10">
-          <p className="text-white text-[0.75rem] md:text-sm font-extrabold leading-tight drop-shadow-md line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
-            {video.titulo}
-          </p>
-        </div>
-
+            {/* Título do Vídeo no canto inferior */}
+            <div className="absolute bottom-3 left-3 right-3 z-10">
+              <p className="text-white text-[0.75rem] md:text-sm font-extrabold leading-tight drop-shadow-md line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
+                {video.titulo}
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </Link>
   )
