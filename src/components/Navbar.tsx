@@ -144,52 +144,22 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* TVs - Android TV / Fire TV */}
-              <div className="mb-6 bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">🔥</span>
-                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">
-                    Para Smart TVs com sistema Android, Mi TV Stick e Fire TV Stick
-                  </h3>
-                </div>
-                <p className="text-white/70 text-sm md:text-base mb-4 leading-relaxed">
-                  Temos um aplicativo nativo, mais rápido e otimizado para sua TV! Para instalar, usaremos o aplicativo oficial <strong>Downloader</strong>:
-                </p>
-                
-                <div className="bg-[#090B10]/50 p-4 rounded-lg mb-5 border border-white/5 flex items-center gap-4">
-                  <img src="https://m.media-amazon.com/images/I/31KVvZnHbuL.png" alt="Ícone Downloader" className="w-14 h-14 rounded-lg" />
-                  <div>
-                    <h4 className="text-white font-bold">Aplicativo Downloader</h4>
-                    <p className="text-white/50 text-xs">Disponível de graça na loja da sua TV</p>
-                  </div>
-                </div>
-
-                <ol className="text-white/80 text-sm md:text-base space-y-4 list-decimal list-outside ml-4">
-                  <li>Acesse a <strong>loja de aplicativos</strong> da sua TV (Play Store ou Amazon Appstore) e instale o aplicativo <strong className="text-[#D4AF37]">Downloader</strong> (ícone laranja acima).</li>
-                  <li>Abra o Downloader. Se ele pedir permissão para acessar arquivos, clique em <strong>Permitir</strong>.</li>
-                  <li>Selecione a barra de pesquisa (URL) e digite o nosso código oficial: <br/>
-                      <div className="mt-2 inline-block"><strong className="text-white bg-[#D4AF37]/20 px-3 py-2 rounded-lg text-xl tracking-widest border border-[#D4AF37]/30 shadow-[0_0_15px_rgba(212,175,55,0.15)]">4961214</strong></div>
-                  </li>
-                  <li>Clique em <strong>Go</strong>. O download começará sozinho. Ao terminar, clique em <strong className="text-white">Instalar</strong>.</li>
-                  <li>Ao abrir o nosso App pela primeira vez, selecione a opção <strong className="text-[#D4AF37]">Smart TV</strong> para ajustar a tela perfeitamente!</li>
-                </ol>
-              </div>
-
-              {/* TVs - Navegador */}
+              {/* TVs */}
               <div className="bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl">📺</span>
-                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Roku, LG (WebOS), Samsung (Tizen) e outras</h3>
+                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Smart TVs e TV Box (Fire Stick, Roku, etc)</h3>
                 </div>
                 <p className="text-white/70 text-sm md:text-base mb-4 leading-relaxed">
-                  Para TVs que não aceitam aplicativos Android, você pode assistir diretamente pelo navegador:
+                  Não é necessário instalar nenhum aplicativo! Funciona diretamente pelo navegador da sua TV:
                 </p>
                 <ol className="text-white/80 text-sm md:text-base space-y-3 list-decimal list-outside ml-4">
                   <li>Abra o <strong className="text-white">Navegador de Internet</strong> da sua TV.</li>
                   <li>Acesse o site <strong className="text-[#D4AF37]">contosdeoracao.com.br</strong>.</li>
                   <li>Na caixa de login, clique na aba <strong className="text-white">📱 Celular / TV</strong>.</li>
                   <li>Um <strong>QR Code</strong> vai aparecer na tela da sua TV.</li>
-                  <li>Abra a câmera do seu celular e aponte para o QR Code da TV. A TV será logada automaticamente!</li>
+                  <li>Abra a câmera do seu celular (onde você já deve estar logado no site/app) e aponte para o QR Code da TV.</li>
+                  <li>A TV será logada automaticamente na sua conta!</li>
                 </ol>
               </div>
 
