@@ -148,17 +148,30 @@ export default function Navbar() {
               <div className="mb-6 bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl">🔥</span>
-                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Android TV e Fire TV Stick</h3>
+                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">
+                    Para Smart TVs com sistema Android, Mi TV Stick e Fire TV Stick
+                  </h3>
                 </div>
                 <p className="text-white/70 text-sm md:text-base mb-4 leading-relaxed">
-                  Temos um aplicativo nativo e otimizado para sua TV! Instale usando o aplicativo <strong className="text-white">Downloader</strong>:
+                  Temos um aplicativo nativo, mais rápido e otimizado para sua TV! Para instalar, usaremos o aplicativo oficial <strong>Downloader</strong>:
                 </p>
-                <ol className="text-white/80 text-sm md:text-base space-y-3 list-decimal list-outside ml-4">
-                  <li>Na sua TV, baixe o aplicativo <strong className="text-[#D4AF37]">Downloader</strong> (ícone laranja) na loja de apps.</li>
-                  <li>Abra o Downloader e vá na barra de pesquisa.</li>
-                  <li>Digite o código: <strong className="text-white bg-[#D4AF37]/20 px-2 py-1 rounded text-lg tracking-wider">4961214</strong> e clique em Go.</li>
-                  <li>O aplicativo será baixado. Ao terminar, clique em <strong className="text-white">Instalar</strong>.</li>
-                  <li>Ao abrir o App, selecione a opção <strong className="text-[#D4AF37]">Smart TV</strong>!</li>
+                
+                <div className="bg-[#090B10]/50 p-4 rounded-lg mb-5 border border-white/5 flex items-center gap-4">
+                  <img src="https://m.media-amazon.com/images/I/31KVvZnHbuL.png" alt="Ícone Downloader" className="w-14 h-14 rounded-lg" />
+                  <div>
+                    <h4 className="text-white font-bold">Aplicativo Downloader</h4>
+                    <p className="text-white/50 text-xs">Disponível de graça na loja da sua TV</p>
+                  </div>
+                </div>
+
+                <ol className="text-white/80 text-sm md:text-base space-y-4 list-decimal list-outside ml-4">
+                  <li>Acesse a <strong>loja de aplicativos</strong> da sua TV (Play Store ou Amazon Appstore) e instale o aplicativo <strong className="text-[#D4AF37]">Downloader</strong> (ícone laranja acima).</li>
+                  <li>Abra o Downloader. Se ele pedir permissão para acessar arquivos, clique em <strong>Permitir</strong>.</li>
+                  <li>Selecione a barra de pesquisa (URL) e digite o nosso código oficial: <br/>
+                      <div className="mt-2 inline-block"><strong className="text-white bg-[#D4AF37]/20 px-3 py-2 rounded-lg text-xl tracking-widest border border-[#D4AF37]/30 shadow-[0_0_15px_rgba(212,175,55,0.15)]">4961214</strong></div>
+                  </li>
+                  <li>Clique em <strong>Go</strong>. O download começará sozinho. Ao terminar, clique em <strong className="text-white">Instalar</strong>.</li>
+                  <li>Ao abrir o nosso App pela primeira vez, selecione a opção <strong className="text-[#D4AF37]">Smart TV</strong> para ajustar a tela perfeitamente!</li>
                 </ol>
               </div>
 
