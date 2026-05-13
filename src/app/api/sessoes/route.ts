@@ -81,6 +81,11 @@ export async function PATCH(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
 
+  const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
+  if (perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com') {
+    return NextResponse.json({ ok: true, admin: true })
+  }
+
   const { device_token } = await request.json()
   if (!device_token) return NextResponse.json({ error: 'device_token obrigatório' }, { status: 400 })
 
@@ -110,6 +115,11 @@ export async function DELETE(request: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+
+  const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
+  if (perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com') {
+    return NextResponse.json({ ok: true, admin: true })
+  }
 
   const { device_token } = await request.json()
   if (!device_token) return NextResponse.json({ error: 'device_token obrigatório' }, { status: 400 })

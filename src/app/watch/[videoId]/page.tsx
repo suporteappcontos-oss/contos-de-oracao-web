@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import FavoritoButton from '@/components/FavoritoButton'
-import CastButton from '@/components/CastButton'
+
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
 import { ChevronLeft, Clock, Tag, Share2, ChevronRight } from 'lucide-react'
 import crypto from 'crypto'
@@ -131,7 +131,7 @@ export default async function VideoPlayerPage({ params }: Props) {
             {/* Ações */}
             <div className="flex flex-wrap items-center gap-2 mb-6">
               <FavoritoButton videoId={video.id} initialFav={isFav} />
-              <CastButton />
+
             </div>
 
             {/* Descrição */}
