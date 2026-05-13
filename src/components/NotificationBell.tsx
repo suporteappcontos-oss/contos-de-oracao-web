@@ -84,7 +84,7 @@ export default function NotificationBell() {
 
       {open && (
         <div
-          className="absolute right-0 top-12 w-80 rounded-2xl overflow-hidden shadow-2xl z-50"
+          className="absolute -right-12 sm:right-0 top-12 w-[300px] sm:w-80 rounded-2xl overflow-hidden shadow-2xl z-50"
           style={{ background: '#0F1117', border: '1px solid rgba(212,175,55,0.2)' }}
         >
           <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
