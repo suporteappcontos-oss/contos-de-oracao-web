@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Play, Clock, Heart } from 'lucide-react'
-import { toggleFavorito } from '@/app/perfil/actions'
+import { Play, Clock } from 'lucide-react'
 
 // Fallback com imagens de oração/espiritualidade
 const FALLBACK_IMAGES = [
@@ -31,19 +30,6 @@ type VideoData = {
 
 export default function VideoCard({ video, isFavoritado = false, minimal = false }: { video: VideoData, isFavoritado?: boolean, minimal?: boolean }) {
   const [imgError, setImgError] = useState(false)
-  const [favoritado, setFavoritado] = useState(isFavoritado)
-  const [loadingFav, setLoadingFav] = useState(false)
-
-  async function handleFavorito(e: React.MouseEvent) {
-    e.preventDefault()
-    e.stopPropagation()
-    if (loadingFav) return
-    setLoadingFav(true)
-    setFavoritado(prev => !prev)
-    const result = await toggleFavorito(video.id)
-    if (result.error) setFavoritado(prev => !prev)
-    setLoadingFav(false)
-  }
 
   const imageUrl = (!imgError && video.thumbnail_url)
     ? video.thumbnail_url
@@ -88,7 +74,7 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
                 </div>
             </div>
 
-            {/* Informações superiores (Duração/Favorito) */}
+            {/* Informações superiores (Duração) */}
             <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
               {video.duracao ? (
                 <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10 flex items-center gap-1">
@@ -96,12 +82,6 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
                     <span className="text-[0.6rem] font-bold text-white/90 tracking-wide">{video.duracao}</span>
                 </div>
               ) : <div />}
-              <button 
-                onClick={handleFavorito}
-                className="p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-black/60 transition-colors"
-              >
-                <Heart className={`w-3.5 h-3.5 ${favoritado ? 'fill-red-500 text-red-500' : 'text-white/80'}`} />
-              </button>
             </div>
 
             {/* Título do Vídeo no canto inferior */}
