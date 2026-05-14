@@ -48,21 +48,21 @@ export default function Hero() {
           <div
             className="rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
-              border: '1px solid rgba(255,255,255,0.1)'
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+              border: '1px solid rgba(255,255,255,0.5)'
             }}
           >
             {/* Brilho interno */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
             {/* Tab Switcher */}
-            <div className="flex border-b mx-6 mt-6 mb-0" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+            <div className="flex border-b mx-6 mt-6 mb-0" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
               <button
                 onClick={() => setTab('login')}
                 className="flex-1 pb-3 text-sm font-bold transition-all"
                 style={{
-                  color: tab === 'login' ? '#D4AF37' : 'rgba(255,255,255,0.35)',
-                  borderBottom: tab === 'login' ? '2px solid #D4AF37' : '2px solid transparent',
+                  color: tab === 'login' ? '#000000' : 'rgba(0,0,0,0.4)',
+                  borderBottom: tab === 'login' ? '2px solid #000000' : '2px solid transparent',
                 }}
               >
                 🔑 Senha
@@ -71,8 +71,8 @@ export default function Hero() {
                 onClick={() => setTab('qr')}
                 className="flex-1 pb-3 text-sm font-bold transition-all"
                 style={{
-                  color: tab === 'qr' ? '#D4AF37' : 'rgba(255,255,255,0.35)',
-                  borderBottom: tab === 'qr' ? '2px solid #D4AF37' : '2px solid transparent',
+                  color: tab === 'qr' ? '#000000' : 'rgba(0,0,0,0.4)',
+                  borderBottom: tab === 'qr' ? '2px solid #000000' : '2px solid transparent',
                 }}
               >
                 📱 Celular / TV
@@ -82,8 +82,8 @@ export default function Hero() {
             {/* Tab: Login com senha */}
             {tab === 'login' && (
               <div className="p-5 md:p-8">
-                <h2 className="text-white text-2xl font-black mb-1" style={{ fontFamily: 'Outfit, sans-serif' }}>Acessar</h2>
-                <p className="text-white/50 text-xs mb-4 font-light">Entre para continuar assistindo.</p>
+                <h2 className="text-black text-2xl font-black mb-1" style={{ fontFamily: 'Outfit, sans-serif' }}>Acessar</h2>
+                <p className="text-black/70 text-xs mb-4 font-bold">Entre para continuar assistindo.</p>
 
                 <form className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
@@ -105,7 +105,7 @@ export default function Hero() {
                     <span className="font-extrabold tracking-wide text-sm md:text-base">Entrar na Plataforma</span>
                   </SubmitButton>
 
-                  <Link href="/esqueci-senha" className="text-center text-white/40 text-sm hover:text-[#D4AF37] transition-colors no-underline font-medium mt-1">
+                  <Link href="/esqueci-senha" className="text-center text-black/60 text-sm hover:text-black transition-colors no-underline font-bold mt-1">
                     Esqueci minha senha
                   </Link>
                 </form>

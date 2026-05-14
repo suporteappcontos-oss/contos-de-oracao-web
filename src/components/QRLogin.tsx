@@ -82,7 +82,7 @@ export default function QRLogin() {
       QRCode.toCanvas(canvasRef.current, `CONTOSQR:${token}`, {
         width: 200,
         margin: 2,
-        color: { dark: '#FFFFFF', light: '#00000000' },
+        color: { dark: '#000000', light: '#FFFFFF' },
       }).catch(e => console.error('Erro ao gerar QR:', e))
     }
   }, [status, token])
@@ -92,7 +92,7 @@ export default function QRLogin() {
 
   return (
     <div className="flex flex-col items-center gap-4 p-6">
-      <p className="text-white/50 text-xs uppercase tracking-widest font-bold">
+      <p className="text-black/80 text-xs uppercase tracking-widest font-bold">
         Entrar com o Celular
       </p>
 
@@ -125,7 +125,7 @@ export default function QRLogin() {
 
       {status === 'waiting' && (
         <>
-          <p className="text-white/60 text-xs text-center max-w-[180px] leading-relaxed">
+          <p className="text-black/80 text-xs text-center max-w-[180px] leading-relaxed">
             Abra o app Contos de Oração e escaneie este QR Code
           </p>
           <span className="text-[#D4AF37] text-xs font-bold font-mono">{minutos}:{segundos}</span>
@@ -143,8 +143,8 @@ export default function QRLogin() {
       )}
 
       {status === 'waiting' && (
-        <p className="text-white/20 text-[10px] text-center">
-          Código: <span className="font-mono font-bold text-white/40">{token}</span>
+        <p className="text-black/70 text-sm text-center font-medium mt-2">
+          Código: <span className="font-mono font-black text-black text-lg">{token}</span>
         </p>
       )}
     </div>
