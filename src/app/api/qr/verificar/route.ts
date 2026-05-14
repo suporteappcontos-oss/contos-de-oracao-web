@@ -58,36 +58,10 @@ export async function GET(req: NextRequest) {
   // Apaga a sessão usada
   await admin.from('qr_sessions').delete().eq('token', token.toUpperCase())
 
-  // BURLA: Ao invés de mandar a TV abrir o link no navegador, nós consumimos o link aqui no servidor
-  // O Supabase retorna um 303 Redirect com o access_token no header Location.
-  let tokens = null
-  const actionLink = linkData.properties?.action_link
-  
-  if (actionLink) {
-    try {
-      const res = await fetch(actionLink, { method: 'GET', redirect: 'manual' })
-      const location = res.headers.get('Location')
-      
-      if (location && location.includes('#')) {
-        const fragment = location.split('#')[1]
-        // Substituir os "&" pra poder usar no URLSearchParams ou parse nativo
-        const params = new URLSearchParams(fragment)
-        if (params.get('access_token')) {
-          tokens = {
-            access_token: params.get('access_token'),
-            refresh_token: params.get('refresh_token')
-          }
-        }
-      }
-    } catch (e) {
-      console.error('Falha ao extrair tokens do magic link', e)
-    }
-  }
-
+  // Retorna para o site redirecionar o usuário
   return NextResponse.json({
     status: 'confirmed',
     email: userEmail,
-    loginUrl: actionLink,
-    tokens // Passa os tokens diretamente para a TV
+    loginUrl: actionLink
   })
 }
