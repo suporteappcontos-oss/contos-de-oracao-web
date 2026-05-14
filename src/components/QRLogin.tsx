@@ -92,7 +92,7 @@ export default function QRLogin() {
 
   return (
     <div className="flex flex-col items-center gap-4 p-6">
-      <p className="text-black/80 text-xs uppercase tracking-widest font-bold">
+      <p className="text-white/80 text-xs uppercase tracking-widest font-bold">
         Entrar com o Celular
       </p>
 
@@ -125,7 +125,7 @@ export default function QRLogin() {
 
       {status === 'waiting' && (
         <>
-          <p className="text-black/80 text-xs text-center max-w-[180px] leading-relaxed">
+          <p className="text-white/80 text-xs text-center max-w-[180px] leading-relaxed">
             Abra o app Contos de Oração e escaneie este QR Code
           </p>
           <span className="text-[#D4AF37] text-xs font-bold font-mono">{minutos}:{segundos}</span>
@@ -143,8 +143,8 @@ export default function QRLogin() {
       )}
 
       {status === 'waiting' && (
-        <p className="text-black/70 text-sm text-center font-medium mt-2">
-          Código: <span className="font-mono font-black text-black text-lg">{token}</span>
+        <p className="text-white/70 text-sm text-center font-medium mt-2">
+          Código: <span className="font-mono font-black text-white text-lg">{token}</span>
         </p>
       )}
     </div>
