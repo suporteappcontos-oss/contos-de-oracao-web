@@ -28,17 +28,17 @@ async function uploadToBunny(file: File, prefix: string): Promise<string> {
   const extensao = file.name.split('.').pop() || 'jpg';
   const fileName = `${prefix}_${Date.now()}.${extensao}`;
 
-  const res = await fetch(`https://br.storage.bunnycdn.com/contos-apks/${fileName}`, {
+  const res = await fetch(`https://br.storage.bunnycdn.com/contos-midia-app/${fileName}`, {
     method: 'PUT',
     headers: {
-      'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+      'AccessKey': '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c',
       'Content-Type': file.type || 'image/jpeg',
     },
     body: arrayBuffer // Envio direto do ArrayBuffer suportado pelo fetch() nativo
   });
 
   if (!res.ok) throw new Error(`Falha no upload [${res.status}]: ${res.statusText}`);
-  return `https://contos-apks.b-cdn.net/${fileName}`;
+  return `https://contos-midia-app.b-cdn.net/${fileName}`;
 }
 
 // ─── Adicionar vídeo ───
