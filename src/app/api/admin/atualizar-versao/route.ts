@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
-const BUNNY_ACCESS_KEY = '5513bf80-0970-4a66-a4e06d748364-2d6f-4522';
-const BUNNY_STORAGE_URL = 'https://br.storage.bunnycdn.com/contos-apks/versao.json';
+const BUNNY_ACCESS_KEY = '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c';
+const BUNNY_STORAGE_URL = 'https://br.storage.bunnycdn.com/contos-midia-app/versao.json';
 
 export async function POST(request: Request) {
   try {

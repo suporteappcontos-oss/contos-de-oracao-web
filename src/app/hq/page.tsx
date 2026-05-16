@@ -16,7 +16,7 @@ const HQS = [
     slug: 'nossa-senhora-fatima',
     titulo: 'Nossa Senhora de Fátima',
     descricao: 'A história das aparições de Nossa Senhora às três pastorinhas em Fátima, Portugal.',
-    capa: 'https://contos-apks.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png',
+    capa: 'https://contos-midia-app.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png',
     totalPaginas: 15,
     planos: ['Essencial', 'Pro', 'essencial', 'pro'], // planos com acesso
   },

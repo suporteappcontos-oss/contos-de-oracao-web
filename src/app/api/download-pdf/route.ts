@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   }
 
   // Aceita apenas URLs do nosso CDN
-  if (!fileUrl.includes('contos-apks.b-cdn.net')) {
+  if (!fileUrl.includes('contos-midia-app.b-cdn.net')) {
     return new NextResponse('URL não autorizada', { status: 403 })
   }
 

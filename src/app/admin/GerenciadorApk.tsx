@@ -4,7 +4,7 @@ import React, { useState, useTransition } from 'react'
 import { Smartphone, Upload, ExternalLink, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react'
 import { salvarVersaoApk } from './actions'
 
-const BUNNY_BASE_URL = 'https://contos-apks.b-cdn.net'
+const BUNNY_BASE_URL = 'https://contos-midia-app.b-cdn.net'
 
 export function GerenciadorApk({ versaoAtual }: { versaoAtual: any }) {
   const [isPending, startTransition] = useTransition()
@@ -95,7 +95,7 @@ export function GerenciadorApk({ versaoAtual }: { versaoAtual: any }) {
           <input
             value={apkLink}
             onChange={(e) => setApkLink(e.target.value)}
-            placeholder="https://contos-apks.b-cdn.net/contos-de-oracao-v1.0.28.apk"
+            placeholder="https://contos-midia-app.b-cdn.net/contos-de-oracao-v1.0.28.apk"
             className="w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all text-sm font-mono"
           />
           <p className="text-white/25 text-[10px] mt-1.5 break-all">

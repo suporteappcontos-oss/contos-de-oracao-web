@@ -162,27 +162,27 @@ export async function salvarConfiguracao(formData: FormData) {
     const arrayBuffer = await file.arrayBuffer();
     
     console.log("Fazendo upload da imagem fixa pro Bunny...");
-    const resImage = await fetch(`https://br.storage.bunnycdn.com/contos-apks/${fileName}`, {
+    const resImage = await fetch(`https://br.storage.bunnycdn.com/contos-midia-app/${fileName}`, {
       method: 'PUT',
       headers: {
-        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
-        'Content-Type': file.type || 'image/png',
+        'AccessKey': '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c',
+        'Content-Type': file.type || 'image/jpeg',
       },
       body: arrayBuffer
     });
 
     if (!resImage.ok) throw new Error(`Falha no upload da imagem: ${resImage.statusText}`);
 
-    const bgUrl = `https://contos-apks.b-cdn.net/${fileName}`;
+    const bgUrl = `https://contos-midia-app.b-cdn.net/${fileName}`;
     const config = { background_url: bgUrl };
     console.log("✅ Nova imagem de fundo salva no Storage:", bgUrl);
 
     // 2. Atualiza o config.json apontando para a imagem
     console.log("Enviando PUT para o config.json no Bunny Storage...");
-    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
+    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-midia-app/config.json`, {
       method: 'PUT',
       headers: {
-        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+        'AccessKey': '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(config),

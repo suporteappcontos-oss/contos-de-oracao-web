@@ -152,7 +152,7 @@ export default async function AdminPage({
   let configCDN = null;
   if (activeTab === 'configuracoes') {
     try {
-      const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' });
+      const res = await fetch(`https://contos-midia-app.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) configCDN = await res.json();
     } catch (e) { console.error('Erro ao buscar configCDN:', e) }
   }

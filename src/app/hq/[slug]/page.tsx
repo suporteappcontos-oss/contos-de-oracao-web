@@ -3,7 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import HQReaderClient from './HQReaderClient'
 
-const BUNNY_BASE = 'https://contos-apks.b-cdn.net/hq'
+const BUNNY_BASE = 'https://contos-midia-app.b-cdn.net/hq'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -42,7 +42,7 @@ export default async function HQPage({ params }: Props) {
   // Verifica acesso ao PDF
   const podeBaixarPdf = isAdmin || (hq.planos_pdf && hq.planos_pdf.some((p: string) => etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)))
   const pdfUrl = hq.tem_pdf
-    ? (hq.link_pdf || `https://contos-apks.b-cdn.net/hq/${slug}/pdf/${slug}.pdf`)
+    ? (hq.link_pdf || `https://contos-midia-app.b-cdn.net/hq/${slug}/pdf/${slug}.pdf`)
     : null
 
   return (

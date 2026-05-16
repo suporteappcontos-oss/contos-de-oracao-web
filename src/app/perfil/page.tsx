@@ -59,7 +59,7 @@ export default async function PerfilPage() {
   }
 
   // Busca URL e versão do APK no Bunny CDN
-  let apkUrl = 'https://contos-apks.b-cdn.net/contos-de-oracao-v1.0.27.apk';
+  let apkUrl = 'https://contos-midia-app.b-cdn.net/apk/contos-de-oracao-v1.0.27.apk';
   let apkNome = 'ContosDeOracao.apk';
   try {
     const versaoRes = await fetch(`https://contosdeoracao.com.br/versao.json?t=${Date.now()}`, { cache: 'no-store' });

@@ -272,7 +272,7 @@ export function GerenciadorMateriais({ materiaisIniciais }: { materiaisIniciais:
               )}
               <p className="text-white/20 text-xs mt-2">Ou cole o link público do Bunny:</p>
               <input value={linkPdf} onChange={e => setLinkPdf(e.target.value)}
-                placeholder="https://contos-apks.b-cdn.net/PDF/hq/..."
+                placeholder="https://contos-midia-app.b-cdn.net/PDF/hq/..."
                 className={inputCls + ' mt-2 font-mono text-xs'} />
             </div>
           </div>
