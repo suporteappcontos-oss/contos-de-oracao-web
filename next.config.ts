@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'contos-apks.b-cdn.net',
+        hostname: 'contos-midia-app.b-cdn.net',
         pathname: '/**',
       },
       {

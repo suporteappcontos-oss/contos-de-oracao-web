@@ -116,14 +116,14 @@ export function GerenciadorMateriais({ materiaisIniciais }: { materiaisIniciais:
       const capaFile = capaRef.current?.files?.[0]
       if (capaFile) {
         const ext = capaFile.name.split('.').pop() || 'jpg'
-        const path = `PDF/${categoria}/${slug}_capa.${ext}`
+        const path = `pdf/${categoria}/${slug}_capa.${ext}`
         capaUrl = await uploadParaBunny(capaFile, path, setProgressCapa)
       }
 
       // 2️⃣ Upload do PDF direto para o Bunny (somente se enviou arquivo)
       const pdfFile = pdfRef.current?.files?.[0]
       if (pdfFile) {
-        const path = `PDF/${categoria}/${slug}.pdf`
+        const path = `pdf/${categoria}/${slug}.pdf`
         pdfUrl = await uploadParaBunny(pdfFile, path, setProgressPdf)
       }
 
