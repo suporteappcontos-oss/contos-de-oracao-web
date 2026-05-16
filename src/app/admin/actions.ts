@@ -47,8 +47,14 @@ export async function adicionarVideo(formData: FormData) {
 
   let thumbnailUrl = formData.get('thumbnail_url') as string;
   const thumbFile = formData.get('thumbnail_file') as File | null;
-  if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
-    thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+  
+  try {
+    if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
+      thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+    }
+  } catch (error: any) {
+    console.error('❌ Erro no upload da thumbnail pro Bunny:', error.message)
+    // Continua salvando o vídeo mesmo sem thumbnail, para não quebrar a tela
   }
 
   const { error } = await supabase.from('videos').insert({
@@ -72,8 +78,13 @@ export async function editarVideo(videoId: string, formData: FormData) {
 
   let thumbnailUrl = formData.get('thumbnail_url') as string;
   const thumbFile = formData.get('thumbnail_file') as File | null;
-  if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
-    thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+  
+  try {
+    if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
+      thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+    }
+  } catch (error: any) {
+    console.error('❌ Erro no upload da thumbnail:', error.message)
   }
 
   await supabase.from('videos').update({
