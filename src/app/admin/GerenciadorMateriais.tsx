@@ -13,9 +13,9 @@ const CATEGORIAS = [
 ]
 
 // AccessKey do Bunny — usada apenas no browser do admin para fazer upload direto
-const BUNNY_STORAGE_KEY = '5513bf80-0970-4a66-a4e06d748364-2d6f-4522'
-const BUNNY_STORAGE_URL = 'https://br.storage.bunnycdn.com/contos-apks'
-const BUNNY_CDN_URL = 'https://contos-apks.b-cdn.net'
+const BUNNY_STORAGE_KEY = '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c'
+const BUNNY_STORAGE_URL = 'https://br.storage.bunnycdn.com/contos-midia-app'
+const BUNNY_CDN_URL = 'https://contos-midia-app.b-cdn.net'
 
 type Material = {
   id: string

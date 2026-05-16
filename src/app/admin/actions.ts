@@ -205,7 +205,7 @@ export async function salvarPermissoesPlanos(planosApp: string[], planosHq: stri
     // 1. Fetch current config
     let config = {};
     try {
-      const res = await fetch(`https://contos-apks.b-cdn.net/config.json?t=${Date.now()}`);
+      const res = await fetch(`https://contos-midia-app.b-cdn.net/config.json?t=${Date.now()}`);
       if (res.ok) {
         config = await res.json();
       }
@@ -221,10 +221,10 @@ export async function salvarPermissoesPlanos(planosApp: string[], planosHq: stri
     };
 
     // 3. Upload back to Bunny
-    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-apks/config.json`, {
+    const resConf = await fetch(`https://br.storage.bunnycdn.com/contos-midia-app/config.json`, {
       method: 'PUT',
       headers: {
-        'AccessKey': '5513bf80-0970-4a66-a4e06d748364-2d6f-4522',
+        'AccessKey': '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(config),
@@ -284,7 +284,7 @@ export async function publicarMaterial(formData: FormData) {
     // Segurança: limpa AccessKey se vier no link
     if (linkPdf?.includes('br.storage.bunnycdn.com')) {
       linkPdf = linkPdf.split('?')[0];
-      linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-apks', 'contos-apks.b-cdn.net');
+      linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-midia-app', 'contos-midia-app.b-cdn.net');
     }
 
     // Gera slug
