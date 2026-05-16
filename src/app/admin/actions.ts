@@ -22,6 +22,15 @@ async function verificarAdmin() {
   return { supabase, user }
 }
 
+function gerarSlug(texto: string) {
+  if (!texto) return 'video';
+  return texto
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '').trim()
+    .replace(/\s+/g, '-');
+}
+
 // ─── Helper de Upload pro Bunny.net ───
 async function uploadToBunny(file: File, prefix: string): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
@@ -45,12 +54,14 @@ async function uploadToBunny(file: File, prefix: string): Promise<string> {
 export async function adicionarVideo(formData: FormData) {
   const { supabase } = await verificarAdmin()
 
+  const titulo = formData.get('titulo') as string;
   let thumbnailUrl = formData.get('thumbnail_url') as string;
   const thumbFile = formData.get('thumbnail_file') as File | null;
   
   try {
     if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
-      thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+      const slug = gerarSlug(titulo);
+      thumbnailUrl = await uploadToBunny(thumbFile, `capas_videos/${slug}/capa`);
     }
   } catch (error: any) {
     console.error('❌ Erro no upload da thumbnail pro Bunny:', error.message)
@@ -76,19 +87,21 @@ export async function adicionarVideo(formData: FormData) {
 export async function editarVideo(videoId: string, formData: FormData) {
   const { supabase } = await verificarAdmin()
 
+  const titulo = formData.get('titulo') as string;
   let thumbnailUrl = formData.get('thumbnail_url') as string;
   const thumbFile = formData.get('thumbnail_file') as File | null;
   
   try {
     if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
-      thumbnailUrl = await uploadToBunny(thumbFile, 'thumb');
+      const slug = gerarSlug(titulo);
+      thumbnailUrl = await uploadToBunny(thumbFile, `capas_videos/${slug}/capa`);
     }
   } catch (error: any) {
     console.error('❌ Erro no upload da thumbnail:', error.message)
   }
 
   await supabase.from('videos').update({
-    titulo: formData.get('titulo') as string,
+    titulo: titulo,
     descricao: (formData.get('descricao') as string) || null,
     categoria: formData.get('categoria') as string,
     thumbnail_url: thumbnailUrl || null,
