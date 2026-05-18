@@ -85,15 +85,18 @@ export async function adicionarVideo(formData: FormData) {
     try {
       const admin = require('firebase-admin');
       if (!admin.apps.length) {
-        const fs = require('fs');
-        const path = require('path');
-        // O arquivo JSON que você colocou na raiz do projeto web
-        const serviceAccountPath = path.join(process.cwd(), 'contos-de-oracao-firebase-adminsdk-fbsvc-ad80fcc96a.json');
-        
-        if (fs.existsSync(serviceAccountPath)) {
-          const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+        // Usa variáveis de ambiente em vez de arquivo JSON para segurança (evita bloqueio no GitHub)
+        const projectId = process.env.FIREBASE_PROJECT_ID;
+        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+        const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+        if (projectId && clientEmail && privateKey) {
           admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
+            credential: admin.credential.cert({
+              projectId,
+              clientEmail,
+              privateKey,
+            })
           });
         }
       }
