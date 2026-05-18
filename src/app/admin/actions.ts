@@ -78,7 +78,45 @@ export async function adicionarVideo(formData: FormData) {
     duracao: (formData.get('duracao') as string) || null,
     ativo: true,
   })
-  if (error) console.error('❌ Erro ao adicionar vídeo:', error.message)
+  if (error) {
+    console.error('❌ Erro ao adicionar vídeo:', error.message)
+  } else {
+    // ─── Enviar Notificação Push ───
+    try {
+      const admin = require('firebase-admin');
+      if (!admin.apps.length) {
+        const fs = require('fs');
+        const path = require('path');
+        // O arquivo JSON que você colocou na raiz do projeto web
+        const serviceAccountPath = path.join(process.cwd(), 'contos-de-oracao-firebase-adminsdk-fbsvc-ad80fcc96a.json');
+        
+        if (fs.existsSync(serviceAccountPath)) {
+          const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+          admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+          });
+        }
+      }
+
+      if (admin.apps.length) {
+        const message = {
+          notification: {
+            title: '✨ Novo Vídeo Disponível!',
+            body: `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`,
+          },
+          topic: 'novos_videos',
+        };
+
+        await admin.messaging().send(message);
+        console.log('✅ Notificação Push enviada com sucesso!');
+      } else {
+        console.log('⚠️ Firebase Admin não inicializado (arquivo JSON não encontrado). Push não enviado.');
+      }
+    } catch (pushError: any) {
+      console.error('❌ Erro ao enviar notificação Push:', pushError.message);
+    }
+  }
+
   revalidatePath('/admin')
   revalidatePath('/watch')
 }
