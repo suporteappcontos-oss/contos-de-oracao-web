@@ -102,13 +102,16 @@ export async function adicionarVideo(formData: FormData) {
       }
 
       if (admin.apps.length) {
+        const title = '✨ Novo Vídeo Disponível!';
+        const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
+        
         const message = {
-          notification: {
-            title: '✨ Novo Vídeo Disponível!',
-            body: `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`,
-          },
+          notification: { title, body },
           topic: 'novos_videos',
         };
+
+        // Salva a notificação no banco de dados para o histórico do "Sino"
+        await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
 
         await admin.messaging().send(message);
         console.log('✅ Notificação Push enviada com sucesso!');
@@ -370,6 +373,45 @@ export async function publicarMaterial(formData: FormData) {
     }, { onConflict: 'slug' });
 
     if (error) throw new Error(error.message);
+
+    // ─── Enviar Notificação Push para Materiais ───
+    try {
+      const admin = require('firebase-admin');
+      if (!admin.apps.length) {
+        const projectId = process.env.FIREBASE_PROJECT_ID;
+        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+        const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+        if (projectId && clientEmail && privateKey) {
+          admin.initializeApp({
+            credential: admin.credential.cert({
+              projectId,
+              clientEmail,
+              privateKey,
+            })
+          });
+        }
+      }
+
+      if (admin.apps.length) {
+        const title = '📚 Novo Material Adicionado!';
+        const body = `"${titulo}" já está disponível na aba Pedagógica. Aproveite!`;
+
+        const message = {
+          notification: { title, body },
+          topic: 'novos_videos', // usamos o mesmo tópico geral do app
+        };
+
+        // Salva a notificação no banco de dados para o histórico do "Sino"
+        await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
+
+        await admin.messaging().send(message);
+        console.log('✅ Notificação Push (Material) enviada com sucesso!');
+      }
+    } catch (pushError: any) {
+      console.error('❌ Erro ao enviar notificação Push (Material):', pushError.message);
+    }
+
     revalidatePath('/materiais');
     revalidatePath('/admin');
     return { success: true };
