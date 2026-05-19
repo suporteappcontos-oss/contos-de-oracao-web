@@ -133,6 +133,8 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     )
   }, [])
 
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+
   useEffect(() => {
     iniciarSessao()
     fetchAnuncio()
@@ -140,12 +142,26 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-        if (data && data.event) {
-          if (data.event === 'pause') {
-            setIsPaused(true)
-          } else if (data.event === 'play' || data.event === 'playing') {
-            setIsPaused(false)
-          }
+        
+        // Padrão Player.js (usado pelo Bunny) ou eventos genéricos
+        if (data && (data.event === 'pause' || data.type === 'pause')) {
+          setIsPaused(true)
+        } else if (data && (data.event === 'play' || data.event === 'playing' || data.type === 'play' || data.type === 'playing')) {
+          setIsPaused(false)
+        }
+        
+        // Se o player estiver pronto, nos inscrevemos nos eventos
+        if (data && data.event === 'ready') {
+           iframeRef.current?.contentWindow?.postMessage(JSON.stringify({
+             context: 'player.js',
+             method: 'addEventListener',
+             value: 'pause'
+           }), '*')
+           iframeRef.current?.contentWindow?.postMessage(JSON.stringify({
+             context: 'player.js',
+             method: 'addEventListener',
+             value: 'play'
+           }), '*')
         }
       } catch (e) {}
     }
@@ -155,6 +171,20 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') encerrarSessao()
     })
+
+    // Fallback: tentar inscrever logo de cara
+    setTimeout(() => {
+       iframeRef.current?.contentWindow?.postMessage(JSON.stringify({
+         context: 'player.js',
+         method: 'addEventListener',
+         value: 'pause'
+       }), '*')
+       iframeRef.current?.contentWindow?.postMessage(JSON.stringify({
+         context: 'player.js',
+         method: 'addEventListener',
+         value: 'play'
+       }), '*')
+    }, 2000)
 
     return () => {
       if (heartbeatRef.current) clearInterval(heartbeatRef.current)
@@ -221,6 +251,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     <div className="bg-black w-full relative">
       <div className="relative w-full aspect-video mx-auto group" style={{ maxWidth: '1600px' }}>
         <iframe
+          ref={iframeRef}
           src={embedUrl}
           className="absolute inset-0 w-full h-full border-none"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
