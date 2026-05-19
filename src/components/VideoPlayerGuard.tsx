@@ -195,6 +195,15 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
     }
   }, [iniciarSessao, encerrarSessao, fetchAnuncio])
 
+  // Retoma o vídeo enviando comando play via Player.js para o iframe
+  const handleResume = useCallback(() => {
+    setIsPaused(false)
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ context: 'player.js', method: 'play' }),
+      '*'
+    )
+  }, [])
+
   // ── ESTADO: Verificando ──
   if (status === 'verificando') {
     return (
@@ -260,44 +269,33 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
         
         {/* OVERLAY DE ANÚNCIO (MOSTRADO NA PAUSA) */}
         {isPaused && anuncioAtivo && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
-            <div className="relative max-w-[80%] max-h-[80%] bg-[#090B10] rounded-2xl overflow-hidden shadow-2xl border border-[#D4AF37]/40 group/ad" style={{ boxShadow: '0 0 40px rgba(212,175,55,0.15)' }}>
-              <button 
-                onClick={() => setIsPaused(false)} 
-                className="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center bg-black/70 text-white rounded-full hover:bg-[#D4AF37] hover:text-black transition-all font-bold text-sm border border-white/20"
-              >
-                ✕
-              </button>
-              
-              {anuncioAtivo.link_destino ? (
-                <a href={anuncioAtivo.link_destino} target="_blank" rel="noreferrer" className="block relative w-full h-full">
-                  {anuncioAtivo.imagem_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
-                  ) : (
-                    <div className="p-12 text-center" style={{ background: 'linear-gradient(135deg, #111827 0%, #1a2332 100%)' }}>
-                      <div className="text-[#D4AF37] text-4xl mb-4">📢</div>
-                      <p className="text-white font-bold text-xl leading-snug">{anuncioAtivo.titulo}</p>
-                      <p className="text-[#D4AF37] text-sm mt-3 font-bold uppercase tracking-widest">Toque para saber mais →</p>
-                    </div>
-                  )}
-                  <div className="absolute bottom-0 w-full bg-[#D4AF37] text-black text-center py-2 font-bold text-sm transform translate-y-full group-hover/ad:translate-y-0 transition-transform">
-                    CLIQUE AQUI PARA SABER MAIS
-                  </div>
-                </a>
+          <div 
+            onClick={handleResume}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300 cursor-pointer group/overlay"
+          >
+            <div className="relative w-full h-full flex items-center justify-center">
+              {anuncioAtivo.imagem_url ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img 
+                  src={anuncioAtivo.imagem_url} 
+                  alt={anuncioAtivo.titulo} 
+                  className="w-full h-full object-contain" 
+                />
               ) : (
-                <div className="block relative w-full h-full">
-                  {anuncioAtivo.imagem_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
-                  ) : (
-                    <div className="p-12 text-center" style={{ background: 'linear-gradient(135deg, #111827 0%, #1a2332 100%)' }}>
-                      <div className="text-[#D4AF37] text-4xl mb-4">📢</div>
-                      <p className="text-white font-bold text-xl leading-snug">{anuncioAtivo.titulo}</p>
-                    </div>
-                  )}
+                <div className="p-12 text-center w-full h-full flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #111827 0%, #1a2332 100%)' }}>
+                  <div className="text-[#D4AF37] text-6xl mb-6">📢</div>
+                  <p className="text-white font-black text-3xl leading-snug">{anuncioAtivo.titulo}</p>
                 </div>
               )}
+              
+              {/* Overlay de Play Hover */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/overlay:opacity-100 transition-opacity duration-300 bg-black/40">
+                <div className="w-24 h-24 bg-[#D4AF37] rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(212,175,55,0.4)] transform hover:scale-110 transition-transform">
+                   <svg width="40" height="40" viewBox="0 0 24 24" fill="black" className="ml-2">
+                     <path d="M8 5v14l11-7z"/>
+                   </svg>
+                </div>
+              </div>
             </div>
           </div>
         )}
