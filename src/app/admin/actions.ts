@@ -460,8 +460,8 @@ export async function adicionarAnuncioPausa(formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' };
   }
 }
 
@@ -473,8 +473,8 @@ export async function deletarAnuncioPausa(id: string) {
     if (error) throw new Error(error.message);
     revalidatePath('/admin');
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' };
   }
 }
 
@@ -486,7 +486,7 @@ export async function toggleAnuncioAtivo(id: string, ativoAtual: boolean) {
     if (error) throw new Error(error.message);
     revalidatePath('/admin');
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' };
   }
 }

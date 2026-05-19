@@ -241,6 +241,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
               {anuncioAtivo.link_destino ? (
                 <a href={anuncioAtivo.link_destino} target="_blank" rel="noreferrer" className="block relative w-full h-full">
                   {anuncioAtivo.imagem_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
                   ) : (
                     <div className="p-10 text-center text-white font-bold">{anuncioAtivo.titulo}</div>
@@ -252,6 +253,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
               ) : (
                 <div className="block relative w-full h-full">
                   {anuncioAtivo.imagem_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
                   ) : (
                     <div className="p-10 text-center text-white font-bold">{anuncioAtivo.titulo}</div>

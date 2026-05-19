@@ -650,7 +650,7 @@ export default async function AdminPage({
         )}
         {/* ════════ ABA ANÚNCIOS PAUSA ════════ */}
         {activeTab === 'anuncios' && (
-          <GerenciadorAnuncios anuncios={anunciosPausa ?? []} />
+          <GerenciadorAnuncios anuncios={(anunciosPausa ?? []) as any} />
         )}
 
       </main>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Edit3, Image as ImageIcon, Link as LinkIcon, Power, CheckCircle2 } from 'lucide-react'
+import { Plus, Trash2, Image as ImageIcon, Link as LinkIcon } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
 import { adicionarAnuncioPausa, deletarAnuncioPausa, toggleAnuncioAtivo } from './actions'
 import Image from 'next/image'
@@ -19,7 +19,7 @@ export function GerenciadorAnuncios({ anuncios }: { anuncios: AnuncioType[] }) {
   const [modalAberto, setModalAberto] = useState(false)
   const [loadingId, setLoadingId] = useState<string | null>(null)
 
-  const handleAction = async (action: () => Promise<any>, id: string) => {
+  const handleAction = async (action: () => Promise<unknown>, id: string) => {
     setLoadingId(id)
     try {
       await action()
