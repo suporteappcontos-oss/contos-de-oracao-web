@@ -370,7 +370,6 @@ export default async function AdminPage({
         {activeTab === 'catalogo' && (
           <div className="space-y-20">
             <div className="space-y-10">
-            <div className="space-y-10">
             {/* Formulário adicionar */}
             <div className="bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
@@ -556,6 +555,8 @@ export default async function AdminPage({
                   ))}
                 </div>
               )}
+            </div>
+            
             </div>
             
             {/* --- MATERIAIS --- */}
