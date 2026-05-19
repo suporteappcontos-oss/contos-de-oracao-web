@@ -11,7 +11,7 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Settings, Clock, Heart, BarChart3, Trophy, Sliders, Smartphone, BookOpen, ShieldCheck, Megaphone
+  Clock, Heart, BarChart3, Trophy, Sliders, Megaphone
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -457,7 +457,7 @@ export default async function AdminPage({
                                 <Edit3 size={18} className="text-[#D4AF37]" />
                                 <span className="text-white font-black">Editar Vídeo</span>
                              </div>
-                             <Link href="/admin?tab=videos" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
+                             <Link href="/admin?tab=catalogo" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
                           </div>
                           
                           <form action={editarVideo.bind(null, video.id)} encType="multipart/form-data" className="space-y-4">
@@ -536,7 +536,7 @@ export default async function AdminPage({
                                <Link href={`/watch/${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl py-2.5 transition-colors" title="Ver no site">
                                  <ExternalLink size={16} />
                                </Link>
-                               <Link href={`/admin?tab=videos&edit=${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-[#D4AF37]/20 text-[#D4AF37] rounded-xl py-2.5 transition-colors" title="Editar">
+                               <Link href={`/admin?tab=catalogo&edit=${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-[#D4AF37]/20 text-[#D4AF37] rounded-xl py-2.5 transition-colors" title="Editar">
                                  <Edit3 size={16} />
                                </Link>
                                <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)} className="col-span-1">

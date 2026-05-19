@@ -229,13 +229,13 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
         
         {/* OVERLAY DE ANÚNCIO (MOSTRADO NA PAUSA) */}
         {isPaused && anuncioAtivo && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
-            <div className="relative max-w-[80%] max-h-[80%] bg-[#090B10] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group/ad">
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
+            <div className="relative max-w-[80%] max-h-[80%] bg-[#090B10] rounded-2xl overflow-hidden shadow-2xl border border-[#D4AF37]/40 group/ad" style={{ boxShadow: '0 0 40px rgba(212,175,55,0.15)' }}>
               <button 
                 onClick={() => setIsPaused(false)} 
-                className="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center bg-black/50 text-white rounded-full hover:bg-black transition-colors"
+                className="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center bg-black/70 text-white rounded-full hover:bg-[#D4AF37] hover:text-black transition-all font-bold text-sm border border-white/20"
               >
-                X
+                ✕
               </button>
               
               {anuncioAtivo.link_destino ? (
@@ -244,7 +244,11 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
                   ) : (
-                    <div className="p-10 text-center text-white font-bold">{anuncioAtivo.titulo}</div>
+                    <div className="p-12 text-center" style={{ background: 'linear-gradient(135deg, #111827 0%, #1a2332 100%)' }}>
+                      <div className="text-[#D4AF37] text-4xl mb-4">📢</div>
+                      <p className="text-white font-bold text-xl leading-snug">{anuncioAtivo.titulo}</p>
+                      <p className="text-[#D4AF37] text-sm mt-3 font-bold uppercase tracking-widest">Toque para saber mais →</p>
+                    </div>
                   )}
                   <div className="absolute bottom-0 w-full bg-[#D4AF37] text-black text-center py-2 font-bold text-sm transform translate-y-full group-hover/ad:translate-y-0 transition-transform">
                     CLIQUE AQUI PARA SABER MAIS
@@ -256,7 +260,10 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
                   ) : (
-                    <div className="p-10 text-center text-white font-bold">{anuncioAtivo.titulo}</div>
+                    <div className="p-12 text-center" style={{ background: 'linear-gradient(135deg, #111827 0%, #1a2332 100%)' }}>
+                      <div className="text-[#D4AF37] text-4xl mb-4">📢</div>
+                      <p className="text-white font-bold text-xl leading-snug">{anuncioAtivo.titulo}</p>
+                    </div>
                   )}
                 </div>
               )}
