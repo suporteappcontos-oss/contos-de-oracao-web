@@ -23,10 +23,23 @@ type Props = {
 export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
   const router = useRouter()
   const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
+  const [isPaused, setIsPaused] = useState(false)
+  const [anuncioAtivo, setAnuncioAtivo] = useState<any>(null)
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const realtimeRef = useRef<ReturnType<typeof createClient> | null>(null)
   const deviceToken = useRef<string>('')
   const statusRef = useRef<string>('verificando')
+
+  // Busca o anúncio ativo aleatório do banco de dados
+  const fetchAnuncio = useCallback(async () => {
+    const supabase = createClient()
+    const { data } = await supabase.from('anuncios_pausa').select('*').eq('ativo', true)
+    if (data && data.length > 0) {
+      // Pega um aleatório para rotacionar
+      const randomIndex = Math.floor(Math.random() * data.length)
+      setAnuncioAtivo(data[randomIndex])
+    }
+  }, [])
 
   // Atualiza status e o ref junto
   const updateStatus = (s: typeof status) => {
@@ -122,7 +135,22 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
 
   useEffect(() => {
     iniciarSessao()
+    fetchAnuncio()
 
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+        if (data && data.event) {
+          if (data.event === 'pause') {
+            setIsPaused(true)
+          } else if (data.event === 'play' || data.event === 'playing') {
+            setIsPaused(false)
+          }
+        }
+      } catch (e) {}
+    }
+
+    window.addEventListener('message', handleMessage)
     window.addEventListener('beforeunload', encerrarSessao)
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') encerrarSessao()
@@ -130,14 +158,12 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
 
     return () => {
       if (heartbeatRef.current) clearInterval(heartbeatRef.current)
-      // Desconecta o canal Realtime
-      if (realtimeRef.current) {
-        realtimeRef.current.channel('sessao-radar').unsubscribe()
-      }
+      if (realtimeRef.current) realtimeRef.current.channel('sessao-radar').unsubscribe()
       encerrarSessao()
+      window.removeEventListener('message', handleMessage)
       window.removeEventListener('beforeunload', encerrarSessao)
     }
-  }, [iniciarSessao, encerrarSessao])
+  }, [iniciarSessao, encerrarSessao, fetchAnuncio])
 
   // ── ESTADO: Verificando ──
   if (status === 'verificando') {
@@ -192,14 +218,49 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
 
   // ── ESTADO: Liberado ──
   return (
-    <div className="bg-black w-full">
-      <div className="relative w-full aspect-video mx-auto" style={{ maxWidth: '1600px' }}>
+    <div className="bg-black w-full relative">
+      <div className="relative w-full aspect-video mx-auto group" style={{ maxWidth: '1600px' }}>
         <iframe
           src={embedUrl}
           className="absolute inset-0 w-full h-full border-none"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
         />
+        
+        {/* OVERLAY DE ANÚNCIO (MOSTRADO NA PAUSA) */}
+        {isPaused && anuncioAtivo && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-auto">
+            <div className="relative max-w-[80%] max-h-[80%] bg-[#090B10] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group/ad">
+              <button 
+                onClick={() => setIsPaused(false)} 
+                className="absolute top-2 right-2 z-10 w-8 h-8 flex items-center justify-center bg-black/50 text-white rounded-full hover:bg-black transition-colors"
+              >
+                X
+              </button>
+              
+              {anuncioAtivo.link_destino ? (
+                <a href={anuncioAtivo.link_destino} target="_blank" rel="noreferrer" className="block relative w-full h-full">
+                  {anuncioAtivo.imagem_url ? (
+                    <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
+                  ) : (
+                    <div className="p-10 text-center text-white font-bold">{anuncioAtivo.titulo}</div>
+                  )}
+                  <div className="absolute bottom-0 w-full bg-[#D4AF37] text-black text-center py-2 font-bold text-sm transform translate-y-full group-hover/ad:translate-y-0 transition-transform">
+                    CLIQUE AQUI PARA SABER MAIS
+                  </div>
+                </a>
+              ) : (
+                <div className="block relative w-full h-full">
+                  {anuncioAtivo.imagem_url ? (
+                    <img src={anuncioAtivo.imagem_url} alt={anuncioAtivo.titulo} className="max-w-full max-h-[60vh] object-contain" />
+                  ) : (
+                    <div className="p-10 text-center text-white font-bold">{anuncioAtivo.titulo}</div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -11,12 +11,13 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Settings, Clock, Heart, BarChart3, Trophy, Sliders, Smartphone, BookOpen, ShieldCheck
+  Settings, Clock, Heart, BarChart3, Trophy, Sliders, Smartphone, BookOpen, ShieldCheck, Megaphone
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
 import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
 import { GerenciadorMateriais } from './GerenciadorMateriais'
+import { GerenciadorAnuncios } from './GerenciadorAnuncios'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -64,6 +65,7 @@ export default async function AdminPage({
   // Videos
   const { data: videos } = await supabase.from('videos').select('*').order('criado_em', { ascending: false })
   const { data: materiaisData } = await supabase.from('materiais').select('*').order('criado_em', { ascending: false })
+  const { data: anunciosPausa } = await supabase.from('anuncios_pausa').select('*').order('criado_em', { ascending: false })
 
   // Users via Admin API
   let usuarios: UsuarioType[] = []
@@ -199,12 +201,13 @@ export default async function AdminPage({
           </div>
 
           {/* Tabs - Estilo Pill Moderno */}
-          <div className="flex bg-[#111827] border border-white/5 rounded-2xl p-1.5 w-fit shadow-2xl">
+          <div className="flex bg-[#111827] border border-white/5 rounded-2xl p-1.5 w-fit shadow-2xl flex-wrap">
             {[
               { id: 'videos', label: 'Vídeos', icon: Film, count: totalVideos },
               { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
               { id: 'relatorios', label: 'Relatórios', icon: BarChart3, count: null },
               { id: 'materiais', label: 'Materiais', icon: BookOpen, count: materiaisData?.length ?? 0 },
+              { id: 'anuncios', label: 'Anúncios', icon: Megaphone, count: anunciosPausa?.length ?? 0 },
               { id: 'stripe', label: 'Planos', icon: Settings, count: null },
               { id: 'configuracoes', label: 'Acessos', icon: Sliders, count: null },
             ].map(tab => (
@@ -644,6 +647,10 @@ export default async function AdminPage({
           <div className="space-y-8 max-w-3xl">
             <ConfiguracoesAcesso initialConfig={configCDN} />
           </div>
+        )}
+        {/* ════════ ABA ANÚNCIOS PAUSA ════════ */}
+        {activeTab === 'anuncios' && (
+          <GerenciadorAnuncios anuncios={anunciosPausa ?? []} />
         )}
 
       </main>
