@@ -147,12 +147,19 @@ export default async function AdminPage({
        }
     })
   } catch(e) { console.error('Erro ao buscar estatísticas:', e) }
+  const tabParam = searchParams.tab || 'catalogo'
+  
+  // Mapeia links antigos para as novas abas agrupadas
+  const activeTab = ['videos', 'materiais'].includes(tabParam) ? 'catalogo' :
+                    ['usuarios', 'stripe'].includes(tabParam) ? 'assinaturas' :
+                    ['relatorios', 'anuncios'].includes(tabParam) ? 'marketing' :
+                    ['configuracoes'].includes(tabParam) ? 'sistema' : tabParam;
 
   const chartData = Object.entries(viewsByDay).map(([dia, count]) => ({ dia, count }))
   const maxViews = Math.max(...chartData.map(d => d.count), 1) // Prevent division by 0
 
   let configCDN = null;
-  if (activeTab === 'configuracoes') {
+  if (activeTab === 'sistema') {
     try {
       const res = await fetch(`https://contos-midia-app.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' });
       if (res.ok) configCDN = await res.json();
@@ -203,13 +210,10 @@ export default async function AdminPage({
           {/* Tabs - Estilo Pill Moderno */}
           <div className="flex bg-[#111827] border border-white/5 rounded-2xl p-1.5 w-fit shadow-2xl flex-wrap">
             {[
-              { id: 'videos', label: 'Vídeos', icon: Film, count: totalVideos },
-              { id: 'usuarios', label: 'Assinantes', icon: Users, count: totalMembros },
-              { id: 'relatorios', label: 'Relatórios', icon: BarChart3, count: null },
-              { id: 'materiais', label: 'Materiais', icon: BookOpen, count: materiaisData?.length ?? 0 },
-              { id: 'anuncios', label: 'Anúncios', icon: Megaphone, count: anunciosPausa?.length ?? 0 },
-              { id: 'stripe', label: 'Planos', icon: Settings, count: null },
-              { id: 'configuracoes', label: 'Acessos', icon: Sliders, count: null },
+              { id: 'catalogo', label: 'Catálogo', icon: Film, count: totalVideos },
+              { id: 'assinaturas', label: 'Assinaturas', icon: Users, count: totalMembros },
+              { id: 'marketing', label: 'Marketing', icon: Megaphone, count: anunciosPausa?.length ?? 0 },
+              { id: 'sistema', label: 'Sistema', icon: Sliders, count: null },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
                 className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
@@ -251,110 +255,123 @@ export default async function AdminPage({
           ))}
         </div>
 
-        {/* ══════════ ABA RELATÓRIOS ══════════ */}
-        {activeTab === 'relatorios' && (
-          <div className="space-y-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                <BarChart3 size={20} className="text-purple-400" />
+        {/* ══════════ ABA MARKETING ══════════ */}
+        {activeTab === 'marketing' && (
+          <div className="space-y-20">
+            
+            {/* --- RELATÓRIOS --- */}
+            <div className="space-y-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                  <BarChart3 size={20} className="text-purple-400" />
+                </div>
+                <div>
+                  <h2 className="text-white text-2xl font-black tracking-tight">Ranking de Desempenho</h2>
+                  <p className="text-white/40 text-sm">Acompanhe quais conteúdos estão performando melhor.</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-white text-2xl font-black tracking-tight">Ranking de Desempenho</h2>
-                <p className="text-white/40 text-sm">Acompanhe quais conteúdos estão performando melhor.</p>
-              </div>
-            </div>
 
-            {/* GRÁFICO DE 7 DIAS */}
-            <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
-               <div className="flex items-center gap-2 mb-6 text-[#D4AF37]">
-                  <BarChart3 size={20} />
-                  <h3 className="text-white font-bold text-lg">Visualizações (Últimos 7 Dias)</h3>
-               </div>
-               <div className="flex items-end justify-between h-48 gap-2 pt-4 border-b border-white/10 pb-2">
-                  {chartData.map((d, i) => {
-                     const height = Math.max((d.count / maxViews) * 100, 2) // min 2% para mostrar uma barra pequena
-                     return (
-                       <div key={i} className="flex flex-col items-center flex-1 gap-2 group h-full">
-                         <div className="w-full relative flex flex-col justify-end h-full">
-                            {/* Tooltip */}
-                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#D4AF37] text-black text-xs font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                              {d.count}
-                            </div>
-                            <div 
-                              className="w-full bg-gradient-to-t from-[#D4AF37]/20 to-[#D4AF37] rounded-t-lg transition-all duration-500 group-hover:brightness-125" 
-                              style={{ height: `${height}%` }}
-                            />
+              {/* GRÁFICO DE 7 DIAS */}
+              <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
+                 <div className="flex items-center gap-2 mb-6 text-[#D4AF37]">
+                    <BarChart3 size={20} />
+                    <h3 className="text-white font-bold text-lg">Visualizações (Últimos 7 Dias)</h3>
+                 </div>
+                 <div className="flex items-end justify-between h-48 gap-2 pt-4 border-b border-white/10 pb-2">
+                    {chartData.map((d, i) => {
+                       const height = Math.max((d.count / maxViews) * 100, 2) // min 2% para mostrar uma barra pequena
+                       return (
+                         <div key={i} className="flex flex-col items-center flex-1 gap-2 group h-full">
+                           <div className="w-full relative flex flex-col justify-end h-full">
+                              {/* Tooltip */}
+                              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#D4AF37] text-black text-xs font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                                {d.count}
+                              </div>
+                              <div 
+                                className="w-full bg-gradient-to-t from-[#D4AF37]/20 to-[#D4AF37] rounded-t-lg transition-all duration-500 group-hover:brightness-125" 
+                                style={{ height: `${height}%` }}
+                              />
+                           </div>
+                           <span className="text-white/50 text-[0.65rem] font-black uppercase tracking-widest">{d.dia}</span>
                          </div>
-                         <span className="text-white/50 text-[0.65rem] font-black uppercase tracking-widest">{d.dia}</span>
-                       </div>
-                     )
-                  })}
-               </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
-              {/* TOP VISUALIZADOS */}
-              <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
-                <div className="flex items-center gap-2 mb-6 text-[#00a8e1]">
-                  <Eye size={20} />
-                  <h3 className="text-white font-bold text-lg">Vídeos Mais Assistidos</h3>
-                </div>
-                {topVisualizados.length === 0 ? (
-                  <p className="text-white/30 text-sm text-center py-10">Nenhuma visualização registrada ainda.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {topVisualizados.map((item, i) => (
-                      <div key={item.id} className="flex items-center gap-4 bg-white/5 rounded-2xl p-3 border border-white/5">
-                        <div className="w-8 text-center text-[#00a8e1] font-black text-xl opacity-80">{i + 1}º</div>
-                        <div className="w-16 aspect-video bg-[#15243E] rounded-lg overflow-hidden shrink-0"
-                             style={{ backgroundImage: `url(${item.thumbnail_url || getFallback(item.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white font-bold text-sm truncate">{item.titulo}</p>
-                        </div>
-                        <div className="bg-[#00a8e1]/10 text-[#00a8e1] px-3 py-1 rounded-lg text-xs font-black">
-                          {item.count} views
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                       )
+                    })}
+                 </div>
               </div>
 
-              {/* TOP FAVORITOS */}
-              <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
-                <div className="flex items-center gap-2 mb-6 text-pink-500">
-                  <Heart size={20} />
-                  <h3 className="text-white font-bold text-lg">Vídeos Mais Favoritados</h3>
-                </div>
-                {topFavoritos.length === 0 ? (
-                  <p className="text-white/30 text-sm text-center py-10">Nenhum favorito registrado ainda.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {topFavoritos.map((item, i) => (
-                      <div key={item.id} className="flex items-center gap-4 bg-white/5 rounded-2xl p-3 border border-white/5">
-                        <div className="w-8 text-center text-pink-500 font-black text-xl opacity-80">{i + 1}º</div>
-                        <div className="w-16 aspect-video bg-[#15243E] rounded-lg overflow-hidden shrink-0"
-                             style={{ backgroundImage: `url(${item.thumbnail_url || getFallback(item.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white font-bold text-sm truncate">{item.titulo}</p>
-                        </div>
-                        <div className="bg-pink-500/10 text-pink-500 px-3 py-1 rounded-lg text-xs font-black">
-                          {item.count} ♥
-                        </div>
-                      </div>
-                    ))}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                {/* TOP VISUALIZADOS */}
+                <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
+                  <div className="flex items-center gap-2 mb-6 text-[#00a8e1]">
+                    <Eye size={20} />
+                    <h3 className="text-white font-bold text-lg">Vídeos Mais Assistidos</h3>
                   </div>
-                )}
-              </div>
+                  {topVisualizados.length === 0 ? (
+                    <p className="text-white/30 text-sm text-center py-10">Nenhuma visualização registrada ainda.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {topVisualizados.map((item, i) => (
+                        <div key={item.id} className="flex items-center gap-4 bg-white/5 rounded-2xl p-3 border border-white/5">
+                          <div className="w-8 text-center text-[#00a8e1] font-black text-xl opacity-80">{i + 1}º</div>
+                          <div className="w-16 aspect-video bg-[#15243E] rounded-lg overflow-hidden shrink-0"
+                               style={{ backgroundImage: `url(${item.thumbnail_url || getFallback(item.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-bold text-sm truncate">{item.titulo}</p>
+                          </div>
+                          <div className="bg-[#00a8e1]/10 text-[#00a8e1] px-3 py-1 rounded-lg text-xs font-black">
+                            {item.count} views
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
+                {/* TOP FAVORITOS */}
+                <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 shadow-xl">
+                  <div className="flex items-center gap-2 mb-6 text-pink-500">
+                    <Heart size={20} />
+                    <h3 className="text-white font-bold text-lg">Vídeos Mais Favoritados</h3>
+                  </div>
+                  {topFavoritos.length === 0 ? (
+                    <p className="text-white/30 text-sm text-center py-10">Nenhum favorito registrado ainda.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {topFavoritos.map((item, i) => (
+                        <div key={item.id} className="flex items-center gap-4 bg-white/5 rounded-2xl p-3 border border-white/5">
+                          <div className="w-8 text-center text-pink-500 font-black text-xl opacity-80">{i + 1}º</div>
+                          <div className="w-16 aspect-video bg-[#15243E] rounded-lg overflow-hidden shrink-0"
+                               style={{ backgroundImage: `url(${item.thumbnail_url || getFallback(item.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-bold text-sm truncate">{item.titulo}</p>
+                          </div>
+                          <div className="bg-pink-500/10 text-pink-500 px-3 py-1 rounded-lg text-xs font-black">
+                            {item.count} ♥
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+              </div>
             </div>
+
+            {/* --- ANÚNCIOS PAUSA --- */}
+            <div className="pt-10 border-t border-white/5 relative">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
+              <GerenciadorAnuncios anuncios={(anunciosPausa ?? []) as any} />
+            </div>
+
           </div>
         )}
 
-        {/* ══════════ ABA VÍDEOS ══════════ */}
-        {activeTab === 'videos' && (
-          <div className="space-y-10">
+        {/* ══════════ ABA CATÁLOGO ══════════ */}
+        {activeTab === 'catalogo' && (
+          <div className="space-y-20">
+            <div className="space-y-10">
+            <div className="space-y-10">
             {/* Formulário adicionar */}
             <div className="bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
@@ -541,12 +558,20 @@ export default async function AdminPage({
                 </div>
               )}
             </div>
+            
+            {/* --- MATERIAIS --- */}
+            <div className="pt-10 border-t border-white/5 relative">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
+              <GerenciadorMateriais materiaisIniciais={(materiaisData ?? []) as any} />
+            </div>
+
           </div>
         )}
 
-        {/* ══════════ ABA USUÁRIOS ══════════ */}
-        {activeTab === 'usuarios' && (
-          <div className="space-y-6">
+        {/* ══════════ ABA ASSINATURAS ══════════ */}
+        {activeTab === 'assinaturas' && (
+          <div className="space-y-20">
+            <div className="space-y-6">
             <div className="flex items-end justify-between flex-wrap gap-4">
               <div>
                 <h2 className="text-white text-2xl font-black tracking-tight">Gestão de Assinantes</h2>
@@ -627,30 +652,21 @@ export default async function AdminPage({
                 </div>
               </div>
             )}
-          </div>
-        )}
+            
+            {/* --- PLANOS E STRIPE --- */}
+            <div className="pt-10 border-t border-white/5 relative">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
+              <StripeAdmin />
+            </div>
 
-        {/* ════════ ABA STRIPE ════════ */}
-        {activeTab === 'stripe' && (
-          <StripeAdmin />
-        )}
-
-        {/* ════════ ABA MATERIAIS ════════ */}
-        {activeTab === 'materiais' && (
-          <div>
-            <GerenciadorMateriais materiaisIniciais={(materiaisData ?? []) as any} />
           </div>
         )}
 
         {/* ════════ ABA CONFIGURAÇÕES DE ACESSO ════════ */}
-        {activeTab === 'configuracoes' && (
+        {activeTab === 'sistema' && (
           <div className="space-y-8 max-w-3xl">
             <ConfiguracoesAcesso initialConfig={configCDN} />
           </div>
-        )}
-        {/* ════════ ABA ANÚNCIOS PAUSA ════════ */}
-        {activeTab === 'anuncios' && (
-          <GerenciadorAnuncios anuncios={(anunciosPausa ?? []) as any} />
         )}
 
       </main>

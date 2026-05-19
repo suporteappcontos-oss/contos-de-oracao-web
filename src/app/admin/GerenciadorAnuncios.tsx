@@ -110,18 +110,63 @@ export function GerenciadorAnuncios({ anuncios }: { anuncios: AnuncioType[] }) {
               </button>
             </div>
             <form action={async (fd) => {
-              await adicionarAnuncioPausa(fd)
-              setModalAberto(false)
+              const file = fd.get('imagem_file') as File;
+              let finalUrl = fd.get('imagem_url') as string;
+              
+              if (file && file.size > 0) {
+                const uploadFd = new FormData();
+                uploadFd.append('file', file);
+                const res = await fetch('/api/admin/upload-anuncio', { method: 'POST', body: uploadFd });
+                const data = await res.json();
+                if (data.success) {
+                  finalUrl = data.url;
+                } else {
+                  alert("Erro no upload da imagem: " + data.error);
+                  return;
+                }
+              }
+              
+              if (!finalUrl) {
+                alert("Por favor, selecione uma imagem do seu PC ou insira uma URL.");
+                return;
+              }
+              
+              fd.set('imagem_url', finalUrl);
+              await adicionarAnuncioPausa(fd);
+              setModalAberto(false);
             }} className="p-6 space-y-5">
               <div>
                 <label className="block text-xs uppercase tracking-widest text-white/50 font-bold mb-2">Título (Interno)</label>
                 <input required name="titulo" type="text" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none" placeholder="Ex: Doação Especial" />
               </div>
-              <div>
-                <label className="block text-xs uppercase tracking-widest text-white/50 font-bold mb-2">URL da Imagem (Recomendado 16:9)</label>
-                <input name="imagem_url" type="url" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none" placeholder="https://..." />
-                <p className="text-[10px] text-white/30 mt-2">Dica: Faça upload da imagem no Bunny e cole o link aqui.</p>
+              
+              <div className="bg-white/5 p-4 rounded-xl border border-white/10 space-y-4">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-[#D4AF37] font-bold mb-2">Opção 1: Enviar do PC</label>
+                  <input name="imagem_file" type="file" accept="image/*" className="w-full text-sm text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110" />
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="h-px bg-white/10 flex-1"></div>
+                  <span className="text-xs text-white/30 font-bold uppercase tracking-wider">OU</span>
+                  <div className="h-px bg-white/10 flex-1"></div>
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-[#D4AF37] font-bold mb-2">Opção 2: URL Direta</label>
+                  <input name="imagem_url" type="url" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none" placeholder="https://..." />
+                </div>
               </div>
+
+              <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl">
+                <p className="text-sm text-blue-400 font-medium mb-2">🎨 Quer criar modelos profissionais?</p>
+                <p className="text-xs text-white/60 leading-relaxed mb-3">Você pode usar modelos pré-prontos do Canva para editar livremente e exportar em PNG para usar aqui.</p>
+                <div className="flex gap-2">
+                  <a href="https://www.canva.com/templates/?query=youtube-thumbnail" target="_blank" rel="noreferrer" className="text-xs bg-blue-500/20 text-blue-300 px-3 py-1.5 rounded-lg font-bold hover:bg-blue-500/30 transition-colors">Ver Modelos Horizontais (TV/PC)</a>
+                  <a href="https://www.canva.com/templates/?query=instagram-story" target="_blank" rel="noreferrer" className="text-xs bg-blue-500/20 text-blue-300 px-3 py-1.5 rounded-lg font-bold hover:bg-blue-500/30 transition-colors">Ver Modelos Verticais (Celular)</a>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs uppercase tracking-widest text-white/50 font-bold mb-2">Link de Destino (Opcional)</label>
                 <input name="link_destino" type="url" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none" placeholder="https://wa.me/..." />
