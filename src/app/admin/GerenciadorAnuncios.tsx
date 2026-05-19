@@ -133,7 +133,9 @@ export function GerenciadorAnuncios({ anuncios }: { anuncios: AnuncioType[] }) {
               </div>
               <div className="pt-6 flex gap-3">
                 <button type="button" onClick={() => setModalAberto(false)} className="flex-1 py-3 font-bold rounded-xl text-white/60 hover:text-white bg-white/5 transition-colors">Cancelar</button>
-                <SubmitButton label="Criar Anúncio" loadingLabel="Criando..." className="flex-1" />
+                <SubmitButton textLoading="Criando..." className="flex-1 py-3 font-bold rounded-xl text-[#090B10] bg-[#D4AF37] hover:brightness-110 transition-all flex items-center justify-center gap-2 disabled:opacity-70">
+                  Criar Anúncio
+                </SubmitButton>
               </div>
             </form>
           </div>
