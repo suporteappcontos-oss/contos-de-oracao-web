@@ -52,7 +52,6 @@ export default async function AdminPage({
   searchParams: Promise<{ tab?: string; edit?: string }>
 }) {
   const params = await searchParams
-  const activeTab = params.tab || 'videos'
   const editId = params.edit || null
 
   // Auth
@@ -147,7 +146,7 @@ export default async function AdminPage({
        }
     })
   } catch(e) { console.error('Erro ao buscar estatísticas:', e) }
-  const tabParam = searchParams.tab || 'catalogo'
+  const tabParam = params.tab || 'catalogo'
   
   // Mapeia links antigos para as novas abas agrupadas
   const activeTab = ['videos', 'materiais'].includes(tabParam) ? 'catalogo' :
