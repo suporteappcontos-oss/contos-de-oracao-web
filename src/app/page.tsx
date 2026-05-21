@@ -42,11 +42,8 @@ export default async function Home({ searchParams }: Props) {
         </div>
       )}
 
-      {/* Conteúdo deslocado para direita da sidebar no desktop */}
-      <div className="md:ml-[220px]">
-        <Hero />
-        <Footer />
-      </div>
+      <Hero />
+      <Footer />
     </main>
   );
 }

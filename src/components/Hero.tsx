@@ -69,32 +69,6 @@ export default function Hero() {
           {/* Divisor dourado */}
           <div className="w-16 h-1 rounded-full bg-gradient-to-r from-[#D4AF37] to-transparent opacity-80" />
 
-          {/* Botões */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 mt-2">
-            <button
-              onClick={() => setShowCard(true)}
-              className="px-10 py-4 rounded-2xl font-black text-base md:text-lg transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_40px_rgba(212,175,55,0.35)]"
-              style={{
-                background: 'linear-gradient(135deg, #D4AF37 0%, #AA8A2A 100%)',
-                color: '#090B10',
-                fontFamily: 'Outfit, sans-serif',
-              }}
-            >
-              Entrar na Plataforma
-            </button>
-            <Link
-              href="/planos"
-              className="px-8 py-4 rounded-2xl font-bold text-base transition-all hover:scale-105 no-underline text-white"
-              style={{
-                background: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                fontFamily: 'Outfit, sans-serif',
-                backdropFilter: 'blur(12px)',
-              }}
-            >
-              Criar Conta e Assinar
-            </Link>
-          </div>
         </div>
       </section>
 

@@ -89,7 +89,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="text-[#D4AF37] hover:text-[#f0c84a] font-semibold no-underline transition-colors"
           >
-            LDP Studio
+            LDP Studios
           </a>
         </p>
       </div>
