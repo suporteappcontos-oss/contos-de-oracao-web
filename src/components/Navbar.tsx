@@ -167,7 +167,7 @@ export default function Navbar() {
           <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden shrink-0 shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
             <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-cover w-full h-full" />
           </div>
-          <div className="text-left hidden xs:block">
+          <div className="text-left hidden min-[360px]:block">
             <div className="text-white font-black text-xs sm:text-sm leading-tight tracking-wide"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração

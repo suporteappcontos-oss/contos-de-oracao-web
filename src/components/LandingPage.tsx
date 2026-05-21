@@ -200,9 +200,9 @@ export default function LandingPage() {
         className="relative h-screen min-h-[650px] lg:h-screen lg:min-h-0 flex items-center overflow-hidden"
         style={{ paddingTop: '0px' }}
       >
-        {/* Imagem de fundo premium enquadrada com perfeição para mostrar Jesus e a criança inteiros sem cortes no desktop */}
+        {/* Imagem de fundo premium enquadrada com perfeição para se encaixar perfeitamente e cobrir toda a tela no desktop e celular */}
         <div
-          className="absolute inset-0 z-0 transition-all duration-500 bg-[#090B10] bg-no-repeat bg-[position:62%_center] lg:bg-center lg:bg-contain bg-cover"
+          className="absolute inset-0 z-0 transition-all duration-500 bg-[#090B10] bg-no-repeat bg-[position:62%_center] lg:bg-[position:50%_22%] bg-cover"
           style={{
             backgroundImage: "linear-gradient(rgba(9, 11, 16, 0.05), rgba(9, 11, 16, 0.1)), url('/background.jpg')",
           }}
