@@ -177,11 +177,11 @@ export default function LandingPage() {
         className="relative min-h-[92vh] flex items-center overflow-hidden"
         style={{ paddingTop: '80px' }}
       >
-        {/* Fundo gradiente */}
+        {/* Imagem de fundo premium */}
         <div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
           style={{
-            background: 'linear-gradient(135deg, #0A1628 0%, #0D1B2A 40%, #0A0F1E 100%)',
+            backgroundImage: "linear-gradient(135deg, rgba(10, 22, 40, 0.82) 0%, rgba(13, 27, 42, 0.88) 60%, rgba(9, 11, 16, 0.96) 100%), url('/background.jpg')",
           }}
         />
         {/* Brilho dourado sutil */}

@@ -66,6 +66,16 @@ export default function Navbar() {
   const [showManual, setShowManual]   = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn]   = useState(false);
+  const [isScrolled, setIsScrolled]   = useState(false);
+
+  // Monitora o scroll para aplicar o efeito de fundo translúcido
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Verifica autenticação
   useEffect(() => {
@@ -117,39 +127,94 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ════════ LOGO — topo esquerdo ════════ */}
-      <div className="fixed top-4 left-4 z-[60] flex items-center gap-2.5 pointer-events-none">
-        <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-[0_2px_16px_rgba(0,0,0,0.6)]">
-          <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-cover w-full h-full" />
-        </div>
-        <div className="hidden sm:block">
-          <div className="text-white font-black text-sm leading-tight"
-            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)', fontFamily: 'Outfit, sans-serif' }}>
-            Contos de Oração
-          </div>
-          <div className="text-[#D4AF37] text-[0.5rem] font-black uppercase tracking-widest"
-            style={{ textShadow: '0 1px 6px rgba(0,0,0,0.8)' }}>
-            Catequese Digital
-          </div>
-        </div>
-      </div>
-
-      {/* ════════ BOTÃO ☰ — topo direito ════════ */}
-      <button
-        onClick={() => setSidebarOpen(v => !v)}
-        title="Menu"
-        aria-label="Abrir menu"
-        className="fixed top-4 z-[70] w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
+      {/* ════════ HEADER HORIZONTAL PREMIUM ════════ */}
+      <header
+        className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-4 sm:px-6 md:px-8 transition-all duration-300"
         style={{
-          right: sidebarOpen ? '238px' : '16px',
-          background: 'rgba(255,255,255,0.07)',
-          border: '1px solid rgba(255,255,255,0.14)',
+          height: '72px',
+          background: isScrolled ? 'rgba(9, 11, 16, 0.88)' : 'transparent',
+          backdropFilter: isScrolled ? 'blur(16px)' : 'none',
+          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+          boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}
       >
-        <span className="block w-[17px] h-[2px] rounded-full bg-white" />
-        <span className="block w-[17px] h-[2px] rounded-full bg-white" />
-        <span className="block w-[17px] h-[2px] rounded-full bg-white" />
-      </button>
+        {/* Menu Esquerdo (Hambúrguer + "MENU") */}
+        <button
+          onClick={() => setSidebarOpen(v => !v)}
+          className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95"
+          style={{
+            border: 'none',
+            background: 'transparent',
+            color: '#fff',
+            fontFamily: 'Outfit, sans-serif',
+          }}
+        >
+          <div className="flex flex-col justify-center gap-[4px] w-[18px] h-[14px]">
+            <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
+            <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
+            <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
+          </div>
+          <span className="text-xs font-black uppercase tracking-wider select-none text-white/90">
+            MENU
+          </span>
+        </button>
+
+        {/* Logo Centro */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+            <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-cover w-full h-full" />
+          </div>
+          <div className="text-left">
+            <div className="text-white font-black text-xs sm:text-sm leading-tight tracking-wide"
+              style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)', fontFamily: 'Outfit, sans-serif' }}>
+              Contos de Oração
+            </div>
+            <div className="text-[#D4AF37] text-[0.45rem] sm:text-[0.5rem] font-black uppercase tracking-widest leading-none mt-0.5"
+              style={{ textShadow: '0 1px 6px rgba(0,0,0,0.8)' }}>
+              Catequese Digital
+            </div>
+          </div>
+        </div>
+
+        {/* Links Direita */}
+        <div className="flex items-center gap-2 sm:gap-4 md:gap-5">
+          <div className="hidden md:flex items-center gap-3 sm:gap-4 text-xs font-black uppercase tracking-wider">
+            <Link href="/planos" className="hover:text-white transition-colors no-underline text-white/70">
+              Loja
+            </Link>
+            <span className="text-white/20 select-none">|</span>
+            <button
+              onClick={isLoggedIn ? () => router.push('/watch') : handleEntrar}
+              className="hover:text-white transition-colors bg-transparent border-none p-0 cursor-pointer font-black text-xs uppercase tracking-wider text-white/70"
+            >
+              Minha Conta
+            </button>
+            <span className="text-white/20 select-none">|</span>
+          </div>
+
+          {/* Lupa de Busca */}
+          <Link href="/watch" className="text-white/70 hover:text-white transition-colors flex items-center" title="Pesquisar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </Link>
+
+          {/* Botão ASSINAR AGORA */}
+          <Link
+            href="/planos"
+            className="flex items-center justify-center px-4 py-2 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-[#D4AF37]/10"
+            style={{
+              background: '#D4AF37',
+              color: '#090B10',
+              textDecoration: 'none',
+              fontFamily: 'Outfit, sans-serif',
+            }}
+          >
+            Assinar Agora
+          </Link>
+        </div>
+      </header>
 
       {/* ════════ BACKDROP — fecha ao clicar fora ════════ */}
       <div
