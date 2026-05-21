@@ -1,9 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
-import CategoryCarousel from "@/components/CategoryCarousel";
-import VideoCard from "@/components/VideoCard";
-import { createClient } from "@/utils/supabase/server";
 import DynamicBackground from "@/components/DynamicBackground";
 
 type Props = {
@@ -15,14 +12,6 @@ export const revalidate = 0;
 
 export default async function Home({ searchParams }: Props) {
   const { acesso } = await searchParams;
-
-  // Busca todos os vídeos ativos, mais recentes primeiro (igual ao App)
-  const supabase = await createClient();
-  const { data: videos } = await supabase
-    .from('videos')
-    .select('id, titulo, categoria, duracao, bunny_library_id, bunny_video_id, thumbnail_url')
-    .eq('ativo', true)
-    .order('criado_em', { ascending: false });
 
   return (
     <main>
@@ -54,24 +43,6 @@ export default async function Home({ searchParams }: Props) {
       )}
 
       <Hero />
-
-      <div className={`relative z-10 md:mt-[-80px] mt-8 pb-10 ${acesso === 'expirado' ? 'pt-12' : ''}`}>
-        {videos && videos.length > 0 ? (
-          <CategoryCarousel title="Portfólio" count={videos.length + 1}>
-
-
-            {videos.map(video => (
-              <VideoCard key={video.id} video={video} minimal={true} />
-            ))}
-          </CategoryCarousel>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-white/30 gap-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            <span className="text-4xl">✝</span>
-            <p className="text-base">Nenhum conteúdo disponível no momento.</p>
-            <p className="text-sm">Acesse o <a href="/admin" className="text-[#D4AF37] hover:underline">painel Admin</a> para adicionar vídeos.</p>
-          </div>
-        )}
-      </div>
 
       <Footer />
     </main>
