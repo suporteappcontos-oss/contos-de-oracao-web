@@ -197,26 +197,23 @@ export default function LandingPage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative h-screen min-h-[600px] flex items-center overflow-hidden"
+        className="relative h-screen min-h-[650px] lg:h-screen lg:min-h-0 flex items-center overflow-hidden"
         style={{ paddingTop: '0px' }}
       >
-        {/* Imagem de fundo premium com apenas 15% de escurecimento e encaixe perfeito */}
+        {/* Imagem de fundo premium enquadrada com perfeição para mostrar Jesus e a criança inteiros sem cortes no desktop */}
         <div
-          className="absolute inset-0 z-0 transition-all duration-500"
+          className="absolute inset-0 z-0 transition-all duration-500 bg-[#090B10] bg-no-repeat bg-[position:62%_center] lg:bg-center lg:bg-contain bg-cover"
           style={{
-            backgroundImage: "linear-gradient(rgba(9, 11, 16, 0.15), rgba(9, 11, 16, 0.15)), url('/background.jpg')",
-            backgroundPosition: 'center bottom',
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
+            backgroundImage: "linear-gradient(rgba(9, 11, 16, 0.05), rgba(9, 11, 16, 0.1)), url('/background.jpg')",
           }}
         />
         {/* Gradiente azul e desfocado premium de transição suave para fundir a imagem ao fundo preto absoluto */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-48 z-[1] pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 h-40 z-[1] pointer-events-none"
           style={{
-            background: 'linear-gradient(to bottom, transparent 0%, rgba(30, 58, 138, 0.25) 35%, rgba(13, 22, 38, 0.7) 65%, rgba(9, 11, 16, 0.95) 85%, #090B10 100%)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
+            background: 'linear-gradient(to bottom, transparent 0%, rgba(30, 58, 138, 0.15) 40%, rgba(13, 22, 38, 0.6) 70%, rgba(9, 11, 16, 0.9) 90%, #090B10 100%)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
           }}
         />
         {/* Brilho dourado sutil */}
@@ -225,88 +222,72 @@ export default function LandingPage() {
           style={{ background: 'radial-gradient(circle, #D4AF37, transparent)' }}
         />
 
-        <div className="relative z-10 w-full max-w-[1750px] mx-auto px-4 lg:px-16 py-12 flex flex-col lg:flex-row justify-between items-center gap-12">
-          {/* Coluna esquerda (30% maior e encostada no lado esquerdo) */}
-          <div className="flex-1 text-center lg:text-left max-w-[850px] lg:-ml-12">
-            <div
-              className="inline-block text-sm font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5"
-              style={{ background: 'rgba(212,175,55,0.2)', color: PRIMARY, border: `1px solid ${PRIMARY}55`, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}
-            >
-              Catequese Digital
+        <div className="relative z-10 w-full max-w-[1650px] mx-auto px-6 lg:px-20 pb-24 pt-12 flex flex-col lg:flex-row justify-between items-center gap-12 h-full">
+          {/* Coluna esquerda (Fontes elegantes, compacta e alinhada à extrema esquerda) */}
+          <div className="flex-1 text-center lg:text-left max-w-[550px] lg:-ml-8">
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
+              <span className="text-xs font-black uppercase tracking-widest" style={{ color: PRIMARY, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
+                Catequese Digital
+              </span>
+              <span className="w-10 h-[1.5px]" style={{ background: PRIMARY }} />
             </div>
 
             <h1
-              className="font-black leading-tight mb-4 text-white"
+              className="font-extrabold leading-tight mb-4 text-white"
               style={{
-                fontSize: 'clamp(2.1rem, 4vw, 3.2rem)',
+                fontSize: 'clamp(2rem, 3.8vw, 2.8rem)',
                 textShadow: '0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+                fontFamily: FONT,
               }}
             >
-              Universo católico para crianças,{' '}
-              <span style={{ color: PRIMARY }}>de forma divertida e encantadora.</span>
+              Universo católico<br />
+              para crianças,<br />
+              <span style={{ color: PRIMARY }}>de forma divertida e<br />encantadora.</span>
             </h1>
 
             <p
-              className="text-white/95 leading-relaxed mb-8 max-w-3xl mx-auto lg:mx-0 font-semibold"
+              className="text-white/80 leading-relaxed mb-8 max-w-[440px] mx-auto lg:mx-0 font-medium"
               style={{
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
-                fontSize: '1.35rem',
+                fontSize: '0.9rem',
               }}
             >
               Histórias, vídeos, jogos, atividades e muito mais para ensinar a fé católica de
               maneira moderna, segura e emocionante.
             </p>
 
-            <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+            <div className="flex flex-wrap gap-3.5 justify-center lg:justify-start">
               <Link
                 href="/planos"
-                className="flex items-center gap-2 px-8 py-4.5 rounded-xl font-black text-[17.5px] transition-all hover:brightness-110 hover:scale-[1.03] shadow-md shadow-[#D4AF37]/15"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all hover:brightness-110 hover:scale-[1.02] shadow-md shadow-[#D4AF37]/15"
                 style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
               >
-                Começar Agora <ChevronRight size={19} />
+                COMEÇAR AGORA <ChevronRight size={16} />
               </Link>
               <Link
                 href="/watch"
-                className="flex items-center gap-2 px-8 py-4.5 rounded-xl font-bold text-[17.5px] transition-all hover:bg-white/10 backdrop-blur-md"
-                style={{ border: '1px solid rgba(255,255,255,0.4)', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.05)' }}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all hover:bg-white/10 backdrop-blur-sm"
+                style={{ border: '1px solid rgba(255,255,255,0.3)', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.05)' }}
               >
-                <Play size={19} /> Explorar Conteúdos
+                <Play size={16} fill="currentColor" /> EXPLORAR CONTEÚDOS
               </Link>
-            </div>
-
-            {/* Métricas (30% maiores) */}
-            <div className="flex flex-wrap gap-4 mt-10 justify-center lg:justify-start">
-              {[
-                { icon: <Users size={18} />, val: '+850 mil',   label: 'seguidores' },
-                { icon: <Eye size={18} />,   val: '+120 mi',    label: 'visualizações' },
-                { icon: <Users size={18} />, val: '+200 mil',   label: 'famílias' },
-                { icon: <Shield size={18} />, val: '100%',      label: 'seguro p/ crianças' },
-              ].map((m, i) => (
-                <div key={i} className="flex items-center gap-2.5 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-xl border border-white/5 shadow-md">
-                  <span style={{ color: PRIMARY }}>{m.icon}</span>
-                  <span>
-                    <span className="text-white font-black text-[18px]" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{m.val}</span>
-                    <span className="text-white/70 text-[14px] ml-1.5 font-bold">{m.label}</span>
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* Card de benefícios (direita) */}
+          {/* Card de benefícios (extrema direita, elegante e translúcido) */}
           <div
-            className="w-full lg:w-[340px] shrink-0 rounded-2xl p-6 transition-all duration-300 lg:-mr-12"
+            className="w-full lg:w-[320px] shrink-0 rounded-2xl p-5 transition-all duration-300 lg:-mr-8"
             style={{
-              background: 'rgba(15,22,42,0.92)',
-              border: `1px solid ${PRIMARY}44`,
+              background: 'rgba(15,22,42,0.85)',
+              border: '1px solid rgba(255,255,255,0.08)',
               backdropFilter: 'blur(20px)',
-              boxShadow: `0 10px 40px rgba(0,0,0,0.6), 0 0 60px ${PRIMARY}15`,
+              boxShadow: '0 15px 35px rgba(0,0,0,0.6)',
             }}
           >
-            <p className="text-white font-black text-base mb-4 flex items-center gap-1.5">
-              🌟 Conteúdo exclusivo para assinantes
+            <p className="text-white font-extrabold text-sm mb-4 flex items-center gap-1.5">
+              <span style={{ color: PRIMARY }}>★</span> Conteúdo exclusivo para assinantes
             </p>
-            <ul className="flex flex-col gap-3 mb-6">
+            <ul className="flex flex-col gap-3 mb-5">
               {[
                 'Novos vídeos toda semana',
                 'Materiais para catequistas',
@@ -314,19 +295,41 @@ export default function LandingPage() {
                 'Jogos educativos',
                 'Revista mensal digital',
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-white/90 font-medium">
-                  <CheckCircle size={15} style={{ color: PRIMARY, flexShrink: 0 }} />
+                <li key={i} className="flex items-center gap-2 text-xs text-white/90 font-medium">
+                  <CheckCircle size={14} style={{ color: PRIMARY, flexShrink: 0 }} />
                   {item}
                 </li>
               ))}
             </ul>
             <Link
               href="/planos"
-              className="block w-full text-center py-3 rounded-xl font-black text-sm transition-all hover:brightness-110 active:scale-95 shadow-md shadow-[#D4AF37]/10"
+              className="block w-full text-center py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all hover:brightness-110 active:scale-95"
               style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
             >
               ASSINAR AGORA
             </Link>
+          </div>
+        </div>
+
+        {/* Barra de métricas horizontal de ponta a ponta na base do Hero (Exatamente como o print 3) */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 z-20 py-3 bg-[#090B10]/90 backdrop-blur-md border-t border-white/5"
+        >
+          <div className="max-w-[1400px] mx-auto px-6 flex flex-wrap justify-between items-center gap-y-4 gap-x-8">
+            {[
+              { icon: <Users size={15} />, val: '+850 mil',   label: 'seguidores' },
+              { icon: <Play size={15} fill="currentColor" />,   val: '+120 milhões',    label: 'visualizações' },
+              { icon: <Users size={15} />, val: '+200 mil',   label: 'famílias' },
+              { icon: <Shield size={15} />, val: 'Ambiente 100%',      label: 'seguro para crianças' },
+            ].map((m, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span style={{ color: PRIMARY }}>{m.icon}</span>
+                <span className="text-xs sm:text-sm font-semibold flex items-center">
+                  <span className="text-white font-bold">{m.val}</span>
+                  <span className="text-white/60 ml-1.5 font-medium">{m.label}</span>
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
