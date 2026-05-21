@@ -6,6 +6,7 @@ import { login } from '@/app/login/actions';
 import PasswordField from '@/components/PasswordField';
 import SubmitButton from '@/components/SubmitButton';
 import dynamic from 'next/dynamic';
+import { createClient } from '@/utils/supabase/client';
 const QRLogin = dynamic(() => import('@/components/QRLogin'), { ssr: false });
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
@@ -151,6 +152,28 @@ function SectionTitle({ title, href, label = 'VER TODOS' }: { title: string; hre
 export default function LandingPage() {
   const [showLogin, setShowLogin] = useState(false);
   const [tab, setTab]           = useState<'login' | 'qr'>('login');
+  const [videos, setVideos] = useState<any[]>([]);
+  const [loadingVideos, setLoadingVideos] = useState(true);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from('videos')
+          .select('*')
+          .eq('ativo', true)
+          .order('criado_em', { ascending: false });
+        if (error) throw error;
+        setVideos(data || []);
+      } catch (err) {
+        console.error("Erro ao carregar vídeos do catálogo:", err);
+      } finally {
+        setLoadingVideos(false);
+      }
+    };
+    fetchVideos();
+  }, []);
 
   // Abre modal de login via evento global (disparado pela Navbar)
   useEffect(() => {
@@ -174,14 +197,15 @@ export default function LandingPage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative min-h-[92vh] flex items-center overflow-hidden"
-        style={{ paddingTop: '80px' }}
+        className="relative h-[calc(100vh-72px)] min-h-[650px] flex items-center overflow-hidden"
+        style={{ paddingTop: '0px' }}
       >
-        {/* Imagem de fundo premium */}
+        {/* Imagem de fundo premium com apenas 15% de escurecimento */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 z-0 bg-cover bg-no-repeat transition-all duration-500"
           style={{
-            backgroundImage: "linear-gradient(135deg, rgba(10, 22, 40, 0.82) 0%, rgba(13, 27, 42, 0.88) 60%, rgba(9, 11, 16, 0.96) 100%), url('/background.jpg')",
+            backgroundImage: "linear-gradient(rgba(9, 11, 16, 0.15), rgba(9, 11, 16, 0.15)), url('/background.jpg')",
+            backgroundPosition: 'center 15%',
           }}
         />
         {/* Brilho dourado sutil */}
@@ -190,25 +214,31 @@ export default function LandingPage() {
           style={{ background: 'radial-gradient(circle, #D4AF37, transparent)' }}
         />
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-6 lg:px-10 py-12 flex flex-col lg:flex-row items-center gap-12">
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 lg:px-16 py-12 flex flex-col lg:flex-row justify-between items-center gap-12">
           {/* Coluna esquerda */}
-          <div className="flex-1 text-center lg:text-left">
+          <div className="flex-1 text-center lg:text-left max-w-2xl">
             <div
               className="inline-block text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4"
-              style={{ background: 'rgba(212,175,55,0.12)', color: PRIMARY, border: `1px solid ${PRIMARY}33` }}
+              style={{ background: 'rgba(212,175,55,0.2)', color: PRIMARY, border: `1px solid ${PRIMARY}55`, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}
             >
               Catequese Digital
             </div>
 
             <h1
-              className="font-black leading-tight mb-4"
-              style={{ fontSize: 'clamp(2rem, 4.5vw, 3.5rem)' }}
+              className="font-black leading-tight mb-4 text-white"
+              style={{
+                fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)',
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+              }}
             >
               Universo católico para crianças,{' '}
               <span style={{ color: PRIMARY }}>de forma divertida e encantadora.</span>
             </h1>
 
-            <p className="text-white/60 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+            <p
+              className="text-white/95 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 font-semibold"
+              style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)' }}
+            >
               Histórias, vídeos, jogos, atividades e muito mais para ensinar a fé católica de
               maneira moderna, segura e emocionante.
             </p>
@@ -216,15 +246,15 @@ export default function LandingPage() {
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
               <Link
                 href="/planos"
-                className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm transition-all hover:brightness-110 hover:scale-[1.03]"
+                className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm transition-all hover:brightness-110 hover:scale-[1.03] shadow-lg shadow-[#D4AF37]/20"
                 style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
               >
                 Começar Agora <ChevronRight size={16} />
               </Link>
               <Link
                 href="/watch"
-                className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-white/10"
-                style={{ border: '1px solid rgba(255,255,255,0.2)', color: '#fff', textDecoration: 'none' }}
+                className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-white/10 backdrop-blur-md"
+                style={{ border: '1px solid rgba(255,255,255,0.4)', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.05)' }}
               >
                 <Play size={15} /> Explorar Conteúdos
               </Link>
@@ -238,11 +268,11 @@ export default function LandingPage() {
                 { icon: <Users size={16} />, val: '+200 mil',   label: 'famílias' },
                 { icon: <Shield size={16} />, val: '100%',      label: 'seguro p/ crianças' },
               ].map((m, i) => (
-                <div key={i} className="flex items-center gap-2">
+                <div key={i} className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/5 shadow-md">
                   <span style={{ color: PRIMARY }}>{m.icon}</span>
                   <span>
-                    <span className="text-white font-black text-sm">{m.val}</span>
-                    <span className="text-white/50 text-xs ml-1">{m.label}</span>
+                    <span className="text-white font-black text-sm" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{m.val}</span>
+                    <span className="text-white/70 text-xs ml-1 font-bold">{m.label}</span>
                   </span>
                 </div>
               ))}
@@ -251,15 +281,15 @@ export default function LandingPage() {
 
           {/* Card de benefícios (direita) */}
           <div
-            className="w-full lg:w-[320px] shrink-0 rounded-2xl p-6"
+            className="w-full lg:w-[340px] shrink-0 rounded-2xl p-6 transition-all duration-300"
             style={{
-              background: 'rgba(15,22,42,0.88)',
-              border: `1px solid ${PRIMARY}33`,
+              background: 'rgba(15,22,42,0.92)',
+              border: `1px solid ${PRIMARY}44`,
               backdropFilter: 'blur(20px)',
-              boxShadow: `0 0 60px ${PRIMARY}22`,
+              boxShadow: `0 10px 40px rgba(0,0,0,0.6), 0 0 60px ${PRIMARY}15`,
             }}
           >
-            <p className="text-white font-black text-base mb-4">
+            <p className="text-white font-black text-base mb-4 flex items-center gap-1.5">
               🌟 Conteúdo exclusivo para assinantes
             </p>
             <ul className="flex flex-col gap-3 mb-6">
@@ -270,7 +300,7 @@ export default function LandingPage() {
                 'Jogos educativos',
                 'Revista mensal digital',
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-white/80">
+                <li key={i} className="flex items-center gap-2 text-sm text-white/90 font-medium">
                   <CheckCircle size={15} style={{ color: PRIMARY, flexShrink: 0 }} />
                   {item}
                 </li>
@@ -278,7 +308,7 @@ export default function LandingPage() {
             </ul>
             <Link
               href="/planos"
-              className="block w-full text-center py-3 rounded-xl font-black text-sm transition-all hover:brightness-110"
+              className="block w-full text-center py-3 rounded-xl font-black text-sm transition-all hover:brightness-110 active:scale-95 shadow-md shadow-[#D4AF37]/10"
               style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
             >
               ASSINAR AGORA
@@ -288,62 +318,97 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          NOSSAS CATEGORIAS
+          VÍDEOS EM DESTAQUE (Carrossel dinâmico do catálogo do Supabase)
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
-        <SectionTitle title="Nossas categorias" href="/watch" label="VER TODAS" />
-        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
-          {CATEGORIAS.map((cat) => (
-            <Link
-              key={cat.id}
-              href={cat.href}
-              className="shrink-0 snap-start flex flex-col items-center gap-2 p-4 rounded-2xl transition-all hover:scale-105 hover:brightness-110"
-              style={{
-                background: cat.cor,
-                border: '1px solid rgba(255,255,255,0.08)',
-                width: 100,
-                textDecoration: 'none',
-              }}
-            >
-              <span className="text-3xl">{cat.emoji}</span>
-              <span className="text-white text-[10px] font-bold text-center leading-tight">{cat.label}</span>
-            </Link>
-          ))}
+      <section className="py-12 px-6 lg:px-16 max-w-[1400px] mx-auto relative">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-white font-black text-xl md:text-2xl" style={{ fontFamily: FONT, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+            Vídeos em destaque
+          </h2>
+          <Link
+            href="/watch"
+            className="flex items-center gap-1 text-xs sm:text-sm font-black transition-all hover:brightness-125 hover:scale-[1.02]"
+            style={{ color: PRIMARY, textDecoration: 'none' }}
+          >
+            VER CATÁLOGO COMPLETO <ChevronRight size={16} />
+          </Link>
         </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          VÍDEOS EM DESTAQUE (carregados do Supabase via /watch)
-      ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
-        <SectionTitle title="Vídeos em destaque" href="/watch" />
-        {/* Link direto para /watch com preview visual */}
-        <Link
-          href="/watch"
-          className="block rounded-2xl overflow-hidden transition-all hover:brightness-110 hover:scale-[1.01]"
-          style={{
-            background: 'linear-gradient(135deg, #0D1B2A, #1a2a3a)',
-            border: '1px solid rgba(212,175,55,0.2)',
-            textDecoration: 'none',
-            padding: '2.5rem',
-            textAlign: 'center',
-          }}
-        >
-          <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-            style={{ background: 'rgba(212,175,55,0.1)', border: `1px solid ${PRIMARY}33` }}
-          >
-            <Play size={32} style={{ color: PRIMARY }} />
+        {loadingVideos ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2" style={{ borderColor: PRIMARY }}></div>
           </div>
-          <p className="text-white font-black text-lg mb-2">Acesse o Catálogo Completo</p>
-          <p className="text-white/50 text-sm">Centenas de vídeos católicos para crianças e famílias</p>
-          <div
-            className="inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-xl font-bold text-sm transition-all hover:brightness-110"
-            style={{ background: PRIMARY, color: BG_ROOT }}
-          >
-            Ver todos os vídeos <ChevronRight size={14} />
+        ) : videos.length === 0 ? (
+          <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
+            <p className="text-white/60 text-sm">Nenhum vídeo disponível no catálogo no momento.</p>
           </div>
-        </Link>
+        ) : (
+          <div className="relative group/carousel">
+            {/* Botão Esquerda */}
+            <button
+              onClick={() => {
+                const el = document.getElementById('featured-videos-scroll');
+                if (el) el.scrollBy({ left: -320, behavior: 'smooth' });
+              }}
+              className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full z-20 flex items-center justify-center transition-all bg-[#090B10]/80 border border-white/10 opacity-0 group-hover/carousel:opacity-100 shadow-lg hover:scale-110 active:scale-95 cursor-pointer"
+            >
+              <ChevronLeft size={20} style={{ color: PRIMARY }} />
+            </button>
+
+            {/* Container do Scroll */}
+            <div
+              id="featured-videos-scroll"
+              className="flex gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {videos.map((video) => {
+                const imageUrl = video.thumbnail_url || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80';
+                return (
+                  <Link
+                    key={video.id}
+                    href={`/watch/${video.id}`}
+                    className="shrink-0 snap-start block w-[240px] sm:w-[270px] md:w-[300px] group transition-transform duration-300 hover:scale-[1.03]"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <div className="relative aspect-video rounded-2xl overflow-hidden mb-3 shadow-lg"
+                      style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <img
+                        src={imageUrl}
+                        alt={video.titulo}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      {/* Overlay gradiente premium */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
+                      
+                      {/* Botão de play central visível no hover */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                          <Play fill="#090B10" className="w-5 h-5 text-[#090B10] ml-0.5" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Título do vídeo (sem a duração) */}
+                    <h3 className="text-white text-sm font-extrabold line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors px-1"
+                      style={{ fontFamily: FONT }}>
+                      {video.titulo}
+                    </h3>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Botão Direita */}
+            <button
+              onClick={() => {
+                const el = document.getElementById('featured-videos-scroll');
+                if (el) el.scrollBy({ left: 320, behavior: 'smooth' });
+              }}
+              className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full z-20 flex items-center justify-center transition-all bg-[#090B10]/80 border border-white/10 opacity-0 group-hover/carousel:opacity-100 shadow-lg hover:scale-110 active:scale-95 cursor-pointer"
+            >
+              <ChevronRight size={20} style={{ color: PRIMARY }} />
+            </button>
+          </div>
+        )}
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════

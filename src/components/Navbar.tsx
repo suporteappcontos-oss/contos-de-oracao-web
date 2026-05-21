@@ -227,19 +227,31 @@ export default function Navbar() {
         onClick={() => setSidebarOpen(false)}
       />
 
-      {/* ════════ SIDEBAR — direita ════════ */}
+      {/* ════════ SIDEBAR — esquerda ════════ */}
       <aside
-        className="fixed top-0 right-0 h-full w-[230px] z-50 flex flex-col"
+        className="fixed top-0 left-0 h-full w-[230px] z-50 flex flex-col"
         style={{
           background: '#0A0C12',
-          borderLeft: '1px solid rgba(255,255,255,0.07)',
+          borderRight: '1px solid rgba(255,255,255,0.07)',
           fontFamily: 'Outfit, sans-serif',
-          transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
+          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
+        {/* Botão de Fechar premium no topo direito da sidebar esquerda */}
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="absolute top-5 right-4 text-white/50 hover:text-white hover:bg-white/10 transition-all p-1.5 rounded-lg flex items-center justify-center cursor-pointer active:scale-95"
+          title="Fechar Menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+
         {/* Logo dentro da sidebar */}
-        <div className="flex items-center gap-3 px-5 pt-6 pb-4">
+        <div className="flex items-center gap-3 px-5 pt-6 pb-4 pr-12">
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain drop-shadow-lg" />
           <div>
             <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
