@@ -139,8 +139,12 @@ export default function Navbar() {
         onClick={() => setSidebarOpen(v => !v)}
         title="Menu"
         aria-label="Abrir menu"
-        className="fixed top-4 right-4 z-[70] w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)' }}
+        className="fixed top-4 z-[70] w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
+        style={{
+          right: sidebarOpen ? '238px' : '16px',
+          background: 'rgba(255,255,255,0.07)',
+          border: '1px solid rgba(255,255,255,0.14)',
+        }}
       >
         <span className="block w-[17px] h-[2px] rounded-full bg-white" />
         <span className="block w-[17px] h-[2px] rounded-full bg-white" />
