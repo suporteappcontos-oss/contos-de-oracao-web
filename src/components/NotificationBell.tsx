@@ -5,7 +5,6 @@ import { createClient } from '@/utils/supabase/client';
 type VideoNotif = {
   id: string;
   titulo: string;
-  categoria: string;
   criado_em: string;
 };
 
@@ -22,7 +21,7 @@ export default function NotificationBell() {
     const supabase = createClient();
     supabase
       .from('videos')
-      .select('id, titulo, categoria, criado_em')
+      .select('id, titulo, criado_em')
       .eq('ativo', true)
       .order('criado_em', { ascending: false })
       .limit(8)
@@ -107,7 +106,6 @@ export default function NotificationBell() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-xs font-semibold leading-tight truncate">{v.titulo}</p>
-                  <p className="text-[#D4AF37] text-[10px] mt-0.5">{v.categoria}</p>
                   <p className="text-white/30 text-[10px]">{timeAgo(v.criado_em)}</p>
                 </div>
               </a>

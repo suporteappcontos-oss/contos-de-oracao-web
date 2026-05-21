@@ -5,7 +5,7 @@ import Image from 'next/image'
 import FavoritoButton from '@/components/FavoritoButton'
 
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
-import { ChevronLeft, Clock, Tag, Share2, ChevronRight } from 'lucide-react'
+import { ChevronLeft, Clock, ChevronRight } from 'lucide-react'
 import crypto from 'crypto'
 
 type Props = {
@@ -43,12 +43,11 @@ export default async function VideoPlayerPage({ params }: Props) {
     .single()
   const isFav = !!favCheck
 
-  // Busca mais vídeos da mesma categoria (exceto o atual)
+  // Busca mais vídeos (exceto o atual)
   const { data: relacionados } = await supabase
     .from('videos')
-    .select('id, titulo, thumbnail_url, duracao, categoria')
+    .select('id, titulo, thumbnail_url, duracao')
     .eq('ativo', true)
-    .eq('categoria', video.categoria)
     .neq('id', videoId)
     .limit(5)
 
@@ -111,11 +110,7 @@ export default async function VideoPlayerPage({ params }: Props) {
           {/* Coluna principal */}
           <div className="flex-1 min-w-0">
 
-            {/* Badges */}
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <div className="flex items-center gap-1 text-[#8197a4] text-xs">
-                <Tag size={11} /> {video.categoria}
-              </div>
               {video.duracao && (
                 <div className="flex items-center gap-1 text-[#8197a4] text-xs">
                   <Clock size={11} /> {video.duracao}
@@ -164,7 +159,7 @@ export default async function VideoPlayerPage({ params }: Props) {
           {relacionados && relacionados.length > 0 && (
             <div className="lg:w-[340px] shrink-0">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-white font-bold text-base">Mais de {video.categoria}</h2>
+                <h2 className="text-white font-bold text-base">Mais Vídeos</h2>
               </div>
               <div className="flex flex-col gap-3">
                 {relacionados.map(v => (
@@ -177,7 +172,6 @@ export default async function VideoPlayerPage({ params }: Props) {
                       <p className="text-white text-xs font-bold line-clamp-2 mb-1 group-hover:text-[#D4AF37] transition-colors">
                         {v.titulo}
                       </p>
-                      <p className="text-[#64748B] text-[0.65rem] uppercase tracking-wider">{v.categoria}</p>
                       {v.duracao && <p className="text-[#64748B] text-[0.65rem] mt-0.5">⏱ {v.duracao}</p>}
                     </div>
                     <ChevronRight size={14} className="text-white/20 group-hover:text-white/60 transition-colors self-center shrink-0" />

@@ -390,12 +390,7 @@ export default async function AdminPage({
                     <label className={labelCls}>Título *</label>
                     <input name="titulo" required placeholder="Ex: A Oração que Move Montanhas" className={inputCls} />
                   </div>
-                  <div className="md:col-span-4">
-                    <label className={labelCls}>Categoria</label>
-                    <select name="categoria" className={inputCls + ' cursor-pointer appearance-none'}>
-                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
+
                   <div className="md:col-span-12">
                     <label className={labelCls}>Descrição</label>
                     <textarea name="descricao" rows={2} placeholder="Descreva sobre o que é o vídeo..." className={inputCls} style={{ resize: 'vertical' }} />
@@ -465,12 +460,6 @@ export default async function AdminPage({
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <label className={labelCls}>Categoria</label>
-                                <select name="categoria" defaultValue={editingVideo.categoria} className={inputCls}>
-                                  {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
-                              </div>
-                              <div>
                                 <label className={labelCls}>Duração</label>
                                 <input name="duracao" defaultValue={editingVideo.duracao || ''} className={inputCls} />
                               </div>
@@ -506,10 +495,7 @@ export default async function AdminPage({
                             
                             {/* Badges Overlay */}
                             <div className="absolute top-3 left-3 flex gap-2">
-                               <span className="bg-black/60 backdrop-blur-md text-white text-[0.65rem] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg border border-white/10">
-                                 {video.categoria}
-                               </span>
-                            </div>
+                             </div>
                             {video.duracao && (
                                <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-md text-white/90 text-[0.65rem] font-bold px-2 py-1 rounded-lg border border-white/10">
                                  <Clock size={10} /> {video.duracao}

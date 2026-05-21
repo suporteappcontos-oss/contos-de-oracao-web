@@ -147,7 +147,6 @@ export async function editarVideo(videoId: string, formData: FormData) {
   await supabase.from('videos').update({
     titulo: titulo,
     descricao: (formData.get('descricao') as string) || null,
-    categoria: formData.get('categoria') as string,
     thumbnail_url: thumbnailUrl || null,
     duracao: (formData.get('duracao') as string) || null,
   }).eq('id', videoId)

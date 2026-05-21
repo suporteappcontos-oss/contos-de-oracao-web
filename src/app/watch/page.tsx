@@ -73,11 +73,6 @@ export default async function WatchPage() {
     }
   }
 
-  const categorias = [...new Set((videos ?? []).map((v: Video) => v.categoria))]
-  const videosPorCategoria: Record<string, Video[]> = {}
-  categorias.forEach(cat => {
-    videosPorCategoria[cat] = (videos ?? []).filter((v: Video) => v.categoria === cat)
-  })
 
   async function logout() {
     'use server'
@@ -218,10 +213,6 @@ export default async function WatchPage() {
               <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
             </div>
 
-
-
-
-            {/* Carrosséis */}
             <div className="space-y-4">
               {recentes.length > 0 && (
                 <div className="mb-6">
@@ -233,13 +224,13 @@ export default async function WatchPage() {
                 </div>
               )}
 
-              {categorias.map(cat => (
-                <CategoryCarousel key={cat} title={cat} count={videosPorCategoria[cat].length}>
-                  {videosPorCategoria[cat].map((video: Video) => (
+              {(videos ?? []).length > 0 && (
+                <CategoryCarousel title="Todos os Vídeos" count={(videos ?? []).length}>
+                  {(videos ?? []).map((video: Video) => (
                     <VideoCard key={video.id} video={video} isFavoritado={favoritosSet.has(video.id)} />
                   ))}
                 </CategoryCarousel>
-              ))}
+              )}
             </div>
 
             {/* Rodapé */}
