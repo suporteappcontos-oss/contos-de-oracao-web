@@ -38,19 +38,43 @@ const DEPOIMENTOS = [
   {
     nome: 'Carlos Eduardo',
     avatar: 'CE',
-    texto: '"Finalmente uma plataforma segura que já ajudei minha família a assinar a fé de verdade. Recomendo!"',
+    texto: '"Finalmente uma plataforma segura que ajuda minha família a viver a fé de verdade. Recomendo!"',
     estrelas: 5,
   },
   {
     nome: 'Patrícia Soares',
     avatar: 'PS',
-    texto: '"As histórias são encantadoras e meus filhos pedem para assistir todos os dias."',
-    estrelas: 5,
+    texto: '"As histórias são encantadoras e meus filhos pedem para assistir todos os dias. Muito bom!"',
+    estrelas: 4,
   },
   {
     nome: 'Ana Clara',
     avatar: 'AC',
     texto: '"Como catequista, o material pedagógico me salvou! Tudo pronto e lindamente feito."',
+    estrelas: 5,
+  },
+  {
+    nome: 'Mariana Silva',
+    avatar: 'MS',
+    texto: '"Excelente conteúdo. Os desenhos e atividades em PDF facilitam muito o ensino da fé em casa."',
+    estrelas: 4,
+  },
+  {
+    nome: 'Diácono Roberto',
+    avatar: 'DR',
+    texto: '"Uma ferramenta fantástica para a nova evangelização. Linguagem acessível e fidelidade doutrinária."',
+    estrelas: 5,
+  },
+  {
+    nome: 'Paula Mendes',
+    avatar: 'PM',
+    texto: '"Os jogos e cruzadinhas ajudam a fixar o conteúdo bíblico de forma super interativa."',
+    estrelas: 4,
+  },
+  {
+    nome: 'Thiago Ramos',
+    avatar: 'TR',
+    texto: '"O aplicativo é maravilhoso. Segurança total para deixar os filhos assistindo sozinhos."',
     estrelas: 5,
   },
 ];
@@ -68,64 +92,45 @@ const MATERIAIS_PEDAGOGICOS = [
 function Stars({ count }: { count: number }) {
   return (
     <div className="flex gap-0.5">
-      {Array.from({ length: count }).map((_, i) => (
-        <Star key={i} size={14} fill={PRIMARY} style={{ color: PRIMARY }} />
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star 
+          key={i} 
+          size={14} 
+          fill={i < count ? PRIMARY : 'transparent'} 
+          style={{ color: i < count ? PRIMARY : 'rgba(255,255,255,0.15)' }} 
+        />
       ))}
     </div>
   );
 }
 
-// ── Carrossel de Depoimentos ──────────────────────────────────────────────────
-function TestimonialsCarousel() {
-  const [idx, setIdx] = useState(0);
-  const prev = () => setIdx(i => (i - 1 + DEPOIMENTOS.length) % DEPOIMENTOS.length);
-  const next = () => setIdx(i => (i + 1) % DEPOIMENTOS.length);
-
+// ── Grid Estático de Depoimentos Premium ─────────────────────────────────────────
+function TestimonialsGrid() {
   return (
-    <div className="relative">
-      <div className="overflow-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {DEPOIMENTOS.map((d, i) => (
         <div
-          className="flex transition-transform duration-500 ease-in-out"
-          style={{ transform: `translateX(-${idx * 100}%)` }}
+          key={i}
+          className="rounded-2xl p-6 transition-all duration-300 hover:scale-[1.02] hover:border-[#D4AF37]/30 flex flex-col justify-between"
+          style={{ background: BG_CARD, border: '1px solid rgba(255,255,255,0.07)' }}
         >
-          {DEPOIMENTOS.map((d, i) => (
-            <div key={i} className="w-full shrink-0 px-2">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
               <div
-                className="rounded-2xl p-6 h-full"
-                style={{ background: BG_CARD, border: '1px solid rgba(255,255,255,0.07)' }}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black shrink-0"
+                style={{ background: PRIMARY, color: BG_ROOT }}
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black"
-                    style={{ background: PRIMARY, color: BG_ROOT }}
-                  >
-                    {d.avatar}
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-bold">{d.nome}</p>
-                    <Stars count={d.estrelas} />
-                  </div>
-                </div>
-                <p className="text-white/60 text-sm leading-relaxed">{d.texto}</p>
+                {d.avatar}
+              </div>
+              <div>
+                <p className="text-white text-sm font-bold leading-none mb-1.5">{d.nome}</p>
+                <Stars count={d.estrelas} />
               </div>
             </div>
-          ))}
+            <p className="text-white/70 text-sm leading-relaxed italic">{d.texto}</p>
+          </div>
         </div>
-      </div>
-      <button
-        onClick={prev}
-        className="absolute -left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
-        style={{ background: 'rgba(212,175,55,0.15)', border: `1px solid ${PRIMARY}44` }}
-      >
-        <ChevronLeft size={16} style={{ color: PRIMARY }} />
-      </button>
-      <button
-        onClick={next}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
-        style={{ background: 'rgba(212,175,55,0.15)', border: `1px solid ${PRIMARY}44` }}
-      >
-        <ChevronRight size={16} style={{ color: PRIMARY }} />
-      </button>
+      ))}
     </div>
   );
 }
@@ -309,46 +314,47 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Cards de Métricas Premium posicionados exatamente no meio da divisória (overlap) */}
-        <div 
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30 w-full max-w-[1300px] px-6"
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            {[
-              { icon: <Users size={18} />, val: '+850 mil',   label: 'seguidores' },
-              { icon: <Play size={18} fill="currentColor" />,   val: '+120 mi',    label: 'visualizações' },
-              { icon: <Users size={18} />, val: '+200 mil',   label: 'famílias' },
-              { icon: <Shield size={18} />, val: '100% Seguro', label: 'para crianças' },
-            ].map((m, i) => (
-              <div 
-                key={i} 
-                className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.03] hover:border-[#D4AF37]/45"
-                style={{ 
-                  background: 'rgba(15, 18, 29, 0.92)', 
-                  borderColor: 'rgba(212, 175, 55, 0.22)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-                  backdropFilter: 'blur(12px)',
-                }}
-              >
-                <div 
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: 'rgba(212, 175, 55, 0.1)', color: PRIMARY }}
-                >
-                  {m.icon}
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-white font-extrabold text-sm sm:text-base tracking-tight leading-none">
-                    {m.val}
-                  </span>
-                  <span className="text-white/60 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mt-1 truncate">
-                    {m.label}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
+
+      {/* Cards de Métricas Premium posicionados exatamente no meio da divisória (overlap) de forma segura fora do overflow-hidden */}
+      <div 
+        className="relative z-30 -mt-10 sm:-mt-12 w-full max-w-[1300px] mx-auto px-6"
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          {[
+            { icon: <Users size={18} />, val: '+850 mil',   label: 'seguidores' },
+            { icon: <Play size={18} fill="currentColor" />,   val: '+120 milhões', label: 'visualizações' },
+            { icon: <Users size={18} />, val: '+200 mil',   label: 'famílias' },
+            { icon: <Shield size={18} />, val: 'Ambiente 100%', label: 'seguro para crianças' },
+          ].map((m, i) => (
+            <div 
+              key={i} 
+              className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.03] hover:border-[#D4AF37]/45"
+              style={{ 
+                background: 'rgba(15, 18, 29, 0.92)', 
+                borderColor: 'rgba(212, 175, 55, 0.22)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              <div 
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: 'rgba(212, 175, 55, 0.1)', color: PRIMARY }}
+              >
+                {m.icon}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-white font-extrabold text-sm sm:text-base tracking-tight leading-none">
+                  {m.val}
+                </span>
+                <span className="text-white/60 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mt-1 truncate">
+                  {m.label}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
           VÍDEOS EM DESTAQUE (Carrossel dinâmico do catálogo do Supabase)
@@ -489,7 +495,7 @@ export default function LandingPage() {
               Histórias, passatempos, formação e muito mais para toda a família!
             </p>
             <Link
-              href="/materiais"
+              href="/planos"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-black text-sm transition-all hover:brightness-110"
               style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
             >
@@ -551,13 +557,13 @@ export default function LandingPage() {
               emoji: '🎓',
               title: 'Formação para Catequistas',
               desc: 'Cursos, ferramentas e materiais exclusivos para sua missão.',
-              href: '/material-catequese',
+              href: '/planos',
             },
             {
               emoji: '👨‍👩‍👧',
               title: 'Conteúdo para Famílias',
               desc: 'Recursos para viver a fé em casa com as crianças.',
-              href: '/watch',
+              href: '/planos',
             },
             {
               emoji: '🔒',
@@ -599,7 +605,7 @@ export default function LandingPage() {
       <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
         <SectionTitle title="O que dizem as famílias" />
         <div className="px-4">
-          <TestimonialsCarousel />
+          <TestimonialsGrid />
         </div>
       </section>
 
