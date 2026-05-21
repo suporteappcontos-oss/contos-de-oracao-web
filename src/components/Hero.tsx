@@ -1,6 +1,7 @@
 "use client";
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { login } from '@/app/login/actions';
 import PasswordField from '@/components/PasswordField';
 import SubmitButton from '@/components/SubmitButton';
@@ -8,16 +9,24 @@ import dynamic from 'next/dynamic';
 
 const QRLogin = dynamic(() => import('@/components/QRLogin'), { ssr: false });
 
-export default function Hero() {
+function HeroContent() {
+  const searchParams                  = useSearchParams();
   const [showCard, setShowCard] = useState(false);
   const [tab, setTab]           = useState<'login' | 'qr'>('login');
 
-  // Escuta o evento disparado pela sidebar
+  // Abre modal via CustomEvent (sidebar na home)
   useEffect(() => {
     const handler = () => setShowCard(true);
     window.addEventListener('open-login', handler);
     return () => window.removeEventListener('open-login', handler);
   }, []);
+
+  // Abre modal via ?modal=login na URL (vindo de outras páginas)
+  useEffect(() => {
+    if (searchParams.get('modal') === 'login') {
+      setShowCard(true);
+    }
+  }, [searchParams]);
 
   // Fechar com ESC
   useEffect(() => {
@@ -186,8 +195,17 @@ export default function Hero() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       )}
     </>
+  );
+}
+
+export default function Hero() {
+  return (
+    <Suspense fallback={null}>
+      <HeroContent />
+    </Suspense>
   );
 }

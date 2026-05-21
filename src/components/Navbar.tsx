@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 
-/* ── Ícones SVG temáticos ── */
+/* ── Ícones SVG ── */
 const IconCursos = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
@@ -39,6 +41,12 @@ const IconPlanos = () => (
     <line x1="7" y1="7" x2="7.01" y2="7"/>
   </svg>
 );
+const IconInicio = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+    <path d="M9 21V12h6v9"/>
+  </svg>
+);
 
 const GRUPO_1 = [
   { label: 'Cursos', Icon: IconCursos },
@@ -51,11 +59,27 @@ const GRUPO_2 = [
 ];
 
 export default function Navbar() {
+  const pathname                      = usePathname();
+  const router                        = useRouter();
   const [versao, setVersao]           = useState<string | null>(null);
   const [apkUrl, setApkUrl]           = useState('#');
   const [showManual, setShowManual]   = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // começa FECHADO
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn]   = useState(false);
 
+  // Verifica autenticação
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  // Busca versão APK
   useEffect(() => {
     const checkUpdate = async () => {
       try {
@@ -71,58 +95,59 @@ export default function Navbar() {
     checkUpdate();
   }, []);
 
+  // "Entrar" funciona em QUALQUER página:
+  // - Na home: abre o modal via CustomEvent
+  // - Em outras páginas: navega para home com ?modal=login
   const handleEntrar = () => {
-    window.dispatchEvent(new CustomEvent('open-login'));
     setSidebarOpen(false);
+    if (pathname === '/') {
+      window.dispatchEvent(new CustomEvent('open-login'));
+    } else {
+      router.push('/?modal=login');
+    }
   };
+
+  // Mostra "Início" só quando:
+  // - NÃO está na home (pathname !== '/')
+  // - NÃO está logado
+  const showInicio = pathname !== '/' && !isLoggedIn;
+
+  // Mostra "Entrar | Inscreva-se" só quando não está logado
+  const showAuth = !isLoggedIn;
 
   return (
     <>
-      {/* ════════════════════════════════════
-          LOGO FIXO — topo esquerdo
-      ════════════════════════════════════ */}
+      {/* ════════ LOGO — topo esquerdo ════════ */}
       <div className="fixed top-4 left-4 z-[60] flex items-center gap-2.5 pointer-events-none">
         <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-[0_2px_16px_rgba(0,0,0,0.6)]">
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-cover w-full h-full" />
         </div>
         <div className="hidden sm:block">
-          <div
-            className="text-white font-black text-sm leading-tight"
-            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)', fontFamily: 'Outfit, sans-serif' }}
-          >
+          <div className="text-white font-black text-sm leading-tight"
+            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)', fontFamily: 'Outfit, sans-serif' }}>
             Contos de Oração
           </div>
-          <div
-            className="text-[#D4AF37] text-[0.5rem] font-black uppercase tracking-widest"
-            style={{ textShadow: '0 1px 6px rgba(0,0,0,0.8)' }}
-          >
+          <div className="text-[#D4AF37] text-[0.5rem] font-black uppercase tracking-widest"
+            style={{ textShadow: '0 1px 6px rgba(0,0,0,0.8)' }}>
             Catequese Digital
           </div>
         </div>
       </div>
 
-      {/* ════════════════════════════════════
-          BOTÃO TOGGLE ☰ — topo direito
-          Sempre mostra ☰ (sem X)
-      ════════════════════════════════════ */}
+      {/* ════════ BOTÃO ☰ — topo direito ════════ */}
       <button
         onClick={() => setSidebarOpen(v => !v)}
         title="Menu"
         aria-label="Abrir menu"
         className="fixed top-4 right-4 z-[70] w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
-        style={{
-          background: 'rgba(255,255,255,0.07)',
-          border: '1px solid rgba(255,255,255,0.14)',
-        }}
+        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)' }}
       >
         <span className="block w-[17px] h-[2px] rounded-full bg-white" />
         <span className="block w-[17px] h-[2px] rounded-full bg-white" />
         <span className="block w-[17px] h-[2px] rounded-full bg-white" />
       </button>
 
-      {/* ════════════════════════════════════
-          BACKDROP — clique fora fecha
-      ════════════════════════════════════ */}
+      {/* ════════ BACKDROP — fecha ao clicar fora ════════ */}
       <div
         className="fixed inset-0 z-[49] transition-all duration-300"
         style={{
@@ -133,9 +158,7 @@ export default function Navbar() {
         onClick={() => setSidebarOpen(false)}
       />
 
-      {/* ════════════════════════════════════
-          SIDEBAR — lado direito
-      ════════════════════════════════════ */}
+      {/* ════════ SIDEBAR — direita ════════ */}
       <aside
         className="fixed top-0 right-0 h-full w-[230px] z-50 flex flex-col"
         style={{
@@ -158,17 +181,20 @@ export default function Navbar() {
         {/* Divisor */}
         <div className="mx-5 h-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
 
-        {/* Entrar | Inscreva-se */}
-        <div className="flex items-center gap-3 px-5 py-4">
-          <button onClick={handleEntrar} className="text-white text-sm font-black hover:text-[#D4AF37] transition-colors">
-            Entrar
-          </button>
-          <span className="text-white/20 text-sm">|</span>
-          <Link href="/planos" onClick={() => setSidebarOpen(false)}
-            className="text-white/60 text-sm font-semibold hover:text-white transition-colors no-underline">
-            Inscreva-se
-          </Link>
-        </div>
+        {/* ── Entrar | Inscreva-se (só quando NÃO logado) ── */}
+        {showAuth && (
+          <div className="flex items-center gap-3 px-5 py-4">
+            <button onClick={handleEntrar}
+              className="text-white text-sm font-black hover:text-[#D4AF37] transition-colors">
+              Entrar
+            </button>
+            <span className="text-white/20 text-sm">|</span>
+            <Link href="/planos" onClick={() => setSidebarOpen(false)}
+              className="text-white/60 text-sm font-semibold hover:text-white transition-colors no-underline">
+              Inscreva-se
+            </Link>
+          </div>
+        )}
 
         {/* Divisor */}
         <div className="mx-5 h-px mb-2" style={{ background: 'rgba(255,255,255,0.06)' }} />
@@ -176,7 +202,21 @@ export default function Navbar() {
         {/* ── MENU ── */}
         <nav className="flex flex-col px-3 gap-0.5">
 
-          {/* ── Planos (item ATIVO — disponível) ── */}
+          {/* ── Início (só aparece em outras páginas E sem login) ── */}
+          {showInicio && (
+            <Link
+              href="/"
+              onClick={() => setSidebarOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-white/5 group no-underline"
+            >
+              <span className="text-white/60 group-hover:text-white transition-colors">
+                <IconInicio />
+              </span>
+              <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-colors">Início</span>
+            </Link>
+          )}
+
+          {/* ── Planos (item ativo, sempre visível) ── */}
           <Link
             href="/planos"
             onClick={() => setSidebarOpen(false)}
@@ -191,7 +231,7 @@ export default function Navbar() {
           {/* Separador */}
           <div className="mx-3 my-2 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
 
-          {/* Grupo 1: Cursos, Loja (em breve) */}
+          {/* Grupo 1 — Em breve */}
           {GRUPO_1.map(({ label, Icon }) => (
             <div key={label} title="Em breve"
               className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none">
@@ -206,10 +246,10 @@ export default function Navbar() {
             </div>
           ))}
 
-          {/* Linha separadora no meio */}
+          {/* Separador */}
           <div className="mx-3 my-2 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
 
-          {/* Grupo 2: Bíblia, Orações, Liturgia diária (em breve) */}
+          {/* Grupo 2 — Em breve */}
           {GRUPO_2.map(({ label, Icon }) => (
             <div key={label} title="Em breve"
               className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none">
@@ -244,9 +284,7 @@ export default function Navbar() {
         </div>
       </aside>
 
-      {/* ════════════════════════════════════
-          MODAL MANUAL
-      ════════════════════════════════════ */}
+      {/* ════════ MODAL MANUAL ════════ */}
       {showManual && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           onClick={() => setShowManual(false)}>
