@@ -136,7 +136,7 @@ export default function Navbar() {
             ? 'rgba(9, 11, 16, 0.92)' 
             : 'linear-gradient(to bottom, rgba(9, 11, 16, 0.95) 0%, rgba(9, 11, 16, 0.5) 60%, transparent 100%)',
           backdropFilter: isScrolled ? 'blur(16px)' : 'none',
-          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
           boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}
       >
@@ -295,12 +295,15 @@ export default function Navbar() {
             <Link
               href="/"
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-white/5 group no-underline"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
             >
-              <span className="text-white/60 group-hover:text-white transition-colors">
+              {/* Indicador de borda dourada lateral esquerda no hover */}
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+              
+              <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
                 <IconInicio />
               </span>
-              <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-colors">Início</span>
+              <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Início</span>
             </Link>
           )}
 
@@ -308,12 +311,15 @@ export default function Navbar() {
           <Link
             href="/planos"
             onClick={() => setSidebarOpen(false)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-white/5 group no-underline"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
           >
-            <span className="text-[#D4AF37] opacity-70 group-hover:opacity-100 transition-opacity">
+            {/* Indicador de borda dourada lateral esquerda no hover */}
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            
+            <span className="text-[#D4AF37] opacity-70 group-hover:opacity-100 group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconPlanos />
             </span>
-            <span className="text-white/80 group-hover:text-white text-sm font-semibold transition-colors">Planos</span>
+            <span className="text-white/80 group-hover:text-white text-sm font-semibold transition-all duration-300">Planos</span>
           </Link>
 
           {/* Separador */}
@@ -322,12 +328,12 @@ export default function Navbar() {
           {/* Grupo 1 — Em breve */}
           {GRUPO_1.map(({ label, Icon }) => (
             <div key={label} title="Em breve"
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none">
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none transition-all duration-300 ease-out hover:bg-white/[0.02] group relative overflow-hidden">
               <div className="flex items-center gap-3">
-                <span className="opacity-25 text-white"><Icon /></span>
-                <span className="text-white/25 text-sm font-semibold">{label}</span>
+                <span className="opacity-25 text-white group-hover:opacity-40 transition-opacity duration-300"><Icon /></span>
+                <span className="text-white/25 group-hover:text-white/40 text-sm font-semibold transition-colors duration-300">{label}</span>
               </div>
-              <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md"
+              <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md transition-all duration-300 group-hover:bg-[#D4AF37]/15 group-hover:text-[#D4AF37]"
                 style={{ background: 'rgba(212,175,55,0.08)', color: 'rgba(212,175,55,0.45)' }}>
                 Em breve
               </span>
@@ -340,12 +346,12 @@ export default function Navbar() {
           {/* Grupo 2 — Em breve */}
           {GRUPO_2.map(({ label, Icon }) => (
             <div key={label} title="Em breve"
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none">
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none transition-all duration-300 ease-out hover:bg-white/[0.02] group relative overflow-hidden">
               <div className="flex items-center gap-3">
-                <span className="opacity-25 text-white"><Icon /></span>
-                <span className="text-white/25 text-sm font-semibold">{label}</span>
+                <span className="opacity-25 text-white group-hover:opacity-40 transition-opacity duration-300"><Icon /></span>
+                <span className="text-white/25 group-hover:text-white/40 text-sm font-semibold transition-colors duration-300">{label}</span>
               </div>
-              <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md"
+              <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md transition-all duration-300 group-hover:bg-[#D4AF37]/15 group-hover:text-[#D4AF37]"
                 style={{ background: 'rgba(212,175,55,0.08)', color: 'rgba(212,175,55,0.45)' }}>
                 Em breve
               </span>
@@ -360,7 +366,7 @@ export default function Navbar() {
           <div className="h-px mb-2" style={{ background: 'rgba(255,255,255,0.06)' }} />
           <button
             onClick={() => setShowManual(true)}
-            className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all hover:border-[#D4AF37]/50 text-sm"
+            className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all duration-300 ease-out hover:scale-[1.03] hover:border-[#D4AF37]/60 text-sm active:scale-95 shadow-lg shadow-[#D4AF37]/5 cursor-pointer"
             style={{ background: '#15243E', borderColor: 'rgba(255,255,255,0.1)' }}
           >
             <div className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden shrink-0"
@@ -374,7 +380,7 @@ export default function Navbar() {
             href="https://wa.me/5566997182760?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20Contos%20de%20Ora%C3%A7%C3%A3o"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all hover:border-[#25D366]/50 text-sm no-underline"
+            className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all duration-300 ease-out hover:scale-[1.03] hover:border-[#25D366]/60 text-sm no-underline active:scale-95 shadow-lg shadow-[#25D366]/5"
             style={{ background: '#0E2E1E', borderColor: 'rgba(37, 211, 102, 0.2)' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">

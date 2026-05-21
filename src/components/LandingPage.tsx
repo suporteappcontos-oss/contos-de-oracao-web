@@ -405,7 +405,7 @@ export default function LandingPage() {
                 return (
                   <Link
                     key={video.id}
-                    href={`/watch/${video.id}`}
+                    href="/planos"
                     className="shrink-0 snap-start block w-[240px] sm:w-[270px] md:w-[300px] group transition-transform duration-300 hover:scale-[1.03]"
                     style={{ textDecoration: 'none' }}
                   >
