@@ -136,7 +136,7 @@ export default function Navbar() {
             ? 'rgba(9, 11, 16, 0.92)' 
             : 'linear-gradient(to bottom, rgba(9, 11, 16, 0.95) 0%, rgba(9, 11, 16, 0.5) 60%, transparent 100%)',
           backdropFilter: isScrolled ? 'blur(16px)' : 'none',
-          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
+          borderBottom: 'none',
           boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}
       >
