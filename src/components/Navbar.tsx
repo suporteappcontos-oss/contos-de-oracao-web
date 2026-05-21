@@ -141,12 +141,13 @@ export default function Navbar() {
         {/* Menu Esquerdo (Hambúrguer + "MENU") */}
         <button
           onClick={() => setSidebarOpen(v => !v)}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95"
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95 ${sidebarOpen ? 'opacity-0 pointer-events-none' : ''}`}
           style={{
             border: 'none',
             background: 'transparent',
             color: '#fff',
             fontFamily: 'Outfit, sans-serif',
+            display: sidebarOpen ? 'none' : 'flex',
           }}
         >
           <div className="flex flex-col justify-center gap-[4px] w-[18px] h-[14px]">
@@ -218,7 +219,7 @@ export default function Navbar() {
 
       {/* ════════ BACKDROP — fecha ao clicar fora ════════ */}
       <div
-        className="fixed inset-0 z-[49] transition-all duration-300"
+        className="fixed inset-0 z-[65] transition-all duration-300"
         style={{
           background: sidebarOpen ? 'rgba(0,0,0,0.28)' : 'transparent',
           backdropFilter: sidebarOpen ? 'blur(1.5px)' : 'none',
@@ -229,7 +230,7 @@ export default function Navbar() {
 
       {/* ════════ SIDEBAR — esquerda ════════ */}
       <aside
-        className="fixed top-0 left-0 h-full w-[230px] z-50 flex flex-col"
+        className="fixed top-0 left-0 h-full w-[230px] z-[70] flex flex-col"
         style={{
           background: '#0A0C12',
           borderRight: '1px solid rgba(255,255,255,0.07)',
