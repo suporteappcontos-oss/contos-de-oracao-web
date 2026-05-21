@@ -207,13 +207,11 @@ export default function LandingPage() {
             backgroundImage: "linear-gradient(rgba(9, 11, 16, 0.05), rgba(9, 11, 16, 0.1)), url('/background.jpg')",
           }}
         />
-        {/* Gradiente azul e desfocado premium de transição suave para fundir a imagem ao fundo preto absoluto */}
+        {/* Gradiente azul de transição suave para fundir a imagem ao fundo preto absoluto (sem desfoque) */}
         <div
           className="absolute bottom-0 left-0 right-0 h-40 z-[1] pointer-events-none"
           style={{
-            background: 'linear-gradient(to bottom, transparent 0%, rgba(30, 58, 138, 0.15) 40%, rgba(13, 22, 38, 0.6) 70%, rgba(9, 11, 16, 0.9) 90%, #090B10 100%)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
+            background: 'linear-gradient(to bottom, transparent 0%, rgba(30, 58, 138, 0.1) 40%, rgba(13, 22, 38, 0.4) 70%, rgba(9, 11, 16, 0.8) 90%, #090B10 100%)',
           }}
         />
         {/* Brilho dourado sutil */}
@@ -222,7 +220,7 @@ export default function LandingPage() {
           style={{ background: 'radial-gradient(circle, #D4AF37, transparent)' }}
         />
 
-        <div className="relative z-10 w-full max-w-[1650px] mx-auto px-6 lg:px-20 pb-24 pt-12 flex flex-col lg:flex-row justify-between items-center gap-12 h-full">
+        <div className="relative z-10 w-full max-w-[1650px] mx-auto px-6 lg:px-20 pb-28 pt-12 flex flex-col lg:flex-row justify-between items-center gap-12 h-full">
           {/* Coluna esquerda (Fontes elegantes, compacta e alinhada à extrema esquerda) */}
           <div className="flex-1 text-center lg:text-left max-w-[550px] lg:-ml-8">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
@@ -265,7 +263,7 @@ export default function LandingPage() {
                 COMEÇAR AGORA <ChevronRight size={16} />
               </Link>
               <Link
-                href="/watch"
+                href="/planos"
                 className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all hover:bg-white/10 backdrop-blur-sm"
                 style={{ border: '1px solid rgba(255,255,255,0.3)', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.05)' }}
               >
@@ -311,23 +309,41 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Barra de métricas horizontal de ponta a ponta na base do Hero (Exatamente como o print 3) */}
+        {/* Cards de Métricas Premium posicionados exatamente no meio da divisória (overlap) */}
         <div 
-          className="absolute bottom-0 left-0 right-0 z-20 py-3 bg-[#090B10]/90 backdrop-blur-md border-t border-white/5"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30 w-full max-w-[1300px] px-6"
         >
-          <div className="max-w-[1400px] mx-auto px-6 flex flex-wrap justify-between items-center gap-y-4 gap-x-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { icon: <Users size={15} />, val: '+850 mil',   label: 'seguidores' },
-              { icon: <Play size={15} fill="currentColor" />,   val: '+120 milhões',    label: 'visualizações' },
-              { icon: <Users size={15} />, val: '+200 mil',   label: 'famílias' },
-              { icon: <Shield size={15} />, val: 'Ambiente 100%',      label: 'seguro para crianças' },
+              { icon: <Users size={18} />, val: '+850 mil',   label: 'seguidores' },
+              { icon: <Play size={18} fill="currentColor" />,   val: '+120 mi',    label: 'visualizações' },
+              { icon: <Users size={18} />, val: '+200 mil',   label: 'famílias' },
+              { icon: <Shield size={18} />, val: '100% Seguro', label: 'para crianças' },
             ].map((m, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span style={{ color: PRIMARY }}>{m.icon}</span>
-                <span className="text-xs sm:text-sm font-semibold flex items-center">
-                  <span className="text-white font-bold">{m.val}</span>
-                  <span className="text-white/60 ml-1.5 font-medium">{m.label}</span>
-                </span>
+              <div 
+                key={i} 
+                className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.03] hover:border-[#D4AF37]/45"
+                style={{ 
+                  background: 'rgba(15, 18, 29, 0.92)', 
+                  borderColor: 'rgba(212, 175, 55, 0.22)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+                  backdropFilter: 'blur(12px)',
+                }}
+              >
+                <div 
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: 'rgba(212, 175, 55, 0.1)', color: PRIMARY }}
+                >
+                  {m.icon}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-white font-extrabold text-sm sm:text-base tracking-tight leading-none">
+                    {m.val}
+                  </span>
+                  <span className="text-white/60 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mt-1 truncate">
+                    {m.label}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -343,7 +359,7 @@ export default function LandingPage() {
             Vídeos em destaque
           </h2>
           <Link
-            href="/watch"
+            href="/planos"
             className="flex items-center gap-1 text-xs sm:text-sm font-black transition-all hover:brightness-125 hover:scale-[1.02]"
             style={{ color: PRIMARY, textDecoration: 'none' }}
           >
@@ -432,7 +448,7 @@ export default function LandingPage() {
           MATERIAIS PEDAGÓGICOS
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
-        <SectionTitle title="Materiais pedagógicos em PDF" href="/materiais" />
+        <SectionTitle title="Materiais pedagógicos em PDF" href="/planos" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {MATERIAIS_PEDAGOGICOS.map((m, i) => (
             <Link
