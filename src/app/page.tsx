@@ -1,7 +1,12 @@
 import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
+import LandingPage from "@/components/LandingPage";
+
+export const metadata = {
+  title: 'Contos de Oração — Catequese Digital para Crianças',
+  description: 'Universo católico para crianças de forma divertida e encantadora. Vídeos, jogos, HQs, atividades, apostilas e conteúdos exclusivos para ensinar a fé católica.',
+};
 
 type Props = {
   searchParams: Promise<{ acesso?: string }>
@@ -16,7 +21,7 @@ export default async function Home({ searchParams }: Props) {
   return (
     <main>
       <DynamicBackground />
-      <Navbar /> {/* sidebar fixa 220px no desktop */}
+      <Navbar />
 
       {/* Banner de acesso expirado */}
       {acesso === 'expirado' && (
@@ -42,9 +47,9 @@ export default async function Home({ searchParams }: Props) {
         </div>
       )}
 
-      <Hero />
+      {/* Nova landing page inspirada na imagem de referência */}
+      <LandingPage />
       <Footer />
     </main>
   );
 }
-
