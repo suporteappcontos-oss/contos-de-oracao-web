@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from 'next/link';
 import Image from 'next/image';
 
-/* ── Ícones SVG temáticos (Catholic premium) ── */
+/* ── Ícones SVG temáticos ── */
 const IconCursos = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
@@ -16,7 +16,8 @@ const IconLoja = () => (
 );
 const IconBiblia = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2v5M9.5 4.5h5"/><path d="M4 9h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V9z"/><path d="M4 9c0 0 4-3 8 0s8 0 8 0"/>
+    <path d="M12 2v5M9.5 4.5h5"/><path d="M4 9h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V9z"/>
+    <path d="M4 9c0 0 4-3 8 0s8 0 8 0"/>
   </svg>
 );
 const IconOracoes = () => (
@@ -27,8 +28,15 @@ const IconOracoes = () => (
 );
 const IconLiturgia = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-    <line x1="3" y1="10" x2="21" y2="10"/><path d="M12 14v4M10 16h4"/>
+    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    <path d="M12 14v4M10 16h4"/>
+  </svg>
+);
+const IconPlanos = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+    <line x1="7" y1="7" x2="7.01" y2="7"/>
   </svg>
 );
 
@@ -37,8 +45,8 @@ const GRUPO_1 = [
   { label: 'Loja',   Icon: IconLoja   },
 ];
 const GRUPO_2 = [
-  { label: 'Bíblia',          Icon: IconBiblia  },
-  { label: 'Orações',         Icon: IconOracoes },
+  { label: 'Bíblia',          Icon: IconBiblia   },
+  { label: 'Orações',         Icon: IconOracoes  },
   { label: 'Liturgia diária', Icon: IconLiturgia },
 ];
 
@@ -46,7 +54,7 @@ export default function Navbar() {
   const [versao, setVersao]           = useState<string | null>(null);
   const [apkUrl, setApkUrl]           = useState('#');
   const [showManual, setShowManual]   = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true); // começa aberto
+  const [sidebarOpen, setSidebarOpen] = useState(false); // começa FECHADO
 
   useEffect(() => {
     const checkUpdate = async () => {
@@ -63,38 +71,71 @@ export default function Navbar() {
     checkUpdate();
   }, []);
 
-  const handleEntrar = () => window.dispatchEvent(new CustomEvent('open-login'));
+  const handleEntrar = () => {
+    window.dispatchEvent(new CustomEvent('open-login'));
+    setSidebarOpen(false);
+  };
 
   return (
     <>
-      {/* ─── Botão de toggle (sempre visível, topo direito) ─── */}
+      {/* ════════════════════════════════════
+          LOGO FIXO — topo esquerdo
+      ════════════════════════════════════ */}
+      <div className="fixed top-4 left-4 z-[60] flex items-center gap-2.5 pointer-events-none">
+        <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-[0_2px_16px_rgba(0,0,0,0.6)]">
+          <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-cover w-full h-full" />
+        </div>
+        <div className="hidden sm:block">
+          <div
+            className="text-white font-black text-sm leading-tight"
+            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)', fontFamily: 'Outfit, sans-serif' }}
+          >
+            Contos de Oração
+          </div>
+          <div
+            className="text-[#D4AF37] text-[0.5rem] font-black uppercase tracking-widest"
+            style={{ textShadow: '0 1px 6px rgba(0,0,0,0.8)' }}
+          >
+            Catequese Digital
+          </div>
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════
+          BOTÃO TOGGLE ☰ — topo direito
+          Sempre mostra ☰ (sem X)
+      ════════════════════════════════════ */}
       <button
         onClick={() => setSidebarOpen(v => !v)}
-        title={sidebarOpen ? 'Fechar menu' : 'Abrir menu'}
-        aria-label="Toggle menu"
+        title="Menu"
+        aria-label="Abrir menu"
         className="fixed top-4 right-4 z-[70] w-10 h-10 flex flex-col items-center justify-center gap-[5px] rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
         style={{
-          background: sidebarOpen ? 'rgba(212,175,55,0.12)' : 'rgba(255,255,255,0.07)',
-          border: `1px solid ${sidebarOpen ? 'rgba(212,175,55,0.35)' : 'rgba(255,255,255,0.12)'}`,
+          background: 'rgba(255,255,255,0.07)',
+          border: '1px solid rgba(255,255,255,0.14)',
         }}
       >
-        <span className={`block w-[17px] h-[2px] rounded-full bg-white transition-all duration-300 origin-center ${sidebarOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
-        <span className={`block w-[17px] h-[2px] rounded-full bg-white transition-all duration-300 ${sidebarOpen ? 'opacity-0 scale-x-0' : ''}`} />
-        <span className={`block w-[17px] h-[2px] rounded-full bg-white transition-all duration-300 origin-center ${sidebarOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+        <span className="block w-[17px] h-[2px] rounded-full bg-white" />
+        <span className="block w-[17px] h-[2px] rounded-full bg-white" />
+        <span className="block w-[17px] h-[2px] rounded-full bg-white" />
       </button>
 
-      {/* ─── Backdrop ao abrir ─── */}
+      {/* ════════════════════════════════════
+          BACKDROP — clique fora fecha
+      ════════════════════════════════════ */}
       <div
         className="fixed inset-0 z-[49] transition-all duration-300"
         style={{
-          background: sidebarOpen ? 'rgba(0,0,0,0.18)' : 'transparent',
-          backdropFilter: sidebarOpen ? 'blur(1px)' : 'none',
+          background: sidebarOpen ? 'rgba(0,0,0,0.28)' : 'transparent',
+          backdropFilter: sidebarOpen ? 'blur(1.5px)' : 'none',
           pointerEvents: sidebarOpen ? 'auto' : 'none',
         }}
         onClick={() => setSidebarOpen(false)}
       />
 
-      {/* ─── SIDEBAR — lado direito ─── */}
+      {/* ════════════════════════════════════
+          SIDEBAR — lado direito
+      ════════════════════════════════════ */}
       <aside
         className="fixed top-0 right-0 h-full w-[230px] z-50 flex flex-col"
         style={{
@@ -105,7 +146,7 @@ export default function Navbar() {
           transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
-        {/* Logo */}
+        {/* Logo dentro da sidebar */}
         <div className="flex items-center gap-3 px-5 pt-6 pb-4">
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain drop-shadow-lg" />
           <div>
@@ -123,21 +164,39 @@ export default function Navbar() {
             Entrar
           </button>
           <span className="text-white/20 text-sm">|</span>
-          <Link href="/planos" className="text-white/60 text-sm font-semibold hover:text-white transition-colors no-underline">
+          <Link href="/planos" onClick={() => setSidebarOpen(false)}
+            className="text-white/60 text-sm font-semibold hover:text-white transition-colors no-underline">
             Inscreva-se
           </Link>
         </div>
 
         {/* Divisor */}
-        <div className="mx-5 h-px mb-3" style={{ background: 'rgba(255,255,255,0.06)' }} />
+        <div className="mx-5 h-px mb-2" style={{ background: 'rgba(255,255,255,0.06)' }} />
 
-        {/* Menu */}
+        {/* ── MENU ── */}
         <nav className="flex flex-col px-3 gap-0.5">
+
+          {/* ── Planos (item ATIVO — disponível) ── */}
+          <Link
+            href="/planos"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-white/5 group no-underline"
+          >
+            <span className="text-[#D4AF37] opacity-70 group-hover:opacity-100 transition-opacity">
+              <IconPlanos />
+            </span>
+            <span className="text-white/80 group-hover:text-white text-sm font-semibold transition-colors">Planos</span>
+          </Link>
+
+          {/* Separador */}
+          <div className="mx-3 my-2 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+
+          {/* Grupo 1: Cursos, Loja (em breve) */}
           {GRUPO_1.map(({ label, Icon }) => (
             <div key={label} title="Em breve"
               className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none">
               <div className="flex items-center gap-3">
-                <span className="opacity-30 text-white"><Icon /></span>
+                <span className="opacity-25 text-white"><Icon /></span>
                 <span className="text-white/25 text-sm font-semibold">{label}</span>
               </div>
               <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md"
@@ -147,14 +206,15 @@ export default function Navbar() {
             </div>
           ))}
 
-          {/* ── Linha separadora no meio ── */}
+          {/* Linha separadora no meio */}
           <div className="mx-3 my-2 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
 
+          {/* Grupo 2: Bíblia, Orações, Liturgia diária (em breve) */}
           {GRUPO_2.map(({ label, Icon }) => (
             <div key={label} title="Em breve"
               className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none">
               <div className="flex items-center gap-3">
-                <span className="opacity-30 text-white"><Icon /></span>
+                <span className="opacity-25 text-white"><Icon /></span>
                 <span className="text-white/25 text-sm font-semibold">{label}</span>
               </div>
               <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md"
@@ -168,7 +228,7 @@ export default function Navbar() {
         <div className="flex-1" />
 
         {/* Manual / App */}
-        <div className="px-4 pb-14"> {/* pb-14 para não colidir com toggle */}
+        <div className="px-4 pb-5">
           <div className="h-px mb-4" style={{ background: 'rgba(255,255,255,0.06)' }} />
           <button
             onClick={() => setShowManual(true)}
@@ -184,7 +244,9 @@ export default function Navbar() {
         </div>
       </aside>
 
-      {/* ─── Modal Manual ─── */}
+      {/* ════════════════════════════════════
+          MODAL MANUAL
+      ════════════════════════════════════ */}
       {showManual && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           onClick={() => setShowManual(false)}>
