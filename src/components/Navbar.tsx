@@ -138,27 +138,29 @@ export default function Navbar() {
           boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}
       >
-        {/* Menu Esquerdo (Hambúrguer + "MENU") */}
-        <button
-          onClick={() => setSidebarOpen(v => !v)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95 ${sidebarOpen ? 'opacity-0 pointer-events-none' : ''}`}
-          style={{
-            border: 'none',
-            background: 'transparent',
-            color: '#fff',
-            fontFamily: 'Outfit, sans-serif',
-            display: sidebarOpen ? 'none' : 'flex',
-          }}
-        >
-          <div className="flex flex-col justify-center gap-[4px] w-[18px] h-[14px]">
-            <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
-            <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
-            <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
-          </div>
-          <span className="text-xs font-black uppercase tracking-wider select-none text-white/90">
-            MENU
-          </span>
-        </button>
+        {/* Menu Esquerdo (Hambúrguer + "MENU") com renderização condicional JSX garantida */}
+        {!sidebarOpen && (
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95"
+            style={{
+              border: 'none',
+              background: 'transparent',
+              color: '#fff',
+              fontFamily: 'Outfit, sans-serif',
+              display: 'flex',
+            }}
+          >
+            <div className="flex flex-col justify-center gap-[4px] w-[18px] h-[14px]">
+              <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
+              <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
+              <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-wider select-none text-white/90">
+              MENU
+            </span>
+          </button>
+        )}
 
         {/* Logo Centro */}
         <div className="flex items-center gap-2.5">

@@ -200,21 +200,23 @@ export default function LandingPage() {
         className="relative h-screen min-h-[600px] flex items-center overflow-hidden"
         style={{ paddingTop: '0px' }}
       >
-        {/* Imagem de fundo premium com apenas 15% de escurecimento */}
+        {/* Imagem de fundo premium com apenas 15% de escurecimento e encaixe perfeito */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-no-repeat transition-all duration-500"
+          className="absolute inset-0 z-0 transition-all duration-500"
           style={{
             backgroundImage: "linear-gradient(rgba(9, 11, 16, 0.15), rgba(9, 11, 16, 0.15)), url('/background.jpg')",
             backgroundPosition: 'center bottom',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
           }}
         />
-        {/* Gradiente azul e desfocado premium para transição suave com o fundo preto absoluto */}
+        {/* Gradiente azul e desfocado premium de transição suave para fundir a imagem ao fundo preto absoluto */}
         <div
-          className="absolute bottom-0 left-0 right-0 h-60 z-[1] pointer-events-none"
+          className="absolute bottom-0 left-0 right-0 h-48 z-[1] pointer-events-none"
           style={{
-            background: 'linear-gradient(to bottom, transparent 0%, rgba(13, 22, 38, 0.45) 30%, rgba(9, 11, 16, 0.88) 70%, #090B10 100%)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
+            background: 'linear-gradient(to bottom, transparent 0%, rgba(30, 58, 138, 0.25) 35%, rgba(13, 22, 38, 0.7) 65%, rgba(9, 11, 16, 0.95) 85%, #090B10 100%)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
           }}
         />
         {/* Brilho dourado sutil */}
@@ -223,20 +225,20 @@ export default function LandingPage() {
           style={{ background: 'radial-gradient(circle, #D4AF37, transparent)' }}
         />
 
-        <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 lg:px-24 py-12 flex flex-col lg:flex-row justify-between items-center gap-12">
-          {/* Coluna esquerda */}
-          <div className="flex-1 text-center lg:text-left max-w-2xl">
+        <div className="relative z-10 w-full max-w-[1750px] mx-auto px-4 lg:px-16 py-12 flex flex-col lg:flex-row justify-between items-center gap-12">
+          {/* Coluna esquerda (30% maior e encostada no lado esquerdo) */}
+          <div className="flex-1 text-center lg:text-left max-w-[850px] lg:-ml-12">
             <div
-              className="inline-block text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full mb-3"
+              className="inline-block text-sm font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-5"
               style={{ background: 'rgba(212,175,55,0.2)', color: PRIMARY, border: `1px solid ${PRIMARY}55`, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}
             >
               Catequese Digital
             </div>
 
             <h1
-              className="font-black leading-tight mb-3 text-white"
+              className="font-black leading-tight mb-4 text-white"
               style={{
-                fontSize: 'clamp(1.1rem, 2.25vw, 1.9rem)',
+                fontSize: 'clamp(2.1rem, 4vw, 3.2rem)',
                 textShadow: '0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
               }}
             >
@@ -245,46 +247,46 @@ export default function LandingPage() {
             </h1>
 
             <p
-              className="text-white/90 leading-relaxed mb-6 max-w-xl mx-auto lg:mx-0 font-semibold"
+              className="text-white/95 leading-relaxed mb-8 max-w-3xl mx-auto lg:mx-0 font-semibold"
               style={{
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
-                fontSize: '0.8rem',
+                fontSize: '1.35rem',
               }}
             >
               Histórias, vídeos, jogos, atividades e muito mais para ensinar a fé católica de
               maneira moderna, segura e emocionante.
             </p>
 
-            <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
+            <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link
                 href="/planos"
-                className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl font-black text-xs transition-all hover:brightness-110 hover:scale-[1.03] shadow-md shadow-[#D4AF37]/15"
+                className="flex items-center gap-2 px-8 py-4.5 rounded-xl font-black text-[17.5px] transition-all hover:brightness-110 hover:scale-[1.03] shadow-md shadow-[#D4AF37]/15"
                 style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
               >
-                Começar Agora <ChevronRight size={12} />
+                Começar Agora <ChevronRight size={19} />
               </Link>
               <Link
                 href="/watch"
-                className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl font-bold text-xs transition-all hover:bg-white/10 backdrop-blur-md"
+                className="flex items-center gap-2 px-8 py-4.5 rounded-xl font-bold text-[17.5px] transition-all hover:bg-white/10 backdrop-blur-md"
                 style={{ border: '1px solid rgba(255,255,255,0.4)', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.05)' }}
               >
-                <Play size={12} /> Explorar Conteúdos
+                <Play size={19} /> Explorar Conteúdos
               </Link>
             </div>
 
-            {/* Métricas */}
-            <div className="flex flex-wrap gap-3.5 mt-8 justify-center lg:justify-start">
+            {/* Métricas (30% maiores) */}
+            <div className="flex flex-wrap gap-4 mt-10 justify-center lg:justify-start">
               {[
-                { icon: <Users size={12} />, val: '+850 mil',   label: 'seguidores' },
-                { icon: <Eye size={12} />,   val: '+120 mi',    label: 'visualizações' },
-                { icon: <Users size={12} />, val: '+200 mil',   label: 'famílias' },
-                { icon: <Shield size={12} />, val: '100%',      label: 'seguro p/ crianças' },
+                { icon: <Users size={18} />, val: '+850 mil',   label: 'seguidores' },
+                { icon: <Eye size={18} />,   val: '+120 mi',    label: 'visualizações' },
+                { icon: <Users size={18} />, val: '+200 mil',   label: 'famílias' },
+                { icon: <Shield size={18} />, val: '100%',      label: 'seguro p/ crianças' },
               ].map((m, i) => (
-                <div key={i} className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-xl border border-white/5 shadow-md">
+                <div key={i} className="flex items-center gap-2.5 bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-xl border border-white/5 shadow-md">
                   <span style={{ color: PRIMARY }}>{m.icon}</span>
                   <span>
-                    <span className="text-white font-black text-[11px]" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{m.val}</span>
-                    <span className="text-white/70 text-[9px] ml-1 font-bold">{m.label}</span>
+                    <span className="text-white font-black text-[18px]" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{m.val}</span>
+                    <span className="text-white/70 text-[14px] ml-1.5 font-bold">{m.label}</span>
                   </span>
                 </div>
               ))}
@@ -293,7 +295,7 @@ export default function LandingPage() {
 
           {/* Card de benefícios (direita) */}
           <div
-            className="w-full lg:w-[340px] shrink-0 rounded-2xl p-6 transition-all duration-300"
+            className="w-full lg:w-[340px] shrink-0 rounded-2xl p-6 transition-all duration-300 lg:-mr-12"
             style={{
               background: 'rgba(15,22,42,0.92)',
               border: `1px solid ${PRIMARY}44`,
@@ -630,27 +632,34 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {/* Download dos apps */}
-          <div className="relative z-10 flex flex-col gap-3 shrink-0 items-center md:items-end">
+          {/* Download dos apps vetorizados oficiais */}
+          <div className="relative z-10 flex flex-col gap-3.5 shrink-0 items-center md:items-end">
             <p className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Baixe nosso app</p>
             <a
               href="https://play.google.com/store/apps/details?id=com.ldpstudios.contosdeoracao"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-5 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', textDecoration: 'none' }}
+              className="transition-all hover:scale-105 active:scale-95 duration-200"
+              style={{ display: 'inline-block', textDecoration: 'none' }}
             >
-              <Smartphone size={18} style={{ color: PRIMARY }} />
-              Google Play
+              <img
+                src="/google-play-badge.svg"
+                alt="Disponível no Google Play"
+                className="h-[46px] w-auto block select-none"
+              />
             </a>
-            <a
-              href="#"
-              className="flex items-center gap-3 px-5 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
-              style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', textDecoration: 'none' }}
+            <div
+              className="transition-all duration-200"
+              style={{ display: 'inline-block', textDecoration: 'none' }}
+              title="App Store (Em breve)"
             >
-              <Smartphone size={18} style={{ color: PRIMARY }} />
-              App Store (em breve)
-            </a>
+              <img
+                src="/app-store-badge.svg"
+                alt="Disponível na App Store (em breve)"
+                className="h-[46px] w-auto block opacity-40 filter grayscale select-none"
+              />
+              <span className="block text-center text-[10px] text-white/30 font-bold mt-1 tracking-wider uppercase">App Store (em breve)</span>
+            </div>
           </div>
         </div>
       </section>
