@@ -167,3 +167,21 @@ select option { background: #090B10; color: #F8FAFC; }
 }
 .qr-pulse { animation: qrPulse 2s infinite; }
 
+/* ── Login Modal Animation (pop in from above) ── */
+@keyframes loginModalIn {
+  0%   { opacity: 0; transform: scale(0.82) translateY(-40px); }
+  70%  { transform: scale(1.02) translateY(4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.login-modal-in {
+  animation: loginModalIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── Sidebar menu item hover (available future items) ── */
+.sidebar-item-active {
+  transition: background 0.2s, color 0.2s;
+}
+.sidebar-item-active:hover {
+  background: rgba(212,175,55,0.08);
+  color: #D4AF37;
+}

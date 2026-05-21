@@ -16,7 +16,7 @@ export default async function Home({ searchParams }: Props) {
   return (
     <main>
       <DynamicBackground />
-      <Navbar />
+      <Navbar /> {/* sidebar fixa 220px no desktop */}
 
       {/* Banner de acesso expirado */}
       {acesso === 'expirado' && (
@@ -42,9 +42,12 @@ export default async function Home({ searchParams }: Props) {
         </div>
       )}
 
-      <Hero />
-
-      <Footer />
+      {/* Conteúdo deslocado para direita da sidebar no desktop */}
+      <div className="md:ml-[220px]">
+        <Hero />
+        <Footer />
+      </div>
     </main>
   );
 }
+
