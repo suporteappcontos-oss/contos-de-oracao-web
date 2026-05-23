@@ -20,7 +20,7 @@ git push
 echo.
 echo [4/4] Enviando direto para os servidores da Vercel...
 echo Por favor, aguarde o deploy terminar...
-npx vercel --prod --yes
+call npx vercel --prod --yes
 
 echo.
 echo ===================================================
