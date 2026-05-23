@@ -484,16 +484,16 @@ export default function LandingPage() {
                   <div className="absolute bottom-0 w-full h-[50px] bg-gradient-to-t from-[#090B10] to-transparent z-20" />
                 </div>
 
-                {/* Título e Ícone */}
-                <div className="p-5 flex flex-col gap-3 relative z-30 -mt-2">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg"
+                {/* Título e Ícone na mesma linha */}
+                <div className="p-5 flex items-center gap-3 relative z-30 -mt-2">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shrink-0"
                     style={{ background: `${cat.color}20`, border: `1px solid ${cat.color}40` }}>
                     <CatIcon size={16} style={{ color: cat.color }} />
                   </div>
                   
-                  <h3 className="text-transparent bg-clip-text font-black text-lg leading-snug tracking-tight whitespace-pre-line"
+                  <h3 className="text-transparent bg-clip-text font-black text-[16px] leading-tight tracking-tight"
                     style={{ backgroundImage: `linear-gradient(135deg, #fff, ${cat.color})` }}>
-                    {cat.label}
+                    {cat.labelFlat}
                   </h3>
                 </div>
               </Link>
