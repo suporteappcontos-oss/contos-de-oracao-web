@@ -6,7 +6,9 @@ import { login } from '@/app/login/actions';
 import PasswordField from '@/components/PasswordField';
 import SubmitButton from '@/components/SubmitButton';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
+import { CATEGORIAS_CONFIG } from '@/app/materiais/constants';
 const QRLogin = dynamic(() => import('@/components/QRLogin'), { ssr: false });
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
@@ -454,20 +456,49 @@ export default function LandingPage() {
           MATERIAIS PEDAGÓGICOS
       ══════════════════════════════════════════════════════════════════════ */}
       <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
-        <SectionTitle title="Materiais pedagógicos em PDF" href="/planos" />
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {MATERIAIS_PEDAGOGICOS.map((m, i) => (
-            <Link
-              key={i}
-              href="/materiais"
-              className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all hover:scale-105 hover:bg-white/10"
-              style={{ background: BG_CARD, border: '1px solid rgba(255,255,255,0.07)', textDecoration: 'none' }}
-            >
-              <span className="text-3xl">{m.icon}</span>
-              <span className="text-white text-xs font-bold text-center leading-tight">{m.label}</span>
-              <span className="text-xs font-bold" style={{ color: PRIMARY }}>{m.count}</span>
-            </Link>
-          ))}
+        <SectionTitle title="Materiais pedagógicos em PDF" href="/materiais" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {CATEGORIAS_CONFIG.map((cat) => {
+            const CatIcon = cat.icon;
+            return (
+              <Link
+                key={cat.value}
+                href="/materiais"
+                className={`group relative flex flex-col rounded-[24px] border overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${cat.border}`}
+                style={{ backgroundColor: 'rgba(15, 20, 30, 0.6)', backdropFilter: 'blur(10px)', textDecoration: 'none' }}
+              >
+                {/* Glow interno no hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-40"
+                  style={{ boxShadow: `0 0 30px ${cat.glow} inset` }} />
+
+                {/* Imagem superior do card */}
+                <div className="relative h-[150px] overflow-hidden flex items-end justify-center">
+                  <Image 
+                    src={cat.image} 
+                    alt={cat.labelFlat} 
+                    fill 
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(15,20,30,0.95)] via-transparent to-transparent z-10" />
+                  <div className="absolute bottom-0 w-full h-[50px] bg-gradient-to-t from-[#090B10] to-transparent z-20" />
+                </div>
+
+                {/* Título e Ícone */}
+                <div className="p-5 flex flex-col gap-3 relative z-30 -mt-2">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg"
+                    style={{ background: `${cat.color}20`, border: `1px solid ${cat.color}40` }}>
+                    <CatIcon size={16} style={{ color: cat.color }} />
+                  </div>
+                  
+                  <h3 className="text-transparent bg-clip-text font-black text-lg leading-snug tracking-tight whitespace-pre-line"
+                    style={{ backgroundImage: `linear-gradient(135deg, #fff, ${cat.color})` }}>
+                    {cat.label}
+                  </h3>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
