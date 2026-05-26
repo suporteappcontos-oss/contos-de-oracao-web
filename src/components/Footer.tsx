@@ -127,12 +127,10 @@ export default function Footer() {
                     {/* Opção Celular */}
                     <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-white/5 transition-all duration-200">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-black/40 border border-white/10 shrink-0 relative">
-                          <Image src="/logo.png" alt="Celular Logo" width={40} height={40} className="object-cover" />
-                        </div>
+                        <Image src="/logo.png" alt="Celular Logo" width={42} height={42} className="object-contain shrink-0" />
                         <div className="flex flex-col">
-                          <span className="text-white font-extrabold text-xs">Celular</span>
-                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">Mobile</span>
+                          <span className="text-white font-extrabold text-xs">Contos de Oração</span>
+                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">Smartphone</span>
                         </div>
                       </div>
                       <a
@@ -152,12 +150,10 @@ export default function Footer() {
                     {/* Opção TV */}
                     <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-white/5 transition-all duration-200">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-black/40 border border-white/10 shrink-0 relative">
-                          <Image src="/logo_tv.png" alt="TV Logo" width={40} height={40} className="object-cover" />
-                        </div>
+                        <Image src="/logo_tv.png" alt="TV Logo" width={54} height={54} className="object-contain shrink-0" />
                         <div className="flex flex-col">
-                          <span className="text-white font-extrabold text-xs">Smart TV</span>
-                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">TV Box</span>
+                          <span className="text-white font-extrabold text-xs">Contos de Oração TV</span>
+                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">Smart TV</span>
                         </div>
                       </div>
                       <a
