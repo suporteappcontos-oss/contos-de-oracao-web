@@ -1,50 +1,11 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Smartphone, Tv, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 export default function Footer() {
-  const [versaoMobile, setVersaoMobile] = useState('1.0.33');
-  const [linkMobile, setLinkMobile] = useState('https://contos-midia-app.b-cdn.net/apks/ContosDeOracao_Mobile_v1.0.33.apk');
-  const [versaoTv, setVersaoTv] = useState('1.0.27');
-  const [linkTv, setLinkTv] = useState('https://contos-midia-app.b-cdn.net/apk-tv/contos-tv-v1.0.27.apk');
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Buscar versão mobile
-    const fetchMobile = async () => {
-      try {
-        const ts = new Date().getTime();
-        const res = await fetch(`/api/apk?t=${ts}`, { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.versao_atual) setVersaoMobile(data.versao_atual);
-          if (data.link_download) setLinkMobile(data.link_download);
-        }
-      } catch (e) {
-        console.error('Erro ao buscar versão mobile no footer:', e);
-      }
-    };
-
-    // Buscar versão TV
-    const fetchTv = async () => {
-      try {
-        const ts = new Date().getTime();
-        const res = await fetch(`/versao_tv.json?t=${ts}`, { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.versao_atual) setVersaoTv(data.versao_atual);
-          if (data.link_download) setLinkTv(data.link_download);
-        }
-      } catch (e) {
-        console.error('Erro ao buscar versão TV no footer:', e);
-      }
-    };
-
-    fetchMobile();
-    fetchTv();
-  }, []);
 
   // Fechar ao clicar fora
   useEffect(() => {
@@ -56,6 +17,7 @@ export default function Footer() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
 
   return (
     <footer
@@ -135,7 +97,7 @@ export default function Footer() {
               {/* Popover/Dropdown */}
               {showDropdown && (
                 <div
-                  className="absolute bottom-full right-0 mb-3 z-[100] w-[290px] rounded-2xl p-4 transition-all duration-300 animate-fade-in"
+                  className="absolute bottom-full right-0 mb-3 z-[100] w-[320px] rounded-2xl p-4 transition-all duration-300 animate-fade-in"
                   style={{
                     background: 'rgba(15, 23, 42, 0.95)',
                     backdropFilter: 'blur(16px)',
@@ -151,7 +113,7 @@ export default function Footer() {
 
                   <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
                     <span className="text-white text-xs font-black uppercase tracking-wider">
-                      Escolha a versão
+                      Escolha o Aplicativo
                     </span>
                     <button
                       onClick={() => setShowDropdown(false)}
@@ -161,54 +123,56 @@ export default function Footer() {
                     </button>
                   </div>
 
-                  <div className="flex flex-col gap-2.5">
-                    {/* Botão Celular */}
-                    <a
-                      href={linkMobile}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 border border-white/5 hover:border-[#D4AF37]/30 transition-all duration-200 group no-underline text-left"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] group-hover:scale-105 transition-transform duration-200">
-                        <Smartphone size={18} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white font-extrabold text-xs">Versão Celular</div>
-                        <div className="text-white/40 text-[10px] mt-0.5 flex items-center gap-1">
-                          APK Oficial <span className="text-[#D4AF37] font-semibold">v{versaoMobile}</span>
+                  <div className="flex flex-col gap-3">
+                    {/* Opção Celular */}
+                    <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-white/5 transition-all duration-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-black/40 border border-white/10 shrink-0 relative">
+                          <Image src="/logo.png" alt="Celular Logo" width={40} height={40} className="object-cover" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-white font-extrabold text-xs">Celular</span>
+                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">Mobile</span>
                         </div>
                       </div>
-                    </a>
+                      <a
+                        href="https://play.google.com/store/apps/details?id=com.ldpstudios.contosdeoracao"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="transition-all hover:scale-105 active:scale-95 duration-200 shrink-0"
+                      >
+                        <img
+                          src="/google-play-badge.svg"
+                          alt="Google Play Celular"
+                          className="h-[32px] w-auto block select-none"
+                        />
+                      </a>
+                    </div>
 
-                    {/* Botão TV */}
-                    <a
-                      href={linkTv}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 border border-white/5 hover:border-[#D4AF37]/30 transition-all duration-200 group no-underline text-left"
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] group-hover:scale-105 transition-transform duration-200">
-                        <Tv size={18} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white font-extrabold text-xs">Versão Smart TV</div>
-                        <div className="text-white/40 text-[10px] mt-0.5 flex items-center gap-1">
-                          APK TV Box <span className="text-[#D4AF37] font-semibold">v{versaoTv}</span>
+                    {/* Opção TV */}
+                    <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-white/5 transition-all duration-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-black/40 border border-white/10 shrink-0 relative">
+                          <Image src="/logo_tv.png" alt="TV Logo" width={40} height={40} className="object-cover" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-white font-extrabold text-xs">Smart TV</span>
+                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">TV Box</span>
                         </div>
                       </div>
-                    </a>
-                  </div>
-
-                  {/* Link opcional para Play Store */}
-                  <div className="mt-3 pt-2.5 border-t border-white/5 text-center">
-                    <a
-                      href="https://play.google.com/store/apps/details?id=com.ldpstudios.contosdeoracao"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[10px] text-[#94A3B8] hover:text-[#D4AF37] transition-colors font-semibold no-underline inline-block"
-                    >
-                      Ou acesse a Google Play Store →
-                    </a>
+                      <a
+                        href="https://play.google.com/store/apps/details?id=br.com.contosdeoracao.app_tv"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="transition-all hover:scale-105 active:scale-95 duration-200 shrink-0"
+                      >
+                        <img
+                          src="/google-play-badge.svg"
+                          alt="Google Play Smart TV"
+                          className="h-[32px] w-auto block select-none"
+                        />
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
