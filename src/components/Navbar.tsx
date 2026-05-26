@@ -166,17 +166,17 @@ export default function Navbar() {
         </button>
 
         {/* Logo Centro — Posicionado de forma absoluta no centro físico da barra de navegação para evitar qualquer oscilação ou deslocamento quando o botão do menu é acionado */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 z-10">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden shrink-0 shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-            <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-cover w-full h-full" />
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 sm:gap-3.5 z-10">
+          <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(0,0,0,0.6)] border border-white/15">
+            <Image src="/logo.png" alt="Contos de Oração" width={52} height={52} className="object-cover w-full h-full" />
           </div>
           <div className="text-left hidden min-[360px]:block">
-            <div className="text-white font-black text-xs sm:text-sm leading-tight tracking-wide"
-              style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)', fontFamily: 'Outfit, sans-serif' }}>
+            <div className="text-white font-black text-sm sm:text-lg md:text-xl leading-tight tracking-wide"
+              style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração
             </div>
-            <div className="text-[#D4AF37] text-[0.45rem] sm:text-[0.5rem] font-black uppercase tracking-widest leading-none mt-0.5"
-              style={{ textShadow: '0 1px 6px rgba(0,0,0,0.8)' }}>
+            <div className="text-[#D4AF37] text-[0.55rem] sm:text-[0.65rem] md:text-[0.7rem] font-black uppercase tracking-widest leading-none mt-1"
+              style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
               Catequese Digital
             </div>
           </div>
