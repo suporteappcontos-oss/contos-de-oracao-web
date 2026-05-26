@@ -94,50 +94,63 @@ export default function Footer() {
                 />
               </button>
 
-              {/* Popover/Dropdown */}
+              {/* Popover/Dropdown Ultra-Premium */}
               {showDropdown && (
                 <div
-                  className="absolute bottom-full right-0 mb-3 z-[100] w-[320px] rounded-2xl p-4 transition-all duration-300 animate-fade-in"
+                  className="absolute bottom-full right-0 mb-4 z-[100] w-[340px] rounded-3xl p-5 animate-fade-in"
                   style={{
-                    background: 'rgba(15, 23, 42, 0.95)',
-                    backdropFilter: 'blur(16px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.1)',
+                    background: 'radial-gradient(circle at top left, rgba(20, 30, 55, 0.96), rgba(9, 11, 16, 0.98))',
+                    backdropFilter: 'blur(24px)',
+                    border: '1px solid rgba(212, 175, 55, 0.15)',
+                    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 175, 55, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
                   }}
                 >
                   {/* Seta do balão */}
                   <div
                     className="absolute top-full right-6 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px]"
-                    style={{ borderTopColor: 'rgba(15, 23, 42, 0.95)' }}
+                    style={{ borderTopColor: 'rgba(9, 11, 16, 0.98)' }}
                   />
 
-                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
-                    <span className="text-white text-xs font-black uppercase tracking-wider">
+                  {/* Header do Popover */}
+                  <div className="flex items-center justify-between mb-4 pb-2.5" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                    <span className="text-white text-xs font-black uppercase tracking-widest bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                       Escolha o Aplicativo
                     </span>
                     <button
                       onClick={() => setShowDropdown(false)}
-                      className="text-white/40 hover:text-white transition-colors p-1 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center"
+                      className="text-white/40 hover:text-white hover:bg-white/10 transition-all p-1.5 rounded-full bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
                     >
                       <X size={14} />
                     </button>
                   </div>
 
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3.5">
                     {/* Opção Celular */}
-                    <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-white/5 transition-all duration-200">
+                    <div 
+                      className="flex items-center justify-between gap-4 p-3 rounded-2xl transition-all duration-300 group"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01))',
+                        border: '1px solid rgba(255, 255, 255, 0.04)',
+                      }}
+                    >
                       <div className="flex items-center gap-3">
-                        <Image src="/logo.png" alt="Celular Logo" width={42} height={42} className="object-contain shrink-0" />
+                        <div className="relative w-12 h-12 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
+                          {/* Glow sutil atrás da logo */}
+                          <div className="absolute inset-0 bg-[#D4AF37]/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <Image src="/logo.png" alt="Celular Logo" width={44} height={44} className="object-contain relative z-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]" />
+                        </div>
                         <div className="flex flex-col">
-                          <span className="text-white font-extrabold text-xs">Contos de Oração</span>
-                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">Smartphone</span>
+                          <span className="text-white font-black text-xs tracking-wide">Contos de Oração</span>
+                          <span className="text-[#D4AF37] text-[8px] font-extrabold uppercase tracking-widest mt-0.5" style={{ textShadow: '0 0 8px rgba(212, 175, 55, 0.2)' }}>
+                            Smartphone
+                          </span>
                         </div>
                       </div>
                       <a
                         href="https://play.google.com/store/apps/details?id=com.ldpstudios.contosdeoracao"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="transition-all hover:scale-105 active:scale-95 duration-200 shrink-0"
+                        className="transition-all hover:scale-105 active:scale-95 duration-200 shrink-0 hover:brightness-110"
                       >
                         <img
                           src="/google-play-badge.svg"
@@ -148,19 +161,31 @@ export default function Footer() {
                     </div>
 
                     {/* Opção TV */}
-                    <div className="flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-white/5 transition-all duration-200">
+                    <div 
+                      className="flex items-center justify-between gap-4 p-3 rounded-2xl transition-all duration-300 group"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01))',
+                        border: '1px solid rgba(255, 255, 255, 0.04)',
+                      }}
+                    >
                       <div className="flex items-center gap-3">
-                        <Image src="/logo_tv.png" alt="TV Logo" width={54} height={54} className="object-contain shrink-0" />
+                        <div className="relative w-12 h-12 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
+                          {/* Glow sutil atrás da logo */}
+                          <div className="absolute inset-0 bg-[#D4AF37]/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <Image src="/logo_tv.png" alt="TV Logo" width={56} height={56} className="object-contain relative z-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]" />
+                        </div>
                         <div className="flex flex-col">
-                          <span className="text-white font-extrabold text-xs">Contos de Oração TV</span>
-                          <span className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-wider mt-0.5">Smart TV</span>
+                          <span className="text-white font-black text-xs tracking-wide">Contos de Oração TV</span>
+                          <span className="text-[#D4AF37] text-[8px] font-extrabold uppercase tracking-widest mt-0.5" style={{ textShadow: '0 0 8px rgba(212, 175, 55, 0.2)' }}>
+                            Smart TV
+                          </span>
                         </div>
                       </div>
                       <a
                         href="https://play.google.com/store/apps/details?id=br.com.contosdeoracao.app_tv"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="transition-all hover:scale-105 active:scale-95 duration-200 shrink-0"
+                        className="transition-all hover:scale-105 active:scale-95 duration-200 shrink-0 hover:brightness-110"
                       >
                         <img
                           src="/google-play-badge.svg"
