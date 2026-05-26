@@ -1,7 +1,62 @@
-import React from 'react';
+'use client';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { Smartphone, Tv, X } from 'lucide-react';
 
 export default function Footer() {
+  const [versaoMobile, setVersaoMobile] = useState('1.0.33');
+  const [linkMobile, setLinkMobile] = useState('https://contos-midia-app.b-cdn.net/apks/ContosDeOracao_Mobile_v1.0.33.apk');
+  const [versaoTv, setVersaoTv] = useState('1.0.27');
+  const [linkTv, setLinkTv] = useState('https://contos-midia-app.b-cdn.net/apk-tv/contos-tv-v1.0.27.apk');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Buscar versão mobile
+    const fetchMobile = async () => {
+      try {
+        const ts = new Date().getTime();
+        const res = await fetch(`/api/apk?t=${ts}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.versao_atual) setVersaoMobile(data.versao_atual);
+          if (data.link_download) setLinkMobile(data.link_download);
+        }
+      } catch (e) {
+        console.error('Erro ao buscar versão mobile no footer:', e);
+      }
+    };
+
+    // Buscar versão TV
+    const fetchTv = async () => {
+      try {
+        const ts = new Date().getTime();
+        const res = await fetch(`/versao_tv.json?t=${ts}`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.versao_atual) setVersaoTv(data.versao_atual);
+          if (data.link_download) setLinkTv(data.link_download);
+        }
+      } catch (e) {
+        console.error('Erro ao buscar versão TV no footer:', e);
+      }
+    };
+
+    fetchMobile();
+    fetchTv();
+  }, []);
+
+  // Fechar ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <footer
       className="pt-14 pb-8 px-[4%]"
@@ -63,20 +118,101 @@ export default function Footer() {
             {/* Linha vertical divisória sutil */}
             <div className="hidden sm:block w-[1.5px] h-6 bg-white/10" />
 
-            {/* Google Play Oficial */}
-            <a
-              href="https://play.google.com/store/apps/details?id=com.ldpstudios.contosdeoracao"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-all hover:scale-105 active:scale-95 duration-200"
-              style={{ display: 'inline-block' }}
-            >
-              <img
-                src="/google-play-badge.svg"
-                alt="Disponível no Google Play"
-                className="h-[36px] w-auto block select-none"
-              />
-            </a>
+            {/* Google Play Oficial - Abre modal/popover */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="transition-all hover:scale-105 active:scale-95 duration-200 border-none bg-transparent p-0 cursor-pointer block"
+                title="Baixar Aplicativos"
+              >
+                <img
+                  src="/google-play-badge.svg"
+                  alt="Disponível no Google Play"
+                  className="h-[36px] w-auto block select-none"
+                />
+              </button>
+
+              {/* Popover/Dropdown */}
+              {showDropdown && (
+                <div
+                  className="absolute bottom-full right-0 mb-3 z-[100] w-[290px] rounded-2xl p-4 transition-all duration-300 animate-fade-in"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.95)',
+                    backdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.1)',
+                  }}
+                >
+                  {/* Seta do balão */}
+                  <div
+                    className="absolute top-full right-6 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px]"
+                    style={{ borderTopColor: 'rgba(15, 23, 42, 0.95)' }}
+                  />
+
+                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
+                    <span className="text-white text-xs font-black uppercase tracking-wider">
+                      Escolha a versão
+                    </span>
+                    <button
+                      onClick={() => setShowDropdown(false)}
+                      className="text-white/40 hover:text-white transition-colors p-1 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-2.5">
+                    {/* Botão Celular */}
+                    <a
+                      href={linkMobile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 border border-white/5 hover:border-[#D4AF37]/30 transition-all duration-200 group no-underline text-left"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] group-hover:scale-105 transition-transform duration-200">
+                        <Smartphone size={18} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-white font-extrabold text-xs">Versão Celular</div>
+                        <div className="text-white/40 text-[10px] mt-0.5 flex items-center gap-1">
+                          APK Oficial <span className="text-[#D4AF37] font-semibold">v{versaoMobile}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                    {/* Botão TV */}
+                    <a
+                      href={linkTv}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 border border-white/5 hover:border-[#D4AF37]/30 transition-all duration-200 group no-underline text-left"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] group-hover:scale-105 transition-transform duration-200">
+                        <Tv size={18} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-white font-extrabold text-xs">Versão Smart TV</div>
+                        <div className="text-white/40 text-[10px] mt-0.5 flex items-center gap-1">
+                          APK TV Box <span className="text-[#D4AF37] font-semibold">v{versaoTv}</span>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                  {/* Link opcional para Play Store */}
+                  <div className="mt-3 pt-2.5 border-t border-white/5 text-center">
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.ldpstudios.contosdeoracao"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] text-[#94A3B8] hover:text-[#D4AF37] transition-colors font-semibold no-underline inline-block"
+                    >
+                      Ou acesse a Google Play Store →
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
