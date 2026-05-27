@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Play, Clock } from 'lucide-react'
+import { Play } from 'lucide-react'
 
 // Fallback com imagens de oração/espiritualidade
 const FALLBACK_IMAGES = [
@@ -133,16 +133,6 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
                 <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
                     <Play fill="#090B10" className="w-5 h-5 text-[#090B10] ml-1" />
                 </div>
-            </div>
-
-            {/* Informações superiores (Duração) */}
-            <div className="absolute top-2 left-2 right-2 flex justify-between items-start z-10">
-              {video.duracao ? (
-                <div className="bg-black/60 backdrop-blur-md px-2 py-1 rounded border border-white/10 flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-white/80" />
-                    <span className="text-[0.6rem] font-bold text-white/90 tracking-wide">{video.duracao}</span>
-                </div>
-              ) : <div />}
             </div>
 
             {/* Título do Vídeo no canto inferior */}

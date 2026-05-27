@@ -76,6 +76,37 @@ export default async function WatchPage() {
     }
   }
 
+  // 🎬 ORGANIZAÇÃO DE CATEGORIAS EXCLUSIVAS (Última Temporada e Clipes)
+  const videosTemporadaTodos = (videos ?? []).filter(v => v.categoria === 'Temporada' && v.temporada_nome);
+  let ultimaTemporadaNome: string | null = null;
+  let videosUltimaTemporada: Video[] = [];
+
+  if (videosTemporadaTodos.length > 0) {
+    // Ordenamos por data de criação desc para achar o mais recente e descobrir o nome da última temporada
+    const ordenadosPorCriadoEm = [...videosTemporadaTodos].sort((a, b) => {
+      return new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime();
+    });
+    ultimaTemporadaNome = ordenadosPorCriadoEm[0].temporada_nome;
+    
+    if (ultimaTemporadaNome) {
+      // Filtramos todos os episódios dessa temporada específica e ordenamos por número de episódio em ordem crescente (1, 2, 3...)
+      videosUltimaTemporada = (videos ?? [])
+        .filter(v => v.categoria === 'Temporada' && v.temporada_nome === ultimaTemporadaNome)
+        .sort((a, b) => {
+          const epA = a.episodio_numero ?? 0;
+          const epB = b.episodio_numero ?? 0;
+          return epA - epB;
+        });
+    }
+  }
+
+  // Filtramos os clipes musicais (tolerando "Video Clip", "Vídeo Clipe", etc.) ordenados por criado_em decrescente
+  const videosClipes = (videos ?? []).filter(v => 
+    v.categoria && (
+      v.categoria.toLowerCase().includes('clip') || 
+      v.categoria.toLowerCase().includes('clipe')
+    )
+  );
 
   async function logout() {
     'use server'
@@ -214,9 +245,17 @@ export default async function WatchPage() {
                 </div>
               )}
 
-              {(videos ?? []).length > 0 && (
-                <CategoryCarousel title="Todos os Vídeos" count={(videos ?? []).length}>
-                  {(videos ?? []).map((video: Video) => (
+              {videosUltimaTemporada.length > 0 && (
+                <CategoryCarousel title={ultimaTemporadaNome || 'Temporada'} count={videosUltimaTemporada.length}>
+                  {videosUltimaTemporada.map((video: Video) => (
+                    <VideoCard key={video.id} video={video} isFavoritado={favoritosSet.has(video.id)} />
+                  ))}
+                </CategoryCarousel>
+              )}
+
+              {videosClipes.length > 0 && (
+                <CategoryCarousel title="Vídeos Clipes" count={videosClipes.length}>
+                  {videosClipes.map((video: Video) => (
                     <VideoCard key={video.id} video={video} isFavoritado={favoritosSet.has(video.id)} />
                   ))}
                 </CategoryCarousel>

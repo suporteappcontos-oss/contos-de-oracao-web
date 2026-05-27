@@ -11,7 +11,7 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Clock, Heart, BarChart3, Trophy, Sliders, Megaphone
+  Heart, BarChart3, Trophy, Sliders, Megaphone
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -431,11 +431,6 @@ export default async function AdminPage({
                             {/* Badges Overlay */}
                             <div className="absolute top-3 left-3 flex gap-2">
                              </div>
-                            {video.duracao && (
-                               <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-md text-white/90 text-[0.65rem] font-bold px-2 py-1 rounded-lg border border-white/10">
-                                 <Clock size={10} /> {video.duracao}
-                               </div>
-                            )}
                             {!video.ativo && (
                               <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 pointer-events-none overflow-hidden">
                                 <div className="absolute transform -rotate-45 bg-gradient-to-r from-red-600 via-red-500 to-yellow-500 text-white font-black text-[0.7rem] sm:text-sm uppercase tracking-[0.3em] py-2 w-[150%] text-center shadow-[0_0_20px_rgba(239,68,68,0.5)] border-y-2 border-yellow-400">

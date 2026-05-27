@@ -52,24 +52,18 @@ export function FormEditarVideo({ video }: { video: VideoType }) {
             <span className="text-white text-xs font-bold">Vídeo "Em Breve" (Lançamento Futuro)</span>
           </label>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className={labelCls}>Categoria</label>
-            <select 
-              name="categoria" 
-              value={categoria} 
-              onChange={(e) => setCategoria(e.target.value)} 
-              className={inputCls}
-            >
-              {['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho', 'Temporada', 'Vídeo Clipe'].map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className={labelCls}>Duração</label>
-            <input name="duracao" defaultValue={video.duracao || ''} placeholder="Ex: 12:34" className={inputCls} />
-          </div>
+        <div>
+          <label className={labelCls}>Categoria</label>
+          <select 
+            name="categoria" 
+            value={categoria} 
+            onChange={(e) => setCategoria(e.target.value)} 
+            className={inputCls}
+          >
+            {['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho', 'Temporada', 'Vídeo Clipe'].map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className={labelCls}>
