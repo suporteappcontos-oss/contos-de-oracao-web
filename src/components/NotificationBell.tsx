@@ -184,13 +184,6 @@ export default function NotificationBell() {
               );
             })}
           </div>
-
-          {/* Rodapé */}
-          <div className="px-4 py-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-            <a href="/watch" className="block text-center text-xs text-[#D4AF37] hover:underline font-semibold" onClick={() => setOpen(false)}>
-              Ver todo o catálogo →
-            </a>
-          </div>
         </div>
       )}
     </div>
