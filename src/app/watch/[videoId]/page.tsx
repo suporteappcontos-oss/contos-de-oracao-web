@@ -28,6 +28,57 @@ export default async function VideoPlayerPage({ params }: Props) {
 
   if (!video) redirect('/watch')
 
+  // Busca o próximo vídeo da sequência (com suporte a temporadas e episódios ou ordem cronológica)
+  let proximoVideo = null
+  if (video) {
+    if (video.categoria === 'Temporada' && video.temporada_nome && video.episodio_numero !== null) {
+      // Busca o próximo episódio da mesma temporada
+      const { data: nextEp } = await supabase
+        .from('videos')
+        .select('id, titulo, thumbnail_url, bunny_video_id, bunny_library_id, duracao')
+        .eq('categoria', 'Temporada')
+        .eq('temporada_nome', video.temporada_nome)
+        .eq('ativo', true)
+        .eq('em_breve', false)
+        .gt('episodio_numero', video.episodio_numero)
+        .order('episodio_numero', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+      
+      proximoVideo = nextEp
+    } else {
+      // Busca o próximo vídeo da mesma categoria em ordem cronológica (mais antigo criado antes deste)
+      const { data: nextVid } = await supabase
+        .from('videos')
+        .select('id, titulo, thumbnail_url, bunny_video_id, bunny_library_id, duracao')
+        .eq('categoria', video.categoria)
+        .eq('ativo', true)
+        .eq('em_breve', false)
+        .lt('criado_em', video.criado_em)
+        .order('criado_em', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        
+      proximoVideo = nextVid
+    }
+
+    // Fallback: se for o último vídeo da sequência, volta para o primeiro (mais recente) da categoria
+    if (!proximoVideo) {
+      const { data: newestVid } = await supabase
+        .from('videos')
+        .select('id, titulo, thumbnail_url, bunny_video_id, bunny_library_id, duracao')
+        .eq('categoria', video.categoria)
+        .eq('ativo', true)
+        .eq('em_breve', false)
+        .order('criado_em', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (newestVid && newestVid.id !== video.id) {
+        proximoVideo = newestVid
+      }
+    }
+  }
+
   // Registra a visualização (ignorando erros caso já exista ou haja falha)
   await supabase.from('visualizacoes').insert({
     video_id: videoId,
@@ -102,7 +153,7 @@ export default async function VideoPlayerPage({ params }: Props) {
       <main className="pt-14 md:pt-[60px]">
 
         {/* ── PLAYER (protegido pelo guarda de sessões) ── */}
-        <VideoPlayerGuard videoId={videoId} embedUrl={embedUrl} />
+        <VideoPlayerGuard videoId={videoId} embedUrl={embedUrl} proximoVideo={proximoVideo} />
 
         {/* ── INFO + RELACIONADOS ── */}
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-8 flex flex-col lg:flex-row gap-8">

@@ -97,7 +97,7 @@ export default function Footer() {
               {/* Popover/Dropdown Ultra-Premium */}
               {showDropdown && (
                 <div
-                  className="absolute bottom-full right-0 mb-4 z-[100] w-[340px] rounded-3xl p-5 animate-fade-in"
+                  className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-4 z-[100] w-[280px] min-[350px]:w-[320px] sm:w-[340px] rounded-3xl p-5 animate-fade-in"
                   style={{
                     background: 'radial-gradient(circle at top left, rgba(20, 30, 55, 0.96), rgba(9, 11, 16, 0.98))',
                     backdropFilter: 'blur(24px)',
@@ -107,7 +107,7 @@ export default function Footer() {
                 >
                   {/* Seta do balão */}
                   <div
-                    className="absolute top-full right-6 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px]"
+                    className="absolute top-full left-6 sm:left-auto sm:right-6 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px]"
                     style={{ borderTopColor: 'rgba(9, 11, 16, 0.98)' }}
                   />
 

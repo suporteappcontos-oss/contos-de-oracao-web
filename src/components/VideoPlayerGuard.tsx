@@ -18,17 +18,43 @@ function getDeviceToken(): string {
 type Props = {
   videoId: string
   embedUrl: string
+  proximoVideo?: {
+    id: string
+    titulo: string
+    thumbnail_url: string | null
+    bunny_video_id: string | null
+    bunny_library_id: string
+    duracao: string | null
+  } | null
 }
 
-export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
+export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo }: Props) {
   const router = useRouter()
   const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
   const [isPaused, setIsPaused] = useState(false)
   const [anuncioAtivo, setAnuncioAtivo] = useState<any>(null)
+  const [showNextOverlay, setShowNextOverlay] = useState(false)
+  const [secondsRemaining, setSecondsRemaining] = useState(10)
+  const overlayDismissedRef = useRef(false)
+  const navigatingRef = useRef(false)
+  const proximoVideoRef = useRef(proximoVideo)
+
+  useEffect(() => {
+    proximoVideoRef.current = proximoVideo
+  }, [proximoVideo])
+  
   const heartbeatRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const realtimeRef = useRef<ReturnType<typeof createClient> | null>(null)
   const deviceToken = useRef<string>('')
   const statusRef = useRef<string>('verificando')
+
+  // Reseta estados do próximo vídeo quando muda de vídeo
+  useEffect(() => {
+    setShowNextOverlay(false);
+    setSecondsRemaining(10);
+    overlayDismissedRef.current = false;
+    navigatingRef.current = false;
+  }, [videoId]);
 
   // Busca o anúncio ativo aleatório do banco de dados
   const fetchAnuncio = useCallback(async () => {
@@ -148,6 +174,25 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
           setIsPaused(true)
         } else if (data && (data.event === 'play' || data.event === 'playing' || data.type === 'play' || data.type === 'playing')) {
           setIsPaused(false)
+        } else if (data && (data.event === 'timeupdate' || data.type === 'timeupdate')) {
+          const value = data.value || data.data
+          if (value && typeof value.seconds === 'number' && typeof value.duration === 'number') {
+            const seconds = value.seconds
+            const duration = value.duration
+            const remaining = Math.max(0, Math.ceil(duration - seconds))
+            
+            if (remaining <= 10 && remaining > 0 && !overlayDismissedRef.current && proximoVideoRef.current) {
+              setShowNextOverlay(true)
+              setSecondsRemaining(remaining)
+            } else {
+              setShowNextOverlay(false)
+            }
+            
+            if (remaining === 0 && !overlayDismissedRef.current && proximoVideoRef.current && !navigatingRef.current) {
+              navigatingRef.current = true
+              router.push(`/watch/${proximoVideoRef.current.id}`)
+            }
+          }
         }
         
         // Se o player estiver pronto, nos inscrevemos nos eventos
@@ -161,6 +206,11 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
              context: 'player.js',
              method: 'addEventListener',
              value: 'play'
+           }), '*')
+           iframeRef.current?.contentWindow?.postMessage(JSON.stringify({
+             context: 'player.js',
+             method: 'addEventListener',
+             value: 'timeupdate'
            }), '*')
         }
       } catch (e) {}
@@ -183,6 +233,11 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
          context: 'player.js',
          method: 'addEventListener',
          value: 'play'
+       }), '*')
+       iframeRef.current?.contentWindow?.postMessage(JSON.stringify({
+         context: 'player.js',
+         method: 'addEventListener',
+         value: 'timeupdate'
        }), '*')
     }, 2000)
 
@@ -295,6 +350,57 @@ export default function VideoPlayerGuard({ videoId, embedUrl }: Props) {
                      <path d="M8 5v14l11-7z"/>
                    </svg>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* OVERLAY DE PRÓXIMO VÍDEO (ESTILO YOUTUBE) */}
+        {showNextOverlay && proximoVideo && (
+          <div className="absolute bottom-16 sm:bottom-20 right-4 sm:right-8 z-40 bg-[#0B0F19]/95 backdrop-blur-md border border-[#D4AF37]/30 rounded-2xl p-4 w-[290px] min-[380px]:w-[320px] sm:w-[360px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col gap-3 animate-in slide-in-from-bottom duration-300">
+            <div className="flex gap-3">
+              <div 
+                className="w-24 sm:w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-[#15243E]"
+                style={{ 
+                  backgroundImage: `url(${proximoVideo.thumbnail_url || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400&q=70'})`, 
+                  backgroundSize: 'cover', 
+                  backgroundPosition: 'center' 
+                }}
+              />
+              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <span className="text-[#D4AF37] text-[10px] font-black uppercase tracking-wider mb-0.5">Próximo Vídeo</span>
+                <p className="text-white text-xs sm:text-sm font-bold line-clamp-2 leading-snug">
+                  {proximoVideo.titulo}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between mt-1 pt-2 border-t border-white/5">
+              <span className="text-white/50 text-[11px] font-medium">
+                Iniciando em <span className="text-[#D4AF37] font-bold">{secondsRemaining}s</span>
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    overlayDismissedRef.current = true;
+                    setShowNextOverlay(false);
+                  }}
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => {
+                    if (!navigatingRef.current) {
+                      navigatingRef.current = true;
+                      router.push(`/watch/${proximoVideo.id}`);
+                    }
+                  }}
+                  className="px-3.5 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider text-[#090B10] hover:brightness-110 transition-all cursor-pointer"
+                  style={{ background: '#D4AF37' }}
+                >
+                  Assistir Agora
+                </button>
               </div>
             </div>
           </div>

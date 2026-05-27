@@ -170,7 +170,7 @@ export default function Navbar() {
           <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(0,0,0,0.6)] border border-white/15">
             <Image src="/logo.png" alt="Contos de Oração" width={52} height={52} className="object-cover w-full h-full" />
           </div>
-          <div className="text-left hidden min-[360px]:block">
+          <div className="text-left hidden sm:block">
             <div className="text-white font-black text-sm sm:text-lg md:text-xl leading-tight tracking-wide"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração
@@ -210,7 +210,7 @@ export default function Navbar() {
           {/* Botão ASSINAR AGORA */}
           <Link
             href="/planos"
-            className="flex items-center justify-center px-4 py-2 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-[#D4AF37]/10"
+            className="flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-[#D4AF37]/10"
             style={{
               background: '#D4AF37',
               color: '#090B10',
