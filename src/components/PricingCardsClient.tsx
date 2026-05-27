@@ -195,11 +195,14 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               </div>
 
               <div className="text-left mb-6 min-h-[60px]">
-                <div className="flex items-end gap-1">
-                  <span className="text-4xl font-black text-white tracking-tight">
-                    R$ {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                <div className="flex items-baseline gap-0.5 flex-wrap">
+                  <span className="text-xl font-black text-white">
+                    R$
                   </span>
-                  <span className="text-white/40 text-sm font-medium mb-1">
+                  <span className="text-4xl font-black text-white tracking-tight">
+                    {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </span>
+                  <span className="text-white/40 text-sm font-medium">
                     /{isAnual ? 'ano' : 'mês'}
                   </span>
                 </div>

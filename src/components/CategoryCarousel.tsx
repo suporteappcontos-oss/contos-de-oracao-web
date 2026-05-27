@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, LayoutGrid, ChevronDown } from 'lucide-react'
 
-const CARD_MIN = 200  // px mínimo de cada card
+const CARD_MIN = 160  // px mínimo de cada card (mobile)
 const CARD_MAX = 320  // px máximo de cada card
 
 export default function CategoryCarousel({ 
@@ -73,7 +73,7 @@ export default function CategoryCarousel({
     <section ref={containerRef} className="mb-8 relative group" style={{ overflow: 'visible' }}>
 
       {/* Título + badge de contagem + toggle grid */}
-      <div className="flex items-center justify-between gap-3 mb-4 px-5 md:px-10 lg:px-16">
+      <div className="flex items-center justify-between gap-3 mb-4 px-3 sm:px-5 md:px-10 lg:px-16">
         <div className="flex items-baseline gap-3">
           {title && (
             <h2 className="text-white font-extrabold text-base md:text-xl tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
@@ -111,7 +111,7 @@ export default function CategoryCarousel({
       {/* ── MODO GRID (expandido ou quando cabe tudo em 1 linha) ── */}
       {modoGrid ? (
         <div
-          className="px-5 md:px-10 lg:px-16 pb-4"
+          className="px-3 sm:px-5 md:px-10 lg:px-16 pb-4"
           style={{ overflow: 'visible' }}
         >
           <div
@@ -144,7 +144,7 @@ export default function CategoryCarousel({
 
           <div
             ref={scrollRef}
-            className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-8 pt-3 px-5 md:px-10 lg:px-16 snap-x snap-mandatory"
+            className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-8 pt-3 px-3 sm:px-5 md:px-10 lg:px-16 snap-x snap-mandatory"
             style={{ overflowY: 'visible' }}
           >
             {childrenArray.map((child, i) => (

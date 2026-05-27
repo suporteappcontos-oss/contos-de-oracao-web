@@ -5,7 +5,7 @@ import Image from 'next/image'
 import {
   Heart, LogOut, Key, ChevronLeft, Calendar,
   Crown, XCircle, CheckCircle2, Play, Mail,
-  AlertTriangle, Smartphone, Download, MessageCircle
+  AlertTriangle, MessageCircle
 } from 'lucide-react'
 import ClientEditableName from './ClientEditableName'
 import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
@@ -58,17 +58,7 @@ export default async function PerfilPage() {
     favoritos = []
   }
 
-  // Busca URL e versão do APK no Bunny CDN
-  let apkUrl = 'https://contos-midia-app.b-cdn.net/apk/contos-de-oracao-v1.0.27.apk';
-  let apkNome = 'ContosDeOracao.apk';
-  try {
-    const versaoRes = await fetch(`https://contosdeoracao.com.br/versao.json?t=${Date.now()}`, { cache: 'no-store' });
-    if (versaoRes.ok) {
-      const versaoData = await versaoRes.json();
-      if (versaoData.link_download) apkUrl = versaoData.link_download;
-      if (versaoData.versao_atual) apkNome = `ContosDeOracao_v${versaoData.versao_atual}.apk`;
-    }
-  } catch { /* usa valores padrão */ }
+
 
   async function logout() {
     'use server'
@@ -251,38 +241,6 @@ export default async function PerfilPage() {
           <Pricing />
         </div>
 
-        {/* ── APLICATIVO ANDROID PREMIUM ── */}
-        <div className="mb-12 rounded-[2rem] p-8 md:p-10 relative overflow-hidden group shadow-[0_20px_50px_rgba(212,175,55,0.08)]"
-             style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.01) 100%)', border: '1px solid rgba(212,175,55,0.2)' }}>
-          <div className="absolute top-0 right-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent opacity-50" />
-          <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#D4AF37]/10 blur-[80px] rounded-full pointer-events-none transition-transform duration-700 group-hover:scale-125" />
-          
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-            <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-6">
-              <div className="relative shrink-0">
-                <div className="absolute inset-0 bg-[#D4AF37] blur-lg opacity-40 rounded-3xl animate-pulse" />
-                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] flex items-center justify-center p-[2px] shadow-xl relative z-10">
-                  <div className="w-full h-full bg-[#090B10] rounded-[22px] flex items-center justify-center">
-                    <Smartphone size={32} className="text-[#D4AF37]" />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-white font-black text-2xl mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>App Oficial Contos de Oração</h4>
-                <p className="text-[#94A3B8] text-sm md:text-base max-w-lg font-light leading-relaxed">
-                  Acesse pelo celular, na TV, ou onde quiser. Tenha as orações e retiros no seu bolso com navegação fluida e Login por QR Code.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 w-full md:w-auto shrink-0">
-              <a href={apkUrl} download={apkNome} className="flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-black text-sm transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(212,175,55,0.4)]"
-                 style={{ background: '#D4AF37', color: '#090B10' }}>
-                <Download size={18} />
-                Baixar para Android (.APK)
-              </a>
-            </div>
-          </div>
-        </div>
 
         {/* ── MEUS FAVORITOS ── */}
         <div>
