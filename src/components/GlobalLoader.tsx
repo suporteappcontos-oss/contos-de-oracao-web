@@ -23,7 +23,9 @@ function GlobalLoaderInner() {
         if (
           url.origin === window.location.origin && 
           url.pathname !== window.location.pathname &&
-          !target.target // Ignora links _blank
+          !target.target && // Ignora links _blank
+          !target.hasAttribute('download') && // Ignora links de download
+          !url.pathname.startsWith('/api/') // Ignora rotas de API
         ) {
           setLoading(true)
         }
