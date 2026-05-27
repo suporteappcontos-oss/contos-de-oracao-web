@@ -36,7 +36,7 @@ export default function CategoryCarousel({
   }
 
   return (
-    <section className="mb-8 relative group">
+    <section className="mb-8 relative group" style={{ overflow: 'visible' }}>
 
       {/* Título (estilo App: bold branco + ação dourada) */}
       <div className="flex items-baseline gap-3 mb-4 px-5 md:px-10 lg:px-16">
@@ -47,7 +47,7 @@ export default function CategoryCarousel({
         )}
       </div>
 
-      <div className="relative">
+      <div className="relative" style={{ overflow: 'visible' }}>
         {/* Seta Esquerda */}
         {showLeft && (
           <button
@@ -64,10 +64,11 @@ export default function CategoryCarousel({
 
         <div
           ref={scrollRef}
-          className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-8 px-5 md:px-10 lg:px-16 snap-x snap-mandatory"
+          className="flex gap-3 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-8 pt-3 px-5 md:px-10 lg:px-16 snap-x snap-mandatory"
+          style={{ overflowY: 'visible' }}
         >
           {React.Children.map(children, child => (
-            <div className="flex-shrink-0 snap-start">{child}</div>
+            <div className="flex-shrink-0 snap-start py-2">{child}</div>
           ))}
         </div>
 
