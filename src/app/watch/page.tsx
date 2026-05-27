@@ -245,12 +245,6 @@ export default async function WatchPage() {
                             className="absolute inset-0"
                             style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.3) 0%, transparent 100%)' }}
                           />
-                          {/* Brilho hover */}
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                            <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
-                              <Plus className="w-5 h-5 text-[#090B10]" />
-                            </div>
-                          </div>
                         </div>
                       </Link>
                       <Link href="/materiais" className="group block hover:no-underline">

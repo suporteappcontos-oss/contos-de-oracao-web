@@ -125,8 +125,9 @@ export default async function CategoriaPage({ params }: Props) {
         <div className="max-w-[1080px] mx-auto">
 
           <Link href="/materiais"
-            className="inline-flex items-center gap-2 text-white/25 hover:text-white/60 text-[11px] font-bold mb-8 transition-colors tracking-[0.15em] uppercase">
-            <ArrowLeft size={12} />Material Pedagógico
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:bg-white/10 mb-8"
+            style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)' }}>
+            <ArrowLeft size={14} /> Voltar ao Material Pedagógico
           </Link>
 
           <div className="flex items-center gap-4">
@@ -195,11 +196,7 @@ export default async function CategoriaPage({ params }: Props) {
                     {/* Gradiente */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
-                    {/* Badge */}
-                    <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider backdrop-blur-sm"
-                      style={{ background: `${cat.color}28`, color: cat.color, border: `1px solid ${cat.color}45` }}>
-                      {categoria.toUpperCase()}
-                    </div>
+
 
                     {/* Lock */}
                     {!temAcesso && (
