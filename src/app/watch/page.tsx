@@ -6,6 +6,7 @@ import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import NotificationBell from '@/components/NotificationBell'
+import Footer from '@/components/Footer'
 import { LogOut, Settings, BookOpen, Plus } from 'lucide-react'
 
 type Video = {
@@ -302,15 +303,7 @@ export default async function WatchPage() {
             </div>
 
             {/* Rodapé */}
-            <footer className="mt-20 pb-10 pt-8 px-5 md:px-10 lg:px-16"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <div className="flex items-center gap-3">
-                <Image src="/logo.png" alt="Logo" width={28} height={28} className="opacity-50 object-contain" />
-                <span style={{ color: '#94A3B8', fontSize: '0.75rem' }}>
-                  Contos de Oração · Todos os direitos reservados
-                </span>
-              </div>
-            </footer>
+            <Footer />
           </>
         )}
       </main>

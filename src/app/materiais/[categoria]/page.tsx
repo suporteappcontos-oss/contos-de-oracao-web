@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { BookOpen, Gamepad2, Pencil, Library, ArrowLeft, Lock, GraduationCap } from 'lucide-react'
 import { Metadata } from 'next'
 import { BotaoDownload } from '@/components/BotaoDownload'
+import Footer from '@/components/Footer'
 
 const CATEGORIAS: Record<string, { label: string; icon: any; color: string; descricao: string }> = {
   hq:      { label: 'Histórias em Quadrinhos', icon: BookOpen, color: '#D4AF37', descricao: 'HQs religiosas exclusivas para download' },
@@ -247,6 +248,7 @@ export default async function CategoriaPage({ params }: Props) {
           </div>
         )}
       </div>
+      <Footer />
     </main>
   )
 }

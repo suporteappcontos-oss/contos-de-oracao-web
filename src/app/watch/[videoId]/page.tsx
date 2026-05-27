@@ -5,6 +5,7 @@ import Image from 'next/image'
 import FavoritoButton from '@/components/FavoritoButton'
 
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
+import Footer from '@/components/Footer'
 import { ChevronLeft, Clock, ChevronRight } from 'lucide-react'
 import crypto from 'crypto'
 
@@ -239,6 +240,7 @@ export default async function VideoPlayerPage({ params }: Props) {
           )}
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

@@ -10,6 +10,7 @@ import {
 import ClientEditableName from './ClientEditableName'
 import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
 import Pricing from '@/components/Pricing'
+import Footer from '@/components/Footer'
 
 type VideoFavorito = {
   id: string
@@ -292,7 +293,7 @@ export default async function PerfilPage() {
         </div>
 
         {/* Logout */}
-        <div className="mt-12 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="mt-12 pt-8 mb-12" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
           <form action={logout}>
             <button type="submit"
               className="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-xl font-bold text-sm bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 transition-all cursor-pointer shadow-lg shadow-red-500/5">
@@ -301,6 +302,7 @@ export default async function PerfilPage() {
           </form>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

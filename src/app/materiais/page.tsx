@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { BookOpen, Gamepad2, Pencil, Library, ArrowLeft, ChevronRight } from 'lucide-react'
 import { Metadata } from 'next'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Material Pedagógico | Contos de Oração',
@@ -216,6 +217,7 @@ export default async function MateriaisPage() {
           })}
         </div>
       </div>
+      <Footer />
     </main>
   )
 }

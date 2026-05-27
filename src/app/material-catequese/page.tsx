@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { BookOpen, Lock } from 'lucide-react'
 import { Metadata } from 'next'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Material Catequese | Contos de Oração',
@@ -107,6 +108,7 @@ export default async function MaterialCatequesePage() {
           </div>
         )}
       </div>
+      <Footer />
     </main>
   )
 }
