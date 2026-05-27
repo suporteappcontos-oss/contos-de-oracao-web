@@ -120,8 +120,12 @@ export async function adicionarVideo(formData: FormData) {
           // Salva a notificação no banco de dados para o histórico do "Sino"
           await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
 
-          await admin.messaging().send(message);
-          console.log('✅ Notificação Push enviada com sucesso!');
+          // Dispara notificação push em segundo plano para não travar a Server Action
+          admin.messaging().send(message).then(() => {
+            console.log('✅ Notificação Push enviada com sucesso!');
+          }).catch((pushError: any) => {
+            console.error('❌ Erro ao enviar notificação Push:', pushError.message);
+          });
         } else {
           console.log('⚠️ Firebase Admin não inicializado. Push não enviado.');
         }
@@ -200,8 +204,13 @@ export async function editarVideo(videoId: string, formData: FormData) {
           };
 
           await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
-          await admin.messaging().send(message);
-          console.log('✅ Notificação Push de lançamento enviada com sucesso!');
+          
+          // Dispara notificação em background para evitar lentidão
+          admin.messaging().send(message).then(() => {
+            console.log('✅ Notificação Push de lançamento enviada com sucesso!');
+          }).catch((pushError: any) => {
+            console.error('❌ Erro ao enviar notificação Push de lançamento:', pushError.message);
+          });
         }
       } catch (pushError: any) {
         console.error('❌ Erro ao enviar notificação Push de lançamento:', pushError.message);

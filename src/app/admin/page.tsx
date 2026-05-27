@@ -19,6 +19,8 @@ import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
 import { GerenciadorMateriais } from './GerenciadorMateriais'
 import { GerenciadorAnuncios } from './GerenciadorAnuncios'
 import { FormAcessoVitalicio } from './FormAcessoVitalicio'
+import { FormAdicionarVideo } from './FormAdicionarVideo'
+import { FormEditarVideo } from './FormEditarVideo'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -388,71 +390,7 @@ export default async function AdminPage({
                 </div>
               </div>
 
-              <form action={adicionarVideo} encType="multipart/form-data">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                  <div className="md:col-span-8">
-                    <label className={labelCls}>Título *</label>
-                    <input name="titulo" required placeholder="Ex: A Oração que Move Montanhas" className={inputCls} />
-                  </div>
-
-                  <div className="md:col-span-4 flex items-end pb-3">
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                      <input 
-                        type="checkbox" 
-                        id="chk_em_breve" 
-                        name="em_breve" 
-                        value="true" 
-                        className="w-5 h-5 rounded-lg bg-[#0f171e] border border-white/10 text-[#D4AF37] focus:ring-0 focus:ring-offset-0 focus:outline-none cursor-pointer accent-[#D4AF37]"
-                      />
-                      <span className="text-white text-xs font-bold">Vídeo "Em Breve" (Lançamento Futuro)</span>
-                    </label>
-                  </div>
-
-                  <div className="md:col-span-12">
-                    <label className={labelCls}>Descrição</label>
-                    <textarea name="descricao" rows={2} placeholder="Descreva sobre o que é o vídeo..." className={inputCls} style={{ resize: 'vertical' }} />
-                  </div>
-                  <div className="md:col-span-4">
-                    <label id="bunny_video_id_label" className={labelCls}>Video ID (Bunny.net) *</label>
-                    <input id="bunny_video_id_input" name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx" className={inputCls + ' font-mono text-white/70'} />
-                  </div>
-                  <div className="md:col-span-5">
-                    <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
-                    <div className="space-y-2">
-                      <input name="thumbnail_url" placeholder="URL opcional (ex: https://...)" className={inputCls} />
-                      <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
-                    </div>
-                  </div>
-                  <div className="md:col-span-3">
-                    <label className={labelCls}>Duração</label>
-                    <input name="duracao" placeholder="Ex: 12:34" className={inputCls} />
-                  </div>
-                </div>
-                
-                <script dangerouslySetInnerHTML={{__html: `
-                  (function() {
-                    var chk = document.getElementById('chk_em_breve');
-                    var inp = document.getElementById('bunny_video_id_input');
-                    var lbl = document.getElementById('bunny_video_id_label');
-                    if (chk && inp && lbl) {
-                      chk.addEventListener('change', function(e) {
-                        var emBreve = e.target.checked;
-                        inp.required = !emBreve;
-                        lbl.innerText = emBreve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *';
-                      });
-                    }
-                  })();
-                `}} />
-
-                <div className="mt-8 flex justify-end">
-                  <SubmitButton 
-                    textLoading="Publicando..."
-                    className="flex items-center justify-center gap-2 text-black px-8 py-3.5 rounded-xl font-black text-sm transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_20px_rgba(212,175,55,0.3)] disabled:opacity-70 disabled:cursor-not-allowed"
-                    style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' }}>
-                    <Plus size={18} strokeWidth={3} /> Publicar Vídeo
-                  </SubmitButton>
-                </div>
-              </form>
+              <FormAdicionarVideo />
             </div>
 
             <hr className="border-white/5" />
@@ -477,87 +415,7 @@ export default async function AdminPage({
                       
                       {/* Formulário de edição por cima do card caso esteja editando */}
                       {editId === video.id && editingVideo ? (
-                        <div className="bg-[#111827] border-2 border-[#D4AF37] rounded-3xl p-6 shadow-[0_0_30px_rgba(212,175,55,0.15)] z-20">
-                          <div className="flex items-center justify-between mb-5 border-b border-white/10 pb-4">
-                             <div className="flex items-center gap-2">
-                                <Edit3 size={18} className="text-[#D4AF37]" />
-                                <span className="text-white font-black">Editar Vídeo</span>
-                             </div>
-                             <Link href="/admin?tab=catalogo" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
-                          </div>
-                          
-                          <form action={editarVideo.bind(null, video.id)} encType="multipart/form-data" className="space-y-4">
-                            <div>
-                              <label className={labelCls}>Título</label>
-                              <input name="titulo" required defaultValue={editingVideo.titulo} className={inputCls} />
-                            </div>
-                            <div className="flex items-center gap-3 py-1">
-                              <label className="flex items-center gap-3 cursor-pointer select-none">
-                                <input 
-                                  type="checkbox" 
-                                  id={`edit_chk_em_breve_${video.id}`}
-                                  name="em_breve" 
-                                  value="true" 
-                                  defaultChecked={editingVideo.em_breve === true}
-                                  className="w-5 h-5 rounded-lg bg-[#0f171e] border border-white/10 text-[#D4AF37] focus:ring-0 focus:ring-offset-0 focus:outline-none cursor-pointer accent-[#D4AF37]"
-                                />
-                                <span className="text-white text-xs font-bold">Vídeo "Em Breve" (Lançamento Futuro)</span>
-                              </label>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <label id={`edit_bunny_video_id_label_${video.id}`} className={labelCls}>
-                                  {editingVideo.em_breve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *'}
-                                </label>
-                                <input 
-                                  id={`edit_bunny_video_id_input_${video.id}`}
-                                  name="bunny_video_id" 
-                                  required={editingVideo.em_breve !== true}
-                                  defaultValue={editingVideo.bunny_video_id || ''} 
-                                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx" 
-                                  className={inputCls + ' font-mono text-white/70'} 
-                                />
-                              </div>
-                              <div>
-                                <label className={labelCls}>Duração</label>
-                                <input name="duracao" defaultValue={editingVideo.duracao || ''} placeholder="Ex: 12:34" className={inputCls} />
-                              </div>
-                            </div>
-                            <div>
-                              <label className={labelCls}>Descrição</label>
-                              <textarea name="descricao" rows={2} defaultValue={editingVideo.descricao || ''} className={inputCls} style={{ resize: 'vertical' }} />
-                            </div>
-                            <div>
-                              <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
-                              <div className="space-y-2">
-                                <input name="thumbnail_url" defaultValue={editingVideo.thumbnail_url || ''} placeholder="Mantenha a URL ou envie um novo arquivo" className={inputCls} />
-                                <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
-                              </div>
-                            </div>
-
-                            <script dangerouslySetInnerHTML={{__html: `
-                              (function() {
-                                var chk = document.getElementById('edit_chk_em_breve_${video.id}');
-                                var inp = document.getElementById('edit_bunny_video_id_input_${video.id}');
-                                var lbl = document.getElementById('edit_bunny_video_id_label_${video.id}');
-                                if (chk && inp && lbl) {
-                                  chk.addEventListener('change', function(e) {
-                                    var emBreve = e.target.checked;
-                                    inp.required = !emBreve;
-                                    lbl.innerText = emBreve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *';
-                                  });
-                                }
-                              })();
-                            `}} />
-
-                            <SubmitButton 
-                              textLoading="Salvando..."
-                              className="w-full mt-2 bg-[#D4AF37] text-black font-black flex justify-center items-center gap-2 py-3 rounded-xl hover:brightness-110 disabled:opacity-70"
-                              style={{}}>
-                              Salvar
-                            </SubmitButton>
-                          </form>
-                        </div>
+                        <FormEditarVideo video={video as any} />
                       ) : (
                         
                         /* CARD DE VÍDEO NORMAL */
