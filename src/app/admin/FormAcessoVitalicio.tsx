@@ -25,7 +25,8 @@ export function FormAcessoVitalicio() {
     setResultado(null)
     setCopiado(false)
 
-    const formData = new FormData(e.currentTarget)
+    const formElement = e.currentTarget
+    const formData = new FormData(formElement)
     try {
       const res = await criarUsuarioVitalicio(formData)
       if (res && 'error' in res && res.error) {
@@ -37,7 +38,7 @@ export function FormAcessoVitalicio() {
           senhaGerada: res.senhaGerada || '',
           plano: res.plano || ''
         })
-        e.currentTarget.reset()
+        formElement.reset()
       } else {
         setErro('Erro desconhecido ao criar usuário.')
       }
