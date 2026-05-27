@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit3, X } from 'lucide-react'
+import { Edit3, X, Tv2 } from 'lucide-react'
 import Link from 'next/link'
 import SubmitButton from '@/components/SubmitButton'
 import { editarVideo } from './actions'
@@ -19,9 +19,30 @@ type VideoType = {
   episodio_numero?: number | null
 }
 
-export function FormEditarVideo({ video }: { video: VideoType }) {
+type Props = {
+  video: VideoType
+  temporadasExistentes?: string[]
+}
+
+export function FormEditarVideo({ video, temporadasExistentes = [] }: Props) {
   const [emBreve, setEmBreve] = useState(video.em_breve === true)
   const [categoria, setCategoria] = useState(video.categoria || 'Geral')
+
+  // Se o vídeo já tem uma temporada, começa no modo existente (se existir na lista) ou nova
+  const temporadaAtual = video.temporada_nome || ''
+  const jaExisteNaLista = temporadasExistentes.includes(temporadaAtual)
+
+  const [modoTemporada, setModoTemporada] = useState<'existente' | 'nova'>(
+    temporadasExistentes.length > 0 && jaExisteNaLista ? 'existente' : 'nova'
+  )
+  const [temporadaSelecionada, setTemporadaSelecionada] = useState(
+    jaExisteNaLista ? temporadaAtual : (temporadasExistentes[0] || '')
+  )
+  const [novaTemporada, setNovaTemporada] = useState(
+    !jaExisteNaLista ? temporadaAtual : ''
+  )
+
+  const temporadaNome = modoTemporada === 'existente' ? temporadaSelecionada : novaTemporada
 
   return (
     <div className="bg-[#111827] border-2 border-[#D4AF37] rounded-3xl p-6 shadow-[0_0_30px_rgba(212,175,55,0.15)] z-20">
@@ -81,28 +102,78 @@ export function FormEditarVideo({ video }: { video: VideoType }) {
 
         {/* Campos Condicionais de Temporada */}
         {categoria === 'Temporada' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={labelCls}>Nome da Temporada *</label>
-              <input 
-                name="temporada_nome" 
-                required 
-                defaultValue={video.temporada_nome || ''} 
-                placeholder="Ex: Temporada 1, Especial de Páscoa..." 
-                className={inputCls} 
-              />
+          <div className="space-y-3">
+            {/* Campo hidden com o nome final */}
+            <input type="hidden" name="temporada_nome" value={temporadaNome} />
+
+            {/* Cabeçalho com toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Tv2 size={15} className="text-[#D4AF37]" />
+                <span className="text-white/70 text-sm font-bold">Temporada</span>
+              </div>
+              <div className="flex bg-[#0f171e] border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
+                {temporadasExistentes.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setModoTemporada('existente')}
+                    className={`px-3 py-1.5 transition-all ${modoTemporada === 'existente' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
+                  >
+                    Selecionar Existente
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setModoTemporada('nova')}
+                  className={`px-3 py-1.5 transition-all ${modoTemporada === 'nova' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
+                >
+                  + Nova Temporada
+                </button>
+              </div>
             </div>
-            <div>
-              <label className={labelCls}>Número do Episódio *</label>
-              <input 
-                type="number" 
-                name="episodio_numero" 
-                required 
-                min={1} 
-                defaultValue={video.episodio_numero || ''} 
-                placeholder="Ex: 1" 
-                className={inputCls} 
-              />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                {modoTemporada === 'existente' && temporadasExistentes.length > 0 ? (
+                  <>
+                    <label className={labelCls}>Selecionar Temporada *</label>
+                    <select
+                      value={temporadaSelecionada}
+                      onChange={(e) => setTemporadaSelecionada(e.target.value)}
+                      className={inputCls}
+                    >
+                      {temporadasExistentes.map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                    <p className="text-white/30 text-[0.65rem] mt-1">✓ Episódio desta temporada</p>
+                  </>
+                ) : (
+                  <>
+                    <label className={labelCls}>Nome da Nova Temporada *</label>
+                    <input 
+                      value={novaTemporada}
+                      onChange={(e) => setNovaTemporada(e.target.value)}
+                      placeholder="Ex: Temporada 2, Especial de Natal..." 
+                      className={inputCls}
+                    />
+                    <p className="text-white/30 text-[0.65rem] mt-1">Nova temporada será criada</p>
+                  </>
+                )}
+              </div>
+              <div>
+                <label className={labelCls}>Número do Episódio *</label>
+                <input 
+                  type="number" 
+                  name="episodio_numero" 
+                  required 
+                  min={1} 
+                  defaultValue={video.episodio_numero || ''} 
+                  placeholder="Ex: 1" 
+                  className={inputCls} 
+                />
+                <p className="text-white/30 text-[0.65rem] mt-1">Sequência dentro da temporada</p>
+              </div>
             </div>
           </div>
         )}

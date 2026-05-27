@@ -1,16 +1,31 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, Tv2 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
 import { adicionarVideo } from './actions'
 
 const inputCls = 'w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm'
 const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold'
 
-export function FormAdicionarVideo() {
+type Props = {
+  temporadasExistentes?: string[]
+}
+
+export function FormAdicionarVideo({ temporadasExistentes = [] }: Props) {
   const [emBreve, setEmBreve] = useState(false)
   const [categoria, setCategoria] = useState('Geral')
+  // 'existente' = selecionar de lista, 'nova' = digitar nome novo
+  const [modoTemporada, setModoTemporada] = useState<'existente' | 'nova'>(
+    temporadasExistentes.length > 0 ? 'existente' : 'nova'
+  )
+  const [temporadaSelecionada, setTemporadaSelecionada] = useState(
+    temporadasExistentes[0] || ''
+  )
+  const [novaTemporada, setNovaTemporada] = useState('')
+
+  // O valor final do nome da temporada
+  const temporadaNome = modoTemporada === 'existente' ? temporadaSelecionada : novaTemporada
 
   return (
     <form action={adicionarVideo} encType="multipart/form-data">
@@ -78,25 +93,89 @@ export function FormAdicionarVideo() {
         {/* Campos Condicionais de Temporada */}
         {categoria === 'Temporada' && (
           <>
-            <div className="md:col-span-8">
-              <label className={labelCls}>Nome da Temporada *</label>
-              <input 
-                name="temporada_nome" 
-                required 
-                placeholder="Ex: Temporada 1, Especial de Páscoa..." 
-                className={inputCls} 
-              />
-            </div>
-            <div className="md:col-span-4">
-              <label className={labelCls}>Número do Episódio *</label>
-              <input 
-                type="number" 
-                name="episodio_numero" 
-                required 
-                min={1} 
-                placeholder="Ex: 1" 
-                className={inputCls} 
-              />
+            {/* Campo hidden com o nome final da temporada */}
+            <input type="hidden" name="temporada_nome" value={temporadaNome} />
+
+            <div className="md:col-span-12">
+              {/* Cabeçalho com ícone e toggle de modo */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Tv2 size={16} className="text-[#D4AF37]" />
+                  <span className="text-white/70 text-sm font-bold">Temporada</span>
+                </div>
+                {/* Toggle: Selecionar existente / Criar nova */}
+                <div className="flex bg-[#0f171e] border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
+                  {temporadasExistentes.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setModoTemporada('existente')}
+                      className={`px-4 py-2 transition-all ${modoTemporada === 'existente' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
+                    >
+                      Selecionar Existente
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setModoTemporada('nova')}
+                    className={`px-4 py-2 transition-all ${modoTemporada === 'nova' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
+                  >
+                    + Nova Temporada
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  {/* Modo: Selecionar temporada existente */}
+                  {modoTemporada === 'existente' && temporadasExistentes.length > 0 ? (
+                    <>
+                      <label className={labelCls}>Selecionar Temporada Existente *</label>
+                      <select
+                        value={temporadaSelecionada}
+                        onChange={(e) => setTemporadaSelecionada(e.target.value)}
+                        className={inputCls}
+                        required
+                      >
+                        {temporadasExistentes.map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                      <p className="text-white/30 text-[0.65rem] mt-1.5">
+                        ✓ O episódio será adicionado a esta temporada
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <label className={labelCls}>Nome da Nova Temporada *</label>
+                      <input 
+                        value={novaTemporada}
+                        onChange={(e) => setNovaTemporada(e.target.value)}
+                        placeholder="Ex: Temporada 1, Especial de Natal..." 
+                        className={inputCls}
+                        required={modoTemporada === 'nova'}
+                      />
+                      <p className="text-white/30 text-[0.65rem] mt-1.5">
+                        Uma nova temporada será criada com este nome
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelCls}>Número do Episódio *</label>
+                  <input 
+                    type="number" 
+                    name="episodio_numero" 
+                    required 
+                    min={1} 
+                    placeholder="Ex: 1" 
+                    className={inputCls} 
+                  />
+                  <p className="text-white/30 text-[0.65rem] mt-1.5">
+                    Sequência do episódio dentro da temporada
+                  </p>
+                </div>
+              </div>
             </div>
           </>
         )}

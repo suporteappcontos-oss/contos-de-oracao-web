@@ -73,6 +73,13 @@ export default async function AdminPage({
   const { data: materiaisData } = await supabase.from('materiais').select('*').order('criado_em', { ascending: false })
   const { data: anunciosPausa } = await supabase.from('anuncios_pausa').select('*').order('criado_em', { ascending: false })
 
+  // Busca nomes de temporadas distintos (para o seletor no FormAdicionarVideo)
+  const temporadasExistentes: string[] = [...new Set(
+    (videos ?? [])
+      .filter(v => v.categoria === 'Temporada' && v.temporada_nome)
+      .map(v => v.temporada_nome as string)
+  )]
+
   // Users via Admin API
   let usuarios: UsuarioType[] = []
   try {
@@ -392,7 +399,7 @@ export default async function AdminPage({
                 </div>
               </div>
 
-              <FormAdicionarVideo />
+              <FormAdicionarVideo temporadasExistentes={temporadasExistentes} />
             </div>
 
             <hr className="border-white/5" />
@@ -417,7 +424,7 @@ export default async function AdminPage({
                       
                       {/* Formulário de edição por cima do card caso esteja editando */}
                       {editId === video.id && editingVideo ? (
-                        <FormEditarVideo video={video as any} />
+                        <FormEditarVideo video={video as any} temporadasExistentes={temporadasExistentes} />
                       ) : (
                         
                         /* CARD DE VÍDEO NORMAL */
