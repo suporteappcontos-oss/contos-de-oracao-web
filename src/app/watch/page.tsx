@@ -231,14 +231,14 @@ export default async function WatchPage() {
                     <div className="flex flex-col gap-3" style={{ width: 'clamp(260px, 30vw, 360px)' }}>
                       <Link
                         href="/materiais"
-                        className="group relative block outline-none cursor-pointer overflow-hidden rounded-xl border border-white/5 shadow-2xl hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+                        className="group relative block outline-none cursor-pointer overflow-hidden rounded-xl border border-white/5 shadow-2xl hover:border-white/20 transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
                         style={{ background: '#111827' }}
                       >
                         <div className="relative aspect-video w-full">
                           <img
                             src="/catequese.png"
                             alt="Material de Catequese"
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            className="w-full h-full object-cover"
                           />
                           {/* Overlay gradiente leve */}
                           <div

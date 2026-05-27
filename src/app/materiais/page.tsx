@@ -158,7 +158,7 @@ export default async function MateriaisPage() {
               <Link
                 key={cat.value}
                 href={`/materiais/${cat.value}`}
-                className={`group relative flex flex-col rounded-[24px] border overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${cat.border}`}
+                className={`group relative flex flex-col rounded-[24px] border overflow-hidden transition-all duration-300 hover:scale-[1.04] hover:-translate-y-2 hover:shadow-2xl ${cat.border}`}
                 style={{ backgroundColor: 'rgba(15, 20, 30, 0.6)', backdropFilter: 'blur(10px)' }}
               >
                 {/* Glow interno no hover */}
@@ -171,7 +171,7 @@ export default async function MateriaisPage() {
                     src={cat.image} 
                     alt={cat.labelFlat} 
                     fill 
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.05]" 
+                    className="object-cover" 
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                   

@@ -39,12 +39,12 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
   if (video.em_breve) {
     return (
       <div
-        className="group relative flex-shrink-0 block outline-none cursor-default"
+        className="group relative flex-shrink-0 block outline-none cursor-default transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
         style={{ width: 'clamp(155px, 20vw, 240px)' }}
       >
         {/* Thumbnail */}
         <div
-          className="relative aspect-video rounded-xl overflow-hidden transition-all duration-300 group-hover:scale-[1.04] group-hover:-translate-y-1"
+          className="relative aspect-video rounded-xl overflow-hidden"
           style={{
             background: '#15243E',
             border: '1px solid rgba(255,255,255,0.06)',
@@ -56,7 +56,7 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
             src={imageUrl}
             alt={video.titulo}
             onError={() => setImgError(true)}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover"
             loading="lazy"
           />
 
@@ -99,12 +99,12 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
   return (
     <Link
       href={`/watch/${video.id}`}
-      className="group relative flex-shrink-0 block outline-none cursor-pointer"
+      className="group relative flex-shrink-0 block outline-none cursor-pointer transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
       style={{ width: 'clamp(155px, 20vw, 240px)' }}
     >
       {/* Thumbnail */}
       <div
-        className="relative aspect-video rounded-xl overflow-hidden transition-all duration-300 group-hover:scale-[1.04] group-hover:-translate-y-1"
+        className="relative aspect-video rounded-xl overflow-hidden"
         style={{
           background: '#15243E',
           border: '1px solid rgba(255,255,255,0.06)',
@@ -116,7 +116,7 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
           src={imageUrl}
           alt={video.titulo}
           onError={() => setImgError(true)}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover"
           loading="lazy"
         />
 

@@ -179,11 +179,11 @@ export default async function CategoriaPage({ params }: Props) {
                 <div key={item.id} className="flex flex-col gap-2.5">
 
                   {/* Capa */}
-                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/7 shadow-lg group">
+                  <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/7 shadow-lg transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1">
                     {item.capa_url ? (
                       <Image
                         src={item.capa_url} alt={item.titulo} fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover"
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       />
                     ) : (

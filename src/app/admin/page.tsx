@@ -421,10 +421,10 @@ export default async function AdminPage({
                       ) : (
                         
                         /* CARD DE VÍDEO NORMAL */
-                        <div className={`h-full flex flex-col bg-[#111827] border rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-lg group-hover:shadow-xl ${video.ativo ? 'border-white/5 hover:border-white/20' : 'border-red-500/20 opacity-75'}`}>
+                        <div className={`h-full flex flex-col bg-[#111827] border rounded-3xl overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 shadow-lg group-hover:shadow-xl ${video.ativo ? 'border-white/5 hover:border-white/20' : 'border-red-500/20 opacity-75'}`}>
                           {/* Thumbnail Header */}
                           <div className="relative aspect-video w-full bg-[#090B10] border-b border-white/5 group-hover:border-white/10 transition-colors">
-                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
+                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700" 
                                style={{ backgroundImage: `url(${video.thumbnail_url || getFallback(video.id)})` }} />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
                             

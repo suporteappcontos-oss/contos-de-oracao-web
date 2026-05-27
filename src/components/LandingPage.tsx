@@ -396,7 +396,7 @@ export default function LandingPage() {
                   <Link
                     key={`${video.id}-${idx}`}
                     href="/planos"
-                    className="shrink-0 block w-[240px] sm:w-[270px] md:w-[300px] group transition-transform duration-300 hover:scale-[1.03]"
+                    className="shrink-0 block w-[240px] sm:w-[270px] md:w-[300px] group transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
                     style={{ textDecoration: 'none' }}
                   >
                     <div className="relative aspect-video rounded-2xl overflow-hidden mb-3 shadow-lg"
@@ -404,7 +404,7 @@ export default function LandingPage() {
                       <img
                         src={imageUrl}
                         alt={video.titulo}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="w-full h-full object-cover"
                       />
                       {/* Overlay gradiente premium */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
@@ -452,7 +452,7 @@ export default function LandingPage() {
               <Link
                 key={cat.value}
                 href="/materiais"
-                className={`group relative flex flex-col rounded-[24px] border overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${cat.border}`}
+                className={`group relative flex flex-col rounded-[24px] border overflow-hidden transition-all duration-300 hover:scale-[1.04] hover:-translate-y-2 hover:shadow-2xl ${cat.border}`}
                 style={{ backgroundColor: 'rgba(15, 20, 30, 0.6)', backdropFilter: 'blur(10px)', textDecoration: 'none' }}
               >
                 {/* Glow interno no hover */}
@@ -465,7 +465,7 @@ export default function LandingPage() {
                     src={cat.image} 
                     alt={cat.labelFlat} 
                     fill 
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                    className="object-cover"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[rgba(15,20,30,0.95)] via-transparent to-transparent z-10" />
