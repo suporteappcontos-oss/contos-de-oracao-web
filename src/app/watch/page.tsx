@@ -6,7 +6,7 @@ import HeroBanner from '@/components/HeroBanner'
 import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import NotificationBell from '@/components/NotificationBell'
-import { LogOut, Settings, BookOpen } from 'lucide-react'
+import { LogOut, Settings, BookOpen, Plus } from 'lucide-react'
 
 type Video = {
   id: string
@@ -139,20 +139,7 @@ export default async function WatchPage() {
           {/* Sino de Notificações */}
           <NotificationBell />
 
-          {/* Botão Material Pedagógico */}
-          {!isBasico && (
-            <Link
-              href="/materiais"
-              title="Material de Catequese"
-              className="group relative flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black transition-all hover:scale-105 shadow-[0_0_10px_rgba(212,175,55,0.2)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] overflow-hidden"
-              style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #AA8A2A 100%)', color: '#090B10' }}
-            >
-              {/* Brilho interno animado */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-[150%] group-hover:animate-[shimmer_1.5s_infinite]" />
-              <BookOpen size={14} className="group-hover:-translate-y-0.5 transition-transform relative z-10" />
-              <span className="hidden md:inline tracking-widest uppercase text-[10px] relative z-10">Mat. Catequese</span>
-            </Link>
-          )}
+
 
           {isAdmin && (
             <Link
@@ -233,6 +220,51 @@ export default async function WatchPage() {
                     <VideoCard key={video.id} video={video} isFavoritado={favoritosSet.has(video.id)} />
                   ))}
                 </CategoryCarousel>
+              )}
+
+              {!isBasico && (
+                <div className="pt-8 pb-4">
+                  <div className="px-5 md:px-10 lg:px-16 mb-4">
+                    <h2 className="text-[#D4AF37] font-black text-lg md:text-xl tracking-tight uppercase">Material de Catequese</h2>
+                  </div>
+                  <div className="px-5 md:px-10 lg:px-16">
+                    <div className="flex flex-col gap-3" style={{ width: 'clamp(260px, 30vw, 360px)' }}>
+                      <Link
+                        href="/materiais"
+                        className="group relative block outline-none cursor-pointer overflow-hidden rounded-xl border border-white/5 shadow-2xl hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
+                        style={{ background: '#111827' }}
+                      >
+                        <div className="relative aspect-video w-full">
+                          <img
+                            src="/catequese.png"
+                            alt="Material de Catequese"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          {/* Overlay gradiente leve */}
+                          <div
+                            className="absolute inset-0"
+                            style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.3) 0%, transparent 100%)' }}
+                          />
+                          {/* Brilho hover */}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                            <div className="w-12 h-12 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                              <Plus className="w-5 h-5 text-[#090B10]" />
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                      <Link href="/materiais" className="group block hover:no-underline">
+                        <span className="text-[#D4AF37] text-[0.6rem] font-extrabold uppercase tracking-widest block mb-1">CONTEÚDO PEDAGÓGICO</span>
+                        <h3 className="text-white text-base font-extrabold leading-tight group-hover:text-[#D4AF37] transition-colors">
+                          Livros, HQs e Desenhos
+                        </h3>
+                        <p className="text-white/40 text-xs mt-1.5 leading-snug">
+                          Acesse e faça download de livros pedagógicos, desenhos e histórias de santos.
+                        </p>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
