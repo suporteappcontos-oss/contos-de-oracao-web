@@ -3,8 +3,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, LayoutGrid, ChevronDown } from 'lucide-react'
 
-const CARD_MIN = 155  // px mínimo de cada card
-const CARD_MAX = 240  // px máximo de cada card
+const CARD_MIN = 200  // px mínimo de cada card
+const CARD_MAX = 320  // px máximo de cada card
 
 export default function CategoryCarousel({ 
   title, count, children 

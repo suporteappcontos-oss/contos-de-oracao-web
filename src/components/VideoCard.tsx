@@ -40,7 +40,7 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
     return (
       <div
         className="group relative flex-shrink-0 block outline-none cursor-default transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
-        style={{ width: 'clamp(155px, 20vw, 240px)' }}
+        style={{ width: 'clamp(200px, 26vw, 320px)' }}
       >
         {/* Thumbnail */}
         <div
@@ -100,7 +100,7 @@ export default function VideoCard({ video, isFavoritado = false, minimal = false
     <Link
       href={`/watch/${video.id}`}
       className="group relative flex-shrink-0 block outline-none cursor-pointer transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
-      style={{ width: 'clamp(155px, 20vw, 240px)' }}
+      style={{ width: 'clamp(200px, 26vw, 320px)' }}
     >
       {/* Thumbnail */}
       <div
