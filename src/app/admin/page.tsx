@@ -18,6 +18,7 @@ import { CopyLeadsButton } from './CopyLeadsButton'
 import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
 import { GerenciadorMateriais } from './GerenciadorMateriais'
 import { GerenciadorAnuncios } from './GerenciadorAnuncios'
+import { FormAcessoVitalicio } from './FormAcessoVitalicio'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -25,10 +26,12 @@ type VideoType = {
   categoria: string; thumbnail_url: string | null
   bunny_video_id: string; bunny_library_id: string
   duracao: string | null; criado_em: string; ativo: boolean
+  em_breve?: boolean
 }
 type UsuarioType = {
   id: string; email: string; nome: string
   plano_ativo: boolean; plano_nome: string; criado_em: string
+  vitalicio?: boolean
 }
 
 const CATEGORIAS = ['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho']
@@ -85,6 +88,7 @@ export default async function AdminPage({
         nome: u.user_metadata?.nome || u.user_metadata?.name || '—',
         plano_ativo: u.user_metadata?.plano_ativo === true,
         plano_nome: u.user_metadata?.etiqueta_plano || 'Básico',
+        vitalicio: u.user_metadata?.vitalicio === true,
         criado_em: u.created_at,
       }))
       .sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
@@ -391,13 +395,26 @@ export default async function AdminPage({
                     <input name="titulo" required placeholder="Ex: A Oração que Move Montanhas" className={inputCls} />
                   </div>
 
+                  <div className="md:col-span-4 flex items-end pb-3">
+                    <label className="flex items-center gap-3 cursor-pointer select-none">
+                      <input 
+                        type="checkbox" 
+                        id="chk_em_breve" 
+                        name="em_breve" 
+                        value="true" 
+                        className="w-5 h-5 rounded-lg bg-[#0f171e] border border-white/10 text-[#D4AF37] focus:ring-0 focus:ring-offset-0 focus:outline-none cursor-pointer accent-[#D4AF37]"
+                      />
+                      <span className="text-white text-xs font-bold">Vídeo "Em Breve" (Lançamento Futuro)</span>
+                    </label>
+                  </div>
+
                   <div className="md:col-span-12">
                     <label className={labelCls}>Descrição</label>
                     <textarea name="descricao" rows={2} placeholder="Descreva sobre o que é o vídeo..." className={inputCls} style={{ resize: 'vertical' }} />
                   </div>
                   <div className="md:col-span-4">
-                    <label className={labelCls}>Video ID (Bunny.net) *</label>
-                    <input name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx" className={inputCls + ' font-mono text-white/70'} />
+                    <label id="bunny_video_id_label" className={labelCls}>Video ID (Bunny.net) *</label>
+                    <input id="bunny_video_id_input" name="bunny_video_id" required placeholder="xxxxxxxx-xxxx-xxxx-xxxx" className={inputCls + ' font-mono text-white/70'} />
                   </div>
                   <div className="md:col-span-5">
                     <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
@@ -411,6 +428,22 @@ export default async function AdminPage({
                     <input name="duracao" placeholder="Ex: 12:34" className={inputCls} />
                   </div>
                 </div>
+                
+                <script dangerouslySetInnerHTML={{__html: `
+                  (function() {
+                    var chk = document.getElementById('chk_em_breve');
+                    var inp = document.getElementById('bunny_video_id_input');
+                    var lbl = document.getElementById('bunny_video_id_label');
+                    if (chk && inp && lbl) {
+                      chk.addEventListener('change', function(e) {
+                        var emBreve = e.target.checked;
+                        inp.required = !emBreve;
+                        lbl.innerText = emBreve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *';
+                      });
+                    }
+                  })();
+                `}} />
+
                 <div className="mt-8 flex justify-end">
                   <SubmitButton 
                     textLoading="Publicando..."
@@ -458,15 +491,41 @@ export default async function AdminPage({
                               <label className={labelCls}>Título</label>
                               <input name="titulo" required defaultValue={editingVideo.titulo} className={inputCls} />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="flex items-center gap-3 py-1">
+                              <label className="flex items-center gap-3 cursor-pointer select-none">
+                                <input 
+                                  type="checkbox" 
+                                  id={`edit_chk_em_breve_${video.id}`}
+                                  name="em_breve" 
+                                  value="true" 
+                                  defaultChecked={editingVideo.em_breve === true}
+                                  className="w-5 h-5 rounded-lg bg-[#0f171e] border border-white/10 text-[#D4AF37] focus:ring-0 focus:ring-offset-0 focus:outline-none cursor-pointer accent-[#D4AF37]"
+                                />
+                                <span className="text-white text-xs font-bold">Vídeo "Em Breve" (Lançamento Futuro)</span>
+                              </label>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label id={`edit_bunny_video_id_label_${video.id}`} className={labelCls}>
+                                  {editingVideo.em_breve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *'}
+                                </label>
+                                <input 
+                                  id={`edit_bunny_video_id_input_${video.id}`}
+                                  name="bunny_video_id" 
+                                  required={editingVideo.em_breve !== true}
+                                  defaultValue={editingVideo.bunny_video_id || ''} 
+                                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx" 
+                                  className={inputCls + ' font-mono text-white/70'} 
+                                />
+                              </div>
                               <div>
                                 <label className={labelCls}>Duração</label>
-                                <input name="duracao" defaultValue={editingVideo.duracao || ''} className={inputCls} />
+                                <input name="duracao" defaultValue={editingVideo.duracao || ''} placeholder="Ex: 12:34" className={inputCls} />
                               </div>
                             </div>
                             <div>
                               <label className={labelCls}>Descrição</label>
-                              <textarea name="descricao" rows={2} defaultValue={editingVideo.descricao || ''} className={inputCls} />
+                              <textarea name="descricao" rows={2} defaultValue={editingVideo.descricao || ''} className={inputCls} style={{ resize: 'vertical' }} />
                             </div>
                             <div>
                               <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
@@ -475,6 +534,22 @@ export default async function AdminPage({
                                 <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
                               </div>
                             </div>
+
+                            <script dangerouslySetInnerHTML={{__html: `
+                              (function() {
+                                var chk = document.getElementById('edit_chk_em_breve_${video.id}');
+                                var inp = document.getElementById('edit_bunny_video_id_input_${video.id}');
+                                var lbl = document.getElementById('edit_bunny_video_id_label_${video.id}');
+                                if (chk && inp && lbl) {
+                                  chk.addEventListener('change', function(e) {
+                                    var emBreve = e.target.checked;
+                                    inp.required = !emBreve;
+                                    lbl.innerText = emBreve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *';
+                                  });
+                                }
+                              })();
+                            `}} />
+
                             <SubmitButton 
                               textLoading="Salvando..."
                               className="w-full mt-2 bg-[#D4AF37] text-black font-black flex justify-center items-center gap-2 py-3 rounded-xl hover:brightness-110 disabled:opacity-70"
@@ -556,90 +631,100 @@ export default async function AdminPage({
 
         {/* ══════════ ABA ASSINATURAS ══════════ */}
         {activeTab === 'assinaturas' && (
-          <div className="space-y-20">
+          <div className="space-y-12">
             <div className="space-y-6">
-            <div className="flex items-end justify-between flex-wrap gap-4">
-              <div>
-                <h2 className="text-white text-2xl font-black tracking-tight">Gestão de Assinantes</h2>
-                <p className="text-white/50 text-sm mt-1">{membrosAtivos} usuários com plano ativo no momento.</p>
+              <div className="flex items-end justify-between flex-wrap gap-4">
+                <div>
+                  <h2 className="text-white text-2xl font-black tracking-tight">Gestão de Assinantes</h2>
+                  <p className="text-white/50 text-sm mt-1">{membrosAtivos} usuários com plano ativo no momento.</p>
+                </div>
+                <CopyLeadsButton emails={usuarios.filter(u => !u.plano_ativo).map(u => u.email)} />
               </div>
-              <CopyLeadsButton emails={usuarios.filter(u => !u.plano_ativo).map(u => u.email)} />
+
+              {/* Formulário Cliente Vitalício */}
+              <FormAcessoVitalicio />
+
+              {usuarios.length === 0 ? (
+                <div className="bg-[#111827] border border-white/5 rounded-3xl p-16 text-center">
+                  <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Users size={32} className="text-white/30" />
+                  </div>
+                  <p className="text-white/60 font-medium">Nenhum assinante encontrado.</p>
+                </div>
+              ) : (
+                <div className="bg-[#111827] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
+                  {/* Header da tabela */}
+                  <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#090B10]/50">
+                    <div className="col-span-6 md:col-span-5 text-white/40 text-xs uppercase tracking-widest font-bold">Assinante</div>
+                    <div className="col-span-3 text-white/40 text-xs uppercase tracking-widest font-bold hidden md:block">Data de Ingresso</div>
+                    <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold">Status</div>
+                    <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold text-right">Controle</div>
+                  </div>
+
+                  {/* Linhas */}
+                  <div className="divide-y divide-white/5">
+                    {usuarios.map((u) => (
+                      <div key={u.id} className="grid grid-cols-12 gap-4 px-8 py-5 items-center transition-colors hover:bg-white/[0.02]">
+                        
+                        {/* Info do usuário */}
+                        <div className="col-span-6 md:col-span-5 flex items-center gap-4 min-w-0">
+                          <div className={`w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center text-lg font-black shadow-inner border ${u.plano_ativo ? 'bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/20' : 'bg-white/5 text-white/30 border-white/5'}`}>
+                            {(u.nome !== '—' ? u.nome : u.email).charAt(0).toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-white text-[0.95rem] font-bold truncate flex items-center gap-2">
+                              {u.nome !== '—' ? u.nome : '—'}
+                              {u.vitalicio && (
+                                <span className="bg-amber-500/20 text-[#D4AF37] text-[0.55rem] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-[#D4AF37]/30">
+                                  Vitalício ♾️
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-white/40 text-xs truncate mt-0.5">{u.email}</div>
+                          </div>
+                        </div>
+
+                        {/* Data */}
+                        <div className="col-span-3 text-white/50 text-sm font-medium hidden md:block">
+                          {new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </div>
+
+                        {/* Status badge */}
+                        <div className="col-span-3 md:col-span-2">
+                          <span className={`inline-flex items-center gap-1.5 text-[0.65rem] px-3 py-1.5 rounded-xl font-bold uppercase tracking-widest border ${u.plano_ativo ? 'text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20' : 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/20'}`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${u.plano_ativo ? 'bg-[#10b981]' : 'bg-[#D4AF37]'}`} />
+                            {u.plano_ativo ? 'Ativo' : 'Lead (Pendente)'}
+                          </span>
+                          {u.plano_ativo && (
+                            <div className="text-white/40 text-[0.6rem] uppercase tracking-widest font-black mt-1.5 truncate">
+                              Plano: {u.plano_nome}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Botão ação */}
+                        <div className="col-span-3 md:col-span-2 flex flex-col items-end gap-2">
+                          <form action={togglePlanoUsuario.bind(null, u.id, u.plano_ativo)}>
+                            <button type="submit"
+                              className={`text-xs px-5 py-2.5 rounded-xl font-bold transition-all border shadow-sm hover:-translate-y-0.5 ${u.plano_ativo ? 'text-red-400 border-red-500/20 bg-red-500/5 hover:bg-red-500/10' : 'text-black border-transparent bg-[#D4AF37] hover:brightness-110'}`}>
+                              {u.plano_ativo ? 'Suspender' : 'Liberar Acesso'}
+                            </button>
+                          </form>
+                          {u.plano_ativo && (
+                            <div className="flex gap-1 mt-1">
+                              <form action={alterarPlanoUsuario.bind(null, u.id, 1, 'Básico')}><button type="submit" className="text-[10px] bg-white/10 hover:bg-white/20 text-white/70 px-2 py-1 rounded transition-colors" title="Mudar para Básico">B</button></form>
+                              <form action={alterarPlanoUsuario.bind(null, u.id, 2, 'Essencial')}><button type="submit" className="text-[10px] bg-[#D4AF37]/10 hover:bg-[#D4AF37]/30 text-[#D4AF37] px-2 py-1 rounded transition-colors" title="Mudar para Essencial">E</button></form>
+                              <form action={alterarPlanoUsuario.bind(null, u.id, 4, 'Pro')}><button type="submit" className="text-[10px] bg-[#10b981]/10 hover:bg-[#10b981]/30 text-[#10b981] px-2 py-1 rounded transition-colors" title="Mudar para Pro">P</button></form>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {usuarios.length === 0 ? (
-              <div className="bg-[#111827] border border-white/5 rounded-3xl p-16 text-center">
-                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Users size={32} className="text-white/30" />
-                </div>
-                <p className="text-white/60 font-medium">Nenhum assinante encontrado.</p>
-              </div>
-            ) : (
-              <div className="bg-[#111827] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
-                {/* Header da tabela */}
-                <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#090B10]/50">
-                  <div className="col-span-6 md:col-span-5 text-white/40 text-xs uppercase tracking-widest font-bold">Assinante</div>
-                  <div className="col-span-3 text-white/40 text-xs uppercase tracking-widest font-bold hidden md:block">Data de Ingresso</div>
-                  <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold">Status</div>
-                  <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold text-right">Controle</div>
-                </div>
-
-                {/* Linhas */}
-                <div className="divide-y divide-white/5">
-                  {usuarios.map((u) => (
-                    <div key={u.id} className="grid grid-cols-12 gap-4 px-8 py-5 items-center transition-colors hover:bg-white/[0.02]">
-                      
-                      {/* Info do usuário */}
-                      <div className="col-span-6 md:col-span-5 flex items-center gap-4 min-w-0">
-                        <div className={`w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center text-lg font-black shadow-inner border ${u.plano_ativo ? 'bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/20' : 'bg-white/5 text-white/30 border-white/5'}`}>
-                          {(u.nome !== '—' ? u.nome : u.email).charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-white text-[0.95rem] font-bold truncate">{u.nome !== '—' ? u.nome : '—'}</div>
-                          <div className="text-white/40 text-xs truncate mt-0.5">{u.email}</div>
-                        </div>
-                      </div>
-
-                      {/* Data */}
-                      <div className="col-span-3 text-white/50 text-sm font-medium hidden md:block">
-                        {new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </div>
-
-                      {/* Status badge */}
-                      <div className="col-span-3 md:col-span-2">
-                        <span className={`inline-flex items-center gap-1.5 text-[0.65rem] px-3 py-1.5 rounded-xl font-bold uppercase tracking-widest border ${u.plano_ativo ? 'text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20' : 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/20'}`}>
-                          <div className={`w-1.5 h-1.5 rounded-full ${u.plano_ativo ? 'bg-[#10b981]' : 'bg-[#D4AF37]'}`} />
-                          {u.plano_ativo ? 'Ativo' : 'Lead (Pendente)'}
-                        </span>
-                        {u.plano_ativo && (
-                          <div className="text-white/40 text-[0.6rem] uppercase tracking-widest font-black mt-1.5 truncate">
-                            Plano: {u.plano_nome}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Botão ação */}
-                      <div className="col-span-3 md:col-span-2 flex flex-col items-end gap-2">
-                        <form action={togglePlanoUsuario.bind(null, u.id, u.plano_ativo)}>
-                          <button type="submit"
-                            className={`text-xs px-5 py-2.5 rounded-xl font-bold transition-all border shadow-sm hover:-translate-y-0.5 ${u.plano_ativo ? 'text-red-400 border-red-500/20 bg-red-500/5 hover:bg-red-500/10' : 'text-black border-transparent bg-[#D4AF37] hover:brightness-110'}`}>
-                            {u.plano_ativo ? 'Suspender' : 'Liberar Acesso'}
-                          </button>
-                        </form>
-                        {u.plano_ativo && (
-                          <div className="flex gap-1 mt-1">
-                            <form action={alterarPlanoUsuario.bind(null, u.id, 1, 'Básico')}><button type="submit" className="text-[10px] bg-white/10 hover:bg-white/20 text-white/70 px-2 py-1 rounded transition-colors" title="Mudar para Básico">B</button></form>
-                            <form action={alterarPlanoUsuario.bind(null, u.id, 2, 'Essencial')}><button type="submit" className="text-[10px] bg-[#D4AF37]/10 hover:bg-[#D4AF37]/30 text-[#D4AF37] px-2 py-1 rounded transition-colors" title="Mudar para Essencial">E</button></form>
-                            <form action={alterarPlanoUsuario.bind(null, u.id, 4, 'Pro')}><button type="submit" className="text-[10px] bg-[#10b981]/10 hover:bg-[#10b981]/30 text-[#10b981] px-2 py-1 rounded transition-colors" title="Mudar para Pro">P</button></form>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            </div>
-            
             {/* --- PLANOS E STRIPE --- */}
             <div className="pt-10 border-t border-white/5 relative">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />

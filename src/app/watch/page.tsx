@@ -14,11 +14,12 @@ type Video = {
   descricao: string | null
   categoria: string
   thumbnail_url: string | null
-  bunny_video_id: string
+  bunny_video_id: string | null
   bunny_library_id: string
   duracao: string | null
   criado_em: string
   ativo: boolean
+  em_breve?: boolean
 }
 
 export default async function WatchPage() {
@@ -45,6 +46,8 @@ export default async function WatchPage() {
   const { data: videos } = await supabase
     .from('videos').select('*').eq('ativo', true)
     .order('criado_em', { ascending: false })
+
+  const videoDestaque = (videos ?? []).find(v => !v.em_breve) || (videos ?? [])[0]
 
   // Busca IDs dos favoritos do usuário para destacar nos cards
   const { data: favoritosData } = await supabase
@@ -204,7 +207,7 @@ export default async function WatchPage() {
         {videos && videos.length > 0 && (
           <>
             {/* HeroBanner */}
-            <HeroBanner video={videos[0] as Video} />
+            {videoDestaque && <HeroBanner video={videoDestaque as any} />}
 
             {/* Separador com estilo ouro */}
             <div className="flex items-center gap-4 px-5 md:px-10 lg:px-16 mt-10 mb-6">

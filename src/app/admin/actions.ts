@@ -57,6 +57,7 @@ export async function adicionarVideo(formData: FormData) {
   const titulo = formData.get('titulo') as string;
   let thumbnailUrl = formData.get('thumbnail_url') as string;
   const thumbFile = formData.get('thumbnail_file') as File | null;
+  const emBreve = formData.get('em_breve') === 'true';
   
   try {
     if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
@@ -68,58 +69,65 @@ export async function adicionarVideo(formData: FormData) {
     // Continua salvando o vídeo mesmo sem thumbnail, para não quebrar a tela
   }
 
+  const bunnyVideoId = (formData.get('bunny_video_id') as string) || null;
+  const duracao = (formData.get('duracao') as string) || null;
+
   const { error } = await supabase.from('videos').insert({
-    titulo: formData.get('titulo') as string,
+    titulo: titulo,
     descricao: (formData.get('descricao') as string) || null,
     categoria: (formData.get('categoria') as string) || 'Geral',
-    bunny_video_id: formData.get('bunny_video_id') as string,
+    bunny_video_id: emBreve ? (bunnyVideoId || null) : bunnyVideoId,
     bunny_library_id: process.env.BUNNY_LIBRARY_ID || '642831',
     thumbnail_url: thumbnailUrl || null,
-    duracao: (formData.get('duracao') as string) || null,
+    duracao: duracao,
     ativo: true,
+    em_breve: emBreve,
   })
+
   if (error) {
     console.error('❌ Erro ao adicionar vídeo:', error.message)
   } else {
-    // ─── Enviar Notificação Push ───
-    try {
-      const admin = require('firebase-admin');
-      if (!admin.apps.length) {
-        // Usa variáveis de ambiente em vez de arquivo JSON para segurança (evita bloqueio no GitHub)
-        const projectId = process.env.FIREBASE_PROJECT_ID;
-        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-        const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+    // ─── Enviar Notificação Push (Apenas se NÃO for vídeo em breve) ───
+    if (!emBreve) {
+      try {
+        const admin = require('firebase-admin');
+        if (!admin.apps.length) {
+          // Usa variáveis de ambiente em vez de arquivo JSON para segurança (evita bloqueio no GitHub)
+          const projectId = process.env.FIREBASE_PROJECT_ID;
+          const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+          const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-        if (projectId && clientEmail && privateKey) {
-          admin.initializeApp({
-            credential: admin.credential.cert({
-              projectId,
-              clientEmail,
-              privateKey,
-            })
-          });
+          if (projectId && clientEmail && privateKey) {
+            admin.initializeApp({
+              credential: admin.credential.cert({
+                projectId,
+                clientEmail,
+                privateKey,
+              })
+            });
+          }
         }
+
+        if (admin.apps.length) {
+          const title = '✨ Novo Vídeo Disponível!';
+          const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
+          
+          const message = {
+            notification: { title, body },
+            topic: 'novos_videos',
+          };
+
+          // Salva a notificação no banco de dados para o histórico do "Sino"
+          await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
+
+          await admin.messaging().send(message);
+          console.log('✅ Notificação Push enviada com sucesso!');
+        } else {
+          console.log('⚠️ Firebase Admin não inicializado. Push não enviado.');
+        }
+      } catch (pushError: any) {
+        console.error('❌ Erro ao enviar notificação Push:', pushError.message);
       }
-
-      if (admin.apps.length) {
-        const title = '✨ Novo Vídeo Disponível!';
-        const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
-        
-        const message = {
-          notification: { title, body },
-          topic: 'novos_videos',
-        };
-
-        // Salva a notificação no banco de dados para o histórico do "Sino"
-        await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
-
-        await admin.messaging().send(message);
-        console.log('✅ Notificação Push enviada com sucesso!');
-      } else {
-        console.log('⚠️ Firebase Admin não inicializado (arquivo JSON não encontrado). Push não enviado.');
-      }
-    } catch (pushError: any) {
-      console.error('❌ Erro ao enviar notificação Push:', pushError.message);
     }
   }
 
@@ -134,6 +142,9 @@ export async function editarVideo(videoId: string, formData: FormData) {
   const titulo = formData.get('titulo') as string;
   let thumbnailUrl = formData.get('thumbnail_url') as string;
   const thumbFile = formData.get('thumbnail_file') as File | null;
+  const emBreve = formData.get('em_breve') === 'true';
+  const bunnyVideoId = (formData.get('bunny_video_id') as string) || null;
+  const duracao = (formData.get('duracao') as string) || null;
   
   try {
     if (thumbFile && typeof thumbFile !== 'string' && thumbFile.size > 0) {
@@ -144,12 +155,59 @@ export async function editarVideo(videoId: string, formData: FormData) {
     console.error('❌ Erro no upload da thumbnail:', error.message)
   }
 
-  await supabase.from('videos').update({
+  // Busca estado antigo do vídeo para saber se foi lançado agora (era em_breve e deixou de ser)
+  const { data: videoAntigo } = await supabase.from('videos').select('em_breve').eq('id', videoId).single();
+
+  const { error } = await supabase.from('videos').update({
     titulo: titulo,
     descricao: (formData.get('descricao') as string) || null,
     thumbnail_url: thumbnailUrl || null,
-    duracao: (formData.get('duracao') as string) || null,
+    bunny_video_id: emBreve ? (bunnyVideoId || null) : bunnyVideoId,
+    duracao: duracao,
+    em_breve: emBreve,
   }).eq('id', videoId)
+
+  if (error) {
+    console.error('❌ Erro ao editar vídeo:', error.message)
+  } else {
+    // Se o vídeo deixou de ser em_breve, dispara notificação push de lançamento!
+    if (videoAntigo && videoAntigo.em_breve && !emBreve) {
+      try {
+        const admin = require('firebase-admin');
+        if (!admin.apps.length) {
+          const projectId = process.env.FIREBASE_PROJECT_ID;
+          const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+          const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+          if (projectId && clientEmail && privateKey) {
+            admin.initializeApp({
+              credential: admin.credential.cert({
+                projectId,
+                clientEmail,
+                privateKey,
+              })
+            });
+          }
+        }
+
+        if (admin.apps.length) {
+          const title = '✨ Novo Vídeo Disponível!';
+          const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
+          
+          const message = {
+            notification: { title, body },
+            topic: 'novos_videos',
+          };
+
+          await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
+          await admin.messaging().send(message);
+          console.log('✅ Notificação Push de lançamento enviada com sucesso!');
+        }
+      } catch (pushError: any) {
+        console.error('❌ Erro ao enviar notificação Push de lançamento:', pushError.message);
+      }
+    }
+  }
   
   revalidatePath('/admin')
   revalidatePath('/watch')
@@ -487,5 +545,61 @@ export async function toggleAnuncioAtivo(id: string, ativoAtual: boolean) {
     return { success: true };
   } catch (error: unknown) {
     return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' };
+  }
+}
+
+// ─── Criar Usuário Vitalício (Cliente - Role de Membro) ───
+export async function criarUsuarioVitalicio(formData: FormData) {
+  await verificarAdmin()
+  const admin = getAdminClient()
+
+  const email = (formData.get('email') as string)?.trim()
+  const nome = (formData.get('nome') as string)?.trim()
+  const plano = formData.get('plano') as string
+
+  if (!email || !nome || !plano) {
+    return { success: false, error: 'Todos os campos são obrigatórios' }
+  }
+
+  // Gera uma senha aleatória de 12 caracteres (letras maiúsculas, minúsculas e números)
+  const senhaGerada = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-4)
+
+  // Determinar telas baseado no plano
+  let maxTelas = 1
+  if (plano === 'Essencial') maxTelas = 2
+  else if (plano === 'Pro') maxTelas = 4
+
+  // Cria o usuário via Admin API do Supabase Auth
+  const { data: authData, error: authError } = await admin.auth.admin.createUser({
+    email,
+    password: senhaGerada,
+    email_confirm: true, // Auto-confirmação do e-mail do usuário
+    user_metadata: {
+      nome,
+      plano_ativo: true,
+      etiqueta_plano: plano,
+      max_telas: maxTelas,
+      vitalicio: true
+    }
+  })
+
+  if (authError) {
+    console.error('❌ Erro ao criar usuário vitalício no auth:', authError.message)
+    return { success: false, error: authError.message }
+  }
+
+  const userId = authData.user.id
+
+  // Nota: o trigger no Supabase 'on_auth_user_created' já cria automaticamente o perfil do usuário
+  // na tabela public.perfis com a role padrão de 'membro' (cliente comum), garantindo segurança total.
+
+  revalidatePath('/admin')
+  
+  return {
+    success: true,
+    nome,
+    email,
+    senhaGerada,
+    plano
   }
 }
