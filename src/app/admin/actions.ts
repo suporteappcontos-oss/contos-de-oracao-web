@@ -72,16 +72,23 @@ export async function adicionarVideo(formData: FormData) {
   const bunnyVideoId = (formData.get('bunny_video_id') as string) || null;
   const duracao = (formData.get('duracao') as string) || null;
 
+  const categoria = (formData.get('categoria') as string) || 'Geral';
+  const temporadaNome = categoria === 'Temporada' ? ((formData.get('temporada_nome') as string) || null) : null;
+  const episodioNumeroStr = categoria === 'Temporada' ? formData.get('episodio_numero') : null;
+  const episodioNumero = episodioNumeroStr ? parseInt(episodioNumeroStr as string, 10) : null;
+
   const { error } = await supabase.from('videos').insert({
     titulo: titulo,
     descricao: (formData.get('descricao') as string) || null,
-    categoria: (formData.get('categoria') as string) || 'Geral',
+    categoria: categoria,
     bunny_video_id: emBreve ? (bunnyVideoId || null) : bunnyVideoId,
     bunny_library_id: process.env.BUNNY_LIBRARY_ID || '642831',
     thumbnail_url: thumbnailUrl || null,
     duracao: duracao,
     ativo: true,
     em_breve: emBreve,
+    temporada_nome: temporadaNome,
+    episodio_numero: isNaN(Number(episodioNumero)) ? null : episodioNumero,
   })
 
   if (error) {
@@ -162,13 +169,21 @@ export async function editarVideo(videoId: string, formData: FormData) {
   // Busca estado antigo do vídeo para saber se foi lançado agora (era em_breve e deixou de ser)
   const { data: videoAntigo } = await supabase.from('videos').select('em_breve').eq('id', videoId).single();
 
+  const categoria = (formData.get('categoria') as string) || 'Geral';
+  const temporadaNome = categoria === 'Temporada' ? ((formData.get('temporada_nome') as string) || null) : null;
+  const episodioNumeroStr = categoria === 'Temporada' ? formData.get('episodio_numero') : null;
+  const episodioNumero = episodioNumeroStr ? parseInt(episodioNumeroStr as string, 10) : null;
+
   const { error } = await supabase.from('videos').update({
     titulo: titulo,
     descricao: (formData.get('descricao') as string) || null,
+    categoria: categoria,
     thumbnail_url: thumbnailUrl || null,
     bunny_video_id: emBreve ? (bunnyVideoId || null) : bunnyVideoId,
     duracao: duracao,
     em_breve: emBreve,
+    temporada_nome: temporadaNome,
+    episodio_numero: isNaN(Number(episodioNumero)) ? null : episodioNumero,
   }).eq('id', videoId)
 
   if (error) {

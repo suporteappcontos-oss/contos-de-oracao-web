@@ -29,6 +29,8 @@ type VideoType = {
   bunny_video_id: string; bunny_library_id: string
   duracao: string | null; criado_em: string; ativo: boolean
   em_breve?: boolean
+  temporada_nome?: string | null
+  episodio_numero?: number | null
 }
 type UsuarioType = {
   id: string; email: string; nome: string
@@ -36,7 +38,7 @@ type UsuarioType = {
   vitalicio?: boolean
 }
 
-const CATEGORIAS = ['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho']
+const CATEGORIAS = ['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho', 'Temporada', 'Vídeo Clipe']
 const FALLBACK = [
   'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=70',
   'https://images.unsplash.com/photo-1476725994324-6f6833cfb205?w=400&q=70',

@@ -10,6 +10,7 @@ const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb
 
 export function FormAdicionarVideo() {
   const [emBreve, setEmBreve] = useState(false)
+  const [categoria, setCategoria] = useState('Geral')
 
   return (
     <form action={adicionarVideo} encType="multipart/form-data">
@@ -38,9 +39,24 @@ export function FormAdicionarVideo() {
           <label className={labelCls}>Descrição</label>
           <textarea name="descricao" rows={2} placeholder="Descreva sobre o que é o vídeo..." className={inputCls} style={{ resize: 'vertical' }} />
         </div>
-        <div className="md:col-span-4">
+        
+        <div className="md:col-span-3">
+          <label className={labelCls}>Categoria</label>
+          <select 
+            name="categoria" 
+            value={categoria} 
+            onChange={(e) => setCategoria(e.target.value)} 
+            className={inputCls}
+          >
+            {['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho', 'Temporada', 'Vídeo Clipe'].map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        
+        <div className="md:col-span-3">
           <label className={labelCls}>
-            {emBreve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *'}
+            {emBreve ? 'Video ID (Bunny)' : 'Video ID (Bunny) *'}
           </label>
           <input 
             id="bunny_video_id_input" 
@@ -50,17 +66,45 @@ export function FormAdicionarVideo() {
             className={inputCls + ' font-mono text-white/70'} 
           />
         </div>
-        <div className="md:col-span-5">
+        
+        <div className="md:col-span-4">
           <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
           <div className="space-y-2">
             <input name="thumbnail_url" placeholder="URL opcional (ex: https://...)" className={inputCls} />
             <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
           </div>
         </div>
-        <div className="md:col-span-3">
+        
+        <div className="md:col-span-2">
           <label className={labelCls}>Duração</label>
           <input name="duracao" placeholder="Ex: 12:34" className={inputCls} />
         </div>
+
+        {/* Campos Condicionais de Temporada */}
+        {categoria === 'Temporada' && (
+          <>
+            <div className="md:col-span-8">
+              <label className={labelCls}>Nome da Temporada *</label>
+              <input 
+                name="temporada_nome" 
+                required 
+                placeholder="Ex: Temporada 1, Especial de Páscoa..." 
+                className={inputCls} 
+              />
+            </div>
+            <div className="md:col-span-4">
+              <label className={labelCls}>Número do Episódio *</label>
+              <input 
+                type="number" 
+                name="episodio_numero" 
+                required 
+                min={1} 
+                placeholder="Ex: 1" 
+                className={inputCls} 
+              />
+            </div>
+          </>
+        )}
       </div>
 
       <div className="mt-8 flex justify-end">

@@ -15,10 +15,13 @@ type VideoType = {
   bunny_video_id: string; bunny_library_id: string
   duracao: string | null; criado_em: string; ativo: boolean
   em_breve?: boolean
+  temporada_nome?: string | null
+  episodio_numero?: number | null
 }
 
 export function FormEditarVideo({ video }: { video: VideoType }) {
   const [emBreve, setEmBreve] = useState(video.em_breve === true)
+  const [categoria, setCategoria] = useState(video.categoria || 'Geral')
 
   return (
     <div className="bg-[#111827] border-2 border-[#D4AF37] rounded-3xl p-6 shadow-[0_0_30px_rgba(212,175,55,0.15)] z-20">
@@ -51,23 +54,65 @@ export function FormEditarVideo({ video }: { video: VideoType }) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className={labelCls}>
-              {emBreve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *'}
-            </label>
-            <input 
-              id={`edit_bunny_video_id_input_${video.id}`}
-              name="bunny_video_id" 
-              required={!emBreve}
-              defaultValue={video.bunny_video_id || ''} 
-              placeholder="xxxxxxxx-xxxx-xxxx-xxxx" 
-              className={inputCls + ' font-mono text-white/70'} 
-            />
+            <label className={labelCls}>Categoria</label>
+            <select 
+              name="categoria" 
+              value={categoria} 
+              onChange={(e) => setCategoria(e.target.value)} 
+              className={inputCls}
+            >
+              {['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho', 'Temporada', 'Vídeo Clipe'].map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className={labelCls}>Duração</label>
             <input name="duracao" defaultValue={video.duracao || ''} placeholder="Ex: 12:34" className={inputCls} />
           </div>
         </div>
+        <div>
+          <label className={labelCls}>
+            {emBreve ? 'Video ID (Bunny.net)' : 'Video ID (Bunny.net) *'}
+          </label>
+          <input 
+            id={`edit_bunny_video_id_input_${video.id}`}
+            name="bunny_video_id" 
+            required={!emBreve}
+            defaultValue={video.bunny_video_id || ''} 
+            placeholder="xxxxxxxx-xxxx-xxxx-xxxx" 
+            className={inputCls + ' font-mono text-white/70'} 
+          />
+        </div>
+
+        {/* Campos Condicionais de Temporada */}
+        {categoria === 'Temporada' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className={labelCls}>Nome da Temporada *</label>
+              <input 
+                name="temporada_nome" 
+                required 
+                defaultValue={video.temporada_nome || ''} 
+                placeholder="Ex: Temporada 1, Especial de Páscoa..." 
+                className={inputCls} 
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Número do Episódio *</label>
+              <input 
+                type="number" 
+                name="episodio_numero" 
+                required 
+                min={1} 
+                defaultValue={video.episodio_numero || ''} 
+                placeholder="Ex: 1" 
+                className={inputCls} 
+              />
+            </div>
+          </div>
+        )}
+
         <div>
           <label className={labelCls}>Descrição</label>
           <textarea name="descricao" rows={2} defaultValue={video.descricao || ''} className={inputCls} style={{ resize: 'vertical' }} />
