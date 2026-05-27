@@ -384,31 +384,19 @@ export default function LandingPage() {
             <p className="text-white/60 text-sm">Nenhum vídeo disponível no catálogo no momento.</p>
           </div>
         ) : (
-          <div className="relative group/carousel">
-            {/* Botão Esquerda */}
-            <button
-              onClick={() => {
-                const el = document.getElementById('featured-videos-scroll');
-                if (el) el.scrollBy({ left: -320, behavior: 'smooth' });
-              }}
-              className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full z-20 flex items-center justify-center transition-all bg-[#090B10]/80 border border-white/10 opacity-0 group-hover/carousel:opacity-100 shadow-lg hover:scale-110 active:scale-95 cursor-pointer"
-            >
-              <ChevronLeft size={20} style={{ color: PRIMARY }} />
-            </button>
+          <div className="relative overflow-hidden w-full py-2">
+            {/* Efeitos de fade nas laterais para transição premium */}
+            <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-[#090B10] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-[#090B10] to-transparent z-10 pointer-events-none" />
 
-            {/* Container do Scroll */}
-            <div
-              id="featured-videos-scroll"
-              className="flex gap-5 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scroll-smooth"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {videos.map((video) => {
+            <div className="animate-marquee flex gap-5">
+              {(videos.length < 6 ? [...videos, ...videos, ...videos, ...videos] : [...videos, ...videos]).map((video, idx) => {
                 const imageUrl = video.thumbnail_url || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80';
                 return (
                   <Link
-                    key={video.id}
+                    key={`${video.id}-${idx}`}
                     href="/planos"
-                    className="shrink-0 snap-start block w-[240px] sm:w-[270px] md:w-[300px] group transition-transform duration-300 hover:scale-[1.03]"
+                    className="shrink-0 block w-[240px] sm:w-[270px] md:w-[300px] group transition-transform duration-300 hover:scale-[1.03]"
                     style={{ textDecoration: 'none' }}
                   >
                     <div className="relative aspect-video rounded-2xl overflow-hidden mb-3 shadow-lg"

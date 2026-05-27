@@ -612,3 +612,26 @@ export async function criarUsuarioVitalicio(formData: FormData) {
     plano
   }
 }
+
+// ─── Deletar Assinante / Usuário (Auth e Tabelas vinculadas) ───
+export async function deletarUsuario(userId: string) {
+  await verificarAdmin()
+  const admin = getAdminClient()
+  const supabase = await createClient()
+
+  try {
+    // 1. Limpa tabelas vinculadas que possam impedir a exclusão por Foreign Key
+    await supabase.from('favoritos').delete().eq('user_id', userId)
+    await supabase.from('visualizacoes').delete().eq('user_id', userId)
+    await supabase.from('perfis').delete().eq('id', userId)
+
+    // 2. Deleta o usuário permanentemente do Supabase Auth
+    const { error } = await admin.auth.admin.deleteUser(userId)
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/admin')
+  } catch (error: any) {
+    console.error('❌ Erro ao deletar usuário:', error.message)
+  }
+}
+

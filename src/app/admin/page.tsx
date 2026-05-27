@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   adicionarVideo, editarVideo, toggleVideoAtivo,
-  deletarVideo, togglePlanoUsuario, alterarPlanoUsuario
+  deletarVideo, togglePlanoUsuario, alterarPlanoUsuario, deletarUsuario
 } from './actions'
 
 import {
@@ -562,17 +562,28 @@ export default async function AdminPage({
 
                         {/* Botão ação */}
                         <div className="col-span-3 md:col-span-2 flex flex-col items-end gap-2">
-                          <form action={togglePlanoUsuario.bind(null, u.id, u.plano_ativo)}>
-                            <button type="submit"
-                              className={`text-xs px-5 py-2.5 rounded-xl font-bold transition-all border shadow-sm hover:-translate-y-0.5 ${u.plano_ativo ? 'text-red-400 border-red-500/20 bg-red-500/5 hover:bg-red-500/10' : 'text-black border-transparent bg-[#D4AF37] hover:brightness-110'}`}>
-                              {u.plano_ativo ? 'Suspender' : 'Liberar Acesso'}
-                            </button>
-                          </form>
+                          <div className="flex gap-2 items-center">
+                            <form action={deletarUsuario.bind(null, u.id)} onSubmit={(e) => {
+                              if (!confirm(`Tem certeza que deseja excluir permanentemente a conta de ${u.nome !== '—' ? u.nome : u.email}? O acesso será cancelado imediatamente.`)) {
+                                e.preventDefault();
+                              }
+                            }}>
+                              <button type="submit" className="text-red-400 hover:text-red-500 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-xl border border-red-500/20 transition-all cursor-pointer" title="Excluir Conta Permanentemente">
+                                <Trash2 size={15} />
+                              </button>
+                            </form>
+                            <form action={togglePlanoUsuario.bind(null, u.id, u.plano_ativo)}>
+                              <button type="submit"
+                                className={`text-xs px-5 py-2.5 rounded-xl font-bold transition-all border shadow-sm hover:-translate-y-0.5 cursor-pointer ${u.plano_ativo ? 'text-red-400 border-red-500/20 bg-red-500/5 hover:bg-red-500/10' : 'text-black border-transparent bg-[#D4AF37] hover:brightness-110'}`}>
+                                {u.plano_ativo ? 'Suspender' : 'Liberar Acesso'}
+                              </button>
+                            </form>
+                          </div>
                           {u.plano_ativo && (
                             <div className="flex gap-1 mt-1">
-                              <form action={alterarPlanoUsuario.bind(null, u.id, 1, 'Básico')}><button type="submit" className="text-[10px] bg-white/10 hover:bg-white/20 text-white/70 px-2 py-1 rounded transition-colors" title="Mudar para Básico">B</button></form>
-                              <form action={alterarPlanoUsuario.bind(null, u.id, 2, 'Essencial')}><button type="submit" className="text-[10px] bg-[#D4AF37]/10 hover:bg-[#D4AF37]/30 text-[#D4AF37] px-2 py-1 rounded transition-colors" title="Mudar para Essencial">E</button></form>
-                              <form action={alterarPlanoUsuario.bind(null, u.id, 4, 'Pro')}><button type="submit" className="text-[10px] bg-[#10b981]/10 hover:bg-[#10b981]/30 text-[#10b981] px-2 py-1 rounded transition-colors" title="Mudar para Pro">P</button></form>
+                              <form action={alterarPlanoUsuario.bind(null, u.id, 1, 'Básico')}><button type="submit" className="text-[10px] bg-white/10 hover:bg-white/20 text-white/70 px-2 py-1 rounded transition-colors cursor-pointer" title="Mudar para Básico">B</button></form>
+                              <form action={alterarPlanoUsuario.bind(null, u.id, 2, 'Essencial')}><button type="submit" className="text-[10px] bg-[#D4AF37]/10 hover:bg-[#D4AF37]/30 text-[#D4AF37] px-2 py-1 rounded transition-colors cursor-pointer" title="Mudar para Essencial">E</button></form>
+                              <form action={alterarPlanoUsuario.bind(null, u.id, 4, 'Pro')}><button type="submit" className="text-[10px] bg-[#10b981]/10 hover:bg-[#10b981]/30 text-[#10b981] px-2 py-1 rounded transition-colors cursor-pointer" title="Mudar para Pro">P</button></form>
                             </div>
                           )}
                         </div>
