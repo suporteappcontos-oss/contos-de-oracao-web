@@ -153,7 +153,13 @@ export default async function VideoPlayerPage({ params }: Props) {
       <main className="pt-14 md:pt-[60px]">
 
         {/* ── PLAYER (protegido pelo guarda de sessões) ── */}
-        <VideoPlayerGuard videoId={videoId} embedUrl={embedUrl} proximoVideo={proximoVideo} />
+        <VideoPlayerGuard 
+          videoId={videoId} 
+          embedUrl={embedUrl} 
+          proximoVideo={proximoVideo} 
+          emBreve={video.em_breve}
+          thumbnailUrl={video.thumbnail_url}
+        />
 
         {/* ── INFO + RELACIONADOS ── */}
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-8 flex flex-col lg:flex-row gap-8">

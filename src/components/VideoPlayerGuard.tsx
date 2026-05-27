@@ -26,9 +26,11 @@ type Props = {
     bunny_library_id: string
     duracao: string | null
   } | null
+  emBreve?: boolean
+  thumbnailUrl?: string | null
 }
 
-export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo }: Props) {
+export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBreve, thumbnailUrl }: Props) {
   const router = useRouter()
   const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
   const [isPaused, setIsPaused] = useState(false)
@@ -258,6 +260,34 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo }: Pr
       '*'
     )
   }, [])
+
+  // ── ESTADO: Em Breve ──
+  if (emBreve) {
+    const bgUrl = thumbnailUrl || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1600&q=80';
+    return (
+      <div className="bg-black w-full relative">
+        <div 
+          className="relative w-full aspect-video mx-auto flex items-center justify-center overflow-hidden bg-cover bg-center"
+          style={{ 
+            maxWidth: '1600px', 
+            backgroundImage: `url(${bgUrl})` 
+          }}
+        >
+          {/* Blur background overlay */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          
+          {/* Card Central */}
+          <div className="relative z-10 text-center px-6 py-8 md:py-12 max-w-md bg-[#090B10]/80 backdrop-blur-md rounded-3xl border border-[#D4AF37]/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            <span className="inline-block text-[#D4AF37] text-4xl mb-4 animate-bounce">⏳</span>
+            <h2 className="text-white text-xl md:text-2xl font-black uppercase tracking-wider mb-2">Em Breve</h2>
+            <p className="text-[#8197a4] text-xs md:text-sm leading-relaxed">
+              Este conteúdo está sendo preparado com muito carinho para você e estará disponível em breve!
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── ESTADO: Verificando ──
   if (status === 'verificando') {
