@@ -59,12 +59,15 @@ export default async function PerfilPage() {
           limit: 1
         })
         if (subscriptions.data.length > 0) {
-          const sub = subscriptions.data[0]
-          proximaFatura = new Date((sub as any).current_period_end * 1000).toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-          })
+          const sub = subscriptions.data[0] as any
+          const rawPeriodEnd = sub.current_period_end || (sub.items && sub.items.data && sub.items.data[0] && sub.items.data[0].current_period_end)
+          if (rawPeriodEnd) {
+            proximaFatura = new Date(rawPeriodEnd * 1000).toLocaleDateString('pt-BR', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric'
+            })
+          }
         }
       }
     } catch (err) {
@@ -188,7 +191,7 @@ export default async function PerfilPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           
           {/* Box 1: Status do Plano (Ocupa 2 colunas no desktop) */}
-          <div className="lg:col-span-2 rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group"
+          <div className="lg:col-span-2 rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group transition-all hover:-translate-y-1 hover:shadow-xl"
             style={{
               background: planoAtivo ? 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.02) 100%)' : 'linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(239,68,68,0.02) 100%)',
               border: `1px solid ${planoAtivo ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
@@ -206,7 +209,7 @@ export default async function PerfilPage() {
               <p className="text-slate-300 text-sm mb-6 max-w-[80%] leading-relaxed font-light">
                 {planoAtivo ? (
                   <>
-                    Você tem acesso ilimitado a todos os conteúdos exclusivos, novenas e retiros espirituais.
+                    Você tem acesso ilimitado a todos os conteúdos exclusivos.
                     {proximaFatura && (
                       <span className="block mt-2 font-semibold text-[#D4AF37]">
                         Próxima renovação: {proximaFatura}
