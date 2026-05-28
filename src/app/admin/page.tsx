@@ -37,6 +37,8 @@ type UsuarioType = {
   id: string; email: string; nome: string
   plano_ativo: boolean; plano_nome: string; criado_em: string
   vitalicio?: boolean
+  ultimo_login?: string | null
+  total_views?: number
   acessos_site?: number
   acessos_app?: number
 }
@@ -76,6 +78,18 @@ export default async function AdminPage({
   const { data: materiaisData } = await supabase.from('materiais').select('*').order('criado_em', { ascending: false })
   const { data: anunciosPausa } = await supabase.from('anuncios_pausa').select('*').order('criado_em', { ascending: false })
 
+  // Busca visualizações para computar estatísticas gerais e individuais
+  let views: any[] = []
+  let viewsPorUsuario: Record<string, number> = {}
+  try {
+    const { data } = await supabase.from('visualizacoes').select('video_id, user_id, criado_em')
+    views = data ?? []
+    viewsPorUsuario = views.reduce((acc, v) => {
+      if (v.user_id) acc[v.user_id] = (acc[v.user_id] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+  } catch (e) { console.error('Erro ao buscar visualizações para usuários:', e) }
+
   // Busca nomes de temporadas distintos (para o seletor no FormAdicionarVideo)
   const temporadasExistentes: string[] = [...new Set(
     (videos ?? [])
@@ -107,6 +121,8 @@ export default async function AdminPage({
           plano_nome: u.user_metadata?.etiqueta_plano || 'Básico',
           vitalicio: u.user_metadata?.vitalicio === true,
           criado_em: u.created_at,
+          ultimo_login: u.last_sign_in_at || null,
+          total_views: viewsPorUsuario[u.id] || 0,
           acessos_site: perf?.acessos_site || 0,
           acessos_app: perf?.acessos_app || 0,
         }
@@ -145,15 +161,14 @@ export default async function AdminPage({
       return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
     })
 
-    const { data: views } = await supabase.from('visualizacoes').select('video_id, criado_em')
-    const viewCounts = views?.reduce((acc, v) => { acc[v.video_id] = (acc[v.video_id] || 0) + 1; return acc }, {} as Record<string, number>) || {}
+    const viewCounts: Record<string, number> = views.reduce((acc, v) => { acc[v.video_id] = (acc[v.video_id] || 0) + 1; return acc }, {} as Record<string, number>)
     topVisualizados = Object.entries(viewCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([id, count]) => {
       const v = videos?.find(v => v.id === id)
       return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
     })
 
     // Calcula visualizações dos últimos 7 dias
-    const views7Days = views?.filter(v => new Date(v.criado_em) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) || []
+    const views7Days = views.filter(v => new Date(v.criado_em) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
     
     // Group by Day
     // Inicializa os últimos 7 dias
@@ -527,7 +542,7 @@ export default async function AdminPage({
                   {/* Header da tabela */}
                   <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#090B10]/50">
                     <div className="col-span-6 md:col-span-5 text-white/40 text-xs uppercase tracking-widest font-bold">Assinante</div>
-                    <div className="col-span-3 text-white/40 text-xs uppercase tracking-widest font-bold hidden md:block">Data de Ingresso</div>
+                    <div className="col-span-3 text-white/40 text-xs uppercase tracking-widest font-bold hidden md:block">Ingresso e Acessos</div>
                     <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold">Status</div>
                     <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold text-right">Controle</div>
                   </div>
@@ -556,14 +571,21 @@ export default async function AdminPage({
                         </div>
 
                         {/* Data e Acessos */}
-                        <div className="col-span-3 hidden md:block">
-                          <div className="text-white/50 text-sm font-medium">
-                            {new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        <div className="col-span-3 hidden md:block text-left">
+                          <div className="text-white/50 text-[11px] leading-tight font-medium">
+                            Ingresso: <span className="text-white">{new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                           </div>
-                          <div className="text-white/30 text-xs mt-1.5 font-bold flex flex-wrap gap-x-2 gap-y-0.5">
+                          {u.ultimo_login && (
+                            <div className="text-white/40 text-[10px] leading-tight mt-1">
+                              Último Login: <span className="text-white/60">{new Date(u.ultimo_login).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} {new Date(u.ultimo_login).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                          )}
+                          <div className="text-white/30 text-[10px] mt-1.5 font-bold flex flex-wrap gap-x-2 gap-y-0.5 items-center">
                             <span>🖥️ Site: {u.acessos_site}</span>
                             <span className="opacity-30">|</span>
                             <span>📱 App: {u.acessos_app}</span>
+                            <span className="opacity-30">|</span>
+                            <span className="text-[#D4AF37]">🎬 Assistidos: {u.total_views}</span>
                           </div>
                         </div>
 

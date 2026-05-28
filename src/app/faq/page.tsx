@@ -57,7 +57,7 @@ export default function FAQPage() {
                 {item.q}
               </h3>
               <p 
-                className="text-[#94A3B8] leading-relaxed"
+                className="text-slate-300 leading-relaxed"
                 style={{ fontFamily: '"Outfit", sans-serif' }}
               >
                 {item.a}

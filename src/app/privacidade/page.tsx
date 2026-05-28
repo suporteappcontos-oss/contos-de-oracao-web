@@ -21,7 +21,7 @@ export default function PrivacidadePage() {
         </h1>
 
         <div 
-          className="prose prose-invert max-w-none text-[#94A3B8]"
+          className="prose prose-invert max-w-none prose-p:text-slate-200 prose-headings:text-white prose-strong:text-white prose-a:text-[#D4AF37] text-slate-200"
           style={{ fontFamily: '"Outfit", sans-serif' }}
         >
           <p className="mb-6">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>

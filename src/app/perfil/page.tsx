@@ -177,7 +177,7 @@ export default async function PerfilPage() {
                   {planoAtivo ? 'Assinatura Ativa' : 'Assinatura Inativa'}
                 </span>
               </div>
-              <p className="text-[#94A3B8] text-sm mb-6 max-w-[80%] leading-relaxed font-light">
+              <p className="text-slate-300 text-sm mb-6 max-w-[80%] leading-relaxed font-light">
                 {planoAtivo ? 'Você tem acesso ilimitado a todos os conteúdos exclusivos, novenas e retiros espirituais.' : 'Sua assinatura expirou e seu acesso foi suspenso. Renove agora para continuar assistindo.'}
               </p>
             </div>
@@ -202,7 +202,7 @@ export default async function PerfilPage() {
                 <Key size={22} />
               </div>
               <div className="text-white font-bold text-base mb-1">Segurança</div>
-              <div className="text-[#64748B] text-xs leading-relaxed">Altere sua senha de acesso a qualquer momento.</div>
+              <div className="text-slate-400 text-xs leading-relaxed">Altere sua senha de acesso a qualquer momento.</div>
             </div>
             <div className="mt-4 flex items-center gap-1 text-[0.7rem] font-bold uppercase tracking-widest text-white/40 group-hover:text-white/80 transition-colors">
               Alterar Senha <ChevronLeft size={12} className="rotate-180" />
@@ -219,7 +219,7 @@ export default async function PerfilPage() {
                 <MessageCircle size={22} />
               </div>
               <div className="text-white font-bold text-base mb-1">Suporte</div>
-              <div className="text-[#64748B] text-xs leading-relaxed">Fale conosco via WhatsApp para tirar dúvidas.</div>
+              <div className="text-slate-400 text-xs leading-relaxed">Fale conosco via WhatsApp para tirar dúvidas.</div>
             </div>
             <div className="mt-4 flex items-center gap-1 text-[0.7rem] font-bold uppercase tracking-widest text-[#25D366]/60 group-hover:text-[#25D366] transition-colors">
               Chamar no Zap <ChevronLeft size={12} className="rotate-180" />
@@ -232,7 +232,7 @@ export default async function PerfilPage() {
         <div className="rounded-xl p-4 mb-8 flex items-start gap-3"
           style={{ background: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.12)' }}>
           <AlertTriangle size={14} className="shrink-0 mt-0.5" style={{ color: '#D4AF37' }} />
-          <p className="text-[#64748B] text-xs">
+          <p className="text-slate-400 text-xs">
             Ao cancelar sua assinatura, <b>você continuará com acesso total até o final do período que já foi pago.</b> Após essa data, o plano não será renovado e o acesso será suspenso.
           </p>
         </div>
@@ -255,8 +255,8 @@ export default async function PerfilPage() {
             <div className="rounded-2xl p-10 text-center"
               style={{ background: '#15243E', border: '1px solid rgba(255,255,255,0.06)' }}>
               <Heart size={36} className="mx-auto mb-3 opacity-20" />
-              <p className="text-[#64748B] text-sm">Você ainda não adicionou favoritos.</p>
-              <p className="text-[#4a5568] text-xs mt-1">Passe o mouse nos vídeos e clique no ❤️ para salvar aqui.</p>
+              <p className="text-slate-300 text-sm">Você ainda não adicionou favoritos.</p>
+              <p className="text-slate-400 text-xs mt-1">Passe o mouse nos vídeos e clique no ❤️ para salvar aqui.</p>
               <Link href="/watch"
                 className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:brightness-110"
                 style={{ background: '#D4AF37', color: '#090B10' }}>

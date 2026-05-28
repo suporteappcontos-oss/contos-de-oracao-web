@@ -144,7 +144,7 @@ export default async function CategoriaPage({ params }: Props) {
                   {itens?.length ?? 0} {(itens?.length ?? 0) === 1 ? 'item' : 'itens'}
                 </span>
               </div>
-              <p className="text-white/30 text-xs">{cat.descricao}</p>
+              <p className="text-white/70 text-xs">{cat.descricao}</p>
             </div>
           </div>
         </div>
@@ -159,8 +159,8 @@ export default async function CategoriaPage({ params }: Props) {
               style={{ background: `${cat.color}10`, border: `1px solid ${cat.color}20` }}>
               <CatIcon size={36} style={{ color: cat.color, opacity: 0.3 }} />
             </div>
-            <p className="text-white/25 font-bold">Nenhum material publicado ainda</p>
-            <p className="text-white/12 text-sm">Em breve novos conteúdos serão adicionados.</p>
+            <p className="text-white/50 font-bold">Nenhum material publicado ainda</p>
+            <p className="text-white/50 text-sm">Em breve novos conteúdos serão adicionados.</p>
             <Link href="/materiais"
               className="mt-4 flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold border border-white/10 text-white/40 hover:text-white/70 hover:border-white/20 transition-all">
               <ArrowLeft size={12} /> Ver categorias
@@ -218,7 +218,7 @@ export default async function CategoriaPage({ params }: Props) {
                     {item.titulo}
                   </h3>
                   {item.descricao && (
-                    <p className="text-white/28 text-xs leading-relaxed line-clamp-2 -mt-1.5 px-0.5">
+                    <p className="text-white/70 text-xs leading-relaxed line-clamp-2 -mt-1.5 px-0.5">
                       {item.descricao}
                     </p>
                   )}
@@ -238,7 +238,7 @@ export default async function CategoriaPage({ params }: Props) {
                     )
                   ) : (
                     <Link href="/planos"
-                      className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all border border-white/10 hover:border-white/20 text-white/35 hover:text-white/60">
+                      className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all border border-white/10 hover:border-white/20 text-white/60 hover:text-white">
                       <Lock size={11} /> Ver planos
                     </Link>
                   )}

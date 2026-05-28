@@ -199,7 +199,7 @@ export default async function MateriaisPage() {
                       style={{ backgroundImage: `linear-gradient(135deg, #fff, ${cat.color})` }}>
                       {cat.label}
                     </h2>
-                    <p className="text-white/40 text-sm leading-relaxed">{cat.descricao}</p>
+                    <p className="text-white/70 text-sm leading-relaxed">{cat.descricao}</p>
                   </div>
 
                   <div className="mt-auto pt-5 border-t border-white/5 flex items-center justify-between">

@@ -53,7 +53,7 @@ export default async function HQListPage() {
             <span className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest">HQs Católicas</span>
           </div>
           <h2 className="text-white text-3xl font-bold">Histórias em Quadrinhos</h2>
-          <p className="text-white/40 mt-2 text-sm">Histórias da fé ilustradas para toda a família</p>
+          <p className="text-white/70 mt-2 text-sm">Histórias da fé ilustradas para toda a família</p>
         </div>
 
         {/* Grid de HQs */}
@@ -101,7 +101,7 @@ export default async function HQListPage() {
                     <h3 className="text-white text-sm font-semibold leading-tight group-hover:text-[#D4AF37] transition-colors">
                       {hq.titulo}
                     </h3>
-                    <p className="text-white/40 text-xs mt-1 leading-relaxed line-clamp-2">
+                    <p className="text-white/70 text-xs mt-1 leading-relaxed line-clamp-2">
                       {hq.descricao}
                     </p>
                   </div>

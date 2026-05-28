@@ -204,7 +204,7 @@ export default async function WatchPage() {
                         <h3 className="text-white text-base font-extrabold leading-tight group-hover:text-[#D4AF37] transition-colors">
                           Livros, HQs e Desenhos
                         </h3>
-                        <p className="text-white/40 text-xs mt-1.5 leading-snug">
+                        <p className="text-white/70 text-xs mt-1.5 leading-snug">
                           Acesse e faça download de livros pedagógicos, desenhos e histórias de santos.
                         </p>
                       </Link>
