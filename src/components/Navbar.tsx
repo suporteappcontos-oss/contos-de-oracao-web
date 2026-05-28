@@ -369,18 +369,13 @@ export default function Navbar() {
         {/* Divisor */}
         <div className="mx-5 h-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
 
-        {/* ── Entrar | Inscreva-se (só quando NÃO logado) ── */}
+        {/* ── Entrar (só quando NÃO logado) ── */}
         {showAuth && (
           <div className="flex items-center gap-3 px-5 py-4">
             <button onClick={handleEntrar}
               className="text-white text-sm font-black hover:text-[#D4AF37] transition-colors">
               Entrar
             </button>
-            <span className="text-white/20 text-sm">|</span>
-            <Link href="/planos" onClick={() => setSidebarOpen(false)}
-              className="text-white/60 text-sm font-semibold hover:text-white transition-colors no-underline">
-              Inscreva-se
-            </Link>
           </div>
         )}
 
@@ -539,7 +534,7 @@ export default function Navbar() {
           </button>
           
           <a
-            href="https://wa.me/5566997182760?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20Contos%20de%20Ora%C3%A7%C3%A3o"
+            href="https://wa.me/5566997182760?text=Ol%C3%A1%2C%20seja%20bem-vindo%20ao%20Contos%20de%20Ora%C3%A7%C3%A3o.%20Em%20breve%2C%20a%20equipe%20de%20suporte%20entrar%C3%A1%20em%20contato%20com%20voc%C3%AA."
             target="_blank"
             rel="noopener noreferrer"
             className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all duration-300 ease-out hover:scale-[1.03] hover:border-[#25D366]/60 text-sm no-underline active:scale-95 shadow-lg shadow-[#25D366]/5"
@@ -548,7 +543,7 @@ export default function Navbar() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
               <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
             </svg>
-            <span className="text-[#25D366] font-bold">Suporte WhatsApp</span>
+            <span className="text-[#25D366] font-bold">Suporte</span>
           </a>
         </div>
       </aside>
