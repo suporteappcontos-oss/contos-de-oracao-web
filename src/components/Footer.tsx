@@ -38,17 +38,17 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-wrap gap-x-6 gap-y-3">
-            <a href="/faq" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Perguntas frequentes</a>
-            <a href="mailto:contato@contosdeoracao.com.br" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Suporte</a>
-            <a href="/termos" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Termos de uso</a>
-            <a href="/privacidade" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Privacidade</a>
-            <a href="/planos" className="text-[#94A3B8] hover:text-white text-sm no-underline transition-colors">Planos</a>
+            <a href="/faq" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Perguntas frequentes</a>
+            <a href="mailto:contato@contosdeoracao.com.br" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Suporte</a>
+            <a href="/termos" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Termos de uso</a>
+            <a href="/privacidade" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Privacidade</a>
+            <a href="/planos" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Planos</a>
           </div>
         </div>
 
         {/* Direita: Redes sociais + suporte */}
         <div className="flex flex-col items-start sm:items-end gap-4">
-          <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-widest">Nos acompanhe</p>
+          <p className="text-slate-300 text-xs font-semibold uppercase tracking-widest">Nos acompanhe</p>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex items-center gap-3">
 
@@ -207,10 +207,10 @@ export default function Footer() {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-6"
         style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
       >
-        <p className="text-[#94A3B8] text-xs">
+        <p className="text-slate-300 text-xs">
           © 2026 Contos de Oração Brasil. Todos os direitos reservados.
         </p>
-        <p className="text-[#94A3B8] text-xs">
+        <p className="text-slate-300 text-xs">
           Desenvolvido por{' '}
           <a
             href="https://wa.me/5566997182760"

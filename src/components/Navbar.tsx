@@ -371,9 +371,15 @@ export default function Navbar() {
 
         {/* ── Entrar (só quando NÃO logado) ── */}
         {showAuth && (
-          <div className="flex items-center gap-3 px-5 py-4">
-            <button onClick={handleEntrar}
-              className="text-white text-sm font-black hover:text-[#D4AF37] transition-colors">
+          <div className="px-5 py-4 w-full">
+            <button
+              onClick={handleEntrar}
+              className="w-full flex items-center justify-center gap-2 border rounded-xl py-2.5 px-4 text-[#D4AF37] hover:text-white transition-all duration-300 font-black text-sm active:scale-95 cursor-pointer"
+              style={{ background: 'rgba(212, 175, 55, 0.1)', borderColor: 'rgba(212, 175, 55, 0.25)' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+              </svg>
               Entrar
             </button>
           </div>
@@ -452,7 +458,10 @@ export default function Navbar() {
             <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconRevistas />
             </span>
-            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Revistas</span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300 flex items-center gap-1.5">
+              Revistas
+              <span className="text-[9px] text-[#D4AF37] font-black uppercase tracking-wider bg-[#D4AF37]/10 px-1.5 py-0.5 rounded border border-[#D4AF37]/20">Em breve</span>
+            </span>
           </Link>
 
           {/* ── Materiais ── */}
@@ -484,7 +493,10 @@ export default function Navbar() {
             <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconCursos />
             </span>
-            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Cursos</span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300 flex items-center gap-1.5">
+              Cursos
+              <span className="text-[9px] text-[#D4AF37] font-black uppercase tracking-wider bg-[#D4AF37]/10 px-1.5 py-0.5 rounded border border-[#D4AF37]/20">Em breve</span>
+            </span>
           </Link>
 
           {/* ── Loja ── */}
@@ -497,7 +509,10 @@ export default function Navbar() {
             <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconLoja />
             </span>
-            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Loja</span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300 flex items-center gap-1.5">
+              Loja
+              <span className="text-[9px] text-[#D4AF37] font-black uppercase tracking-wider bg-[#D4AF37]/10 px-1.5 py-0.5 rounded border border-[#D4AF37]/20">Em breve</span>
+            </span>
           </Link>
 
           {/* ── Sobre ── */}
@@ -540,8 +555,8 @@ export default function Navbar() {
             className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all duration-300 ease-out hover:scale-[1.03] hover:border-[#25D366]/60 text-sm no-underline active:scale-95 shadow-lg shadow-[#25D366]/5"
             style={{ background: '#0E2E1E', borderColor: 'rgba(37, 211, 102, 0.2)' }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366" className="shrink-0">
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.182 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.97C16.528 2.015 14.07 1 11.83 1c-5.44 0-9.866 4.372-9.87 9.802 0 1.714.452 3.393 1.312 4.88L2.225 21l5.422-1.846zM18.66 15c-.352-.177-2.09-1.03-2.413-1.147-.324-.117-.56-.177-.796.177-.236.353-.913 1.148-1.12 1.383-.205.234-.412.264-.764.088-.352-.176-1.488-.549-2.836-1.75-1.049-.937-1.758-2.096-1.964-2.45-.205-.353-.022-.544.154-.72.158-.158.352-.412.53-.618.176-.206.236-.353.353-.589.118-.235.059-.441-.03-.617-.088-.177-.795-1.913-1.09-2.618-.287-.69-.578-.596-.795-.607-.205-.011-.44-.011-.676-.011-.235 0-.617.088-.94.44-.324.353-1.236 1.207-1.236 2.941 0 1.734 1.265 3.411 1.442 3.646.177.235 2.49 3.801 6.03 5.33.842.364 1.5.581 2.013.743.845.269 1.615.23 2.223.14.678-.1 2.09-.854 2.383-1.678.293-.824.293-1.53.205-1.678-.088-.148-.324-.236-.677-.413z"/>
             </svg>
             <span className="text-[#25D366] font-bold">Suporte</span>
           </a>
