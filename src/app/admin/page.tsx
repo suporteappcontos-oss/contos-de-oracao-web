@@ -22,6 +22,7 @@ import { FormAcessoVitalicio } from './FormAcessoVitalicio'
 import { FormAdicionarVideo } from './FormAdicionarVideo'
 import { FormEditarVideo } from './FormEditarVideo'
 import { BotoesControleUsuario } from './BotoesControleUsuario'
+import { AssinantesComFiltros } from './AssinantesComFiltros'
 import SubmitButton from '@/components/SubmitButton'
 
 type VideoType = {
@@ -530,92 +531,7 @@ export default async function AdminPage({
               {/* Formulário Cliente Vitalício */}
               <FormAcessoVitalicio />
 
-              {usuarios.length === 0 ? (
-                <div className="bg-[#111827] border border-white/5 rounded-3xl p-16 text-center">
-                  <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Users size={32} className="text-white/30" />
-                  </div>
-                  <p className="text-white/60 font-medium">Nenhum assinante encontrado.</p>
-                </div>
-              ) : (
-                <div className="bg-[#111827] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
-                  {/* Header da tabela */}
-                  <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#090B10]/50">
-                    <div className="col-span-6 md:col-span-5 text-white/40 text-xs uppercase tracking-widest font-bold">Assinante</div>
-                    <div className="col-span-3 text-white/40 text-xs uppercase tracking-widest font-bold hidden md:block">Ingresso e Acessos</div>
-                    <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold">Status</div>
-                    <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold text-right">Controle</div>
-                  </div>
-
-                  {/* Linhas */}
-                  <div className="divide-y divide-white/5">
-                    {usuarios.map((u) => (
-                      <div key={u.id} className="grid grid-cols-12 gap-4 px-8 py-5 items-center transition-colors hover:bg-white/[0.02]">
-                        
-                        {/* Info do usuário */}
-                        <div className="col-span-6 md:col-span-5 flex items-center gap-4 min-w-0">
-                          <div className={`w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center text-lg font-black shadow-inner border ${u.plano_ativo ? 'bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/20' : 'bg-white/5 text-white/30 border-white/5'}`}>
-                            {(u.nome !== '—' ? u.nome : u.email).charAt(0).toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-white text-[0.95rem] font-bold truncate flex items-center gap-2">
-                              {u.nome !== '—' ? u.nome : '—'}
-                              {u.vitalicio && (
-                                <span className="bg-amber-500/20 text-[#D4AF37] text-[0.55rem] font-black uppercase tracking-widest px-2 py-0.5 rounded border border-[#D4AF37]/30">
-                                  Vitalício ♾️
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-white/40 text-xs truncate mt-0.5">{u.email}</div>
-                          </div>
-                        </div>
-
-                        {/* Data e Acessos */}
-                        <div className="col-span-3 hidden md:block text-left">
-                          <div className="text-white/50 text-[11px] leading-tight font-medium">
-                            Ingresso: <span className="text-white">{new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                          </div>
-                          {u.ultimo_login && (
-                            <div className="text-white/40 text-[10px] leading-tight mt-1">
-                              Último Login: <span className="text-white/60">{new Date(u.ultimo_login).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} {new Date(u.ultimo_login).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
-                            </div>
-                          )}
-                          <div className="text-white/30 text-[10px] mt-1.5 font-bold flex flex-wrap gap-x-2 gap-y-0.5 items-center">
-                            <span>🖥️ Site: {u.acessos_site}</span>
-                            <span className="opacity-30">|</span>
-                            <span>📱 App: {u.acessos_app}</span>
-                            <span className="opacity-30">|</span>
-                            <span className="text-[#D4AF37]">🎬 Assistidos: {u.total_views}</span>
-                          </div>
-                        </div>
-
-                        {/* Status badge */}
-                        <div className="col-span-3 md:col-span-2">
-                          <span className={`inline-flex items-center gap-1.5 text-[0.65rem] px-3 py-1.5 rounded-xl font-bold uppercase tracking-widest border ${u.plano_ativo ? 'text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20' : 'text-[#D4AF37] bg-[#D4AF37]/10 border-[#D4AF37]/20'}`}>
-                            <div className={`w-1.5 h-1.5 rounded-full ${u.plano_ativo ? 'bg-[#10b981]' : 'bg-[#D4AF37]'}`} />
-                            {u.plano_ativo ? 'Ativo' : 'Lead (Pendente)'}
-                          </span>
-                          {u.plano_ativo && (
-                            <div className="text-white/40 text-[0.6rem] uppercase tracking-widest font-black mt-1.5 truncate">
-                              Plano: {u.plano_nome}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Botão ação */}
-                        <div className="col-span-3 md:col-span-2 flex flex-col items-end gap-2">
-                          <BotoesControleUsuario
-                            userId={u.id}
-                            nome={u.nome}
-                            email={u.email}
-                            planoAtivo={u.plano_ativo}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <AssinantesComFiltros usuarios={usuarios} membrosAtivos={membrosAtivos} />
             </div>
 
             {/* --- PLANOS E STRIPE --- */}
