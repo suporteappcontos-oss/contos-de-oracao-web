@@ -275,7 +275,7 @@ export default function Navbar() {
 
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all h-full bg-white/5 text-slate-400 border border-white/10 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all h-full bg-red-500/10 text-red-500 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/35 cursor-pointer"
               >
                 <span>Sair</span>
               </button>
@@ -405,7 +405,7 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* ── Assinar ── */}
+          {/* ── Assinatura / Trocar assinatura ── */}
           <Link
             href="/planos"
             onClick={() => setSidebarOpen(false)}
@@ -415,27 +415,31 @@ export default function Navbar() {
             <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconPlanos />
             </span>
-            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Assinar</span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">
+              {isLoggedIn ? "Trocar assinatura" : "Assinatura"}
+            </span>
           </Link>
 
           {/* ── Vídeos ── */}
-          <Link
-            href={isLoggedIn ? "/watch" : "/?modal=login"}
-            onClick={(e) => {
-              setSidebarOpen(false);
-              if (!isLoggedIn) {
-                e.preventDefault();
-                handleEntrar();
-              }
-            }}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
-          >
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
-            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
-              <IconVideos />
-            </span>
-            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Vídeos</span>
-          </Link>
+          {pathname !== '/watch' && (
+            <Link
+              href={isLoggedIn ? "/watch" : "/?modal=login"}
+              onClick={(e) => {
+                setSidebarOpen(false);
+                if (!isLoggedIn) {
+                  e.preventDefault();
+                  handleEntrar();
+                }
+              }}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+            >
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+              <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+                <IconVideos />
+              </span>
+              <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Vídeos</span>
+            </Link>
+          )}
 
           {/* ── Revistas ── */}
           <Link
@@ -562,30 +566,10 @@ export default function Navbar() {
             </button>
             <div className="p-6 md:p-10">
               <h2 className="text-2xl md:text-3xl font-black text-white mb-8 tracking-tight text-center">Manual de Acesso</h2>
-              <div className="mb-6 bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">📱</span>
-                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Celulares Android</h3>
-                </div>
-                <p className="text-white/70 text-sm md:text-base mb-5 leading-relaxed">
-                  Baixe o nosso aplicativo oficial. Seu celular pedirá para{' '}
-                  <strong className="text-white">permitir a instalação de aplicativos desconhecidos</strong>.
-                  Basta autorizar e instalar o arquivo <span className="text-[#D4AF37] font-mono">.apk</span>.
-                </p>
-                {apkUrl !== '#' ? (
-                  <a href={apkUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#D4AF37] text-[#090B10] px-6 py-3 rounded-xl font-black text-sm transition-all hover:scale-105 shadow-lg">
-                    Baixar o App Agora
-                    {versao && <span className="bg-black/10 px-2 py-0.5 rounded-md text-xs ml-1">v{versao}</span>}
-                  </a>
-                ) : (
-                  <span className="text-white/50 text-sm italic">O aplicativo estará disponível em breve.</span>
-                )}
-              </div>
               <div className="bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl">📺</span>
-                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para Smart TVs e TV Box</h3>
+                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para o navegador de Smart TVs e TV Box</h3>
                 </div>
                 <p className="text-white/70 text-sm md:text-base mb-4 leading-relaxed">
                   Funciona diretamente pelo navegador da sua TV:
