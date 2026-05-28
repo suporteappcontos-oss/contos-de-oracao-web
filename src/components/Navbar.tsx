@@ -506,8 +506,10 @@ export default function Navbar() {
           </Link>
 
           {/* ── Sobre ── */}
-          <Link
-            href="/#sobre"
+          <a
+            href="https://d-biblical-visions.lovable.app/"
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
           >
@@ -516,7 +518,7 @@ export default function Navbar() {
               <IconSobre />
             </span>
             <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Sobre</span>
-          </Link>
+          </a>
         </nav>
 
         <div className="flex-1" />
