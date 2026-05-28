@@ -48,15 +48,26 @@ const IconInicio = () => (
   </svg>
 );
 
-const GRUPO_1 = [
-  { label: 'Cursos', Icon: IconCursos },
-  { label: 'Loja',   Icon: IconLoja   },
-];
-const GRUPO_2 = [
-  { label: 'Bíblia',          Icon: IconBiblia   },
-  { label: 'Orações',         Icon: IconOracoes  },
-  { label: 'Liturgia diária', Icon: IconLiturgia },
-];
+const IconVideos = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+  </svg>
+);
+const IconRevistas = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+  </svg>
+);
+const IconMateriais = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+  </svg>
+);
+const IconSobre = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+  </svg>
+);
 
 export default function Navbar() {
   const pathname                      = usePathname();
@@ -65,6 +76,8 @@ export default function Navbar() {
   const [apkUrl, setApkUrl]           = useState('#');
   const [showManual, setShowManual]   = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser]               = useState<any>(null);
+  const [isAdmin, setIsAdmin]         = useState(false);
   const [isLoggedIn, setIsLoggedIn]   = useState(false);
   const [isScrolled, setIsScrolled]   = useState(false);
 
@@ -77,17 +90,65 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Verifica autenticação
+  // Verifica autenticação e registra o acesso ao site
   useEffect(() => {
     const supabase = createClient();
+    
+    const registrarAcesso = (userId: string) => {
+      const acessoRegistrado = sessionStorage.getItem('cdo_acesso_site_registrado');
+      if (!acessoRegistrado) {
+        fetch('/api/registrar-acesso', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tipo: 'site' })
+        }).then(res => {
+          if (res.ok) {
+            sessionStorage.setItem('cdo_acesso_site_registrado', 'true');
+          }
+        }).catch(err => console.error('Erro ao registrar acesso:', err));
+      }
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        registrarAcesso(session.user.id);
+        setIsAdmin(session.user.email === 'suporte.appcontos@gmail.com' || session.user.user_metadata?.role === 'admin');
+        supabase.from('perfis').select('role').eq('id', session.user.id).single().then(({ data }) => {
+          if (data?.role === 'admin') {
+            setIsAdmin(true);
+          }
+        });
+      }
     });
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        registrarAcesso(session.user.id);
+        setIsAdmin(session.user.email === 'suporte.appcontos@gmail.com' || session.user.user_metadata?.role === 'admin');
+        supabase.from('perfis').select('role').eq('id', session.user.id).single().then(({ data }) => {
+          if (data?.role === 'admin') {
+            setIsAdmin(true);
+          }
+        });
+      } else {
+        setIsAdmin(false);
+      }
     });
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    setSidebarOpen(false);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    setUser(null);
+    router.push('/');
+  };
 
   // Busca versão APK
   useEffect(() => {
@@ -184,42 +245,81 @@ export default function Navbar() {
 
         {/* Links Direita — ml-auto garante o alinhamento fixado à direita independentemente da visibilidade do botão menu */}
         <div className="flex items-center gap-2 sm:gap-4 md:gap-5 ml-auto">
-          <div className="hidden md:flex items-center gap-3 sm:gap-4 text-xs font-black uppercase tracking-wider">
-            <Link href="/planos" className="hover:text-[#D4AF37] transition-colors no-underline text-white font-extrabold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.95)' }}>
-              Loja
-            </Link>
-            <span className="text-white/20 select-none">|</span>
-            <button
-              onClick={isLoggedIn ? () => router.push('/watch') : handleEntrar}
-              className="hover:text-[#D4AF37] transition-colors bg-transparent border-none p-0 cursor-pointer font-extrabold text-xs uppercase tracking-wider text-white"
-              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.95)' }}
-            >
-              Minha Conta
-            </button>
-            <span className="text-white/20 select-none">|</span>
-          </div>
+          {isLoggedIn ? (
+            <div className="flex items-center gap-2 sm:gap-3.5">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+                  style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)', textDecoration: 'none' }}
+                >
+                  <span className="hidden sm:inline">Painel Admin</span>
+                  <span className="sm:hidden">Admin</span>
+                </Link>
+              )}
 
-          {/* Lupa de Busca */}
-          <Link href="/watch" className="text-white hover:text-[#D4AF37] transition-colors flex items-center" title="Pesquisar" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </Link>
+              <Link
+                href="/perfil"
+                className="group flex items-center gap-1.5 px-1.5 py-1 rounded-xl transition-all hover:bg-white/5 no-underline"
+                title="Meu perfil"
+              >
+                <div className="relative w-8 h-8 rounded-xl overflow-hidden border transition-all group-hover:border-[#D4AF37] shrink-0"
+                  style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Link>
 
-          {/* Botão ASSINAR AGORA */}
-          <Link
-            href="/planos"
-            className="flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-[#D4AF37]/10"
-            style={{
-              background: '#D4AF37',
-              color: '#090B10',
-              textDecoration: 'none',
-              fontFamily: 'Outfit, sans-serif',
-            }}
-          >
-            Assinar Agora
-          </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all h-full bg-white/5 text-slate-400 border border-white/10 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 cursor-pointer"
+              >
+                <span>Sair</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="hidden md:flex items-center gap-3 sm:gap-4 text-xs font-black uppercase tracking-wider">
+                <Link href="/planos" className="hover:text-[#D4AF37] transition-colors no-underline text-white font-extrabold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.95)' }}>
+                  Loja
+                </Link>
+                <span className="text-white/20 select-none">|</span>
+                <button
+                  onClick={handleEntrar}
+                  className="hover:text-[#D4AF37] transition-colors bg-transparent border-none p-0 cursor-pointer font-extrabold text-xs uppercase tracking-wider text-white"
+                  style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.95)' }}
+                >
+                  Entrar
+                </button>
+                <span className="text-white/20 select-none">|</span>
+              </div>
+
+              {/* Lupa de Busca */}
+              <Link href="/watch" className="text-white hover:text-[#D4AF37] transition-colors flex items-center" title="Pesquisar" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </Link>
+
+              {/* Botão ASSINAR AGORA */}
+              <Link
+                href="/planos"
+                className="flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-[#D4AF37]/10"
+                style={{
+                  background: '#D4AF37',
+                  color: '#090B10',
+                  textDecoration: 'none',
+                  fontFamily: 'Outfit, sans-serif',
+                }}
+              >
+                Assinar Agora
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -290,73 +390,129 @@ export default function Navbar() {
         {/* ── MENU ── */}
         <nav className="flex flex-col px-3 gap-0.5">
 
-          {/* ── Início (só aparece em outras páginas E sem login) ── */}
-          {showInicio && (
+          {/* ── Home (só aparece se pathname !== '/') ── */}
+          {pathname !== '/' && (
             <Link
               href="/"
               onClick={() => setSidebarOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
             >
-              {/* Indicador de borda dourada lateral esquerda no hover */}
               <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
-              
               <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
                 <IconInicio />
               </span>
-              <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Início</span>
+              <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Home</span>
             </Link>
           )}
 
-          {/* ── Planos (item ativo, sempre visível) ── */}
+          {/* ── Assinar ── */}
           <Link
             href="/planos"
             onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
           >
-            {/* Indicador de borda dourada lateral esquerda no hover */}
             <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
-            
-            <span className="text-[#D4AF37] opacity-70 group-hover:opacity-100 group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconPlanos />
             </span>
-            <span className="text-white/80 group-hover:text-white text-sm font-semibold transition-all duration-300">Planos</span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Assinar</span>
           </Link>
 
-          {/* Separador */}
-          <div className="mx-3 my-2 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          {/* ── Vídeos ── */}
+          <Link
+            href={isLoggedIn ? "/watch" : "/?modal=login"}
+            onClick={(e) => {
+              setSidebarOpen(false);
+              if (!isLoggedIn) {
+                e.preventDefault();
+                handleEntrar();
+              }
+            }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+          >
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+              <IconVideos />
+            </span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Vídeos</span>
+          </Link>
 
-          {/* Grupo 1 — Em breve */}
-          {GRUPO_1.map(({ label, Icon }) => (
-            <div key={label} title="Em breve"
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none transition-all duration-300 ease-out hover:bg-white/[0.02] group relative overflow-hidden">
-              <div className="flex items-center gap-3">
-                <span className="opacity-25 text-white group-hover:opacity-40 transition-opacity duration-300"><Icon /></span>
-                <span className="text-white/25 group-hover:text-white/40 text-sm font-semibold transition-colors duration-300">{label}</span>
-              </div>
-              <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md transition-all duration-300 group-hover:bg-[#D4AF37]/15 group-hover:text-[#D4AF37]"
-                style={{ background: 'rgba(212,175,55,0.08)', color: 'rgba(212,175,55,0.45)' }}>
-                Em breve
-              </span>
-            </div>
-          ))}
+          {/* ── Revistas ── */}
+          <Link
+            href={isLoggedIn ? "/hq" : "/?modal=login"}
+            onClick={(e) => {
+              setSidebarOpen(false);
+              if (!isLoggedIn) {
+                e.preventDefault();
+                handleEntrar();
+              }
+            }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+          >
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+              <IconRevistas />
+            </span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Revistas</span>
+          </Link>
 
-          {/* Separador */}
-          <div className="mx-3 my-2 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          {/* ── Materiais ── */}
+          <Link
+            href={isLoggedIn ? "/materiais" : "/?modal=login"}
+            onClick={(e) => {
+              setSidebarOpen(false);
+              if (!isLoggedIn) {
+                e.preventDefault();
+                handleEntrar();
+              }
+            }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+          >
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+              <IconMateriais />
+            </span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Materiais</span>
+          </Link>
 
-          {/* Grupo 2 — Em breve */}
-          {GRUPO_2.map(({ label, Icon }) => (
-            <div key={label} title="Em breve"
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl cursor-not-allowed select-none transition-all duration-300 ease-out hover:bg-white/[0.02] group relative overflow-hidden">
-              <div className="flex items-center gap-3">
-                <span className="opacity-25 text-white group-hover:opacity-40 transition-opacity duration-300"><Icon /></span>
-                <span className="text-white/25 group-hover:text-white/40 text-sm font-semibold transition-colors duration-300">{label}</span>
-              </div>
-              <span className="text-[0.46rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md transition-all duration-300 group-hover:bg-[#D4AF37]/15 group-hover:text-[#D4AF37]"
-                style={{ background: 'rgba(212,175,55,0.08)', color: 'rgba(212,175,55,0.45)' }}>
-                Em breve
-              </span>
-            </div>
-          ))}
+          {/* ── Cursos ── */}
+          <Link
+            href="/cursos"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+          >
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+              <IconCursos />
+            </span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Cursos</span>
+          </Link>
+
+          {/* ── Loja ── */}
+          <Link
+            href="/planos"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+          >
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+              <IconLoja />
+            </span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Loja</span>
+          </Link>
+
+          {/* ── Sobre ── */}
+          <Link
+            href="/#sobre"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+          >
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+              <IconSobre />
+            </span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">Sobre</span>
+          </Link>
         </nav>
 
         <div className="flex-1" />

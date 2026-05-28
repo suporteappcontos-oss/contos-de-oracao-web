@@ -37,6 +37,8 @@ type UsuarioType = {
   id: string; email: string; nome: string
   plano_ativo: boolean; plano_nome: string; criado_em: string
   vitalicio?: boolean
+  acessos_site?: number
+  acessos_app?: number
 }
 
 const CATEGORIAS = ['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho', 'Temporada', 'Vídeo Clipe']
@@ -90,19 +92,25 @@ export default async function AdminPage({
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
     const { data: { users: authUsers } } = await adminClient.auth.admin.listUsers({ perPage: 500 })
-    const { data: perfis } = await supabase.from('perfis').select('id, role')
+    const { data: perfis } = await supabase.from('perfis').select('id, role, acessos_site, acessos_app')
     const adminIds = new Set(perfis?.filter(p => p.role === 'admin').map(p => p.id) || [])
+    const perfisMap = new Map((perfis || []).map(p => [p.id, p]))
     usuarios = authUsers
       .filter(u => !adminIds.has(u.id) && u.email !== 'suporte.appcontos@gmail.com')
-      .map(u => ({
-        id: u.id,
-        email: u.email || '',
-        nome: u.user_metadata?.nome || u.user_metadata?.name || '—',
-        plano_ativo: u.user_metadata?.plano_ativo === true,
-        plano_nome: u.user_metadata?.etiqueta_plano || 'Básico',
-        vitalicio: u.user_metadata?.vitalicio === true,
-        criado_em: u.created_at,
-      }))
+      .map(u => {
+        const perf = perfisMap.get(u.id)
+        return {
+          id: u.id,
+          email: u.email || '',
+          nome: u.user_metadata?.nome || u.user_metadata?.name || '—',
+          plano_ativo: u.user_metadata?.plano_ativo === true,
+          plano_nome: u.user_metadata?.etiqueta_plano || 'Básico',
+          vitalicio: u.user_metadata?.vitalicio === true,
+          criado_em: u.created_at,
+          acessos_site: perf?.acessos_site || 0,
+          acessos_app: perf?.acessos_app || 0,
+        }
+      })
       .sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
   } catch (e) { console.error('Erro ao buscar usuários:', e) }
 
@@ -547,9 +555,16 @@ export default async function AdminPage({
                           </div>
                         </div>
 
-                        {/* Data */}
-                        <div className="col-span-3 text-white/50 text-sm font-medium hidden md:block">
-                          {new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        {/* Data e Acessos */}
+                        <div className="col-span-3 hidden md:block">
+                          <div className="text-white/50 text-sm font-medium">
+                            {new Date(u.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </div>
+                          <div className="text-white/30 text-xs mt-1.5 font-bold flex flex-wrap gap-x-2 gap-y-0.5">
+                            <span>🖥️ Site: {u.acessos_site}</span>
+                            <span className="opacity-30">|</span>
+                            <span>📱 App: {u.acessos_app}</span>
+                          </div>
                         </div>
 
                         {/* Status badge */}

@@ -6,6 +6,7 @@ import FavoritoButton from '@/components/FavoritoButton'
 
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
 import Footer from '@/components/Footer'
+import Navbar from '@/components/Navbar'
 import { ChevronLeft, Clock, ChevronRight } from 'lucide-react'
 import crypto from 'crypto'
 
@@ -19,6 +20,19 @@ export default async function VideoPlayerPage({ params }: Props) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
+
+  const { data: perfil } = await supabase
+    .from('perfis')
+    .select('role, plano')
+    .eq('id', user.id)
+    .single()
+
+  const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
+  const planoAtivo = user.user_metadata?.plano_ativo === true
+
+  if (!isAdmin && !planoAtivo) {
+    redirect('/?acesso=expirado')
+  }
 
   const { data: video } = await supabase
     .from('videos')
@@ -130,28 +144,11 @@ export default async function VideoPlayerPage({ params }: Props) {
   return (
     <div className="min-h-screen text-white" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
 
-      {/* ── NAVBAR ── */}
-      <header className="fixed top-0 w-full z-50 flex items-center gap-3 px-4 md:px-8 h-14 md:h-[60px]"
-        style={{ background: 'rgba(9,11,16,0.95)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      {/* ── NAVBAR UNIFICADA (com menu lateral) ── */}
+      <Navbar />
 
-        <Link href="/watch" className="flex items-center gap-1.5 text-white/50 hover:text-white transition-colors text-sm shrink-0">
-          <ChevronLeft size={18} />
-          <span className="hidden sm:inline">Voltar</span>
-        </Link>
-
-        <div className="h-4 w-px bg-white/10" />
-
-        <Link href="/watch" className="flex items-center gap-2.5 shrink-0">
-          <Image src="/logo.png" alt="Contos de Oração" width={32} height={32} className="object-contain" />
-          <span className="text-white font-black text-sm hidden sm:inline">Contos de Oração</span>
-        </Link>
-
-        <div className="flex-1 text-center hidden md:block">
-          <span className="text-white/35 text-xs truncate">{video.titulo}</span>
-        </div>
-      </header>
-
-      <main className="pt-14 md:pt-[60px]">
+      {/* ── CONTEÚDO ── */}
+      <main className="pt-[72px]">
 
         {/* ── PLAYER (protegido pelo guarda de sessões) ── */}
         <VideoPlayerGuard 
