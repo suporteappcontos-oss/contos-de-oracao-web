@@ -11,6 +11,7 @@ import ClientEditableName from './ClientEditableName'
 import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
 import Pricing from '@/components/Pricing'
 import Footer from '@/components/Footer'
+import { stripe } from '@/lib/stripe'
 
 type VideoFavorito = {
   id: string
@@ -45,6 +46,31 @@ export default async function PerfilPage() {
 
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
   const planoAtivo = user.user_metadata?.plano_ativo === true || isAdmin
+
+  let proximaFatura: string | null = null
+  if (user.email && planoAtivo && !isAdmin) {
+    try {
+      const customers = await stripe.customers.list({ email: user.email, limit: 1 })
+      if (customers.data.length > 0) {
+        const customerId = customers.data[0].id
+        const subscriptions = await stripe.subscriptions.list({
+          customer: customerId,
+          status: 'active',
+          limit: 1
+        })
+        if (subscriptions.data.length > 0) {
+          const sub = subscriptions.data[0]
+          proximaFatura = new Date((sub as any).current_period_end * 1000).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+          })
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao buscar assinatura no Stripe para o perfil:', err)
+    }
+  }
 
   // Busca favoritos — protegido com try/catch caso a tabela ainda não exista
   let favoritos: unknown[] = []
@@ -178,7 +204,18 @@ export default async function PerfilPage() {
                 </span>
               </div>
               <p className="text-slate-300 text-sm mb-6 max-w-[80%] leading-relaxed font-light">
-                {planoAtivo ? 'Você tem acesso ilimitado a todos os conteúdos exclusivos, novenas e retiros espirituais.' : 'Sua assinatura expirou e seu acesso foi suspenso. Renove agora para continuar assistindo.'}
+                {planoAtivo ? (
+                  <>
+                    Você tem acesso ilimitado a todos os conteúdos exclusivos, novenas e retiros espirituais.
+                    {proximaFatura && (
+                      <span className="block mt-2 font-semibold text-[#D4AF37]">
+                        Próxima renovação: {proximaFatura}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  'Sua assinatura expirou e seu acesso foi suspenso. Renove agora para continuar assistindo.'
+                )}
               </p>
             </div>
             <div className="relative z-10">
