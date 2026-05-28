@@ -416,7 +416,7 @@ export default function Navbar() {
               <IconPlanos />
             </span>
             <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">
-              {isLoggedIn ? "Trocar assinatura" : "Assinatura"}
+              Assinatura
             </span>
           </Link>
 
