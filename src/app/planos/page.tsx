@@ -22,7 +22,7 @@ export default function PlanosPage() {
       >
         {/* O Grande "Card" que contém as imagens e os planos */}
         <div 
-          className="relative w-full max-w-[1300px] min-h-[850px] rounded-[2rem] border-2 border-[#D4AF37]/50 shadow-[0_0_60px_rgba(212,175,55,0.15)] flex flex-col items-center overflow-hidden"
+          className="relative w-full max-w-[1300px] min-h-0 md:min-h-[850px] rounded-[1.5rem] md:rounded-[2rem] border-2 border-[#D4AF37]/50 shadow-[0_0_60px_rgba(212,175,55,0.15)] flex flex-col items-center overflow-hidden"
           style={{
             background: 'radial-gradient(circle at center, #111a2c 0%, #090B10 60%, #050608 100%)'
           }}
@@ -32,13 +32,13 @@ export default function PlanosPage() {
 
           {/* Imagem Esquerda (Jesus com crianças) */}
           <div 
-            className="absolute left-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-20 xl:opacity-30 z-0 pointer-events-none"
+            className="hidden md:block absolute left-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-20 xl:opacity-30 z-0 pointer-events-none"
             style={{ backgroundImage: "url('/jesus-criancas.png')" }}
           />
 
           {/* Imagem Direita (Mulher orando) */}
           <div 
-            className="absolute right-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-20 xl:opacity-30 z-0 pointer-events-none"
+            className="hidden md:block absolute right-0 top-[5%] xl:top-auto xl:bottom-0 w-[200px] xl:w-[420px] h-[350px] xl:h-[650px] bg-contain xl:bg-bottom bg-center bg-no-repeat opacity-20 xl:opacity-30 z-0 pointer-events-none"
             style={{ backgroundImage: "url('/mulher-orando.png')" }}
           />
 
@@ -78,17 +78,17 @@ export default function PlanosPage() {
               Escolha o <span style={{ color: '#D4AF37' }}>plano ideal</span> para sua família e ministério
             </h1>
             
-            <div className="flex flex-row justify-center items-center gap-5 mt-5" style={{ position: 'relative' }}>
+            <div className="flex flex-col md:flex-row justify-center items-center gap-3 md:gap-5 mt-5" style={{ position: 'relative' }}>
                <div className="flex items-center gap-1.5">
                   <span className="text-[#D4AF37] text-base">▶</span>
                   <span className="text-white/60 text-xs">Filmes que educam na fé</span>
                </div>
-               <div className="w-[1px] h-5 bg-white/15"></div>
+               <div className="hidden md:block w-[1px] h-5 bg-white/15"></div>
                <div className="flex items-center gap-1.5">
                   <span className="text-[#D4AF37] text-base">📖</span>
                   <span className="text-white/60 text-xs">Materiais formativos</span>
                </div>
-               <div className="w-[1px] h-5 bg-white/15"></div>
+               <div className="hidden md:block w-[1px] h-5 bg-white/15"></div>
                <div className="flex items-center gap-1.5">
                   <span className="text-[#D4AF37] text-base">❤️</span>
                   <span className="text-white/60 text-xs">Cancele quando quiser</span>

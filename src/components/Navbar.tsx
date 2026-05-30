@@ -194,9 +194,9 @@ export default function Navbar() {
         style={{
           height: '72px',
           background: isScrolled 
-            ? 'rgba(9, 11, 16, 0.85)' 
-            : 'linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, transparent 100%)',
-          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
+            ? 'rgba(9, 11, 16, 0.92)' 
+            : 'linear-gradient(to bottom, rgba(9, 11, 16, 0.95) 0%, rgba(9, 11, 16, 0.5) 60%, transparent 100%)',
+          backdropFilter: isScrolled ? 'blur(16px)' : 'none',
           borderBottom: 'none',
           boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}
@@ -244,7 +244,7 @@ export default function Navbar() {
         </div>
 
         {/* Links Direita — ml-auto garante o alinhamento fixado à direita independentemente da visibilidade do botão menu */}
-        <div className="flex items-center gap-2 sm:gap-4 md:gap-5 ml-auto">
+        <div className="flex items-center gap-1.5 sm:gap-4 md:gap-5 ml-auto">
           {isLoggedIn ? (
             <div className="flex items-center gap-2 sm:gap-3.5">
               {isAdmin && (
@@ -275,7 +275,7 @@ export default function Navbar() {
 
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all h-full bg-red-500/10 text-red-500 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/35 cursor-pointer"
+                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] sm:text-xs transition-all h-full bg-red-500/10 text-red-500 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/35 cursor-pointer"
               >
                 <span>Sair</span>
               </button>
@@ -298,7 +298,7 @@ export default function Navbar() {
               </div>
 
               {/* Lupa de Busca */}
-              <Link href="/watch" className="text-white hover:text-[#D4AF37] transition-colors flex items-center" title="Pesquisar" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))' }}>
+              <Link href="/watch" className="text-white hover:text-[#D4AF37] transition-colors flex items-center p-1" title="Pesquisar" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.9))' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -308,7 +308,7 @@ export default function Navbar() {
               {/* Botão ASSINAR AGORA */}
               <Link
                 href="/planos"
-                className="flex items-center justify-center px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-[#D4AF37]/10"
+                className="flex items-center justify-center px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg font-black text-[9px] sm:text-xs uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-[#D4AF37]/10"
                 style={{
                   background: '#D4AF37',
                   color: '#090B10',

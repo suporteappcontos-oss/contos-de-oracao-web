@@ -204,7 +204,7 @@ export default function LandingPage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative h-screen min-h-[650px] lg:h-screen lg:min-h-0 flex items-center overflow-hidden"
+        className="relative min-h-screen lg:h-screen flex items-center overflow-hidden pt-28 pb-16 lg:py-0"
         style={{ paddingTop: '0px' }}
       >
         {/* Imagem de fundo premium enquadrada com perfeição para se encaixar perfeitamente e cobrir toda a tela no desktop e celular */}
@@ -281,7 +281,7 @@ export default function LandingPage() {
 
           {/* Card de benefícios (extrema direita, elegante e translúcido) */}
           <div
-            className="w-full lg:w-[320px] shrink-0 rounded-2xl p-5 transition-all duration-300 lg:-mr-8"
+            className="w-full max-w-[400px] lg:max-w-none lg:w-[320px] shrink-0 rounded-2xl p-5 transition-all duration-300 lg:-mr-8"
             style={{
               background: 'rgba(15,22,42,0.85)',
               border: '1px solid rgba(255,255,255,0.08)',
@@ -658,7 +658,7 @@ export default function LandingPage() {
         >
           <div className="w-full max-w-[430px]" onClick={e => e.stopPropagation()}>
             <div
-              className="rounded-3xl shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden"
+              className="rounded-3xl shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-y-auto max-h-[90vh]"
               style={{ background: 'rgba(15,22,42,0.95)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)', fontFamily: FONT }}
             >
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
