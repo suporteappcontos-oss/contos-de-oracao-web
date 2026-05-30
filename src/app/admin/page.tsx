@@ -19,7 +19,8 @@ import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
 import { GerenciadorMateriais } from './GerenciadorMateriais'
 import { GerenciadorAnuncios } from './GerenciadorAnuncios'
 import { FormAcessoVitalicio } from './FormAcessoVitalicio'
-import { FormAdicionarVideo } from './FormAdicionarVideo'
+import CriadorConteudoUnificado from './CriadorConteudoUnificado'
+import AcervoVideosAdmin from './AcervoVideosAdmin'
 import { FormEditarVideo } from './FormEditarVideo'
 import { BotoesControleUsuario } from './BotoesControleUsuario'
 import { AssinantesComFiltros } from './AssinantesComFiltros'
@@ -410,101 +411,18 @@ export default async function AdminPage({
         {activeTab === 'catalogo' && (
           <div className="space-y-20">
             <div className="space-y-10">
-            {/* Formulário adicionar */}
-            <div className="bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
-               
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
-                   <Plus size={20} className="text-[#D4AF37]" />
-                </div>
-                <div>
-                  <h2 className="text-white text-xl font-extrabold tracking-tight">Novo Vídeo</h2>
-                  <p className="text-white/40 text-xs">Adicione conteúdo ao catálogo da plataforma.</p>
-                </div>
-              </div>
+              {/* Criador Unificado de Conteúdo */}
+              <CriadorConteudoUnificado temporadasExistentes={temporadasExistentes} />
 
-              <FormAdicionarVideo temporadasExistentes={temporadasExistentes} />
-            </div>
+              <hr className="border-white/5" />
 
-            <hr className="border-white/5" />
-
-            {/* Lista de vídeos (Grid Cards) */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-white text-2xl font-black tracking-tight">Acervo de Vídeos</h2>
-              </div>
-
-              {!videos || videos.length === 0 ? (
-                <div className="bg-[#111827] border border-white/5 rounded-3xl p-16 text-center">
-                  <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Video size={32} className="text-white/30" />
-                  </div>
-                  <p className="text-white/60 font-medium">O catálogo está vazio.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {(videos as VideoType[]).map(video => (
-                    <div key={video.id} className="group relative flex flex-col">
-                      
-                      {/* Formulário de edição por cima do card caso esteja editando */}
-                      {editId === video.id && editingVideo ? (
-                        <FormEditarVideo video={video as any} temporadasExistentes={temporadasExistentes} />
-                      ) : (
-                        
-                        /* CARD DE VÍDEO NORMAL */
-                        <div className={`h-full flex flex-col bg-[#111827] border rounded-3xl overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 shadow-lg group-hover:shadow-xl ${video.ativo ? 'border-white/5 hover:border-white/20' : 'border-red-500/20 opacity-75'}`}>
-                          {/* Thumbnail Header */}
-                          <div className="relative aspect-video w-full bg-[#090B10] border-b border-white/5 group-hover:border-white/10 transition-colors">
-                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700" 
-                               style={{ backgroundImage: `url(${video.thumbnail_url || getFallback(video.id)})` }} />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
-                            
-                            {/* Badges Overlay */}
-                            <div className="absolute top-3 left-3 flex gap-2">
-                             </div>
-                            {!video.ativo && (
-                              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 pointer-events-none overflow-hidden">
-                                <div className="absolute transform -rotate-45 bg-gradient-to-r from-red-600 via-red-500 to-yellow-500 text-white font-black text-[0.7rem] sm:text-sm uppercase tracking-[0.3em] py-2 w-[150%] text-center shadow-[0_0_20px_rgba(239,68,68,0.5)] border-y-2 border-yellow-400">
-                                  VÍDEO OCULTO
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Card Body */}
-                          <div className="p-5 flex flex-col flex-grow">
-                            <h3 className="text-white font-extrabold text-lg leading-tight mb-2 line-clamp-2">{video.titulo}</h3>
-                            <div className="text-white/40 text-xs font-medium mb-5">Adicionado em {new Date(video.criado_em).toLocaleDateString('pt-BR')}</div>
-                            
-                            {/* Botões Bottom */}
-                            <div className="mt-auto grid grid-cols-4 gap-2 pt-4 border-t border-white/5">
-                               <Link href={`/watch/${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl py-2.5 transition-colors" title="Ver no site">
-                                 <ExternalLink size={16} />
-                               </Link>
-                               <Link href={`/admin?tab=catalogo&edit=${video.id}`} className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-[#D4AF37]/20 text-[#D4AF37] rounded-xl py-2.5 transition-colors" title="Editar">
-                                 <Edit3 size={16} />
-                               </Link>
-                               <form action={toggleVideoAtivo.bind(null, video.id, video.ativo)} className="col-span-1">
-                                 <button type="submit" className={`w-full flex items-center justify-center rounded-xl py-2.5 transition-colors ${video.ativo ? 'bg-white/5 hover:bg-white/10 text-white/70' : 'bg-[#10b981]/10 hover:bg-[#10b981]/20 text-[#10b981]'}`} title={video.ativo ? 'Ocultar' : 'Publicar'}>
-                                   {video.ativo ? <EyeOff size={16} /> : <Eye size={16} />}
-                                 </button>
-                               </form>
-                               <form action={deletarVideo.bind(null, video.id)} className="col-span-1">
-                                 <button type="submit" className="w-full flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl py-2.5 transition-colors" title="Deletar">
-                                   <Trash2 size={16} />
-                                 </button>
-                               </form>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
+              {/* Acervo de Vídeos (Agrupado por Temporadas e Colapsável) */}
+              <AcervoVideosAdmin 
+                videos={(videos || []) as any} 
+                temporadasExistentes={temporadasExistentes} 
+                editId={editId} 
+                editingVideo={editingVideo as any} 
+              />
             </div>
             
             {/* --- MATERIAIS --- */}
