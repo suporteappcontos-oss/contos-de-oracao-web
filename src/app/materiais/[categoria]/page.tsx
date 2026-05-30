@@ -12,7 +12,7 @@ const CATEGORIAS: Record<string, { label: string; icon: any; color: string; desc
   jogo:    { label: 'Jogos Educativos',         icon: Gamepad2, color: '#10b981', descricao: 'Atividades lúdicas e pedagógicas' },
   desenho: { label: 'Desenhos para Colorir',    icon: Pencil,   color: '#818cf8', descricao: 'Ilustrações para imprimir e colorir' },
   livro:   { label: 'Livros Digitais',          icon: Library,  color: '#f97316', descricao: 'Leituras formativas e espirituais' },
-  adesivo: { label: 'Adesivos Catequéticos',    icon: Tag,      color: '#ec4899', descricao: 'Adesivos e artes prontas para imprimir' },
+  adesivo: { label: 'Adesivos',                 icon: Tag,      color: '#ec4899', descricao: 'Adesivos e artes prontas para imprimir' },
 }
 
 type Props = { params: Promise<{ categoria: string }> }

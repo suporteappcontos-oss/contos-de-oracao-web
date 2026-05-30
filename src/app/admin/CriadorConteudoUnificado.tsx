@@ -15,7 +15,7 @@ const CATEGORIAS_MATERIAIS = [
   { value: 'jogo',    label: 'Jogo Educativo',              icon: Gamepad2, color: '#10b981' },
   { value: 'desenho', label: 'Desenho para Colorir',        icon: Pencil,   color: '#818cf8' },
   { value: 'livro',   label: 'Livro Digital',               icon: Library,  color: '#f97316' },
-  { value: 'adesivo',  label: 'Adesivos Catequéticos',       icon: Tag,      color: '#ec4899' },
+  { value: 'adesivo',  label: 'Adesivos',                    icon: Tag,      color: '#ec4899' },
 ]
 
 // AccessKey do Bunny — usada apenas no browser do admin para fazer upload direto

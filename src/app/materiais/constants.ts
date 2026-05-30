@@ -51,8 +51,8 @@ export const CATEGORIAS_CONFIG = [
   },
   {
     value: 'adesivo',
-    label: 'Adesivos\nCatequéticos',
-    labelFlat: 'Adesivos Catequéticos',
+    label: 'Adesivos',
+    labelFlat: 'Adesivos',
     descricao: 'Adesivos e artes prontas para imprimir e decorar materiais catequéticos.',
     icon: Tag,
     color: '#ec4899',
