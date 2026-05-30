@@ -21,8 +21,8 @@ export default function Footer() {
 
   return (
     <footer
-      className="pt-14 pb-8 px-[4%]"
-      style={{ background: '#090B10', borderTop: '1px solid rgba(255,255,255,0.06)', fontFamily: 'Outfit, sans-serif' }}
+      className="pt-14 pb-8 px-[4%] opacity-100 relative z-50"
+      style={{ backgroundColor: '#090B10', borderTop: '1px solid rgba(255,255,255,0.06)', fontFamily: 'Outfit, sans-serif' }}
     >
       {/* ── Linha principal: Logo + links à esquerda | Redes sociais à direita ── */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-10 mb-10">
@@ -118,7 +118,7 @@ export default function Footer() {
                     </span>
                     <button
                       onClick={() => setShowDropdown(false)}
-                      className="text-white/40 hover:text-white hover:bg-white/10 transition-all p-1.5 rounded-full bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
+                      className="text-slate-400 hover:text-white hover:bg-white/10 transition-all p-1.5 rounded-full bg-transparent border-none cursor-pointer flex items-center justify-center active:scale-90"
                     >
                       <X size={14} />
                     </button>
@@ -207,10 +207,10 @@ export default function Footer() {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-6"
         style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
       >
-        <p className="text-slate-300 text-xs">
+        <p className="text-slate-400 text-xs">
           © 2026 Contos de Oração Brasil. Todos os direitos reservados.
         </p>
-        <p className="text-slate-300 text-xs">
+        <p className="text-slate-400 text-xs">
           Desenvolvido por{' '}
           <a
             href="https://wa.me/5566997182760"
