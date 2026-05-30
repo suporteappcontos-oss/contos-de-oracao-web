@@ -1,4 +1,4 @@
-import { BookOpen, Gamepad2, Pencil, Library } from 'lucide-react'
+import { BookOpen, Gamepad2, Pencil, Library, Tag } from 'lucide-react'
 
 export const CATEGORIAS_CONFIG = [
   {
@@ -48,5 +48,17 @@ export const CATEGORIAS_CONFIG = [
     gradient: 'from-[#f97316]/25 via-[#f97316]/10 to-transparent',
     border: 'border-[#f97316]/20 hover:border-[#f97316]/50',
     glow: 'rgba(249,115,22,0.4)',
+  },
+  {
+    value: 'adesivo',
+    label: 'Adesivos\nCatequéticos',
+    labelFlat: 'Adesivos Catequéticos',
+    descricao: 'Adesivos e artes prontas para imprimir e decorar materiais catequéticos.',
+    icon: Tag,
+    color: '#ec4899',
+    image: '/adesivos.png',
+    gradient: 'from-[#ec4899]/25 via-[#ec4899]/10 to-transparent',
+    border: 'border-[#ec4899]/20 hover:border-[#ec4899]/50',
+    glow: 'rgba(236,72,153,0.4)',
   },
 ]

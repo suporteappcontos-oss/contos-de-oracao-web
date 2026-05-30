@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, Gamepad2, Pencil, Library, ArrowLeft, Lock, GraduationCap } from 'lucide-react'
+import { BookOpen, Gamepad2, Pencil, Library, ArrowLeft, Lock, GraduationCap, Tag } from 'lucide-react'
 import { Metadata } from 'next'
 import { BotaoDownload } from '@/components/BotaoDownload'
 import Footer from '@/components/Footer'
@@ -12,6 +12,7 @@ const CATEGORIAS: Record<string, { label: string; icon: any; color: string; desc
   jogo:    { label: 'Jogos Educativos',         icon: Gamepad2, color: '#10b981', descricao: 'Atividades lúdicas e pedagógicas' },
   desenho: { label: 'Desenhos para Colorir',    icon: Pencil,   color: '#818cf8', descricao: 'Ilustrações para imprimir e colorir' },
   livro:   { label: 'Livros Digitais',          icon: Library,  color: '#f97316', descricao: 'Leituras formativas e espirituais' },
+  adesivo: { label: 'Adesivos Catequéticos',    icon: Tag,      color: '#ec4899', descricao: 'Adesivos e artes prontas para imprimir' },
 }
 
 type Props = { params: Promise<{ categoria: string }> }

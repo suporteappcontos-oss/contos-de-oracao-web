@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useTransition } from 'react'
-import { BookOpen, Gamepad2, Pencil, Library, Trash2, Download } from 'lucide-react'
+import { BookOpen, Gamepad2, Pencil, Library, Trash2, Download, Tag } from 'lucide-react'
 import { deletarMaterial } from './actions'
 
 const CATEGORIAS = [
@@ -9,6 +9,7 @@ const CATEGORIAS = [
   { value: 'jogo',    label: 'Jogo Educativo',              icon: Gamepad2, color: '#10b981' },
   { value: 'desenho', label: 'Desenho para Colorir',        icon: Pencil,   color: '#818cf8' },
   { value: 'livro',   label: 'Livro Digital',               icon: Library,  color: '#f97316' },
+  { value: 'adesivo',  label: 'Adesivos Catequéticos',       icon: Tag,      color: '#ec4899' },
 ]
 
 type Material = {

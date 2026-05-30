@@ -106,7 +106,7 @@ export default async function MateriaisPage() {
         <Link href="/watch" className="flex items-center gap-3 transition-transform hover:scale-105">
           <Image src="/logo.png" alt="Contos de Oração" width={38} height={38} className="rounded-lg shadow-lg" />
           <span className="font-bold text-[17px] tracking-tight hidden sm:block">
-            Contos de <span className="text-[#D4AF37]">Oração</span>
+            Contos de Oração
           </span>
         </Link>
         <Link href="/watch"
