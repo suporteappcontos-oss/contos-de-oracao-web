@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.materiais (
     slug TEXT NOT NULL UNIQUE,
     titulo TEXT NOT NULL,
     descricao TEXT,
-    categoria TEXT NOT NULL,
+    categoria TEXT NOT NULL CHECK (categoria IN ('hq', 'jogo', 'desenho', 'livro', 'adesivo')),
     capa_url TEXT,
     link_pdf TEXT,
     planos_acesso TEXT[] DEFAULT ARRAY['Essencial'::text, 'Pro'::text],

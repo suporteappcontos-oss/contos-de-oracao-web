@@ -443,50 +443,68 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           MATERIAIS PEDAGÓGICOS
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
-        <SectionTitle title="Materiais pedagógicos em PDF" href="/materiais" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {CATEGORIAS_CONFIG.map((cat) => {
-            const CatIcon = cat.icon;
-            return (
-              <Link
-                key={cat.value}
-                href="/materiais"
-                className={`group relative flex flex-col rounded-[24px] border overflow-hidden transition-all duration-300 hover:scale-[1.04] hover:-translate-y-2 hover:shadow-2xl ${cat.border}`}
-                style={{ backgroundColor: 'rgba(15, 20, 30, 0.6)', backdropFilter: 'blur(10px)', textDecoration: 'none' }}
-              >
-                {/* Glow interno no hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-40"
-                  style={{ boxShadow: `0 0 30px ${cat.glow} inset` }} />
+      <section className="py-12 px-6 lg:px-16 max-w-[1400px] mx-auto relative">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-white font-black text-xl md:text-2xl" style={{ fontFamily: FONT, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+            Materiais pedagógicos em PDF
+          </h2>
+          <Link
+            href="/materiais"
+            className="flex items-center gap-1 text-xs sm:text-sm font-black transition-all hover:brightness-125 hover:scale-[1.02]"
+            style={{ color: PRIMARY, textDecoration: 'none' }}
+          >
+            VER TODOS <ChevronRight size={16} />
+          </Link>
+        </div>
 
-                {/* Imagem superior do card */}
-                <div className="relative h-[150px] overflow-hidden flex items-end justify-center">
-                  <Image 
-                    src={cat.image} 
-                    alt={cat.labelFlat} 
-                    fill 
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(15,20,30,0.95)] via-transparent to-transparent z-10" />
-                  <div className="absolute bottom-0 w-full h-[50px] bg-gradient-to-t from-[#090B10] to-transparent z-20" />
-                </div>
+        <div className="relative overflow-hidden w-full py-2">
+          {/* Efeitos de fade nas laterais para transição premium */}
+          <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-[#090B10] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-[#090B10] to-transparent z-10 pointer-events-none" />
 
-                {/* Título e Ícone na mesma linha */}
-                <div className="p-5 flex items-center gap-3 relative z-30 -mt-2">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shrink-0"
-                    style={{ background: `${cat.color}20`, border: `1px solid ${cat.color}40` }}>
-                    <CatIcon size={16} style={{ color: cat.color }} />
+          <div className="animate-marquee-reverse flex gap-5">
+            {[...CATEGORIAS_CONFIG, ...CATEGORIAS_CONFIG, ...CATEGORIAS_CONFIG, ...CATEGORIAS_CONFIG].map((cat, idx) => {
+              const CatIcon = cat.icon;
+              return (
+                <Link
+                  key={`${cat.value}-${idx}`}
+                  href="/materiais"
+                  className={`shrink-0 block w-[240px] sm:w-[270px] md:w-[300px] group transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1 rounded-[24px] border overflow-hidden ${cat.border}`}
+                  style={{ backgroundColor: 'rgba(15, 20, 30, 0.6)', backdropFilter: 'blur(10px)', textDecoration: 'none' }}
+                >
+                  {/* Glow interno no hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-40"
+                    style={{ boxShadow: `0 0 30px ${cat.glow} inset` }} />
+
+                  {/* Imagem superior do card */}
+                  <div className="relative aspect-video overflow-hidden flex items-end justify-center">
+                    <Image 
+                      src={cat.image} 
+                      alt={cat.labelFlat} 
+                      fill 
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[rgba(15,20,30,0.95)] via-transparent to-transparent z-10" />
+                    <div className="absolute bottom-0 w-full h-[50px] bg-gradient-to-t from-[#090B10] to-transparent z-20" />
                   </div>
-                  
-                  <h3 className="text-transparent bg-clip-text font-black text-[16px] leading-tight tracking-tight"
-                    style={{ backgroundImage: `linear-gradient(135deg, #fff, ${cat.color})` }}>
-                    {cat.labelFlat}
-                  </h3>
-                </div>
-              </Link>
-            );
-          })}
+
+                  {/* Título e Ícone na mesma linha */}
+                  <div className="p-5 flex items-center gap-3 relative z-30 -mt-2">
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center shadow-lg shrink-0"
+                      style={{ background: `${cat.color}20`, border: `1px solid ${cat.color}40` }}>
+                      <CatIcon size={16} style={{ color: cat.color }} />
+                    </div>
+                    
+                    <h3 className="text-transparent bg-clip-text font-black text-sm tracking-tight truncate flex-1"
+                      style={{ backgroundImage: `linear-gradient(135deg, #fff, ${cat.color})` }}>
+                      {cat.labelFlat}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </section>
 
