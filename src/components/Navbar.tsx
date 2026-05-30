@@ -194,9 +194,9 @@ export default function Navbar() {
         style={{
           height: '72px',
           background: isScrolled 
-            ? 'rgba(9, 11, 16, 0.92)' 
-            : 'linear-gradient(to bottom, rgba(9, 11, 16, 0.95) 0%, rgba(9, 11, 16, 0.5) 60%, transparent 100%)',
-          backdropFilter: isScrolled ? 'blur(16px)' : 'none',
+            ? 'rgba(9, 11, 16, 0.85)' 
+            : 'linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, transparent 100%)',
+          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
           borderBottom: 'none',
           boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}

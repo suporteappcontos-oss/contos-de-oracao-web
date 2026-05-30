@@ -124,7 +124,7 @@ export default async function WatchPage() {
       <Navbar />
 
       {/* ── CONTEÚDO ── */}
-      <main className="pt-[72px]">
+      <main className="pt-0">
 
         {/* Estado vazio */}
         {(!videos || videos.length === 0) && (
