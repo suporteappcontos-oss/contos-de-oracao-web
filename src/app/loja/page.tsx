@@ -21,6 +21,7 @@ type ProdutoType = {
   imagem_url_1: string | null
   imagem_url_2: string | null
   imagem_url_3: string | null
+  proporcao_imagem?: string
   ativo: boolean
   criado_em: string
 }

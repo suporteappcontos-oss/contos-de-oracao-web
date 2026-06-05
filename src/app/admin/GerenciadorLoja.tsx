@@ -14,6 +14,7 @@ type ProdutoType = {
   imagem_url_1: string | null
   imagem_url_2: string | null
   imagem_url_3: string | null
+  proporcao_imagem?: string
   ativo: boolean
   criado_em: string
 }
@@ -22,6 +23,7 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
   const [modalAberto, setModalAberto] = useState(false)
   const [produtoEditando, setProdutoEditando] = useState<ProdutoType | null>(null)
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const [qtdImagensVisiveis, setQtdImagensVisiveis] = useState(1)
 
   const handleAction = async (action: () => Promise<any>, id: string) => {
     setLoadingId(id)
@@ -35,11 +37,14 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
 
   const abrirCriar = () => {
     setProdutoEditando(null)
+    setQtdImagensVisiveis(1)
     setModalAberto(true)
   }
 
   const abrirEditar = (prod: ProdutoType) => {
     setProdutoEditando(prod)
+    const count = 1 + (prod.imagem_url_2 ? 1 : 0) + (prod.imagem_url_3 ? 1 : 0)
+    setQtdImagensVisiveis(count)
     setModalAberto(true)
   }
 
@@ -85,12 +90,17 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                   </button>
                 </div>
 
-                {/* Badge de Miniaturas secundárias */}
-                {(produto.imagem_url_2 || produto.imagem_url_3) && (
-                  <div className="absolute bottom-3 left-3 bg-black/70 px-2 py-1 rounded-md text-[10px] font-bold text-white/80 border border-white/10">
-                    {1 + (produto.imagem_url_2 ? 1 : 0) + (produto.imagem_url_3 ? 1 : 0)} Imagens
-                  </div>
-                )}
+                {/* Badge de Proporção e Miniaturas */}
+                <div className="absolute bottom-3 left-3 flex gap-1.5 z-10">
+                  <span className="bg-black/75 px-2.5 py-1 rounded-lg text-[9px] font-black text-[#D4AF37] border border-[#D4AF37]/25 uppercase tracking-wider">
+                    {produto.proporcao_imagem || '1:1'}
+                  </span>
+                  {(produto.imagem_url_2 || produto.imagem_url_3) && (
+                    <span className="bg-black/75 px-2.5 py-1 rounded-lg text-[9px] font-black text-white/80 border border-white/10">
+                      {1 + (produto.imagem_url_2 ? 1 : 0) + (produto.imagem_url_3 ? 1 : 0)} FOTOS
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="p-5 space-y-3">
@@ -162,22 +172,30 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                   if (file && file.size > 0) {
                     const uploadFd = new FormData();
                     uploadFd.append('file', file);
-                    const res = await fetch('/api/admin/upload-produto', { method: 'POST', body: uploadFd });
-                    const data = await res.json();
-                    if (data.success) {
-                      return data.url;
-                    } else {
-                      alert(`Erro no upload da imagem ${fieldName.replace('imagem_file_', '')}: ${data.error}`);
-                      throw new Error('Upload falhou');
+                    try {
+                      const res = await fetch('/api/admin/upload-produto', { method: 'POST', body: uploadFd });
+                      if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        throw new Error(errData.error || `Erro de rede (${res.status})`);
+                      }
+                      const data = await res.json();
+                      if (data.success) {
+                        return data.url;
+                      } else {
+                        throw new Error(data.error || 'Erro no upload');
+                      }
+                    } catch (err: any) {
+                      throw new Error(`Falha no upload da Imagem ${fieldName.replace('imagem_file_', '')}: ${err.message}`);
                     }
                   }
-                  return fd.get(fieldName.replace('file', 'url')) as string || currentUrl;
+                  const urlText = fd.get(fieldName.replace('file', 'url')) as string;
+                  return urlText || currentUrl;
                 };
 
                 try {
-                  const url1 = await uploadImagem('imagem_file_1', produtoEditando?.imagem_url_1 || null);
-                  const url2 = await uploadImagem('imagem_file_2', produtoEditando?.imagem_url_2 || null);
-                  const url3 = await uploadImagem('imagem_file_3', produtoEditando?.imagem_url_3 || null);
+                  const url1 = qtdImagensVisiveis >= 1 ? await uploadImagem('imagem_file_1', produtoEditando?.imagem_url_1 || null) : null;
+                  const url2 = qtdImagensVisiveis >= 2 ? await uploadImagem('imagem_file_2', produtoEditando?.imagem_url_2 || null) : null;
+                  const url3 = qtdImagensVisiveis >= 3 ? await uploadImagem('imagem_file_3', produtoEditando?.imagem_url_3 || null) : null;
 
                   fd.set('imagem_url_1', url1 || '');
                   fd.set('imagem_url_2', url2 || '');
@@ -195,8 +213,8 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                   } else {
                     alert(res?.error || 'Erro ao salvar produto.');
                   }
-                } catch (e) {
-                  // Erro já alertado no uploadImagem
+                } catch (e: any) {
+                  alert(`Falha no upload ou salvamento: ${e.message || e}`);
                 }
               }} 
               className="p-6 space-y-5 max-h-[80vh] overflow-y-auto"
@@ -211,19 +229,56 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                 <textarea required defaultValue={produtoEditando?.descricao} name="descricao" rows={3} className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none text-sm transition-all resize-none" placeholder="Escreva uma breve descrição destacando o produto..." />
               </div>
 
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest text-white/50 font-black mb-2">Link de Afiliado (Shopee, TikTok, etc.)</label>
-                <input required defaultValue={produtoEditando?.link_afiliado} name="link_afiliado" type="url" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none text-sm transition-all" placeholder="https://shopee.com.br/... ou link do TikTok" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/50 font-black mb-2">Link de Afiliado</label>
+                  <input required defaultValue={produtoEditando?.link_afiliado} name="link_afiliado" type="url" className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none text-sm transition-all" placeholder="https://shopee.com.br/..." />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/50 font-black mb-2">Proporção da Imagem no Card</label>
+                  <select 
+                    name="proporcao_imagem" 
+                    defaultValue={produtoEditando?.proporcao_imagem || '1:1'}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#D4AF37] focus:outline-none text-sm transition-all cursor-pointer"
+                  >
+                    <option value="1:1">Quadrado (1:1)</option>
+                    <option value="16:9">Horizontal (16:9)</option>
+                    <option value="9:16">Vertical (9:16)</option>
+                  </select>
+                </div>
               </div>
 
-              {/* Upload de Imagens (Até 3) */}
+              {/* Upload de Imagens dinâmicas */}
               <div className="space-y-4">
-                <span className="block text-[10px] uppercase tracking-widest text-[#D4AF37] font-black">Fotos do Produto (Até 3 imagens)</span>
+                <div className="flex justify-between items-center">
+                  <span className="block text-[10px] uppercase tracking-widest text-[#D4AF37] font-black">Fotos do Produto</span>
+                  <div className="flex gap-2">
+                    {qtdImagensVisiveis > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setQtdImagensVisiveis(prev => prev - 1)}
+                        className="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl transition-all"
+                      >
+                        - Remover Foto
+                      </button>
+                    )}
+                    {qtdImagensVisiveis < 3 && (
+                      <button
+                        type="button"
+                        onClick={() => setQtdImagensVisiveis(prev => prev + 1)}
+                        className="text-[#D4AF37] hover:text-white text-xs font-bold bg-[#D4AF37]/10 border border-[#D4AF37]/20 px-3 py-1.5 rounded-xl transition-all"
+                      >
+                        + Adicionar Foto
+                      </button>
+                    )}
+                  </div>
+                </div>
                 
-                {[1, 2, 3].map((num) => {
+                {Array.from({ length: qtdImagensVisiveis }).map((_, index) => {
+                  const num = index + 1;
                   const curUrl = produtoEditando?.[`imagem_url_${num}` as keyof ProdutoType] as string | null;
                   return (
-                    <div key={num} className="bg-white/[0.02] p-4 rounded-2xl border border-white/5 space-y-3">
+                    <div key={num} className="bg-white/[0.02] p-4 rounded-2xl border border-white/5 space-y-3 relative">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] uppercase font-extrabold text-white/40">Imagem {num}</span>
                         {curUrl && (

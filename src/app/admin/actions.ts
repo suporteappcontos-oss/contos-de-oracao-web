@@ -660,6 +660,7 @@ export async function adicionarProdutoLoja(formData: FormData) {
     const imagemUrl1 = formData.get('imagem_url_1') as string | null;
     const imagemUrl2 = formData.get('imagem_url_2') as string | null;
     const imagemUrl3 = formData.get('imagem_url_3') as string | null;
+    const proporcaoImagem = (formData.get('proporcao_imagem') as string) || '1:1';
     const ativo = formData.get('ativo') === 'true';
 
     if (!titulo || !descricao || !linkAfiliado) {
@@ -673,6 +674,7 @@ export async function adicionarProdutoLoja(formData: FormData) {
       imagem_url_1: imagemUrl1 || null,
       imagem_url_2: imagemUrl2 || null,
       imagem_url_3: imagemUrl3 || null,
+      proporcao_imagem: proporcaoImagem,
       ativo
     });
 
@@ -696,6 +698,7 @@ export async function editarProdutoLoja(id: string, formData: FormData) {
     const imagemUrl1 = formData.get('imagem_url_1') as string | null;
     const imagemUrl2 = formData.get('imagem_url_2') as string | null;
     const imagemUrl3 = formData.get('imagem_url_3') as string | null;
+    const proporcaoImagem = (formData.get('proporcao_imagem') as string) || '1:1';
 
     if (!titulo || !descricao || !linkAfiliado) {
       throw new Error('Título, descrição e link de afiliado são obrigatórios.');
@@ -707,7 +710,8 @@ export async function editarProdutoLoja(id: string, formData: FormData) {
       link_afiliado: linkAfiliado,
       imagem_url_1: imagemUrl1 || null,
       imagem_url_2: imagemUrl2 || null,
-      imagem_url_3: imagemUrl3 || null
+      imagem_url_3: imagemUrl3 || null,
+      proporcao_imagem: proporcaoImagem
     }).eq('id', id);
 
     if (error) throw new Error(error.message);

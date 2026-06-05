@@ -12,6 +12,7 @@ type ProdutoType = {
   imagem_url_1: string | null
   imagem_url_2: string | null
   imagem_url_3: string | null
+  proporcao_imagem?: string
   ativo: boolean
   criado_em: string
 }
@@ -38,6 +39,11 @@ export default function LojaProductCard({ produto }: { produto: ProdutoType }) {
     setIndexAtivo((prev) => (prev - 1 + imagens.length) % imagens.length)
   }
 
+  const proporcao = produto.proporcao_imagem || '1:1'
+  let aspectClass = 'aspect-square'
+  if (proporcao === '16:9') aspectClass = 'aspect-video'
+  if (proporcao === '9:16') aspectClass = 'aspect-[9/16]'
+
   return (
     <div 
       className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between group hover:border-[#D4AF37]/20 transition-all duration-300"
@@ -45,7 +51,7 @@ export default function LojaProductCard({ produto }: { produto: ProdutoType }) {
     >
       <div>
         {/* Container da Imagem com Galeria */}
-        <div className="aspect-square relative bg-black/40 flex items-center justify-center overflow-hidden">
+        <div className={`${aspectClass} relative bg-black/40 flex items-center justify-center overflow-hidden`}>
           {imagens.length > 0 ? (
             <>
               <Image 
