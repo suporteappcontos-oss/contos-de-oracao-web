@@ -40,6 +40,18 @@ export default function LojaProductCard({ produto }: { produto: ProdutoType }) {
     return () => clearInterval(interval)
   }, [imagens.length])
 
+  // Bloqueia a rolagem do body da página quando o modal de detalhes estiver aberto
+  useEffect(() => {
+    if (modalDetalhesAberto) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [modalDetalhesAberto])
+
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
