@@ -177,7 +177,7 @@ export default async function WatchPage() {
               {!isBasico && (
                 <div className="pt-8 pb-4">
                   <div className="px-5 md:px-10 lg:px-16 mb-4">
-                    <h2 className="text-[#D4AF37] font-black text-lg md:text-xl tracking-tight uppercase">Material de Catequese</h2>
+                    <h2 className="text-[#D4AF37] font-black text-lg md:text-xl tracking-tight uppercase">Material Didático</h2>
                   </div>
                   <div className="px-5 md:px-10 lg:px-16">
                     <div className="flex flex-col gap-3" style={{ width: 'clamp(260px, 30vw, 360px)' }}>
@@ -189,7 +189,7 @@ export default async function WatchPage() {
                         <div className="relative aspect-video w-full">
                           <img
                             src="/catequese.png"
-                            alt="Material de Catequese"
+                            alt="Material Didático"
                             className="w-full h-full object-cover"
                           />
                           {/* Overlay gradiente leve */}

@@ -7,7 +7,7 @@ import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Material Catequese | Contos de Oração',
+  title: 'Material Didático | Contos de Oração',
   description: 'Materiais exclusivos e Histórias em Quadrinhos para download.',
 }
 
@@ -39,7 +39,7 @@ export default async function MaterialCatequesePage() {
               <BookOpen size={14} className="text-[#D4AF37]" />
               <span className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase">Exclusivo</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">Material de Catequese</h1>
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">Material Didático</h1>
             <p className="text-white/40 mt-2 text-sm">Histórias em Quadrinhos e materiais de apoio para download</p>
           </div>
 

@@ -238,7 +238,7 @@ export default function Navbar() {
             </div>
             <div className="text-[#D4AF37] text-[0.55rem] sm:text-[0.65rem] md:text-[0.7rem] font-black uppercase tracking-widest leading-none mt-1"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-              Catequese Digital
+              Biblioteca Católica
             </div>
           </div>
         </div>
@@ -378,7 +378,7 @@ export default function Navbar() {
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain drop-shadow-lg" />
           <div>
             <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
-            <div className="text-[#D4AF37] text-[0.55rem] font-bold uppercase tracking-widest mt-0.5">Catequese Digital</div>
+            <div className="text-[#D4AF37] text-[0.55rem] font-bold uppercase tracking-widest mt-0.5">Biblioteca Católica</div>
           </div>
         </div>
 

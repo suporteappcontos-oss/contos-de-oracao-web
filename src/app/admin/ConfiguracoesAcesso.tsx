@@ -113,7 +113,7 @@ export function ConfiguracoesAcesso({ initialConfig }: { initialConfig: any }) {
             <BookOpen size={20} className="text-black" />
           </div>
           <div>
-            <h3 className="text-white font-black text-base">Material de Catequese e HQs</h3>
+            <h3 className="text-white font-black text-base">Material didático e HQs</h3>
             <p className="text-white/40 text-xs">Planos que podem acessar e baixar os materiais exclusivos na plataforma Web</p>
           </div>
         </div>

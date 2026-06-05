@@ -4,7 +4,7 @@ import DynamicBackground from "@/components/DynamicBackground";
 import LandingPage from "@/components/LandingPage";
 
 export const metadata = {
-  title: 'Contos de Oração — Catequese Digital para Crianças',
+  title: 'Contos de Oração — Biblioteca Católica para Crianças',
   description: 'Universo católico para crianças de forma divertida e encantadora. Vídeos, jogos, HQs, atividades, apostilas e conteúdos exclusivos para ensinar a fé católica.',
 };
 

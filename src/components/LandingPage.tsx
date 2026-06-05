@@ -232,7 +232,7 @@ export default function LandingPage() {
           <div className="flex-1 text-center lg:text-left max-w-[550px] lg:-ml-8">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
               <span className="text-xs font-black uppercase tracking-widest" style={{ color: PRIMARY, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
-                Catequese Digital
+                Biblioteca Católica
               </span>
               <span className="w-10 h-[1.5px]" style={{ background: PRIMARY }} />
             </div>

@@ -33,7 +33,7 @@ export default function Footer() {
             <Image src="/logo.png" alt="Contos de Oração" width={38} height={38} className="object-contain opacity-80" />
             <div>
               <div className="text-white font-bold text-sm leading-tight">Contos de Oração</div>
-              <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest">Catequese Digital</div>
+              <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest">Biblioteca Católica</div>
             </div>
           </div>
 
