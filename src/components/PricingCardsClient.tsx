@@ -123,9 +123,9 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
     <>
       {/* ── Seletor de ciclo ── */}
       {temMultiplosCiclos && (
-        <div className="flex justify-center mb-14">
+        <div className="flex justify-center mb-10 px-4 w-full">
           <div
-            className="inline-flex rounded-2xl p-1.5 gap-1 shadow-2xl"
+            className="flex w-full max-w-sm sm:max-w-md rounded-2xl p-1 gap-1 shadow-2xl"
             style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)' }}
           >
             {opcoesCiclo.map(({ id, label, badge }) => {
@@ -134,21 +134,21 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 <button
                   key={id}
                   onClick={() => setCiclo(id)}
-                  className="relative flex flex-col items-center justify-center rounded-xl px-8 py-3 transition-all duration-200 min-w-[110px]"
+                  className="flex-1 relative flex flex-col items-center justify-center rounded-xl py-2 px-1 transition-all duration-200 min-h-[52px]"
                   style={ativo
-                    ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', boxShadow: '0 4px 20px rgba(212,175,55,0.35)' }
+                    ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', boxShadow: '0 4px 15px rgba(212,175,55,0.3)' }
                     : { background: 'transparent' }
                   }
                 >
                   <span
-                    className="text-base font-black tracking-wide"
+                    className="text-xs sm:text-sm md:text-base font-black tracking-wide"
                     style={{ color: ativo ? '#000' : 'rgba(255,255,255,0.5)' }}
                   >
                     {label}
                   </span>
                   {badge && (
                     <span
-                      className="mt-1 text-[0.6rem] font-black px-2 py-0.5 rounded-full tracking-wider"
+                      className="mt-0.5 text-[0.55rem] sm:text-[0.6rem] font-black px-1.5 py-0.5 rounded-full tracking-wider whitespace-nowrap"
                       style={ativo
                         ? { background: 'rgba(0,0,0,0.25)', color: '#000' }
                         : { background: '#22c55e', color: '#fff' }
