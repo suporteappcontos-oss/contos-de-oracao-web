@@ -182,14 +182,31 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
               action={async (fd) => {
                 const uploadImagem = async (fieldName: string, currentUrl: string | null) => {
                   const file = fd.get(fieldName) as File;
+                  const numImagem = fieldName.replace('imagem_file_', '');
+                  
                   if (file && file.size > 0) {
+                    // Validar tamanho do arquivo no cliente (limite de 4.5MB da Vercel)
+                    if (file.size > 4.5 * 1024 * 1024) {
+                      throw new Error(`A Imagem ${numImagem} é muito grande (${(file.size / 1024 / 1024).toFixed(2)}MB). O limite máximo permitido é 4.5MB. Reduza a resolução ou envie um arquivo menor.`);
+                    }
+
                     const uploadFd = new FormData();
                     uploadFd.append('file', file);
                     try {
                       const res = await fetch('/api/admin/upload-produto', { method: 'POST', body: uploadFd });
                       if (!res.ok) {
-                        const errData = await res.json().catch(() => ({}));
-                        throw new Error(errData.error || `Erro de rede (${res.status})`);
+                        const errText = await res.text().catch(() => '');
+                        let errMsg = `Erro de rede (${res.status})`;
+                        try {
+                          const errData = JSON.parse(errText);
+                          if (errData.error) errMsg = errData.error;
+                        } catch {
+                          if (errText) {
+                            const cleanText = errText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                            errMsg = `${errMsg}: ${cleanText.substring(0, 120)}`;
+                          }
+                        }
+                        throw new Error(errMsg);
                       }
                       const data = await res.json();
                       if (data.success) {
@@ -198,7 +215,7 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                         throw new Error(data.error || 'Erro no upload');
                       }
                     } catch (err: any) {
-                      throw new Error(`Falha no upload da Imagem ${fieldName.replace('imagem_file_', '')}: ${err.message}`);
+                      throw new Error(`Falha no upload da Imagem ${numImagem}: ${err.message}`);
                     }
                   }
                   const urlText = fd.get(fieldName.replace('file', 'url')) as string;
