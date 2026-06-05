@@ -649,3 +649,105 @@ export async function deletarUsuario(userId: string) {
   }
 }
 
+// ─── LOJA DE AFILIADOS ───
+
+export async function adicionarProdutoLoja(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const titulo = formData.get('titulo') as string;
+    const descricao = formData.get('descricao') as string;
+    const linkAfiliado = formData.get('link_afiliado') as string;
+    const imagemUrl1 = formData.get('imagem_url_1') as string | null;
+    const imagemUrl2 = formData.get('imagem_url_2') as string | null;
+    const imagemUrl3 = formData.get('imagem_url_3') as string | null;
+    const ativo = formData.get('ativo') === 'true';
+
+    if (!titulo || !descricao || !linkAfiliado) {
+      throw new Error('Título, descrição e link de afiliado são obrigatórios.');
+    }
+
+    const { error } = await supabase.from('produtos_loja').insert({
+      titulo,
+      descricao,
+      link_afiliado: linkAfiliado,
+      imagem_url_1: imagemUrl1 || null,
+      imagem_url_2: imagemUrl2 || null,
+      imagem_url_3: imagemUrl3 || null,
+      ativo
+    });
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin');
+    revalidatePath('/loja');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Erro ao adicionar produto:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function editarProdutoLoja(id: string, formData: FormData) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const titulo = formData.get('titulo') as string;
+    const descricao = formData.get('descricao') as string;
+    const linkAfiliado = formData.get('link_afiliado') as string;
+    const imagemUrl1 = formData.get('imagem_url_1') as string | null;
+    const imagemUrl2 = formData.get('imagem_url_2') as string | null;
+    const imagemUrl3 = formData.get('imagem_url_3') as string | null;
+
+    if (!titulo || !descricao || !linkAfiliado) {
+      throw new Error('Título, descrição e link de afiliado são obrigatórios.');
+    }
+
+    const { error } = await supabase.from('produtos_loja').update({
+      titulo,
+      descricao,
+      link_afiliado: linkAfiliado,
+      imagem_url_1: imagemUrl1 || null,
+      imagem_url_2: imagemUrl2 || null,
+      imagem_url_3: imagemUrl3 || null
+    }).eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin');
+    revalidatePath('/loja');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Erro ao editar produto:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deletarProdutoLoja(id: string) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase.from('produtos_loja').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin');
+    revalidatePath('/loja');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Erro ao deletar produto:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function toggleProdutoLojaAtivo(id: string, ativoAtual: boolean) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase.from('produtos_loja').update({ ativo: !ativoAtual }).eq('id', id);
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/admin');
+    revalidatePath('/loja');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Erro ao alternar status do produto:', error.message);
+    return { success: false, error: error.message };
+  }
+}
+

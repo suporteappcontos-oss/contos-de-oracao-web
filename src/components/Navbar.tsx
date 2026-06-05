@@ -322,7 +322,7 @@ export default function Navbar() {
           ) : (
             <>
               <div className="hidden md:flex items-center gap-3 sm:gap-4 text-xs font-black uppercase tracking-wider">
-                <Link href="/planos" className="hover:text-[#D4AF37] transition-colors no-underline text-white font-extrabold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.95)' }}>
+                <Link href="/loja" className="hover:text-[#D4AF37] transition-colors no-underline text-white font-extrabold" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.95)' }}>
                   Loja
                 </Link>
                 <span className="text-white/20 select-none">|</span>
@@ -517,7 +517,7 @@ export default function Navbar() {
 
           {/* ── Loja ── */}
           <Link
-            href="/planos"
+            href="/loja"
             onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
           >
@@ -525,9 +525,8 @@ export default function Navbar() {
             <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconLoja />
             </span>
-            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300 flex items-center gap-1.5">
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">
               Loja
-              <span className="text-[9px] text-[#D4AF37] font-black uppercase tracking-wider bg-[#D4AF37]/10 px-1.5 py-0.5 rounded border border-[#D4AF37]/20">Em breve</span>
             </span>
           </Link>
 

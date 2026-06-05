@@ -11,12 +11,13 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Heart, BarChart3, Trophy, Megaphone
+  Heart, BarChart3, Trophy, Megaphone, ShoppingBag
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
 import { GerenciadorMateriais } from './GerenciadorMateriais'
 import { GerenciadorAnuncios } from './GerenciadorAnuncios'
+import { GerenciadorLoja } from './GerenciadorLoja'
 import { FormAcessoVitalicio } from './FormAcessoVitalicio'
 import CriadorConteudoUnificado from './CriadorConteudoUnificado'
 import AcervoVideosAdmin from './AcervoVideosAdmin'
@@ -78,6 +79,7 @@ export default async function AdminPage({
   const { data: videos } = await supabase.from('videos').select('*').order('criado_em', { ascending: false })
   const { data: materiaisData } = await supabase.from('materiais').select('*').order('criado_em', { ascending: false })
   const { data: anunciosPausa } = await supabase.from('anuncios_pausa').select('*').order('criado_em', { ascending: false })
+  const { data: produtosLoja } = await supabase.from('produtos_loja').select('*').order('criado_em', { ascending: false })
 
   // Busca visualizações para computar estatísticas gerais e individuais
   let views: any[] = []
@@ -137,6 +139,7 @@ export default async function AdminPage({
   const videosAtivos = videos?.filter(v => v.ativo).length ?? 0
   const totalMembros = usuarios.length
   const membrosAtivos = usuarios.filter(u => u.plano_ativo).length
+  const totalProdutos = produtosLoja?.length ?? 0
 
   // Planos mais comprados
   const vendasPorPlano: Record<string, number> = {}
@@ -243,6 +246,7 @@ export default async function AdminPage({
             {[
               { id: 'catalogo', label: 'Catálogo', icon: Film, count: totalVideos },
               { id: 'assinaturas', label: 'Assinaturas', icon: Users, count: totalMembros },
+              { id: 'loja', label: 'Loja', icon: ShoppingBag, count: totalProdutos },
               { id: 'marketing', label: 'Marketing', icon: Megaphone, count: anunciosPausa?.length ?? 0 },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
@@ -260,11 +264,12 @@ export default async function AdminPage({
           </div>
         </div>
 
-        {/* Stats — 4 cards premium */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mb-12">
+        {/* Stats — 5 cards premium */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-6 mb-12">
           {[
             { label: 'Total de Vídeos', value: totalVideos, icon: Film, color: 'from-[#00a8e1] to-[#007ba6]' },
             { label: 'Vídeos Ativos', value: videosAtivos, icon: Eye, color: 'from-[#10b981] to-[#047857]' },
+            { label: 'Produtos Loja', value: totalProdutos, icon: ShoppingBag, color: 'from-[#ec4899] to-[#db2777]' },
             { label: 'Plano Mais Vendido', value: planoMaisComprado, icon: Trophy, color: 'from-[#ef4444] to-[#b91c1c]', textSm: true },
             { label: 'Assinantes Ativos', value: membrosAtivos, icon: UserCheck, color: 'from-[#FFD700] to-[#D4AF37]', darkText: true },
             { label: 'Total de Cadastros', value: totalMembros, icon: Users, color: 'from-[#8b5cf6] to-[#6d28d9]' },
@@ -447,8 +452,12 @@ export default async function AdminPage({
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
               <StripeAdmin />
             </div>
-
           </div>
+        )}
+
+        {/* ══════════ ABA LOJA ══════════ */}
+        {activeTab === 'loja' && (
+          <GerenciadorLoja produtos={(produtosLoja || []) as any} />
         )}
 
       </main>

@@ -1,3 +1,33 @@
+Tabela de Produtos da Loja de Afiliados:
+
+CREATE TABLE public.produtos_loja (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  titulo TEXT NOT NULL,
+  descricao TEXT NOT NULL,
+  link_afiliado TEXT NOT NULL,
+  imagem_url_1 TEXT,
+  imagem_url_2 TEXT,
+  imagem_url_3 TEXT,
+  ativo BOOLEAN DEFAULT true,
+  criado_em TIMESTAMPTZ DEFAULT now()
+);
+
+-- Ativar RLS (Row Level Security)
+ALTER TABLE public.produtos_loja ENABLE ROW LEVEL SECURITY;
+
+-- Permite leitura pública de produtos_loja
+CREATE POLICY "Permitir leitura pública de produtos_loja"
+ON public.produtos_loja FOR SELECT
+USING (true);
+
+-- Permite controle total para administradores autenticados
+CREATE POLICY "Permitir tudo para administradores"
+ON public.produtos_loja FOR ALL
+TO authenticated
+USING (true);
+
+---------------------------------------------------------
+
 Atualiza restrição de categoria:
 -- 1. Remove a restrição antiga que bloqueava a nova categoria
 ALTER TABLE public.materiais 
