@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Monitor, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { Monitor, Check } from 'lucide-react';
 
 type PriceInfo = { id: string; valor: number };
 
@@ -19,7 +19,21 @@ type ProdutoInfo = {
   destaque: boolean;
 };
 
-// Animação de partículas douradas simples via CSS inline
+// Remove itens duplicados e filtra "perfis de usuário"
+function filtrarBeneficios(lista: string[]): string[] {
+  const vistos = new Set<string>();
+  return lista
+    .map(b => b.replace('⭐', '').trim())
+    .filter(b => {
+      const chave = b.toLowerCase();
+      // remove menções a perfis de usuário (confunde clientes)
+      if (chave.includes('perfis de usu')) return false;
+      if (vistos.has(chave)) return false;
+      vistos.add(chave);
+      return true;
+    });
+}
+
 const ParticlesBanner = ({ destaque }: { destaque: boolean }) => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -37,54 +51,31 @@ const ParticlesBanner = ({ destaque }: { destaque: boolean }) => {
 
   return (
     <div className="absolute top-0 left-0 w-full h-16 overflow-hidden rounded-t-[22px] pointer-events-none">
-      {/* Linha de brilho no topo */}
       <div
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '1px',
+          position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
           background: destaque
             ? 'linear-gradient(90deg, transparent, #D4AF37, transparent)'
             : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
         }}
       />
-
-      {/* Brilho suave atrás */}
       <div
         style={{
-          position: 'absolute',
-          top: '-20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '80%',
-          height: '60px',
+          position: 'absolute', top: '-20px', left: '50%', transform: 'translateX(-50%)',
+          width: '80%', height: '60px', borderRadius: '50%',
           background: destaque
             ? 'radial-gradient(ellipse, rgba(212,175,55,0.12) 0%, transparent 70%)'
             : 'radial-gradient(ellipse, rgba(255,255,255,0.04) 0%, transparent 70%)',
-          borderRadius: '50%',
         }}
       />
-
-      {/* Partículas flutuantes */}
       {mounted && particles.map((p, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            left: p.left,
-            bottom: '4px',
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            borderRadius: '50%',
-            background: color,
-            opacity: 0,
-            animation: `floatUp ${p.duration} ${p.delay} infinite ease-in`,
-          }}
-        />
+        <div key={i} style={{
+          position: 'absolute', left: p.left, bottom: '4px',
+          width: `${p.size}px`, height: `${p.size}px`, borderRadius: '50%',
+          background: color, opacity: 0,
+          animation: `floatUp ${p.duration} ${p.delay} infinite ease-in`,
+        }} />
       ))}
-
       <style>{`
         @keyframes floatUp {
           0%   { opacity: 0;   transform: translateY(0) scale(1); }
@@ -101,11 +92,6 @@ type Ciclo = 'mensal' | 'semestral' | 'anual';
 
 export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo[] }) {
   const [ciclo, setCiclo] = useState<Ciclo>('mensal');
-  const [allExpanded, setAllExpanded] = useState(false);
-
-  const toggleAll = () => {
-    setAllExpanded(!allExpanded);
-  };
 
   if (produtos.length === 0) {
     return (
@@ -115,94 +101,96 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
     );
   }
 
-  const temPlanoAnual = produtos.some(p => p.priceAnual !== null);
-  const temPlanoMensal = produtos.some(p => p.priceMensal !== null);
+  const temPlanoAnual     = produtos.some(p => p.priceAnual !== null);
+  const temPlanoMensal    = produtos.some(p => p.priceMensal !== null);
   const temPlanoSemestral = produtos.some(p => p.priceSemestral !== null);
 
-  // Ordena do mais barato para o mais caro
   const produtosOrdenados = [...produtos].sort((a, b) => {
     const precoA = a.priceMensal?.valor ?? a.priceSemestral?.valor ?? a.priceAnual?.valor ?? 0;
     const precoB = b.priceMensal?.valor ?? b.priceSemestral?.valor ?? b.priceAnual?.valor ?? 0;
     return precoA - precoB;
   });
 
-  // Quantas opções de ciclo existem?
-  const temMultiplosCiclos = (temPlanoMensal ? 1 : 0) + (temPlanoSemestral ? 1 : 0) + (temPlanoAnual ? 1 : 0) > 1;
+  const opcoesCiclo = ([
+    { id: 'mensal'    as Ciclo, show: temPlanoMensal,    label: 'Mensal',    badge: null },
+    { id: 'semestral' as Ciclo, show: temPlanoSemestral, label: 'Semestral', badge: '+ Econômico' },
+    { id: 'anual'     as Ciclo, show: temPlanoAnual,     label: 'Anual',     badge: '🏆 Melhor Valor' },
+  ]).filter(c => c.show);
 
-  const cicloLabel: Record<Ciclo, string> = {
-    mensal: 'Mensal',
-    semestral: 'Semestral',
-    anual: 'Anual',
-  };
-
-  const economiaSufixo: Record<Ciclo, string | null> = {
-    mensal: null,
-    semestral: 'Economize + com 6 meses',
-    anual: 'Mais Econômico 🏆',
-  };
+  const temMultiplosCiclos = opcoesCiclo.length > 1;
 
   return (
     <>
+      {/* ── Seletor de ciclo ── */}
       {temMultiplosCiclos && (
-        <div className="flex justify-center mb-12">
-          <div className="bg-[#111827] p-1.5 rounded-full border border-white/10 flex items-center shadow-lg gap-1">
-            {([
-              { id: 'mensal', show: temPlanoMensal },
-              { id: 'semestral', show: temPlanoSemestral },
-              { id: 'anual', show: temPlanoAnual },
-            ] as { id: Ciclo; show: boolean }[]).filter(c => c.show).map(({ id }) => (
-              <button
-                key={id}
-                onClick={() => setCiclo(id)}
-                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${ciclo === id ? 'bg-[#D4AF37] text-black shadow-md' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
-              >
-                {cicloLabel[id]}
-                {economiaSufixo[id] && (
-                  <span className={`text-[0.6rem] px-2 py-0.5 rounded-full font-black tracking-wide ${ciclo === id ? 'bg-black text-white' : 'bg-[#22c55e] text-white'}`}>
-                    {economiaSufixo[id]}
+        <div className="flex justify-center mb-14">
+          <div
+            className="inline-flex rounded-2xl p-1.5 gap-1 shadow-2xl"
+            style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)' }}
+          >
+            {opcoesCiclo.map(({ id, label, badge }) => {
+              const ativo = ciclo === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setCiclo(id)}
+                  className="relative flex flex-col items-center justify-center rounded-xl px-8 py-3 transition-all duration-200 min-w-[110px]"
+                  style={ativo
+                    ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', boxShadow: '0 4px 20px rgba(212,175,55,0.35)' }
+                    : { background: 'transparent' }
+                  }
+                >
+                  <span
+                    className="text-base font-black tracking-wide"
+                    style={{ color: ativo ? '#000' : 'rgba(255,255,255,0.5)' }}
+                  >
+                    {label}
                   </span>
-                )}
-              </button>
-            ))}
+                  {badge && (
+                    <span
+                      className="mt-1 text-[0.6rem] font-black px-2 py-0.5 rounded-full tracking-wider"
+                      style={ativo
+                        ? { background: 'rgba(0,0,0,0.25)', color: '#000' }
+                        : { background: '#22c55e', color: '#fff' }
+                      }
+                    >
+                      {badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto">
-        {/* Botão global — expande/recolhe todos */}
-        <div className="col-span-full flex justify-center mb-2">
-          <button
-            onClick={toggleAll}
-            className="flex items-center gap-2 text-sm font-bold text-white/50 hover:text-[#D4AF37] transition-colors border border-white/10 hover:border-[#D4AF37]/40 px-5 py-2 rounded-full"
-          >
-            {allExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-            {allExpanded ? 'Recolher todos os detalhes' : 'Ver detalhes de todos os planos'}
-          </button>
-        </div>
+      {/* ── Cards ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mx-auto">
         {produtosOrdenados.map((plano) => {
-          // Seleciona o preço de acordo com o ciclo atual
           let precoExibido: PriceInfo | null = null;
-          if (ciclo === 'anual' && plano.priceAnual) precoExibido = plano.priceAnual;
+          if (ciclo === 'anual'     && plano.priceAnual)     precoExibido = plano.priceAnual;
           else if (ciclo === 'semestral' && plano.priceSemestral) precoExibido = plano.priceSemestral;
-          else if (ciclo === 'mensal' && plano.priceMensal) precoExibido = plano.priceMensal;
-          // fallback: qualquer preço disponível
+          else if (ciclo === 'mensal'    && plano.priceMensal)    precoExibido = plano.priceMensal;
           else precoExibido = plano.priceMensal ?? plano.priceSemestral ?? plano.priceAnual;
 
           if (!precoExibido) return null;
 
-          const labelPeriodo = ciclo === 'anual' ? 'ano' : ciclo === 'semestral' ? 'semestre' : 'mês';
-          const equivalenteMensal = ciclo === 'anual' ? precoExibido.valor / 12 :
-            ciclo === 'semestral' ? precoExibido.valor / 6 : null;
+          const labelPeriodo    = ciclo === 'anual' ? 'ano' : ciclo === 'semestral' ? 'semestre' : 'mês';
+          const equivalenteMensal = ciclo === 'anual'     ? precoExibido.valor / 12
+                                  : ciclo === 'semestral' ? precoExibido.valor / 6
+                                  : null;
+
+          const beneficiosFiltrados = filtrarBeneficios(plano.beneficios);
 
           return (
             <div
               key={plano.id}
-              className={`relative flex flex-col pt-12 px-8 pb-8 rounded-[24px] w-full transition-all duration-300 border-2 hover:-translate-y-1 ${plano.destaque
+              className={`relative flex flex-col pt-12 px-8 pb-8 rounded-[24px] w-full transition-all duration-300 border-2 hover:-translate-y-1 ${
+                plano.destaque
                   ? 'bg-gradient-to-b from-[#1a1a2e] to-[#0f1423] border-[#D4AF37] shadow-[0_15px_50px_rgba(212,175,55,0.15)] scale-[1.02] z-10'
                   : 'bg-[#111827] border-white/5 hover:border-white/20'
-                }`}
+              }`}
             >
-              {/* Animação de partículas no topo */}
               <ParticlesBanner destaque={plano.destaque} />
 
               {plano.badge && (
@@ -214,90 +202,66 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 </div>
               )}
 
+              {/* Nome e descrição */}
               <div className="text-left mb-6">
                 <h3 className={`text-2xl font-extrabold mb-1 ${plano.cor}`}>{plano.nome}</h3>
                 <p className="text-white/40 text-sm leading-relaxed">{plano.descricao}</p>
               </div>
 
-              <div className="text-left mb-6 min-h-[72px]">
+              {/* Preço */}
+              <div className="text-left mb-6">
                 <div className="flex items-baseline gap-0.5 flex-wrap">
-                  <span className="text-xl font-black text-white">
-                    R$
-                  </span>
-                  <span className="text-4xl font-black text-white tracking-tight">
+                  <span className="text-xl font-black text-white">R$</span>
+                  <span className="text-5xl font-black text-white tracking-tight">
                     {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
-                  <span className="text-white/40 text-sm font-medium">
-                    /{labelPeriodo}
-                  </span>
+                  <span className="text-white/40 text-base font-medium">/{labelPeriodo}</span>
                 </div>
                 {equivalenteMensal && (
-                  <div className="text-[#D4AF37] text-[0.8rem] font-bold mt-2">
+                  <div className="text-[#D4AF37] text-sm font-bold mt-2">
                     Equivale a R$ {equivalenteMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} /mês
                   </div>
                 )}
                 {ciclo === 'mensal' && plano.priceAnual && (
-                  <div className="text-[#22c55e] text-[0.75rem] font-bold mt-2">
-                    💡 Economize no plano anual
+                  <div className="text-[#22c55e] text-xs font-bold mt-1">
+                    💡 Economize escolhendo o plano anual
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 mb-6 text-left">
+              {/* Telas simultâneas em destaque */}
+              <div className="flex items-center gap-2 mb-6">
                 <div
-                  className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg w-full"
-                  style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.2)' }}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl w-full"
+                  style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)' }}
                 >
-                  <Monitor size={14} style={{ color: '#D4AF37' }} />
-                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: '#D4AF37' }}>
+                  <Monitor size={16} style={{ color: '#D4AF37' }} />
+                  <span className="text-sm font-black uppercase tracking-wider" style={{ color: '#D4AF37' }}>
                     {plano.maxTelas} tela{plano.maxTelas > 1 ? 's' : ''} simult{plano.maxTelas > 1 ? 'âneas' : 'ânea'}
                   </span>
                 </div>
               </div>
 
-              {/* Lista de Benefícios */}
+              {/* Benefícios — todos visíveis, sem accordion */}
               <div className="text-left mb-8 flex-1">
-                <ul className="space-y-3.5">
-                  {plano.beneficios.slice(0, 3).map((b, i) => (
-                    <li key={`vis-${i}`} className="flex items-start gap-3 text-white/90 text-[0.9rem] leading-snug">
-                      <Check size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
-                      <span>{b.replace('⭐', '')}</span>
+                <ul className="space-y-3">
+                  {beneficiosFiltrados.map((b, i) => (
+                    <li key={i} className="flex items-start gap-3 text-white/85 text-[0.9rem] leading-snug">
+                      <Check size={17} className="text-[#D4AF37] shrink-0 mt-0.5" />
+                      <span>{b}</span>
                     </li>
                   ))}
                 </ul>
-
-                {plano.beneficios.length > 0 && (() => {
-                  return (
-                    <div className="mt-4 border-t border-white/5 pt-4">
-                      <button
-                        onClick={toggleAll}
-                        className="flex items-center justify-between w-full text-sm font-bold text-white/60 hover:text-[#D4AF37] transition-colors"
-                      >
-                        <span>{allExpanded ? 'Ocultar detalhes' : `Ver todos (${plano.beneficios.length})`}</span>
-                        {allExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                      </button>
-
-                      {allExpanded && (
-                        <ul className="space-y-3 mt-4 pt-2 border-t border-white/5">
-                          {plano.beneficios.map((b, i) => (
-                            <li key={`all-${i}`} className="flex items-start gap-3 text-white/70 text-[0.85rem] leading-snug">
-                              <Check size={16} className="text-[#D4AF37]/70 shrink-0 mt-0.5" />
-                              <span>{b.replace('⭐', '')}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  );
-                })()}
               </div>
 
+              {/* CTA */}
               <a
                 href={`/assinar?plan=${precoExibido.id}`}
-                className={`flex items-center justify-center w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-95 ${plano.destaque
+                className={`flex items-center justify-center w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-95 ${
+                  plano.destaque
                     ? 'bg-[#D4AF37] text-black shadow-[0_5px_20px_rgba(212,175,55,0.3)] hover:brightness-110'
                     : 'bg-white/10 text-white border border-white/10 hover:bg-white/20'
-                  }`}
+                }`}
               >
                 Assinar Agora →
               </a>
