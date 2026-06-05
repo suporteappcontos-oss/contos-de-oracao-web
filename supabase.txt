@@ -13,8 +13,8 @@ CREATE TABLE public.produtos_loja (
   criado_em TIMESTAMPTZ DEFAULT now()
 );
 
--- Query de atualização (caso a tabela já exista):
--- ALTER TABLE public.produtos_loja ADD COLUMN IF NOT EXISTS proporcao_imagem TEXT DEFAULT '1:1';
+-- Query de atualização (caso a tabela já exista, rode no console do Supabase):
+ALTER TABLE public.produtos_loja ADD COLUMN IF NOT EXISTS proporcao_imagem TEXT DEFAULT '1:1';
 
 -- Ativar RLS (Row Level Security)
 ALTER TABLE public.produtos_loja ENABLE ROW LEVEL SECURITY;
