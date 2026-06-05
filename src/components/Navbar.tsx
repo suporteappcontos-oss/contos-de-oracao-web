@@ -280,7 +280,7 @@ export default function Navbar() {
               className="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-110 hover:brightness-110"
               style={{ background: '#000000', border: '1px solid rgba(255, 255, 255, 0.15)' }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="white"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.38 13.74 4 15 4v2c-1.387 0-2.499-.408-3.5-1.378V12c0 2.209-1.791 4-4 4s-4-1.791-4-4 1.791-4 4-4c.41 0 .79.062 1.148.175V5.47A4.81 4.81 0 0 1 7 5c0-2.761 2.239-5 5-5V0h-3z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M16.6 3c.2 1.8 1.2 3.5 2.8 4.5 1 .7 2.1 1.1 3.3 1.2v3.4c-1.8-.1-3.5-.6-5.1-1.5v6.4c0 3.8-3.1 6.9-6.9 6.9S3.8 20.8 3.8 17s3.1-6.9 6.9-6.9c.3 0 .6 0 .9.1v3.5c-.3-.1-.6-.1-.9-.1-1.9 0-3.4 1.5-3.4 3.4s1.5 3.4 3.4 3.4 3.4-1.5 3.4-3.4V3h2.5z"></path></svg>
             </a>
           </div>
 
