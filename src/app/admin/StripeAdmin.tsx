@@ -26,7 +26,8 @@ export function StripeAdmin() {
   const [cupons, setCupons] = useState<Cupom[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', etiqueta: 'Premium', precoMensal: '29,90', precoAnual: '290,00', max_telas: 1 })
+  const [novoProduto, setNovoProduto] = useState({ nome: 'Assinatura', etiqueta: 'Premium', precoMensal: '29,90', precoSemestral: '', precoAnual: '290,00', max_telas: 1 })
+  const [ativandoPlano, setAtivandoPlano] = useState<string | null>(null)
   const [beneficiosCheck, setBeneficiosCheck] = useState<{nome: string, destaque: boolean}[]>([
     { nome: 'Acesso a todos os filmes', destaque: true }, 
     { nome: 'Materiais didáticos inclusos (HQ, atividades, jogos e mais)', destaque: true },
@@ -101,6 +102,7 @@ export function StripeAdmin() {
     const payload = {
       ...novoProduto,
       precoMensal: parsePreco(novoProduto.precoMensal),
+      precoSemestral: novoProduto.precoSemestral ? parsePreco(novoProduto.precoSemestral) : null,
       precoAnual: novoProduto.precoAnual ? parsePreco(novoProduto.precoAnual) : null,
       beneficios: beneficiosCheck.map(b => b.destaque ? `⭐${b.nome}` : b.nome).join(' | '),
       max_telas: novoProduto.max_telas,
@@ -123,6 +125,32 @@ export function StripeAdmin() {
       alert('Erro inesperado')
     }
     setLoadingAction(false)
+  }
+
+  // Ativa um dos planos padrão diretamente
+  const ativarPlanoPadrao = async (tipo: 'individual' | 'familia') => {
+    setAtivandoPlano(tipo)
+    const cfg = tipo === 'individual'
+      ? { nome: 'Individual', etiqueta: 'Individual', max_telas: 1, precoMensal: 27.9, precoSemestral: 149.9, precoAnual: 249.9,
+          beneficios: 'Acesso a todos os filmes | Materiais didáticos inclusos (HQ, atividades, jogos e mais) | 1 tela simultânea | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento' }
+      : { nome: 'Família', etiqueta: 'Família', max_telas: 5, precoMensal: 49.9, precoSemestral: 269.9, precoAnual: 449.9,
+          beneficios: 'Até 5 telas simultâneas | Até 5 perfis de usuário | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento | Suporte prioritário por e-mail' }
+    try {
+      const response = await fetch('/api/stripe/produtos', {
+        method: 'POST',
+        body: JSON.stringify(cfg)
+      })
+      const data = await response.json()
+      if (data.error) {
+        alert('Erro ao criar plano ' + cfg.nome + ': ' + data.error)
+      } else {
+        alert(`✅ Plano ${cfg.nome} criado com sucesso no Stripe!\n\nMensal: R$ ${cfg.precoMensal}\nSemestral: R$ ${cfg.precoSemestral}\nAnual: R$ ${cfg.precoAnual}`)
+        await fetchData()
+      }
+    } catch {
+      alert('Erro inesperado ao criar plano')
+    }
+    setAtivandoPlano(null)
   }
 
   const arquivarProduto = async (id: string) => {
@@ -189,6 +217,46 @@ export function StripeAdmin() {
 
   return (
     <div className="space-y-10">
+
+      {/* ATIVAÇÃO RÁPIDA DOS PLANOS PADRÃO */}
+      <div className="bg-gradient-to-br from-[#111827] to-[#0f1423] border border-[#D4AF37]/20 rounded-3xl p-6 shadow-xl">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
+            <CreditCard size={16} className="text-[#D4AF37]" />
+          </div>
+          <div>
+            <h3 className="text-white font-extrabold text-base">Ativar Planos Padrão</h3>
+            <p className="text-white/40 text-xs">Cria os planos Individual e Família com todos os ciclos (Mensal, Semestral e Anual) automaticamente.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Individual */}
+          <div className="bg-[#090B10] border border-white/10 rounded-2xl p-5">
+            <div className="text-[#D4AF37] font-black text-sm mb-1">👤 Plano Individual</div>
+            <div className="text-white/50 text-xs mb-3">1 tela · Mensal R$27,90 · Semestral R$149,90 · Anual R$249,90</div>
+            <button
+              onClick={() => ativarPlanoPadrao('individual')}
+              disabled={!!ativandoPlano}
+              className="w-full bg-[#D4AF37] text-black py-2.5 rounded-xl font-black text-sm hover:brightness-110 transition-all disabled:opacity-50"
+            >
+              {ativandoPlano === 'individual' ? '⏳ Criando...' : '✨ Ativar Plano Individual'}
+            </button>
+          </div>
+          {/* Família */}
+          <div className="bg-[#090B10] border border-white/10 rounded-2xl p-5">
+            <div className="text-[#22c55e] font-black text-sm mb-1">👨‍👩‍👧‍👦 Plano Família</div>
+            <div className="text-white/50 text-xs mb-3">5 telas · Mensal R$49,90 · Semestral R$269,90 · Anual R$449,90</div>
+            <button
+              onClick={() => ativarPlanoPadrao('familia')}
+              disabled={!!ativandoPlano}
+              className="w-full bg-[#22c55e] text-black py-2.5 rounded-xl font-black text-sm hover:brightness-110 transition-all disabled:opacity-50"
+            >
+              {ativandoPlano === 'familia' ? '⏳ Criando...' : '✨ Ativar Plano Família'}
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* PRODUTOS */}
       <div>
         <div className="flex items-center gap-3 mb-6">
@@ -225,13 +293,24 @@ export function StripeAdmin() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
                   <label className="block text-[#8197a4] text-xs font-bold mb-2 tracking-wider">VALOR MENSAL (R$)</label>
                   <input
                     type="text"
                     value={novoProduto.precoMensal}
                     onChange={(e) => setNovoProduto({ ...novoProduto, precoMensal: e.target.value })}
+                    className="w-full p-3 rounded-lg bg-[#0f172a] border border-[#1e293b] text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#8197a4] text-xs font-bold mb-2 tracking-wider">VALOR SEMESTRAL (R$) <span className="text-white/30 font-normal">(Opcional)</span></label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 149,90"
+                    value={novoProduto.precoSemestral}
+                    onChange={(e) => setNovoProduto({ ...novoProduto, precoSemestral: e.target.value })}
                     className="w-full p-3 rounded-lg bg-[#0f172a] border border-[#1e293b] text-white focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]"
                   />
                 </div>

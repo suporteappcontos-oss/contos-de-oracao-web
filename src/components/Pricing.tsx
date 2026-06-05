@@ -3,7 +3,7 @@ import { stripe } from '@/lib/stripe';
 import PricingCardsClient from './PricingCardsClient';
 
 export default async function Pricing() {
-  const prices = await stripe.prices.list({ active: true, limit: 10, expand: ['data.product'] })
+  const prices = await stripe.prices.list({ active: true, limit: 30, expand: ['data.product'] })
 
   const groupedProducts = new Map<string, any>()
 
@@ -13,7 +13,9 @@ export default async function Pricing() {
       .forEach((price) => {
         const prod = price.product as any
         const isAnual = price.recurring?.interval === 'year'
-        
+        const isSemestral = price.recurring?.interval === 'month' && (price.recurring?.interval_count ?? 1) === 6
+        const isMensal = price.recurring?.interval === 'month' && (price.recurring?.interval_count ?? 1) === 1
+
         if (!groupedProducts.has(prod.id)) {
           groupedProducts.set(prod.id, {
             id: prod.id,
@@ -21,38 +23,41 @@ export default async function Pricing() {
             descricao: prod.description || 'Acesso completo à plataforma',
             badge: prod.metadata?.etiqueta || null,
             cor: prod.metadata?.cor || (isAnual ? 'text-[#D4AF37]' : 'text-[#8197a4]'),
-            destaque: isAnual || false, // Se tiver plano anual, o card ganha destaque
+            destaque: isAnual || false,
             maxTelas: Number(prod.metadata?.max_telas || 1),
             beneficios: prod.metadata?.beneficios
               ? prod.metadata.beneficios.split(/\|/).map((b: string) => b.trim()).filter(Boolean)
               : [
-                  'Acesso ilimitado ao catálogo',
-                  'Assista em qualquer dispositivo',
-                  'Vídeos em Full HD (1080p)',
-                  'Suporte prioritário'
-                ],
+                'Acesso ilimitado ao catálogo',
+                'Assista em qualquer dispositivo',
+                'Vídeos em Full HD (1080p)',
+                'Suporte prioritário'
+              ],
             priceMensal: null,
+            priceSemestral: null,
             priceAnual: null,
           })
         }
-        
+
         const g = groupedProducts.get(prod.id)
         const valor = price.unit_amount! / 100
-        
+
         if (isAnual) {
-           g.priceAnual = { id: price.id, valor }
-           g.destaque = true // Garante que se tiver anual, é destaque
-           g.cor = 'text-[#D4AF37]' // Atualiza cor se for destaque
-           if (!g.badge) g.badge = 'Mais Popular' // Fallback
-        } else {
-           g.priceMensal = { id: price.id, valor }
+          g.priceAnual = { id: price.id, valor }
+          g.destaque = true
+          g.cor = 'text-[#D4AF37]'
+          if (!g.badge) g.badge = 'Mais Popular'
+        } else if (isSemestral) {
+          g.priceSemestral = { id: price.id, valor }
+        } else if (isMensal) {
+          g.priceMensal = { id: price.id, valor }
         }
       })
   }
 
   let produtosArray = Array.from(groupedProducts.values())
-  
-  // Ordena para que os em destaque fiquem por último ou numa ordem legal
+
+  // Destaque no plano com preço anual ou em seu defeito mensal (de acordo com quantidade de telas)
   produtosArray.sort((a, b) => (a.destaque === b.destaque ? 0 : a.destaque ? 1 : -1))
 
   return (
@@ -65,4 +70,3 @@ export default async function Pricing() {
     </section>
   )
 }
-

@@ -1,14 +1,385 @@
+Atualiza restrição de categoria:
+-- 1. Remove a restrição antiga que bloqueava a nova categoria
+ALTER TABLE public.materiais 
+DROP CONSTRAINT IF EXISTS materiais_categoria_check;
+
+-- 2. Recria a restrição permitindo o novo valor 'adesivo'
+ALTER TABLE public.materiais 
+ADD CONSTRAINT materiais_categoria_check 
+CHECK (categoria IN ('hq', 'jogo', 'desenho', 'livro', 'adesivo'));
+
+Add Access Counters to Perfis:
+
+ALTER TABLE public.perfis ADD COLUMN IF NOT EXISTS acessos_site INTEGER DEFAULT 0;
+ALTER TABLE public.perfis ADD COLUMN IF NOT EXISTS acessos_app INTEGER DEFAULT 0;x
+
+Schema de Colunas na Public:
+
+
+SELECT 
+    t.table_name AS "Tabela",
+    c.column_name AS "Coluna",
+    CASE 
+        WHEN c.data_type = 'character varying' THEN 'varchar(' || c.character_maximum_length || ')'
+        WHEN c.data_type = 'numeric' AND c.numeric_precision IS NOT NULL THEN 'numeric(' || c.numeric_precision || ',' || c.numeric_scale || ')'
+        ELSE c.data_type
+    END AS "Tipo de Dado",
+    c.is_nullable AS "Aceita Nulo?",
+    c.column_default AS "Valor Padrão"
+FROM 
+    information_schema.tables t
+INNER JOIN 
+    information_schema.columns c ON t.table_name = c.table_name AND t.table_schema = c.table_schema
+WHERE 
+    t.table_schema = 'public'
+ORDER BY 
+    t.table_name, c.ordinal_position;
+
+
+Add Video Season and Episode Fields:
+
+ALTER TABLE public.videos ADD COLUMN IF NOT EXISTS temporada_nome TEXT;
+ALTER TABLE public.videos ADD COLUMN IF NOT EXISTS episodio_numero INTEGER;
+
+
+Untitled query:
+
+-- 1. Remove a política antiga que estava gerando o aviso de segurança
+DROP POLICY IF EXISTS apenas_assinantes_ativos_ver_videos ON public.videos;
+
+-- 2. Cria uma nova política que exige apenas que o usuário esteja logado para ver os vídeos ativos
+CREATE POLICY assinantes_ver_videos ON public.videos
+FOR SELECT
+TO authenticated
+USING (ativo = true);
+
+
+
+Untitled query::
+
+-- Adiciona a coluna em_breve na tabela de vídeos
+ALTER TABLE public.videos ADD COLUMN IF NOT EXISTS em_breve BOOLEAN DEFAULT false;
+
+-- Altera a coluna bunny_video_id para aceitar valores nulos (para permitir cadastros "Em Breve" sem ID do Bunny)
+ALTER TABLE public.videos ALTER COLUMN bunny_video_id DROP NOT NULL;
+
+
+
+
+
+Secure Video Select Policy:
+
+
+
+-- 1. Remove a política antiga que permitia qualquer um logado ler
+DROP POLICY IF EXISTS "assinantes_ver_videos" ON public.videos;
+DROP POLICY IF EXISTS "Assinantes podem ver o catalogo" ON public.videos;
+
+-- 2. Cria a nova política ultra-segura
+CREATE POLICY "apenas_assinantes_ativos_ver_videos"
+  ON public.videos 
+  FOR SELECT 
+  TO authenticated
+  USING (
+    ativo = true 
+    AND (
+      -- Verifica se o plano está ativo na sessão do usuário (metadados do JWT)
+      (auth.jwt() -> 'user_metadata' ->> 'plano_ativo')::boolean = true
+      OR 
+      -- Ou se ele é um administrador cadastrado
+      EXISTS (
+        SELECT 1 FROM public.perfis 
+        WHERE id = auth.uid() AND role = 'admin'
+      )
+    )
+  );
+
+
+
+
+
+
+Update user metadata for Google Reviewer:
+
+
+
+
+
+UPDATE auth.users 
+SET raw_user_meta_data = jsonb_build_object(
+  'nome', 'Google Reviewer',
+  'plano_ativo', true,
+  'etiqueta_plano', 'Pro'
+)
+WHERE email = 'google.test@contosdeoracao.com.br';
+
+
+
+
+
+Anúncios com controle de acesso via RLS:
+
+
+
+create table anuncios_pausa (
+  id uuid default gen_random_uuid() primary key,
+  criado_em timestamp with time zone default timezone('utc'::text, now()) not null,
+  titulo text not null,
+  imagem_url text,
+  link_destino text,
+  ativo boolean default true
+);
+
+-- Ativando o RLS para leitura pública
+alter table anuncios_pausa enable row level security;
+
+create policy "Anuncios publicos"
+  on anuncios_pausa for select
+  to public
+  using (ativo = true);
+
+create policy "Admin pode tudo nos anuncios"
+  on anuncios_pausa for all
+  to authenticated
+  using (true)
+  with check (true);
+
+
+
+Tabela de histórico de notificações:
+
+-- Cria a tabela para guardar o histórico de notificações
+CREATE TABLE public.notificacoes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  titulo TEXT NOT NULL,
+  mensagem TEXT NOT NULL,
+  criado_em TIMESTAMPTZ DEFAULT now()
+);
+
+-- Liga a segurança da tabela
+ALTER TABLE public.notificacoes ENABLE ROW LEVEL SECURITY;
+
+-- Permite que o aplicativo consiga ler as notificações
+CREATE POLICY "Permitir leitura publica de notificacoes" ON public.notificacoes
+  FOR SELECT USING (true);
+
+
+
+Allow Updating qr_sessions Policy:
+
+
+
+DROP POLICY IF EXISTS "Permitir atualizar qr_session" ON public.qr_sessions;
+
+CREATE POLICY "Permitir atualizar qr_session" ON public.qr_sessions
+  FOR UPDATE TO authenticated USING (true);
+
+
+Atualiza URLs de mídia em vídeos e materiais:
+
+
+-- Corrige as capas dos Vídeos
+UPDATE videos 
+SET thumbnail_url = REPLACE(thumbnail_url, 'contos-apks', 'contos-midia-app')
+WHERE thumbnail_url LIKE '%contos-apks%';
+
+-- Corrige as capas dos Materiais (HQs, Desenhos, Jogos, etc)
+UPDATE materiais 
+SET capa_url = REPLACE(capa_url, 'contos-apks', 'contos-midia-app')
+WHERE capa_url LIKE '%contos-apks%';
+
+-- Corrige os links de download dos PDFs dos Materiais
+UPDATE materiais 
+SET link_pdf = REPLACE(link_pdf, 'contos-apks', 'contos-midia-app')
+WHERE link_pdf LIKE '%contos-apks%';
+
+
+
+
+Update materiais category constraint:
+
+
+ALTER TABLE materiais DROP CONSTRAINT materiais_categoria_check;
+
+ALTER TABLE materiais ADD CONSTRAINT materiais_categoria_check CHECK (categoria IN ('hq', 'jogo', 'desenho', 'livro'));
+
+
+Materiais com RLS e categorias:
+
+
+
+-- Apaga a tabela antiga de HQs
+DROP TABLE IF EXISTS hqs CASCADE;
+
+-- Cria a nova tabela genérica de materiais
+CREATE TABLE materiais (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug         TEXT UNIQUE NOT NULL,
+  titulo       TEXT NOT NULL,
+  descricao    TEXT,
+  categoria    TEXT NOT NULL CHECK (categoria IN ('hq', 'jogo', 'desenho')),
+  capa_url     TEXT,
+  link_pdf     TEXT,
+  planos_acesso TEXT[] DEFAULT ARRAY['Essencial', 'Pro'],
+  ativo        BOOLEAN DEFAULT true,
+  criado_em    TIMESTAMPTZ DEFAULT now()
+);
+
+-- Permissões
+ALTER TABLE materiais ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Leitura pública" ON materiais FOR SELECT USING (true);
+CREATE POLICY "Admin total" ON materiais FOR ALL USING (true);
+
+
+
+
+Admin Full Access Policy:
+
+
+
+-- Remove a trava antiga que limitava só para leitura
+DROP POLICY IF EXISTS "hqs_select_authenticated" ON hqs;
+
+-- Cria a regra nova liberando total acesso (Criar, Editar, Apagar e Ler) para quem está logado no Admin
+CREATE POLICY "hqs_all_authenticated"
+  ON hqs FOR ALL
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+
+
+Add PDF Link Column:
+
+
+ALTER TABLE hqs ADD COLUMN link_pdf text;
+
+
+
+Mark Template as PDF:
+
+
+UPDATE hqs 
+SET tem_pdf = true 
+WHERE slug = 'nossa-senhora-fatima';
+
+
+
+
+
+HQs catalog with access control:
+
+CREATE TABLE IF NOT EXISTS hqs (
+  id            uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  slug          text NOT NULL UNIQUE,
+  titulo        text NOT NULL,
+  descricao     text,
+  capa_url      text,
+  total_paginas integer NOT NULL DEFAULT 1,
+  planos_acesso text[] NOT NULL DEFAULT ARRAY['Essencial','Pro'],
+  planos_pdf    text[] NOT NULL DEFAULT ARRAY['Essencial','Pro'],
+  tem_pdf       boolean NOT NULL DEFAULT true,
+  ativo         boolean NOT NULL DEFAULT true,
+  criado_em     timestamptz DEFAULT now()
+);
+
+ALTER TABLE hqs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "hqs_select_authenticated"
+  ON hqs FOR SELECT
+  TO authenticated
+  USING (ativo = true);
+
+CREATE POLICY "hqs_all_service_role"
+  ON hqs FOR ALL
+  TO service_role
+  USING (true);
+
+INSERT INTO hqs (slug, titulo, descricao, capa_url, total_paginas, planos_acesso, planos_pdf, tem_pdf, ativo)
+VALUES (
+  'nossa-senhora-fatima',
+  'Nossa Senhora de Fátima',
+  'A história das aparições de Nossa Senhora às três pastorinhas em Fátima, Portugal.',
+  'https://contos-apks.b-cdn.net/hq/nossa-senhora-fatima/HQ_01.png',
+  15,
+  ARRAY['Essencial', 'Pro'],
+  ARRAY['Essencial', 'Pro'],
+  false,
+  true
+)
+ON CONFLICT (slug) DO NOTHING;
+
+
+
+QR Sessions Policy Controls:
+
+
+-- Permite que qualquer um (anônimo) crie um QR session (gerar QR)
+CREATE POLICY "Permitir inserir qr_session" ON public.qr_sessions
+  FOR INSERT WITH CHECK (true);
+
+-- Permite leitura pública para verificar o status do token
+CREATE POLICY "Permitir ler qr_session por token" ON public.qr_sessions
+  FOR SELECT USING (true);
+
+-- Permite que usuários autenticados atualizem (confirmar QR)
+CREATE POLICY "Permitir atualizar qr_session" ON public.qr_sessions
+  FOR UPDATE USING (true);
+
+-- Permite deletar sessões usadas
+CREATE POLICY "Permitir deletar qr_session" ON public.qr_sessions
+  FOR DELETE USING (true);
+
+
+QR Session Storage with Expiration Tracking:
+
+
+CREATE TABLE IF NOT EXISTS public.qr_sessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  token TEXT UNIQUE NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  usado BOOLEAN DEFAULT FALSE,
+  confirmed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Índice para busca rápida por token
+CREATE INDEX IF NOT EXISTS qr_sessions_token_idx ON public.qr_sessions(token);
+
+-- Limpeza automática de QRs expirados
+CREATE INDEX IF NOT EXISTS qr_sessions_expires_idx ON public.qr_sessions(expires_at);
+
+
+
+
 Add push token column to perfiles:
+
+
+
+
 -- Adiciona coluna push_token na tabela perfis
 ALTER TABLE public.perfis ADD COLUMN IF NOT EXISTS push_token TEXT;
 
 
-Enable Realtime for Active Sessions
+
+
+
+Enable Realtime for Active Sessions:
+
+
 -- Habilita o Realtime na tabela de sessões ativas
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sessoes_ativas;
 
 
+
+
+
 Policy for Viewing Active Videos:
+
+
+
+
 
 -- Permite que visitantes não logados vejam os vídeos ativos (para o carrossel do Onboarding)
 CREATE POLICY "Anon pode ver videos ativos"
@@ -18,7 +389,10 @@ TO anon
 USING (ativo = true);
 
 
+
+
 Tabela de Visualizações por Vídeo e Usuário:
+
 
 -- Cria a tabela para registrar cada visualização
 CREATE TABLE visualizacoes (
@@ -42,7 +416,6 @@ CREATE POLICY "Visualizações: Usuários logados podem inserir"
 
 
 Tabela de Sessões Ativas por Dispositivo:
-
 
 -- Cria tabela de sessões ativas (rastreamento de dispositivos)
 CREATE TABLE sessoes_ativas (
@@ -135,6 +508,9 @@ USING (user_id = auth.uid());
 
 
 
+
+
+
 User Video Favorites:
 
 
@@ -155,15 +531,14 @@ CREATE POLICY "usuarios_proprios_favoritos" ON public.favoritos
 Activate Active Plan Flag for User:
 
 
-
 UPDATE auth.users 
 SET raw_user_meta_data = raw_user_meta_data || '{"plano_ativo": true}'::jsonb
 WHERE email = 'teste@contosdeoracao.online';
 
 
 
-Favoritos com controle de acesso:
 
+Favoritos com controle de acesso:
 
 CREATE TABLE IF NOT EXISTS public.favoritos (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -194,10 +569,7 @@ ON CONFLICT (id) DO UPDATE
 SET role = 'admin';
 
 
-
-
 Perfis e Vídeos com RLS e Trigger de Provisionamento:
-
 
 
 
@@ -293,3 +665,61 @@ VALUES (
   '642831',
   true
 );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

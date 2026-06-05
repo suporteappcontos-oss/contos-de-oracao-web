@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   if (!await verificarAdmin()) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
 
   const body = await request.json()
-  const { nome, descricao, precoMensal, precoAnual, beneficios, max_telas, etiqueta } = body
+  const { nome, descricao, precoMensal, precoSemestral, precoAnual, beneficios, max_telas, etiqueta } = body
 
   if (!nome || !precoMensal || isNaN(precoMensal)) {
     return NextResponse.json({ error: 'Nome e preço mensal são obrigatórios e devem ser válidos' }, { status: 400 })
@@ -74,6 +74,17 @@ try {
     recurring: { interval: 'month' },
   })
 
+  // Se houver preço semestral preenchido, cria também (6 meses)
+  let priceSemestralObj = null
+  if (precoSemestral && !isNaN(precoSemestral)) {
+    priceSemestralObj = await stripe.prices.create({
+      product: produto.id,
+      unit_amount: Math.round(precoSemestral * 100),
+      currency: 'brl',
+      recurring: { interval: 'month', interval_count: 6 },
+    })
+  }
+
   // Se houver preço anual preenchido, cria também
   let priceAnualObj = null
   if (precoAnual && !isNaN(precoAnual)) {
@@ -88,6 +99,7 @@ try {
   return NextResponse.json({
     produto: { id: produto.id, nome: produto.name },
     precoMensal: priceMensalObj.id,
+    precoSemestral: priceSemestralObj ? priceSemestralObj.id : null,
     precoAnual: priceAnualObj ? priceAnualObj.id : null,
   })
 } catch (error: any) {

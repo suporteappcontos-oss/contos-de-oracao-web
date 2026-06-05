@@ -590,8 +590,7 @@ export async function criarUsuarioVitalicio(formData: FormData) {
 
   // Determinar telas baseado no plano
   let maxTelas = 1
-  if (plano === 'Essencial') maxTelas = 2
-  else if (plano === 'Pro') maxTelas = 4
+  if (plano === 'Família') maxTelas = 5
 
   // Cria o usuário via Admin API do Supabase Auth
   const { data: authData, error: authError } = await admin.auth.admin.createUser({

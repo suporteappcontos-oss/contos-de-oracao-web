@@ -85,10 +85,9 @@ export function FormAcessoVitalicio() {
             </div>
             <div>
               <label className={labelCls}>Plano Vitalício *</label>
-              <select name="plano" defaultValue="Básico" className={inputCls}>
-                <option value="Básico" className="bg-[#090B10]">Básico (1 Tela)</option>
-                <option value="Essencial" className="bg-[#090B10]">Essencial (2 Telas)</option>
-                <option value="Pro" className="bg-[#090B10]">Pro (4 Telas)</option>
+              <select name="plano" defaultValue="Individual" className={inputCls}>
+                <option value="Individual" className="bg-[#090B10]">Individual (1 Tela)</option>
+                <option value="Família" className="bg-[#090B10]">Família (5 Telas)</option>
               </select>
             </div>
           </div>

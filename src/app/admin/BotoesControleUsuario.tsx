@@ -50,31 +50,22 @@ export function BotoesControleUsuario({
       </div>
       {planoAtivo && (
         <div className="flex gap-1 mt-1">
-          <form action={alterarPlanoUsuario.bind(null, userId, 1, 'Básico')}>
-            <button
-              type="submit"
-              className="text-[10px] bg-white/10 hover:bg-white/20 text-white/70 px-2 py-1 rounded transition-colors cursor-pointer"
-              title="Mudar para Básico"
-            >
-              B
-            </button>
-          </form>
-          <form action={alterarPlanoUsuario.bind(null, userId, 2, 'Essencial')}>
+          <form action={alterarPlanoUsuario.bind(null, userId, 1, 'Individual')}>
             <button
               type="submit"
               className="text-[10px] bg-[#D4AF37]/10 hover:bg-[#D4AF37]/30 text-[#D4AF37] px-2 py-1 rounded transition-colors cursor-pointer"
-              title="Mudar para Essencial"
+              title="Mudar para Individual (1 tela)"
             >
-              E
+              I
             </button>
           </form>
-          <form action={alterarPlanoUsuario.bind(null, userId, 4, 'Pro')}>
+          <form action={alterarPlanoUsuario.bind(null, userId, 5, 'Família')}>
             <button
               type="submit"
-              className="text-[10px] bg-[#10b981]/10 hover:bg-[#10b981]/30 text-[#10b981] px-2 py-1 rounded transition-colors cursor-pointer"
-              title="Mudar para Pro"
+              className="text-[10px] bg-[#22c55e]/10 hover:bg-[#22c55e]/30 text-[#22c55e] px-2 py-1 rounded transition-colors cursor-pointer"
+              title="Mudar para Família (5 telas)"
             >
-              P
+              F
             </button>
           </form>
         </div>

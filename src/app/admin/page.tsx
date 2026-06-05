@@ -11,11 +11,10 @@ import {
 import {
   LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
-  Heart, BarChart3, Trophy, Sliders, Megaphone
+  Heart, BarChart3, Trophy, Megaphone
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
-import { ConfiguracoesAcesso } from './ConfiguracoesAcesso'
 import { GerenciadorMateriais } from './GerenciadorMateriais'
 import { GerenciadorAnuncios } from './GerenciadorAnuncios'
 import { FormAcessoVitalicio } from './FormAcessoVitalicio'
@@ -192,19 +191,11 @@ export default async function AdminPage({
   // Mapeia links antigos para as novas abas agrupadas
   const activeTab = ['videos', 'materiais'].includes(tabParam) ? 'catalogo' :
                     ['usuarios', 'stripe'].includes(tabParam) ? 'assinaturas' :
-                    ['relatorios', 'anuncios'].includes(tabParam) ? 'marketing' :
-                    ['configuracoes'].includes(tabParam) ? 'sistema' : tabParam;
+                    ['relatorios', 'anuncios'].includes(tabParam) ? 'marketing' : tabParam;
 
   const chartData = Object.entries(viewsByDay).map(([dia, count]) => ({ dia, count }))
   const maxViews = Math.max(...chartData.map(d => d.count), 1) // Prevent division by 0
 
-  let configCDN = null;
-  if (activeTab === 'sistema') {
-    try {
-      const res = await fetch(`https://contos-midia-app.b-cdn.net/config.json?t=${Date.now()}`, { cache: 'no-store' });
-      if (res.ok) configCDN = await res.json();
-    } catch (e) { console.error('Erro ao buscar configCDN:', e) }
-  }
 
   return (
     <div className="min-h-screen text-white pb-20 selection:bg-[#D4AF37] selection:text-black" style={{ background: 'radial-gradient(circle at top, #111827 0%, #090B10 100%)', fontFamily: 'Outfit, sans-serif' }}>
@@ -253,7 +244,6 @@ export default async function AdminPage({
               { id: 'catalogo', label: 'Catálogo', icon: Film, count: totalVideos },
               { id: 'assinaturas', label: 'Assinaturas', icon: Users, count: totalMembros },
               { id: 'marketing', label: 'Marketing', icon: Megaphone, count: anunciosPausa?.length ?? 0 },
-              { id: 'sistema', label: 'Sistema', icon: Sliders, count: null },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
                 className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
@@ -458,13 +448,6 @@ export default async function AdminPage({
               <StripeAdmin />
             </div>
 
-          </div>
-        )}
-
-        {/* ════════ ABA CONFIGURAÇÕES DE ACESSO ════════ */}
-        {activeTab === 'sistema' && (
-          <div className="space-y-8 max-w-3xl">
-            <ConfiguracoesAcesso initialConfig={configCDN} />
           </div>
         )}
 
