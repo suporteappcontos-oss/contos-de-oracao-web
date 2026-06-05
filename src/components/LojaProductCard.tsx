@@ -164,7 +164,7 @@ export default function LojaProductCard({ produto }: { produto: ProdutoType }) {
       {/* Modal de Detalhes Completo */}
       {modalDetalhesAberto && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-4 bg-black/90 backdrop-blur-md"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-3 md:p-4 bg-black/90 backdrop-blur-md"
           style={{
             animation: 'fadeIn 0.25s ease-out forwards'
           }}
