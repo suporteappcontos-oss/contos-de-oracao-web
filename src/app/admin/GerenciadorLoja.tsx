@@ -14,6 +14,7 @@ type ProdutoType = {
   imagem_url_1: string | null
   imagem_url_2: string | null
   imagem_url_3: string | null
+  imagens_urls?: string[] | null
   proporcao_imagem?: string
   ativo: boolean
   criado_em: string
@@ -24,6 +25,7 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
   const [produtoEditando, setProdutoEditando] = useState<ProdutoType | null>(null)
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [qtdImagensVisiveis, setQtdImagensVisiveis] = useState(1)
+  const [urlsEdicao, setUrlsEdicao] = useState<string[]>([])
 
   const handleAction = async (action: () => Promise<any>, id: string) => {
     setLoadingId(id)
@@ -37,14 +39,18 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
 
   const abrirCriar = () => {
     setProdutoEditando(null)
+    setUrlsEdicao([])
     setQtdImagensVisiveis(1)
     setModalAberto(true)
   }
 
   const abrirEditar = (prod: ProdutoType) => {
     setProdutoEditando(prod)
-    const count = 1 + (prod.imagem_url_2 ? 1 : 0) + (prod.imagem_url_3 ? 1 : 0)
-    setQtdImagensVisiveis(count)
+    const urls = prod.imagens_urls && prod.imagens_urls.length > 0
+      ? [...prod.imagens_urls]
+      : [prod.imagem_url_1, prod.imagem_url_2, prod.imagem_url_3].filter((u): u is string => !!u);
+    setUrlsEdicao(urls)
+    setQtdImagensVisiveis(Math.max(1, urls.length))
     setModalAberto(true)
   }
 
@@ -64,85 +70,92 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {produtos.map((produto) => (
-          <div key={produto.id} className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden group flex flex-col justify-between">
-            <div>
-              {/* Imagem Principal ou Carrossel de Miniaturas */}
-              <div className="aspect-square relative bg-black/50 border-b border-white/5 flex items-center justify-center overflow-hidden">
-                {produto.imagem_url_1 ? (
-                  <Image src={produto.imagem_url_1} alt={produto.titulo} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
-                ) : (
-                  <ImageIcon className="text-white/20" size={48} />
-                )}
-                
-                {/* Indicador de Status */}
-                <div className="absolute top-3 right-3 flex items-center gap-2">
-                  <button
-                    onClick={() => handleAction(() => toggleProdutoLojaAtivo(produto.id, produto.ativo), produto.id)}
-                    disabled={loadingId === produto.id}
-                    className={`px-3 py-1 text-[10px] font-black rounded-full transition-colors ${
-                      produto.ativo 
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                        : 'bg-white/5 text-white/40 border border-white/10'
-                    }`}
-                  >
-                    {loadingId === produto.id ? '...' : produto.ativo ? 'ATIVO' : 'INATIVO'}
-                  </button>
-                </div>
+        {produtos.map((produto) => {
+          const totalFotos = produto.imagens_urls && produto.imagens_urls.length > 0
+            ? produto.imagens_urls.length
+            : (1 + (produto.imagem_url_2 ? 1 : 0) + (produto.imagem_url_3 ? 1 : 0));
+          const fotoPrincipal = (produto.imagens_urls && produto.imagens_urls[0]) || produto.imagem_url_1;
 
-                {/* Badge de Proporção e Miniaturas */}
-                <div className="absolute bottom-3 left-3 flex gap-1.5 z-10">
-                  <span className="bg-black/75 px-2.5 py-1 rounded-lg text-[9px] font-black text-[#D4AF37] border border-[#D4AF37]/25 uppercase tracking-wider">
-                    {produto.proporcao_imagem || '1:1'}
-                  </span>
-                  {(produto.imagem_url_2 || produto.imagem_url_3) && (
-                    <span className="bg-black/75 px-2.5 py-1 rounded-lg text-[9px] font-black text-white/80 border border-white/10">
-                      {1 + (produto.imagem_url_2 ? 1 : 0) + (produto.imagem_url_3 ? 1 : 0)} FOTOS
-                    </span>
+          return (
+            <div key={produto.id} className="bg-[#111827] border border-white/5 rounded-2xl overflow-hidden group flex flex-col justify-between">
+              <div>
+                {/* Imagem Principal ou Carrossel de Miniaturas */}
+                <div className="aspect-square relative bg-black/50 border-b border-white/5 flex items-center justify-center overflow-hidden">
+                  {fotoPrincipal ? (
+                    <Image src={fotoPrincipal} alt={produto.titulo} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <ImageIcon className="text-white/20" size={48} />
                   )}
+                  
+                  {/* Indicador de Status */}
+                  <div className="absolute top-3 right-3 flex items-center gap-2">
+                    <button
+                      onClick={() => handleAction(() => toggleProdutoLojaAtivo(produto.id, produto.ativo), produto.id)}
+                      disabled={loadingId === produto.id}
+                      className={`px-3 py-1 text-[10px] font-black rounded-full transition-colors ${
+                        produto.ativo 
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                          : 'bg-white/5 text-white/40 border border-white/10'
+                      }`}
+                    >
+                      {loadingId === produto.id ? '...' : produto.ativo ? 'ATIVO' : 'INATIVO'}
+                    </button>
+                  </div>
+
+                  {/* Badge de Proporção e Miniaturas */}
+                  <div className="absolute bottom-3 left-3 flex gap-1.5 z-10">
+                    <span className="bg-black/75 px-2.5 py-1 rounded-lg text-[9px] font-black text-[#D4AF37] border border-[#D4AF37]/25 uppercase tracking-wider">
+                      {produto.proporcao_imagem || '1:1'}
+                    </span>
+                    {totalFotos > 1 && (
+                      <span className="bg-black/75 px-2.5 py-1 rounded-lg text-[9px] font-black text-white/80 border border-white/10">
+                        {totalFotos} FOTOS
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-5 space-y-3">
+                  <h3 className="font-bold text-white text-lg truncate" title={produto.titulo}>{produto.titulo}</h3>
+                  <p className="text-white/60 text-xs leading-relaxed line-clamp-3 h-12">{produto.descricao}</p>
+                  <div className="flex items-center gap-2 text-[11px] text-[#D4AF37] font-semibold bg-[#D4AF37]/5 px-3 py-1.5 rounded-lg border border-[#D4AF37]/10 w-fit truncate max-w-full">
+                    <LinkIcon size={12} className="shrink-0" />
+                    <span className="truncate">{produto.link_afiliado}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-5 space-y-3">
-                <h3 className="font-bold text-white text-lg truncate" title={produto.titulo}>{produto.titulo}</h3>
-                <p className="text-white/60 text-xs leading-relaxed line-clamp-3 h-12">{produto.descricao}</p>
-                <div className="flex items-center gap-2 text-[11px] text-[#D4AF37] font-semibold bg-[#D4AF37]/5 px-3 py-1.5 rounded-lg border border-[#D4AF37]/10 w-fit truncate max-w-full">
-                  <LinkIcon size={12} className="shrink-0" />
-                  <span className="truncate">{produto.link_afiliado}</span>
+              <div className="p-5 pt-0">
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                  <span className="text-[9px] text-white/30 uppercase tracking-widest font-bold">
+                    Cadastrado {new Date(produto.criado_em).toLocaleDateString()}
+                  </span>
+                  
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => abrirEditar(produto)}
+                      className="text-[#D4AF37] hover:bg-[#D4AF37]/10 p-2 rounded-lg transition-colors border border-transparent hover:border-[#D4AF37]/20"
+                      title="Editar produto"
+                    >
+                      <Edit3 size={16} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm('Deseja deletar este produto permanentemente?')) {
+                          handleAction(() => deletarProdutoLoja(produto.id), produto.id)
+                        }
+                      }}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+                      title="Excluir produto"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="p-5 pt-0">
-              <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                <span className="text-[9px] text-white/30 uppercase tracking-widest font-bold">
-                  Cadastrado {new Date(produto.criado_em).toLocaleDateString()}
-                </span>
-                
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => abrirEditar(produto)}
-                    className="text-[#D4AF37] hover:bg-[#D4AF37]/10 p-2 rounded-lg transition-colors border border-transparent hover:border-[#D4AF37]/20"
-                    title="Editar produto"
-                  >
-                    <Edit3 size={16} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (confirm('Deseja deletar este produto permanentemente?')) {
-                        handleAction(() => deletarProdutoLoja(produto.id), produto.id)
-                      }
-                    }}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
-                    title="Excluir produto"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+          )
+        })}
         {produtos.length === 0 && (
           <div className="col-span-full py-24 text-center text-white/30 font-bold border border-dashed border-white/10 rounded-3xl bg-white/[0.01]">
             Nenhum produto cadastrado na Loja de Afiliados ainda.
@@ -193,13 +206,26 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                 };
 
                 try {
-                  const url1 = qtdImagensVisiveis >= 1 ? await uploadImagem('imagem_file_1', produtoEditando?.imagem_url_1 || null) : null;
-                  const url2 = qtdImagensVisiveis >= 2 ? await uploadImagem('imagem_file_2', produtoEditando?.imagem_url_2 || null) : null;
-                  const url3 = qtdImagensVisiveis >= 3 ? await uploadImagem('imagem_file_3', produtoEditando?.imagem_url_3 || null) : null;
+                  const urls: string[] = [];
 
-                  fd.set('imagem_url_1', url1 || '');
-                  fd.set('imagem_url_2', url2 || '');
-                  fd.set('imagem_url_3', url3 || '');
+                  // Processa o upload de todas as imagens que estão dentro do limite visível
+                  for (let i = 1; i <= qtdImagensVisiveis; i++) {
+                    const fieldName = `imagem_file_${i}`;
+                    const curUrl = urlsEdicao[i - 1] || null;
+                    const url = await uploadImagem(fieldName, curUrl);
+                    if (url) {
+                      urls.push(url);
+                    }
+                  }
+
+                  // Adiciona o array serializado no FormData
+                  fd.set('imagens_urls', JSON.stringify(urls));
+
+                  // Remove os arquivos binários do FormData antes de enviar para a Server Action
+                  // Isso impede que a requisição estoure o limite de 4.5MB da Vercel
+                  for (let i = 1; i <= 10; i++) {
+                    fd.delete(`imagem_file_${i}`);
+                  }
 
                   let res;
                   if (produtoEditando) {
@@ -251,18 +277,22 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
               {/* Upload de Imagens dinâmicas */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="block text-[10px] uppercase tracking-widest text-[#D4AF37] font-black">Fotos do Produto</span>
+                  <span className="block text-[10px] uppercase tracking-widest text-[#D4AF37] font-black">Fotos do Produto (Máx 10)</span>
                   <div className="flex gap-2">
                     {qtdImagensVisiveis > 1 && (
                       <button
                         type="button"
-                        onClick={() => setQtdImagensVisiveis(prev => prev - 1)}
+                        onClick={() => {
+                          setQtdImagensVisiveis(prev => prev - 1)
+                          // Remove o último item das URLs em edição para manter a integridade visual
+                          setUrlsEdicao(prev => prev.slice(0, prev.length - 1))
+                        }}
                         className="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl transition-all"
                       >
                         - Remover Foto
                       </button>
                     )}
-                    {qtdImagensVisiveis < 3 && (
+                    {qtdImagensVisiveis < 10 && (
                       <button
                         type="button"
                         onClick={() => setQtdImagensVisiveis(prev => prev + 1)}
@@ -276,14 +306,37 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                 
                 {Array.from({ length: qtdImagensVisiveis }).map((_, index) => {
                   const num = index + 1;
-                  const curUrl = produtoEditando?.[`imagem_url_${num}` as keyof ProdutoType] as string | null;
+                  const curUrl = urlsEdicao[index] || null;
                   return (
                     <div key={num} className="bg-white/[0.02] p-4 rounded-2xl border border-white/5 space-y-3 relative">
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center bg-black/20 p-2 rounded-lg -mx-2 -mt-2">
                         <span className="text-[10px] uppercase font-extrabold text-white/40">Imagem {num}</span>
-                        {curUrl && (
-                          <span className="text-[9px] bg-green-500/10 text-green-400 font-bold border border-green-500/20 px-2 py-0.5 rounded">Já cadastrada</span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {curUrl ? (
+                            <>
+                              <span className="text-[9px] bg-green-500/10 text-green-400 font-bold border border-green-500/20 px-2 py-0.5 rounded">Já cadastrada</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const novas = [...urlsEdicao];
+                                  novas[index] = '';
+                                  setUrlsEdicao(novas);
+                                  // Limpa fisicamente os inputs correspondentes
+                                  const fileInput = document.querySelector(`input[name="imagem_file_${num}"]`) as HTMLInputElement;
+                                  if (fileInput) fileInput.value = '';
+                                  const urlInput = document.querySelector(`input[name="imagem_url_${num}"]`) as HTMLInputElement;
+                                  if (urlInput) urlInput.value = '';
+                                }}
+                                className="text-red-400 hover:text-red-300 p-1 hover:bg-red-500/20 rounded transition-colors"
+                                title="Limpar e remover imagem"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </>
+                          ) : (
+                            <span className="text-[9px] bg-white/5 text-white/30 border border-white/5 px-2 py-0.5 rounded">Vazio</span>
+                          )}
+                        </div>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -293,11 +346,22 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
                         </div>
                         <div>
                           <label className="block text-[9px] uppercase tracking-wider text-white/40 font-bold mb-1.5">Ou URL externa direta</label>
-                          <input defaultValue={curUrl || ''} name={`imagem_url_${num}`} type="url" className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-xs text-white focus:border-[#D4AF37] focus:outline-none transition-all" placeholder="https://site.com/foto.jpg" />
+                          <input 
+                            value={curUrl || ''} 
+                            name={`imagem_url_${num}`} 
+                            type="url" 
+                            onChange={(e) => {
+                              const novas = [...urlsEdicao];
+                              novas[index] = e.target.value;
+                              setUrlsEdicao(novas);
+                            }}
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-xs text-white focus:border-[#D4AF37] focus:outline-none transition-all" 
+                            placeholder="https://site.com/foto.jpg" 
+                          />
                         </div>
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
 
@@ -330,3 +394,4 @@ export function GerenciadorLoja({ produtos }: { produtos: ProdutoType[] }) {
     </div>
   )
 }
+

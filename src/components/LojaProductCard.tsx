@@ -12,18 +12,19 @@ type ProdutoType = {
   imagem_url_1: string | null
   imagem_url_2: string | null
   imagem_url_3: string | null
+  imagens_urls?: string[] | null
   proporcao_imagem?: string
   ativo: boolean
   criado_em: string
 }
 
 export default function LojaProductCard({ produto }: { produto: ProdutoType }) {
-  // Coleta as imagens válidas
-  const imagens = [
-    produto.imagem_url_1,
-    produto.imagem_url_2,
-    produto.imagem_url_3
-  ].filter((url): url is string => !!url)
+  // Coleta as imagens válidas usando prioritariamente o array dinâmico
+  const imagens = (
+    produto.imagens_urls && produto.imagens_urls.length > 0
+      ? produto.imagens_urls
+      : [produto.imagem_url_1, produto.imagem_url_2, produto.imagem_url_3]
+  ).filter((url): url is string => !!url)
 
   const [indexAtivo, setIndexAtivo] = useState(0)
 
