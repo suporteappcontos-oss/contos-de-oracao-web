@@ -26,6 +26,7 @@ import { BotoesControleUsuario } from './BotoesControleUsuario'
 import { AssinantesComFiltros } from './AssinantesComFiltros'
 import SubmitButton from '@/components/SubmitButton'
 import GerenciadorVideosTematicos from './GerenciadorVideosTematicos'
+import { GerenciadorRevistas } from './GerenciadorRevistas'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -82,6 +83,7 @@ export default async function AdminPage({
   const { data: anunciosPausa } = await supabase.from('anuncios_pausa').select('*').order('criado_em', { ascending: false })
   const { data: produtosLoja } = await supabase.from('produtos_loja').select('*').order('criado_em', { ascending: false })
   const { data: videosTematicos } = await supabase.from('videos_tematicos').select('*').order('criado_em', { ascending: false })
+  const { data: revistasData } = await supabase.from('revistas').select('*').order('criado_em', { ascending: false })
 
   // Busca visualizações para computar estatísticas gerais e individuais
   let views: any[] = []
@@ -432,6 +434,12 @@ export default async function AdminPage({
             <div className="pt-10 border-t border-white/5 relative">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#E1306C] to-transparent opacity-30" />
               <GerenciadorVideosTematicos videos={(videosTematicos ?? []) as any} />
+            </div>
+
+            {/* --- REVISTAS --- */}
+            <div className="pt-10 border-t border-white/5 relative">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#7c3aed] to-transparent opacity-30" />
+              <GerenciadorRevistas revistasIniciais={(revistasData ?? []) as any} />
             </div>
 
           </div>

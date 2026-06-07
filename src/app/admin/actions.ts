@@ -568,6 +568,63 @@ export async function deletarMaterial(id: string) {
   }
 }
 
+// ─── Publicar Revista ─── Upload já foi feito no cliente
+export async function publicarRevista(formData: FormData) {
+  await verificarAdmin()
+  try {
+    const supabase = await createClient()
+    const titulo = formData.get('titulo') as string
+    const descricao = (formData.get('descricao') as string) || null
+    const edicao = (formData.get('edicao') as string) || null
+    const capaUrl = (formData.get('capa_url') as string | null) || null
+    let linkPdf = (formData.get('link_pdf') as string | null)?.trim() || null
+
+    if (linkPdf?.includes('br.storage.bunnycdn.com')) {
+      linkPdf = linkPdf.split('?')[0]
+      linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-midia-app', 'contos-midia-app.b-cdn.net')
+    }
+
+    const slug = titulo.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '').trim()
+      .replace(/\s+/g, '-')
+
+    const { error } = await supabase.from('revistas').upsert({
+      slug,
+      titulo,
+      descricao,
+      edicao,
+      capa_url: capaUrl,
+      link_pdf: linkPdf,
+      ativo: true,
+    }, { onConflict: 'slug' })
+
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/revistas')
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('❌ Erro no publicarRevista:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+// ─── Deletar Revista ───
+export async function deletarRevista(id: string) {
+  await verificarAdmin()
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.from('revistas').delete().eq('id', id)
+    if (error) throw new Error(error.message)
+    revalidatePath('/revistas')
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
 // ─── ANÚNCIOS DE PAUSA ───
 
 export async function adicionarAnuncioPausa(formData: FormData) {

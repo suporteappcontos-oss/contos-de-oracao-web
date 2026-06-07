@@ -13,10 +13,10 @@ const ANIM_STYLE = `
 import { 
   Plus, Tv2, BookOpen, Gamepad2, Pencil, 
   Library, ImageIcon, FileText, Loader2, 
-  CheckCircle2, Video, X, Tag
+  CheckCircle2, Video, X, Tag, BookMarked
 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
-import { adicionarVideo, publicarMaterial, adicionarVideoTematico } from './actions'
+import { adicionarVideo, publicarMaterial, adicionarVideoTematico, publicarRevista } from './actions'
 
 // SVG do Instagram (lucide-react desta versão não tem o ícone)
 function IgIcon({ size = 14 }: { size?: number }) {
@@ -89,10 +89,11 @@ const TIPO_CONFIG = {
   video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Vídeo' },
   material:  { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
   instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram' },
+  revista:   { border: '#7c3aed',  glow: 'rgba(124,58,237,0.15)', label: 'Revista' },
 }
 
 export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: Props) {
-  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram'>('video')
+  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista'>('video')
 
   // --- Estados do Formulário de Vídeo ---
   const [emBreve, setEmBreve] = useState(false)
@@ -134,6 +135,20 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
   const [instaIsPending, instaStartTransition] = useTransition()
   const instaCapaRef = useRef<HTMLInputElement>(null)
 
+  // --- Estados do Formulário de Revista ---
+  const [revTitulo, setRevTitulo] = useState('')
+  const [revDescricao, setRevDescricao] = useState('')
+  const [revEdicao, setRevEdicao] = useState('')
+  const [revLinkPdf, setRevLinkPdf] = useState('')
+  const [uploadingRevista, setUploadingRevista] = useState(false)
+  const [progressRevCapa, setProgressRevCapa] = useState(0)
+  const [progressRevPdf, setProgressRevPdf] = useState(0)
+  const [mensagemRevista, setMensagemRevista] = useState('')
+  const [erroRevista, setErroRevista] = useState('')
+  const [revIsPending, revStartTransition] = useTransition()
+  const revCapaRef = useRef<HTMLInputElement>(null)
+  const revPdfRef = useRef<HTMLInputElement>(null)
+
   const togglePlanoMat = (plano: string) => {
     setMatPlanosAcesso(prev =>
       prev.includes(plano) ? prev.filter(p => p !== plano) : [...prev, plano]
@@ -142,7 +157,6 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
   const resetFormMaterial = () => {
     setMatTitulo(''); setMatDescricao(''); setMatLinkPdf('')
-    setMatPlanosAcesso(['Essencial', 'Pro'])
     setProgressCapa(0); setProgressPdf(0)
     if (capaRef.current) capaRef.current.value = ''
     if (pdfRef.current) pdfRef.current.value = ''
@@ -202,6 +216,55 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
   const isProcessingMat = uploadingMaterial || isPending
   const matCatInfo = CATEGORIAS_MATERIAIS.find(c => c.value === matCategoria)
+
+  // --- Handler Revista ---
+  const handlePublicarRevista = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!revTitulo.trim()) { setErroRevista('Informe o título.'); return }
+    setErroRevista('')
+    setUploadingRevista(true)
+
+    const slug = gerarSlug(revTitulo)
+    let capaUrl: string | null = null
+    let pdfUrl: string | null = revLinkPdf.trim() || null
+
+    try {
+      const capaFile = revCapaRef.current?.files?.[0]
+      if (capaFile) {
+        const ext = capaFile.name.split('.').pop() || 'jpg'
+        capaUrl = await uploadParaBunny(capaFile, `revistas/${slug}_capa.${ext}`, setProgressRevCapa)
+      }
+      const pdfFile = revPdfRef.current?.files?.[0]
+      if (pdfFile) {
+        pdfUrl = await uploadParaBunny(pdfFile, `revistas/${slug}.pdf`, setProgressRevPdf)
+      }
+
+      const fd = new FormData()
+      fd.append('titulo', revTitulo.trim())
+      fd.append('descricao', revDescricao.trim())
+      fd.append('edicao', revEdicao.trim())
+      if (capaUrl) fd.append('capa_url', capaUrl)
+      if (pdfUrl) fd.append('link_pdf', pdfUrl)
+
+      revStartTransition(async () => {
+        const res = await publicarRevista(fd)
+        if (res?.success) {
+          setMensagemRevista('✅ Revista publicada com sucesso!')
+          setRevTitulo(''); setRevDescricao(''); setRevEdicao(''); setRevLinkPdf('')
+          setProgressRevCapa(0); setProgressRevPdf(0)
+          if (revCapaRef.current) revCapaRef.current.value = ''
+          if (revPdfRef.current) revPdfRef.current.value = ''
+          setTimeout(() => setMensagemRevista(''), 5000)
+        } else {
+          setErroRevista(`Erro ao salvar: ${res?.error}`)
+        }
+      })
+    } catch (err: any) {
+      setErroRevista(`Erro no upload: ${err.message}`)
+    } finally {
+      setUploadingRevista(false)
+    }
+  }
 
   // --- Handler Instagram ---
   const handlePublicarInsta = async (e: React.FormEvent) => {
@@ -295,6 +358,19 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
           >
             <BookOpen size={14} />
             Material Didático
+          </button>
+
+          {/* Botão Revista — Roxo */}
+          <button
+            type="button"
+            onClick={() => setTipoCriacao('revista')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300"
+            style={tipoCriacao === 'revista'
+              ? { background: '#7c3aed', color: '#fff', boxShadow: '0 2px 12px rgba(124,58,237,0.5)' }
+              : { color: 'rgba(255,255,255,0.4)' }}
+          >
+            <BookMarked size={14} />
+            Revista
           </button>
 
           {/* Botão Instagram — Gradiente oficial */}
@@ -505,38 +581,16 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             </div>
           </div>
 
-          {/* Título + Planos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className={labelCls}>Título *</label>
-              <input 
-                value={matTitulo} 
-                onChange={e => setMatTitulo(e.target.value)} 
-                placeholder="Ex: Nossa Senhora de Fátima" 
-                className={inputCls} 
-                required
-              />
-            </div>
-            <div>
-              <label className={labelCls}>Planos com Acesso</label>
-              <div className="flex gap-2 mt-1 flex-wrap">
-                {PLANOS_DISPONIVEIS.map(p => (
-                  <button 
-                    key={p} 
-                    type="button" 
-                    onClick={() => togglePlanoMat(p)}
-                    className="px-4 py-2.5 rounded-xl text-xs font-bold border transition-all"
-                    style={{
-                      borderColor: matPlanosAcesso.includes(p) ? '#D4AF37' : 'rgba(255,255,255,0.1)',
-                      background: matPlanosAcesso.includes(p) ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.03)',
-                      color: matPlanosAcesso.includes(p) ? '#D4AF37' : 'rgba(255,255,255,0.4)',
-                    }}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {/* Título */}
+          <div>
+            <label className={labelCls}>Título *</label>
+            <input 
+              value={matTitulo} 
+              onChange={e => setMatTitulo(e.target.value)} 
+              placeholder="Ex: Nossa Senhora de Fátima" 
+              className={inputCls} 
+              required
+            />
           </div>
 
           {/* Descrição */}
@@ -631,6 +685,130 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             >
               {isProcessingMat ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
               {uploadingMaterial ? 'Enviando...' : isPending ? 'Salvando...' : 'Publicar Material'}
+            </button>
+          </div>
+        </form>
+        </div>
+      )}
+
+      {/* ================= FORMULÁRIO REVISTA ================= */}
+      {tipoCriacao === 'revista' && (
+        <div key="form-revista" className="admin-form-anim">
+        <form onSubmit={handlePublicarRevista} className="space-y-6">
+
+          {/* Título + Edição */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className={labelCls}>Título *</label>
+              <input
+                value={revTitulo}
+                onChange={e => setRevTitulo(e.target.value)}
+                placeholder="Ex: Revista Ação Católica"
+                className={inputCls}
+                required
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Edição (opcional)</label>
+              <input
+                value={revEdicao}
+                onChange={e => setRevEdicao(e.target.value)}
+                placeholder="Ex: Edição 01 — Janeiro 2025"
+                className={inputCls}
+              />
+            </div>
+          </div>
+
+          {/* Descrição */}
+          <div>
+            <label className={labelCls}>Descrição (opcional)</label>
+            <textarea
+              value={revDescricao}
+              onChange={e => setRevDescricao(e.target.value)}
+              rows={2}
+              placeholder="Breve descrição do conteúdo da revista..."
+              className={inputCls}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+
+          {/* Upload Capa + PDF */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Capa */}
+            <div>
+              <label className={labelCls}>
+                <ImageIcon size={12} className="inline mr-1" />
+                Imagem de Capa
+              </label>
+              <input
+                ref={revCapaRef}
+                type="file"
+                accept="image/*"
+                className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#7c3aed] file:text-white cursor-pointer text-sm"
+              />
+              {progressRevCapa > 0 && progressRevCapa < 100 && (
+                <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#7c3aed] transition-all" style={{ width: `${progressRevCapa}%` }} />
+                </div>
+              )}
+            </div>
+
+            {/* PDF */}
+            <div>
+              <label className={labelCls}>
+                <FileText size={12} className="inline mr-1" />
+                Arquivo PDF
+              </label>
+              <input
+                ref={revPdfRef}
+                type="file"
+                accept="application/pdf"
+                className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#7c3aed] file:text-white cursor-pointer text-sm"
+              />
+              {progressRevPdf > 0 && progressRevPdf < 100 && (
+                <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#7c3aed] transition-all" style={{ width: `${progressRevPdf}%` }} />
+                </div>
+              )}
+              <p className="text-white/20 text-xs mt-2">Ou cole o link público do Bunny:</p>
+              <input
+                value={revLinkPdf}
+                onChange={e => setRevLinkPdf(e.target.value)}
+                placeholder="https://contos-midia-app.b-cdn.net/revistas/..."
+                className={inputCls + ' mt-2 font-mono text-xs'}
+              />
+            </div>
+          </div>
+
+          {/* Erros e Sucessos */}
+          {erroRevista && (
+            <div className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3">
+              {erroRevista}
+            </div>
+          )}
+          {uploadingRevista && (
+            <div className="flex items-center gap-3 text-[#7c3aed] text-sm bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl px-4 py-3">
+              <Loader2 size={16} className="animate-spin shrink-0" />
+              Enviando arquivos para o Bunny... aguarde.
+            </div>
+          )}
+          {mensagemRevista && (
+            <div className="text-green-400 text-sm bg-green-400/10 border border-green-400/20 rounded-xl px-4 py-3 flex items-center gap-2">
+              <CheckCircle2 size={16} />
+              {mensagemRevista}
+            </div>
+          )}
+
+          {/* Botão publicar */}
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={uploadingRevista || revIsPending}
+              className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-black text-sm text-white disabled:opacity-60 hover:scale-105 transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+              style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
+            >
+              {(uploadingRevista || revIsPending) ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+              {uploadingRevista ? 'Enviando...' : revIsPending ? 'Salvando...' : 'Publicar Revista'}
             </button>
           </div>
         </form>
