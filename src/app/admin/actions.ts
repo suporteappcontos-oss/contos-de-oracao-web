@@ -101,6 +101,43 @@ export async function toggleVideoTematicoAtivo(id: string, ativo: boolean) {
   return { success: true }
 }
 
+// ─── Editar Vídeo Temático ───
+export async function editarVideoTematico(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+
+  const id       = formData.get('id') as string
+  const titulo   = formData.get('titulo') as string
+  const descricao = formData.get('descricao') as string | null
+  const bunnyId  = formData.get('bunny_video_id') as string
+  const capaUrl  = formData.get('capa_url') as string | null
+
+  if (!id?.trim())     return { success: false, error: 'ID inválido.' }
+  if (!titulo?.trim()) return { success: false, error: 'Título obrigatório.' }
+  if (!bunnyId?.trim()) return { success: false, error: 'Bunny Video ID obrigatório.' }
+
+  const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_INSTAGRAM_LIBRARY_ID
+    || process.env.BUNNY_INSTAGRAM_LIBRARY_ID
+    || '678138'
+  const videoUrl = `https://iframe.mediadelivery.net/embed/${bunnyLibraryId}/${bunnyId.trim()}`
+
+  const { error } = await supabase
+    .from('videos_tematicos')
+    .update({
+      titulo:    titulo.trim(),
+      descricao: descricao?.trim() || null,
+      video_url: videoUrl,
+      capa_url:  capaUrl?.trim() || null,
+    })
+    .eq('id', id)
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/admin')
+  revalidatePath('/videos-tematicos')
+  return { success: true }
+}
+
+
 // ─── Adicionar vídeo ───
 export async function adicionarVideo(formData: FormData) {
   const { supabase } = await verificarAdmin()
