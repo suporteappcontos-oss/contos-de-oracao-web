@@ -43,9 +43,10 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
         className="group flex flex-col rounded-[20px] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl"
         style={{ background: 'rgba(15,22,35,0.9)', border: '1px solid rgba(225,48,108,0.2)' }}
       >
-        {/* Capa — sem iframe, somente imagem */}
+        {/* Capa — formato 9:16 portrait */}
         <div
-          className="relative w-full aspect-video bg-black overflow-hidden cursor-pointer"
+          className="relative w-full overflow-hidden cursor-pointer"
+          style={{ aspectRatio: '9/16' }}
           onClick={() => setModalAberto(true)}
         >
           <img
@@ -98,11 +99,10 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
               Assistir
             </button>
 
-            {/* Baixar */}
+            {/* Baixar — usa rota interna que força download direto */}
             <a
-              href={downloadUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/api/download-video?videoId=${extrairVideoId(video.video_url)}`}
+              download
               title="Baixar vídeo"
               className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03]"
               style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
@@ -144,15 +144,15 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
               <span className="text-white/80 text-xs font-bold hidden sm:block">{video.titulo}</span>
             </div>
 
-            {/* iframe player */}
-            <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
-              <iframe
-                src={`${video.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
-                className="absolute inset-0 w-full h-full border-0"
-                allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen"
-                allowFullScreen
-              />
-            </div>
+          {/* iframe em portrait 9:16 dentro do modal */}
+          <div className="relative w-full max-h-[85vh]" style={{ aspectRatio: '9/16' }}>
+            <iframe
+              src={`${video.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
+              className="absolute inset-0 w-full h-full border-0"
+              allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen"
+              allowFullScreen
+            />
+          </div>
           </div>
         </div>
       )}
