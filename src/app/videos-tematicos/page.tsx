@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -44,11 +45,20 @@ export default async function VideosTematicosPage() {
 
   const nome = (user.user_metadata?.nome || user.email?.split('@')[0] || 'assinante').split(' ')[0]
 
-  const { data: videos } = await supabase
-    .from('videos_tematicos')
-    .select('*')
-    .eq('ativo', true)
-    .order('criado_em', { ascending: false })
+  const { data: videos } = isAdmin
+    ? await createAdminClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+      )
+        .from('videos_tematicos')
+        .select('*')
+        .order('criado_em', { ascending: false })
+    : await supabase
+        .from('videos_tematicos')
+        .select('*')
+        .eq('ativo', true)
+        .order('criado_em', { ascending: false })
 
   const lista: VideoTematico[] = videos ?? []
 
