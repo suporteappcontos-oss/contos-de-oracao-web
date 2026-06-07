@@ -3,9 +3,10 @@ import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, Download } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
+import VideoTematicoCard from './VideoTematicoCard'
 
 export const metadata: Metadata = {
   title: 'Vídeos Temáticos | Contos de Oração',
@@ -125,7 +126,7 @@ export default async function VideosTematicosPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {lista.map((video) => (
-              <VideoCard key={video.id} video={video} />
+              <VideoTematicoCard key={video.id} video={video} />
             ))}
           </div>
         )}
@@ -136,61 +137,3 @@ export default async function VideosTematicosPage() {
   )
 }
 
-// ── Card individual com player embed e download ──
-function VideoCard({ video }: { video: VideoTematico }) {
-  return (
-    <div
-      className="group flex flex-col rounded-[20px] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl"
-      style={{ background: 'rgba(15,22,35,0.9)', border: '1px solid rgba(225,48,108,0.2)' }}
-    >
-      {/* Player iframe Bunny */}
-      <div className="relative w-full aspect-video bg-black overflow-hidden">
-        <iframe
-          src={`${video.video_url}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full border-0"
-          allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture"
-          allowFullScreen
-        />
-        {/* Badge Instagram */}
-        <div
-          className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-wider z-10"
-          style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
-        >
-          <IgIcon size={10} /> Instagram
-        </div>
-      </div>
-
-      {/* Info */}
-      <div className="flex flex-col gap-3 p-5 flex-1">
-        <h3
-          className="text-white font-extrabold text-base leading-tight"
-          style={{ backgroundImage: 'linear-gradient(135deg,#c084fc,#E1306C)', WebkitBackgroundClip: 'text' }}
-        >
-          {video.titulo}
-        </h3>
-
-        {video.descricao && (
-          <p className="text-white/55 text-xs leading-relaxed line-clamp-2">{video.descricao}</p>
-        )}
-
-        {/* Botões */}
-        <div className="mt-auto flex flex-col gap-2">
-          {/* Assistir em tela cheia */}
-          <a
-            href={video.video_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03] hover:brightness-110"
-            style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff', boxShadow: '0 4px 20px rgba(225,48,108,0.3)' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-            Assistir em Tela Cheia
-          </a>
-        </div>
-      </div>
-    </div>
-  )
-}

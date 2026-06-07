@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useTransition } from 'react'
-import { BookOpen, Gamepad2, Pencil, Library, Trash2, Download, Tag } from 'lucide-react'
+import { BookOpen, Gamepad2, Pencil, Library, Trash2, Download, Tag, ChevronDown, ChevronUp } from 'lucide-react'
 import { deletarMaterial } from './actions'
 
 const CATEGORIAS = [
@@ -28,6 +28,7 @@ type Material = {
 export function GerenciadorMateriais({ materiaisIniciais }: { materiaisIniciais: Material[] }) {
   const [isPending, startTransition] = useTransition()
   const [materiais, setMateriais] = useState(materiaisIniciais)
+  const [aberto, setAberto] = useState(false)
 
   const handleDeletar = (id: string, titulo: string) => {
     if (!confirm(`Deletar "${titulo}"? Essa ação não pode ser desfeita.`)) return
@@ -42,74 +43,92 @@ export function GerenciadorMateriais({ materiaisIniciais }: { materiaisIniciais:
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h2 className="text-white text-2xl font-black">Materiais Didáticos</h2>
-        <p className="text-white/40 text-sm mt-1">Lista de HQs, Jogos e Desenhos cadastrados na plataforma.</p>
-      </div>
+    <div className="bg-[#0f171e] border border-white/5 rounded-3xl overflow-hidden shadow-lg">
+      {/* Cabeçalho colapsável */}
+      <button
+        type="button"
+        onClick={() => setAberto(p => !p)}
+        className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/[0.02] transition-colors text-left"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#D4AF37]/10 border border-[#D4AF37]/20">
+            <Library size={18} className="text-[#D4AF37]" />
+          </div>
+          <div>
+            <h3 className="text-white text-base font-extrabold tracking-tight">Materiais Didáticos</h3>
+            <p className="text-white/40 text-xs mt-0.5">
+              {materiais.length} {materiais.length === 1 ? 'item cadastrado' : 'itens cadastrados'}
+            </p>
+          </div>
+        </div>
+        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50">
+          {aberto ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </div>
+      </button>
 
-      {/* Lista por categoria */}
-      <div className="space-y-10">
-        {CATEGORIAS.map(cat => {
-          const itens = materiais.filter(m => m.categoria === cat.value)
-          return (
-            <div key={cat.value} className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${cat.color}20` }}>
-                  <cat.icon size={14} style={{ color: cat.color }} />
+      {/* Conteúdo expandido */}
+      {aberto && (
+        <div className="border-t border-white/5 p-6 bg-black/10 space-y-8">
+          {CATEGORIAS.map(cat => {
+            const itens = materiais.filter(m => m.categoria === cat.value)
+            return (
+              <div key={cat.value} className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${cat.color}20` }}>
+                    <cat.icon size={14} style={{ color: cat.color }} />
+                  </div>
+                  <h3 className="text-white font-bold">{cat.label}</h3>
+                  <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: `${cat.color}20`, color: cat.color }}>
+                    {itens.length}
+                  </span>
                 </div>
-                <h3 className="text-white font-bold">{cat.label}</h3>
-                <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: `${cat.color}20`, color: cat.color }}>
-                  {itens.length}
-                </span>
-              </div>
 
-              {itens.length === 0 ? (
-                <div className="text-white/20 text-sm text-center py-8 border border-white/5 rounded-2xl bg-white/[0.01]">
-                  Nenhum item publicado ainda nesta categoria.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {itens.map(m => (
-                    <div key={m.id} className="group relative bg-[#111827] border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all">
-                      <div className="aspect-[3/4] bg-black/40 relative">
-                        {m.capa_url ? (
-                          <img src={m.capa_url} alt={m.titulo} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <cat.icon size={32} style={{ color: cat.color, opacity: 0.3 }} />
+                {itens.length === 0 ? (
+                  <div className="text-white/20 text-sm text-center py-8 border border-white/5 rounded-2xl bg-white/[0.01]">
+                    Nenhum item publicado ainda nesta categoria.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {itens.map(m => (
+                      <div key={m.id} className="group relative bg-[#111827] border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all">
+                        <div className="aspect-[3/4] bg-black/40 relative">
+                          {m.capa_url ? (
+                            <img src={m.capa_url} alt={m.titulo} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <cat.icon size={32} style={{ color: cat.color, opacity: 0.3 }} />
+                            </div>
+                          )}
+                          <div className="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase"
+                            style={{ background: `${cat.color}30`, color: cat.color, border: `1px solid ${cat.color}40` }}>
+                            {cat.value.toUpperCase()}
                           </div>
-                        )}
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase"
-                          style={{ background: `${cat.color}30`, color: cat.color, border: `1px solid ${cat.color}40` }}>
-                          {cat.value.toUpperCase()}
+                          {m.link_pdf && (
+                            <div className="absolute top-2 right-2 w-6 h-6 rounded-lg flex items-center justify-center bg-black/60">
+                              <Download size={11} className="text-green-400" />
+                            </div>
+                          )}
                         </div>
-                        {m.link_pdf && (
-                          <div className="absolute top-2 right-2 w-6 h-6 rounded-lg flex items-center justify-center bg-black/60">
-                            <Download size={11} className="text-green-400" />
-                          </div>
-                        )}
+                        <div className="p-3">
+                          <p className="text-white text-xs font-bold leading-tight line-clamp-2 mb-1">{m.titulo}</p>
+                          <p className="text-white/30 text-[10px]">{(m.planos_acesso || []).join(', ')}</p>
+                        </div>
+                        <button
+                          onClick={() => handleDeletar(m.id, m.titulo)}
+                          disabled={isPending}
+                          className="absolute bottom-2 right-2 w-7 h-7 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </div>
-                      <div className="p-3">
-                        <p className="text-white text-xs font-bold leading-tight line-clamp-2 mb-1">{m.titulo}</p>
-                        <p className="text-white/30 text-[10px]">{(m.planos_acesso || []).join(', ')}</p>
-                      </div>
-                      <button
-                        onClick={() => handleDeletar(m.id, m.titulo)}
-                        disabled={isPending}
-                        className="absolute bottom-2 right-2 w-7 h-7 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

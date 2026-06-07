@@ -171,6 +171,9 @@ export default function AcervoVideosAdmin({
 
   const nomesTemporadas = Object.keys(temporadas).sort()
 
+  // Estado accordion para Vídeos Avulsos
+  const [avulsosAbertos, setAvulsosAbertos] = useState(false)
+
   return (
     <div className="space-y-12">
       {/* SEÇÃO TEMPORADAS (SÉRIES) */}
@@ -237,25 +240,40 @@ export default function AcervoVideosAdmin({
         )}
       </div>
 
-      {/* SEÇÃO VÍDEOS AVULSOS */}
-      <div className="space-y-6 pt-6 border-t border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-            <Film size={16} className="text-purple-400" />
+      {/* SEÇÃO VÍDEOS AVULSOS — com accordion */}
+      <div className="bg-[#0f171e] border border-white/5 rounded-3xl overflow-hidden shadow-lg">
+        <button
+          type="button"
+          onClick={() => setAvulsosAbertos(p => !p)}
+          className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/[0.02] transition-colors text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-500/10 border border-purple-500/20">
+              <Film size={18} className="text-purple-400" />
+            </div>
+            <div>
+              <h3 className="text-white text-base font-extrabold tracking-tight">Vídeos Avulsos</h3>
+              <p className="text-white/40 text-xs mt-0.5">
+                {videosAvulsos.length} {videosAvulsos.length === 1 ? 'vídeo cadastrado' : 'vídeos cadastrados'}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-white text-xl font-bold tracking-tight">Vídeos Avulsos</h3>
-            <p className="text-white/40 text-xs">Vídeos gerais e avulsos que não pertencem a séries ou temporadas.</p>
+          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50">
+            {avulsosAbertos ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </div>
-        </div>
+        </button>
 
-        {videosAvulsos.length === 0 ? (
-          <div className="text-white/20 text-sm text-center py-8 border border-white/5 rounded-2xl bg-white/[0.01]">
-            Nenhum vídeo avulso no catálogo.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videosAvulsos.map(video => renderCardVideo(video))}
+        {avulsosAbertos && (
+          <div className="border-t border-white/5 p-6 bg-black/10">
+            {videosAvulsos.length === 0 ? (
+              <div className="text-white/20 text-sm text-center py-8 border border-white/5 rounded-2xl bg-white/[0.01]">
+                Nenhum vídeo avulso no catálogo.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {videosAvulsos.map(video => renderCardVideo(video))}
+              </div>
+            )}
           </div>
         )}
       </div>
