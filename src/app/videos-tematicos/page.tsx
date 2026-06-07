@@ -174,18 +174,22 @@ function VideoCard({ video }: { video: VideoTematico }) {
           <p className="text-white/55 text-xs leading-relaxed line-clamp-2">{video.descricao}</p>
         )}
 
-        {/* Botão Download */}
-        <a
-          href={video.video_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          download
-          className="mt-auto flex items-center justify-center gap-2 w-full py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03] hover:brightness-110"
-          style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff', boxShadow: '0 4px 20px rgba(225,48,108,0.3)' }}
-        >
-          <Download size={14} />
-          Baixar Vídeo
-        </a>
+        {/* Botões */}
+        <div className="mt-auto flex flex-col gap-2">
+          {/* Assistir em tela cheia */}
+          <a
+            href={video.video_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03] hover:brightness-110"
+            style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff', boxShadow: '0 4px 20px rgba(225,48,108,0.3)' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            Assistir em Tela Cheia
+          </a>
+        </div>
       </div>
     </div>
   )
