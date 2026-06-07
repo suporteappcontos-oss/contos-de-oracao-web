@@ -811,3 +811,52 @@ CREATE POLICY "Admin gerencia videos_tematicos"
       WHERE id = auth.uid() AND role = 'admin'
     )
   );
+
+---------------------------------------------------------
+
+Tabela de Revistas (biblioteca digital de revistas católicas):
+
+-- Cria a tabela de revistas
+CREATE TABLE IF NOT EXISTS public.revistas (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug       TEXT UNIQUE NOT NULL,
+  titulo     TEXT NOT NULL,
+  descricao  TEXT,
+  edicao     TEXT,
+  capa_url   TEXT,
+  link_pdf   TEXT,
+  ativo      BOOLEAN DEFAULT true NOT NULL,
+  criado_em  TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- Índice para ordenação por data (mais recente primeiro)
+CREATE INDEX IF NOT EXISTS idx_revistas_criado_em
+  ON public.revistas (criado_em DESC);
+
+-- Liga a segurança por linha (RLS)
+ALTER TABLE public.revistas ENABLE ROW LEVEL SECURITY;
+
+-- Somente assinantes autenticados podem ler as revistas ativas
+CREATE POLICY "Assinantes leem revistas"
+  ON public.revistas FOR SELECT
+  TO authenticated
+  USING (ativo = true);
+
+-- Somente admin pode inserir, editar e deletar
+CREATE POLICY "Admin gerencia revistas"
+  ON public.revistas FOR ALL
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.perfis
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+    OR (SELECT email FROM auth.users WHERE id = auth.uid()) = 'suporte.appcontos@gmail.com'
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.perfis
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+    OR (SELECT email FROM auth.users WHERE id = auth.uid()) = 'suporte.appcontos@gmail.com'
+  );

@@ -470,9 +470,8 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* ── Revistas ── */}
           <Link
-            href={isLoggedIn ? "/hq" : "/?modal=login"}
+            href={isLoggedIn ? "/revistas" : "/?modal=login"}
             onClick={(e) => {
               setSidebarOpen(false);
               if (!isLoggedIn) {
@@ -486,9 +485,8 @@ export default function Navbar() {
             <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
               <IconRevistas />
             </span>
-            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300 flex items-center gap-1.5">
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">
               Revistas
-              <span className="text-[9px] text-[#D4AF37] font-black uppercase tracking-wider bg-[#D4AF37]/10 px-1.5 py-0.5 rounded border border-[#D4AF37]/20">Em breve</span>
             </span>
           </Link>
 
