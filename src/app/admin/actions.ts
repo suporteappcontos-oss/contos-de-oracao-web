@@ -607,14 +607,14 @@ export async function deletarMaterial(id: string) {
 
 // ─── Publicar Revista ─── Upload já foi feito no cliente
 export async function publicarRevista(formData: FormData) {
-  await verificarAdmin()
+  await verificarAdmin()                 // garante que é admin
+  const supabase = getAdminClient()      // usa service role → bypassa RLS
   try {
-    const supabase = await createClient()
-    const titulo = formData.get('titulo') as string
+    const titulo   = formData.get('titulo') as string
     const descricao = (formData.get('descricao') as string) || null
-    const edicao = (formData.get('edicao') as string) || null
-    const capaUrl = (formData.get('capa_url') as string | null) || null
-    let linkPdf = (formData.get('link_pdf') as string | null)?.trim() || null
+    const edicao   = (formData.get('edicao') as string) || null
+    const capaUrl  = (formData.get('capa_url') as string | null) || null
+    let   linkPdf  = (formData.get('link_pdf') as string | null)?.trim() || null
 
     if (linkPdf?.includes('br.storage.bunnycdn.com')) {
       linkPdf = linkPdf.split('?')[0]
@@ -649,9 +649,9 @@ export async function publicarRevista(formData: FormData) {
 
 // ─── Deletar Revista ───
 export async function deletarRevista(id: string) {
-  await verificarAdmin()
+  await verificarAdmin()               // garante que é admin
+  const supabase = getAdminClient()    // usa service role → bypassa RLS
   try {
-    const supabase = await createClient()
     const { error } = await supabase.from('revistas').delete().eq('id', id)
     if (error) throw new Error(error.message)
     revalidatePath('/revistas')
