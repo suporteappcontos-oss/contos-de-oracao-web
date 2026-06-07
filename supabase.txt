@@ -45,7 +45,7 @@ CHECK (categoria IN ('hq', 'jogo', 'desenho', 'livro', 'adesivo'));
 Add Access Counters to Perfis:
 
 ALTER TABLE public.perfis ADD COLUMN IF NOT EXISTS acessos_site INTEGER DEFAULT 0;
-ALTER TABLE public.perfis ADD COLUMN IF NOT EXISTS acessos_app INTEGER DEFAULT 0;x
+ALTER TABLE public.perfis ADD COLUMN IF NOT EXISTS acessos_app INTEGER DEFAULT 0;
 
 Schema de Colunas na Public:
 
