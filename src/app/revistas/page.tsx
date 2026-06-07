@@ -1,10 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowLeft, BookMarked, Download, ExternalLink } from 'lucide-react'
+import { BookMarked, Download } from 'lucide-react'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
+import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = {
   title: 'Revistas | Contos de Oração',
@@ -41,6 +40,9 @@ export default async function RevistasPage() {
   return (
     <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
 
+      {/* Navbar com botão MENU */}
+      <Navbar />
+
       {/* Fundo gradiente sutil */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div
@@ -49,26 +51,8 @@ export default async function RevistasPage() {
         />
       </div>
 
-      {/* Header */}
-      <header
-        className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-[60px] md:h-[68px] backdrop-blur-xl border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.05)', backgroundColor: 'rgba(10, 13, 20, 0.85)' }}
-      >
-        <Link href="/watch" className="flex items-center gap-3 transition-transform hover:scale-105">
-          <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="rounded-lg shadow-lg" />
-          <span className="font-bold text-[16px] tracking-tight hidden sm:block">Contos de Oração</span>
-        </Link>
-        <Link
-          href="/watch"
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:bg-white/10"
-          style={{ border: '1px solid rgba(255,255,255,0.1)' }}
-        >
-          <ArrowLeft size={14} /> Voltar
-        </Link>
-      </header>
-
       {/* Hero */}
-      <div className="relative z-10 pt-28 pb-10 px-6">
+      <div className="relative z-10 pt-24 pb-8 px-6">
         <div className="max-w-[1200px] mx-auto text-center flex flex-col items-center">
           <div
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 shadow-lg"
