@@ -1,6 +1,15 @@
 'use client'
 
-import React, { useState, useTransition, useRef } from 'react'
+import React, { useState, useTransition, useRef, useEffect } from 'react'
+
+// Keyframes para animação ao trocar de tipo
+const ANIM_STYLE = `
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .admin-form-anim { animation: fadeSlideIn 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+`
 import { 
   Plus, Tv2, BookOpen, Gamepad2, Pencil, 
   Library, ImageIcon, FileText, Loader2, 
@@ -303,8 +312,12 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
         </div>
       </div>
 
+      {/* Injeção dos keyframes (só no cliente) */}
+      <style dangerouslySetInnerHTML={{ __html: ANIM_STYLE }} />
+
       {/* ================= FORMULÁRIO DE VÍDEO ================= */}
       {tipoCriacao === 'video' && (
+        <div key="form-video" className="admin-form-anim">
         <form action={adicionarVideo} encType="multipart/form-data">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-8">
@@ -463,10 +476,12 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             </SubmitButton>
           </div>
         </form>
+        </div>
       )}
 
       {/* ================= FORMULÁRIO DE MATERIAL DIDÁTICO ================= */}
       {tipoCriacao === 'material' && (
+        <div key="form-material" className="admin-form-anim">
         <form onSubmit={handlePublicarMaterial} className="space-y-6">
           {/* Categoria */}
           <div>
@@ -619,10 +634,12 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             </button>
           </div>
         </form>
+        </div>
       )}
 
       {/* ================= FORMULÁRIO INSTAGRAM / VÍDEOS TEMÁTICOS ================= */}
       {tipoCriacao === 'instagram' && (
+        <div key="form-instagram" className="admin-form-anim">
         <form onSubmit={handlePublicarInsta} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Título */}
@@ -720,7 +737,9 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             </button>
           </div>
         </form>
+        </div>
       )}
+
     </div>
   )
 }

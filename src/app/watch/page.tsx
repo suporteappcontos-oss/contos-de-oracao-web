@@ -183,13 +183,16 @@ export default async function WatchPage() {
                     <div className="flex flex-row gap-6 overflow-x-auto pb-2">
 
                       {/* Card — Material Didático */}
-                      <div className="flex flex-col gap-3 shrink-0" style={{ width: 'clamp(240px, 28vw, 340px)' }}>
+                      <div
+                        className="flex flex-col gap-3 shrink-0 group transition-all duration-300 group-hover:scale-[1.04] group-hover:-translate-y-1"
+                        style={{ width: 'clamp(240px, 28vw, 340px)' }}
+                      >
                         <Link
                           href="/materiais"
-                          className="group relative block outline-none cursor-pointer overflow-hidden rounded-xl border border-white/5 shadow-2xl hover:border-white/20 transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
-                          style={{ background: '#111827' }}
+                          className="relative block outline-none cursor-pointer rounded-xl shadow-2xl"
+                          style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.06)' }}
                         >
-                          <div className="relative aspect-video w-full">
+                          <div className="relative aspect-video w-full overflow-hidden rounded-xl">
                             <img
                               src="/catequese.png"
                               alt="Material Didático"
@@ -201,7 +204,7 @@ export default async function WatchPage() {
                             />
                           </div>
                         </Link>
-                        <Link href="/materiais" className="group block hover:no-underline">
+                        <Link href="/materiais" className="block hover:no-underline">
                           <span className="text-[#D4AF37] text-[0.6rem] font-extrabold uppercase tracking-widest block mb-1">CONTEÚDO PEDAGÓGICO</span>
                           <h3 className="text-white text-base font-extrabold leading-tight group-hover:text-[#D4AF37] transition-colors">
                             Livros, HQs e Desenhos
