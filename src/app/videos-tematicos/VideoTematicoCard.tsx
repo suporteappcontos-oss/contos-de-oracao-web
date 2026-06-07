@@ -101,7 +101,7 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
 
             {/* Baixar — usa rota interna que força download direto */}
             <a
-              href={`/api/download-video?videoId=${extrairVideoId(video.video_url)}`}
+              href={`/api/download-video?videoId=${extrairVideoId(video.video_url)}&titulo=${encodeURIComponent(video.titulo)}`}
               download
               title="Baixar vídeo"
               className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03]"

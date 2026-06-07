@@ -1,67 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Rota de download do vídeo temático — força o browser a baixar o arquivo
-// Usa a API do Bunny Stream para pegar a URL direta do CDN
+// Rota de download direto — busca o vídeo no CDN do Bunny e serve com header de download
+// Funciona igual ao PDF: um clique → baixa direto no dispositivo
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const videoId = searchParams.get('videoId')
+  const titulo = searchParams.get('titulo') || 'video'
 
   if (!videoId) {
     return new NextResponse('Video ID obrigatório', { status: 400 })
   }
 
-  const libraryId = process.env.BUNNY_INSTAGRAM_LIBRARY_ID || '678138'
-  const apiKey = process.env.BUNNY_INSTAGRAM_API_KEY
+  const cdnHostname = process.env.BUNNY_INSTAGRAM_CDN_URL || 'vz-f8cf772c-1bd.b-cdn.net'
 
-  if (!apiKey) {
-    // Fallback: redireciona para o play URL caso não tenha API key
-    return NextResponse.redirect(
-      `https://iframe.mediadelivery.net/play/${libraryId}/${videoId}`
-    )
-  }
+  // Tenta baixar o arquivo original primeiro, depois fallback para 720p
+  const urls = [
+    `https://${cdnHostname}/${videoId}/original`,
+    `https://${cdnHostname}/${videoId}/play_720p.mp4`,
+    `https://${cdnHostname}/${videoId}/play_480p.mp4`,
+  ]
 
-  try {
-    // Busca informações do vídeo na API do Bunny Stream
-    const res = await fetch(
-      `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`,
-      {
-        headers: {
-          AccessKey: apiKey,
-          accept: 'application/json',
-        },
-        cache: 'no-store',
+  let response: Response | null = null
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' })
+      if (res.ok) {
+        response = res
+        break
       }
-    )
-
-    if (!res.ok) {
-      return new NextResponse('Vídeo não encontrado', { status: 404 })
+    } catch {
+      continue
     }
-
-    const data = await res.json()
-
-    // Monta URL direta do CDN para download
-    const cdnHostname = data.storageSize > 0
-      ? `${data.guid}.b-cdn.net`
-      : null
-
-    // URL de download: CDN direto se disponível, senão usa pull zone do Bunny
-    const pullZone = process.env.NEXT_PUBLIC_BUNNY_INSTAGRAM_CDN_URL
-    const baseUrl = pullZone
-      ? `https://${pullZone}`
-      : `https://iframe.mediadelivery.net/play/${libraryId}`
-
-    if (pullZone) {
-      // Redireciona para CDN com header de download
-      const downloadUrl = `${baseUrl}/${videoId}/original`
-      return NextResponse.redirect(downloadUrl)
-    }
-
-    // Se não tem CDN configurado, redireciona para play
-    return NextResponse.redirect(
-      `https://iframe.mediadelivery.net/play/${libraryId}/${videoId}`
-    )
-  } catch (error) {
-    console.error('Erro ao buscar vídeo:', error)
-    return new NextResponse('Erro interno', { status: 500 })
   }
+
+  if (!response || !response.body) {
+    return new NextResponse('Vídeo não encontrado. Tente novamente.', { status: 404 })
+  }
+
+  // Nome do arquivo limpo para download
+  const nomeArquivo = titulo
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .replace(/\s+/g, '_')
+    .slice(0, 60)
+
+  const contentLength = response.headers.get('content-length')
+  const contentType = response.headers.get('content-type') || 'video/mp4'
+
+  const headers: Record<string, string> = {
+    'Content-Type': contentType,
+    'Content-Disposition': `attachment; filename="${nomeArquivo}.mp4"`,
+    'Cache-Control': 'no-cache',
+  }
+
+  if (contentLength) {
+    headers['Content-Length'] = contentLength
+  }
+
+  return new NextResponse(response.body, { headers })
 }
