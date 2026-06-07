@@ -636,15 +636,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          DEPOIMENTOS
-      ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
-        <SectionTitle title="O que dizem as famílias" />
-        <div className="px-4">
-          <TestimonialsGrid />
-        </div>
-      </section>
 
 
 
