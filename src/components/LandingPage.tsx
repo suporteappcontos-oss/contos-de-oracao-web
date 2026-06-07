@@ -161,6 +161,7 @@ export default function LandingPage() {
   const [tab, setTab]           = useState<'login' | 'qr'>('login');
   const [videos, setVideos] = useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(true);
+  const [revistaDestaque, setRevistaDestaque] = useState<{ titulo: string; edicao: string | null; capa_url: string | null; link_pdf: string | null } | null>(null);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -180,6 +181,24 @@ export default function LandingPage() {
       }
     };
     fetchVideos();
+  }, []);
+
+  // Busca a última revista publicada
+  useEffect(() => {
+    const fetchRevista = async () => {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from('revistas')
+          .select('titulo, edicao, capa_url, link_pdf')
+          .eq('ativo', true)
+          .order('criado_em', { ascending: false })
+          .limit(1)
+          .single();
+        if (data) setRevistaDestaque(data);
+      } catch {}
+    };
+    fetchRevista();
   }, []);
 
   // Abre modal de login via evento global (disparado pela Navbar)
@@ -542,17 +561,27 @@ export default function LandingPage() {
 
           {/* Col centro — capa */}
           <div
-            className="w-40 h-52 rounded-xl shrink-0 flex items-center justify-center relative overflow-hidden"
+            className="w-40 h-52 rounded-xl shrink-0 relative overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #D4AF37, #8B7322)',
               boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
             }}
           >
-            <div className="text-center px-4">
-              <div className="text-5xl mb-2">📖</div>
-              <p className="text-black font-black text-sm leading-tight">Contos de Oração</p>
-              <p className="text-black/70 text-[10px] font-bold mt-1">Edição de Maio</p>
-            </div>
+            {revistaDestaque?.capa_url ? (
+              <img
+                src={revistaDestaque.capa_url}
+                alt={revistaDestaque.titulo}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full text-center px-4">
+                <div>
+                  <div className="text-5xl mb-2">📖</div>
+                  <p className="text-black font-black text-sm leading-tight">Contos de Oração</p>
+                  <p className="text-black/70 text-[10px] font-bold mt-1">Edição de Maio</p>
+                </div>
+              </div>
+            )}
             <div
               className="absolute top-2 right-2 text-[9px] font-black px-2 py-0.5 rounded-full"
               style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}

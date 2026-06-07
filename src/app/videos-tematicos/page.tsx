@@ -109,9 +109,7 @@ export default async function VideosTematicosPage() {
           >
             Vídeos Temáticos
           </h1>
-          <p className="text-white/60 text-base md:text-lg max-w-xl leading-relaxed">
-            Olá, <strong className="text-white">{nome}</strong>! Conteúdo exclusivo disponível somente para assinantes.
-          </p>
+
         </div>
       </div>
 
