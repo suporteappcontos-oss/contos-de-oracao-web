@@ -237,8 +237,8 @@ export default async function WatchPage() {
                         </Link>
                         <Link href="/videos-tematicos" className="group block hover:no-underline">
                           <span className="text-[0.6rem] font-extrabold uppercase tracking-widest block mb-1" style={{ color: '#E1306C' }}>VÍDEOS EXCLUSIVOS</span>
-                          <h3 className="text-white text-base font-extrabold leading-tight transition-all group-hover:text-transparent"
-                            style={{ backgroundImage: 'linear-gradient(135deg,#c084fc,#E1306C)', WebkitBackgroundClip: 'text' } as React.CSSProperties}>
+                          <h3 className="text-white text-base font-extrabold leading-tight transition-all"
+                            style={{ backgroundImage: 'linear-gradient(135deg,#c084fc,#E1306C)', WebkitBackgroundClip: 'text' }}>
                             Vídeos Temáticos
                           </h3>
                           <p className="text-white/70 text-xs mt-1.5 leading-snug">
