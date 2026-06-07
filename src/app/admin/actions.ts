@@ -50,6 +50,57 @@ async function uploadToBunny(file: File, prefix: string): Promise<string> {
   return `https://contos-midia-app.b-cdn.net/${fileName}`;
 }
 
+// ─── Adicionar Vídeo Temático (Instagram) ───
+export async function adicionarVideoTematico(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+
+  const titulo    = formData.get('titulo') as string
+  const descricao = formData.get('descricao') as string | null
+  const bunnyId   = formData.get('bunny_video_id') as string
+  const capaUrl   = formData.get('capa_url') as string | null
+
+  if (!titulo?.trim()) return { success: false, error: 'Título obrigatório.' }
+  if (!bunnyId?.trim()) return { success: false, error: 'Video ID do Bunny obrigatório.' }
+
+  // Monta a video_url usando a biblioteca Bunny Stream padrão do projeto
+  const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID || '642831'
+  const videoUrl = `https://iframe.mediadelivery.net/embed/${bunnyLibraryId}/${bunnyId}`
+
+  const { error } = await supabase.from('videos_tematicos').insert({
+    titulo:    titulo.trim(),
+    descricao: descricao?.trim() || null,
+    video_url: videoUrl,
+    capa_url:  capaUrl || null,
+    ativo:     true,
+  })
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/admin')
+  revalidatePath('/videos-tematicos')
+  return { success: true }
+}
+
+// ─── Deletar Vídeo Temático ───
+export async function deletarVideoTematico(id: string) {
+  const { supabase } = await verificarAdmin()
+  const { error } = await supabase.from('videos_tematicos').delete().eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin')
+  revalidatePath('/videos-tematicos')
+  return { success: true }
+}
+
+// ─── Toggle Ativo Vídeo Temático ───
+export async function toggleVideoTematicoAtivo(id: string, ativo: boolean) {
+  const { supabase } = await verificarAdmin()
+  const { error } = await supabase.from('videos_tematicos').update({ ativo }).eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin')
+  revalidatePath('/videos-tematicos')
+  return { success: true }
+}
+
 // ─── Adicionar vídeo ───
 export async function adicionarVideo(formData: FormData) {
   const { supabase } = await verificarAdmin()

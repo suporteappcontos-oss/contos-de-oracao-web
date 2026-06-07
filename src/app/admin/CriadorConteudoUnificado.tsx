@@ -4,10 +4,10 @@ import React, { useState, useTransition, useRef } from 'react'
 import { 
   Plus, Tv2, BookOpen, Gamepad2, Pencil, 
   Library, ImageIcon, FileText, Loader2, 
-  CheckCircle2, Video, X, Tag
+  CheckCircle2, Video, X, Tag, Instagram
 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
-import { adicionarVideo, publicarMaterial } from './actions'
+import { adicionarVideo, publicarMaterial, adicionarVideoTematico } from './actions'
 
 const PLANOS_DISPONIVEIS = ['Básico', 'Essencial', 'Pro']
 const CATEGORIAS_MATERIAIS = [
@@ -66,8 +66,15 @@ function gerarSlug(titulo: string) {
     .replace(/\s+/g, '-')
 }
 
+// Cores e estilos por tipo
+const TIPO_CONFIG = {
+  video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Vídeo' },
+  material:  { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
+  instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram' },
+}
+
 export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: Props) {
-  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material'>('video')
+  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram'>('video')
 
   // --- Estados do Formulário de Vídeo ---
   const [emBreve, setEmBreve] = useState(false)
@@ -97,6 +104,17 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
   const capaRef = useRef<HTMLInputElement>(null)
   const pdfRef = useRef<HTMLInputElement>(null)
+
+  // --- Estados do Formulário de Instagram ---
+  const [instaTitulo, setInstaTitulo] = useState('')
+  const [instaDescricao, setInstaDescricao] = useState('')
+  const [instaBunnyId, setInstaBunnyId] = useState('')
+  const [instaUploadingCapa, setInstaUploadingCapa] = useState(false)
+  const [instaProgressCapa, setInstaProgressCapa] = useState(0)
+  const [instaMensagem, setInstaMensagem] = useState('')
+  const [instaErro, setInstaErro] = useState('')
+  const [instaIsPending, instaStartTransition] = useTransition()
+  const instaCapaRef = useRef<HTMLInputElement>(null)
 
   const togglePlanoMat = (plano: string) => {
     setMatPlanosAcesso(prev =>
@@ -167,9 +185,59 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
   const isProcessingMat = uploadingMaterial || isPending
   const matCatInfo = CATEGORIAS_MATERIAIS.find(c => c.value === matCategoria)
 
+  // --- Handler Instagram ---
+  const handlePublicarInsta = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!instaTitulo.trim()) { setInstaErro('Informe o título.'); return }
+    if (!instaBunnyId.trim()) { setInstaErro('Informe o Video ID do Bunny.'); return }
+    setInstaErro('')
+    setInstaUploadingCapa(true)
+
+    let capaUrl: string | null = null
+    try {
+      const capaFile = instaCapaRef.current?.files?.[0]
+      if (capaFile) {
+        const ext = capaFile.name.split('.').pop() || 'jpg'
+        const slug = gerarSlug(instaTitulo)
+        const path = `videos_tematicos/${slug}/capa.${ext}`
+        capaUrl = await uploadParaBunny(capaFile, path, setInstaProgressCapa)
+      }
+
+      const fd = new FormData()
+      fd.append('titulo', instaTitulo.trim())
+      fd.append('descricao', instaDescricao.trim())
+      fd.append('bunny_video_id', instaBunnyId.trim())
+      if (capaUrl) fd.append('capa_url', capaUrl)
+
+      instaStartTransition(async () => {
+        const res = await adicionarVideoTematico(fd)
+        if (res?.success) {
+          setInstaMensagem('✅ Vídeo Temático publicado!')
+          setInstaTitulo(''); setInstaDescricao(''); setInstaBunnyId('')
+          setInstaProgressCapa(0)
+          if (instaCapaRef.current) instaCapaRef.current.value = ''
+          setTimeout(() => setInstaMensagem(''), 5000)
+        } else {
+          setInstaErro(`Erro: ${res?.error}`)
+        }
+      })
+    } catch (err: any) {
+      setInstaErro(`Erro no upload: ${err.message}`)
+    } finally {
+      setInstaUploadingCapa(false)
+    }
+  }
+
+  const tipoAtual = TIPO_CONFIG[tipoCriacao]
+
   return (
-    <div className="bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
+    <div
+      className="bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-500"
+      style={{ border: `1px solid ${tipoAtual.border}40` }}>
+      <div
+        className="absolute top-0 left-0 w-full h-1 transition-all duration-500"
+        style={{ background: `linear-gradient(90deg, transparent, ${tipoAtual.border}, transparent)`, opacity: 0.6 }}
+      />
       
       {/* Header Unificado */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-white/5">
@@ -184,22 +252,44 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
         </div>
 
         {/* Seletor de Tipo */}
-        <div className="flex bg-[#0f171e] border border-white/10 rounded-2xl p-1 w-fit shadow-inner">
+        <div className="flex bg-[#0f171e] border border-white/10 rounded-2xl p-1 w-fit shadow-inner gap-0.5">
+          {/* Botão Vídeo — Dourado */}
           <button
             type="button"
             onClick={() => setTipoCriacao('video')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${tipoCriacao === 'video' ? 'bg-[#D4AF37] text-black shadow-md' : 'text-white/50 hover:text-white'}`}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300"
+            style={tipoCriacao === 'video'
+              ? { background: '#D4AF37', color: '#000', boxShadow: '0 2px 12px rgba(212,175,55,0.4)' }
+              : { color: 'rgba(255,255,255,0.4)' }}
           >
             <Video size={14} />
             Vídeo
           </button>
+
+          {/* Botão Material Didático — Verde */}
           <button
             type="button"
             onClick={() => setTipoCriacao('material')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${tipoCriacao === 'material' ? 'bg-[#D4AF37] text-black shadow-md' : 'text-white/50 hover:text-white'}`}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300"
+            style={tipoCriacao === 'material'
+              ? { background: '#10b981', color: '#fff', boxShadow: '0 2px 12px rgba(16,185,129,0.4)' }
+              : { color: 'rgba(255,255,255,0.4)' }}
           >
             <BookOpen size={14} />
             Material Didático
+          </button>
+
+          {/* Botão Instagram — Gradiente oficial */}
+          <button
+            type="button"
+            onClick={() => setTipoCriacao('instagram')}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300"
+            style={tipoCriacao === 'instagram'
+              ? { background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff', boxShadow: '0 2px 12px rgba(225,48,108,0.5)' }
+              : { color: 'rgba(255,255,255,0.4)' }}
+          >
+            <Instagram size={14} />
+            Instagram
           </button>
         </div>
       </div>
@@ -517,6 +607,107 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             >
               {isProcessingMat ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
               {uploadingMaterial ? 'Enviando...' : isPending ? 'Salvando...' : 'Publicar Material'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* ================= FORMULÁRIO INSTAGRAM / VÍDEOS TEMÁTICOS ================= */}
+      {tipoCriacao === 'instagram' && (
+        <form onSubmit={handlePublicarInsta} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Título */}
+            <div className="md:col-span-2">
+              <label className={labelCls}>Título *</label>
+              <input
+                value={instaTitulo}
+                onChange={e => setInstaTitulo(e.target.value)}
+                placeholder="Ex: Terço da Família — Episódio 1"
+                className={inputCls}
+                required
+              />
+            </div>
+
+            {/* Descrição */}
+            <div className="md:col-span-2">
+              <label className={labelCls}>Descrição (opcional)</label>
+              <textarea
+                value={instaDescricao}
+                onChange={e => setInstaDescricao(e.target.value)}
+                rows={2}
+                placeholder="Breve descrição do vídeo..."
+                className={inputCls}
+                style={{ resize: 'vertical' }}
+              />
+            </div>
+
+            {/* Video ID do Bunny Stream */}
+            <div>
+              <label className={labelCls}>Video ID (Bunny Stream) *</label>
+              <input
+                value={instaBunnyId}
+                onChange={e => setInstaBunnyId(e.target.value)}
+                placeholder="xxxxxxxx-xxxx-xxxx-xxxx"
+                className={inputCls + ' font-mono text-white/70'}
+                required
+              />
+              <p className="text-white/30 text-[0.65rem] mt-1.5">Copie o Video ID do painel do Bunny Stream</p>
+            </div>
+
+            {/* Capa */}
+            <div>
+              <label className={labelCls}>
+                <ImageIcon size={12} className="inline mr-1" />
+                Imagem de Capa *
+              </label>
+              <input
+                ref={instaCapaRef}
+                type="file"
+                accept="image/*"
+                className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold cursor-pointer text-sm"
+                style={{ '--file-bg': '#E1306C' } as React.CSSProperties}
+              />
+              <p className="text-white/30 text-[0.65rem] mt-1.5">Será salva em <code className="text-white/40">videos_tematicos/slug/capa.jpg</code> no Bunny</p>
+              {instaProgressCapa > 0 && instaProgressCapa < 100 && (
+                <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full transition-all"
+                    style={{ width: `${instaProgressCapa}%`, background: 'linear-gradient(90deg,#833AB4,#E1306C,#F77737)' }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Erros e Mensagens */}
+          {instaErro && (
+            <div className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3">{instaErro}</div>
+          )}
+          {instaUploadingCapa && (
+            <div className="flex items-center gap-3 text-sm px-4 py-3 rounded-xl"
+              style={{ color: '#E1306C', background: 'rgba(225,48,108,0.08)', border: '1px solid rgba(225,48,108,0.2)' }}>
+              <Loader2 size={16} className="animate-spin shrink-0" />
+              Enviando capa para o Bunny...
+            </div>
+          )}
+          {instaMensagem && (
+            <div className="text-green-400 text-sm bg-green-400/10 border border-green-400/20 rounded-xl px-4 py-3 flex items-center gap-2">
+              <CheckCircle2 size={16} />{instaMensagem}
+            </div>
+          )}
+
+          {/* Botão Publicar */}
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={instaUploadingCapa || instaIsPending}
+              className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-black text-sm text-white disabled:opacity-60 hover:scale-105 transition-all"
+              style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', boxShadow: '0 0 20px rgba(225,48,108,0.3)' }}
+            >
+              {instaUploadingCapa || instaIsPending
+                ? <Loader2 size={16} className="animate-spin" />
+                : <Instagram size={16} />}
+              {instaUploadingCapa ? 'Enviando capa...' : instaIsPending ? 'Salvando...' : 'Publicar Vídeo Temático'}
             </button>
           </div>
         </form>

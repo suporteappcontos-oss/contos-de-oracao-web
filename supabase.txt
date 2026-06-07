@@ -757,3 +757,57 @@ VALUES (
 
 
 
+
+---------------------------------------------------------
+
+Tabela de Vídeos Temáticos (página exclusiva para assinantes):
+
+-- Cria a tabela de vídeos temáticos (conteúdo do Instagram / vídeos exclusivos)
+CREATE TABLE public.videos_tematicos (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  titulo      TEXT NOT NULL,
+  descricao   TEXT,
+  video_url   TEXT NOT NULL,
+  capa_url    TEXT,
+  ativo       BOOLEAN DEFAULT true,
+  criado_em   TIMESTAMPTZ DEFAULT now()
+);
+
+-- Índice para ordenação por data (mais recente primeiro)
+CREATE INDEX IF NOT EXISTS idx_videos_tematicos_criado_em
+  ON public.videos_tematicos (criado_em DESC);
+
+-- Liga a segurança por linha (RLS)
+ALTER TABLE public.videos_tematicos ENABLE ROW LEVEL SECURITY;
+
+-- Somente assinantes autenticados com plano ativo podem VER os vídeos
+CREATE POLICY "Assinantes ativos veem videos_tematicos"
+  ON public.videos_tematicos FOR SELECT
+  TO authenticated
+  USING (
+    ativo = true
+    AND (
+      (auth.jwt() -> 'user_metadata' ->> 'plano_ativo')::boolean = true
+      OR EXISTS (
+        SELECT 1 FROM public.perfis
+        WHERE id = auth.uid() AND role = 'admin'
+      )
+    )
+  );
+
+-- Somente admin pode inserir, editar e deletar
+CREATE POLICY "Admin gerencia videos_tematicos"
+  ON public.videos_tematicos FOR ALL
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.perfis
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.perfis
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
