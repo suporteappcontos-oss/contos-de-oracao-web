@@ -62,8 +62,8 @@ export async function adicionarVideoTematico(formData: FormData) {
   if (!titulo?.trim()) return { success: false, error: 'Título obrigatório.' }
   if (!bunnyId?.trim()) return { success: false, error: 'Video ID do Bunny obrigatório.' }
 
-  // Monta a video_url usando a biblioteca Bunny Stream padrão do projeto
-  const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID || '642831'
+  // Monta a video_url usando a biblioteca Instagram dedicada
+  const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_INSTAGRAM_LIBRARY_ID || process.env.BUNNY_INSTAGRAM_LIBRARY_ID || '678138'
   const videoUrl = `https://iframe.mediadelivery.net/embed/${bunnyLibraryId}/${bunnyId}`
 
   const { error } = await supabase.from('videos_tematicos').insert({
