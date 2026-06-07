@@ -161,7 +161,7 @@ export default function LandingPage() {
   const [tab, setTab]           = useState<'login' | 'qr'>('login');
   const [videos, setVideos] = useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(true);
-  const [revistaDestaque, setRevistaDestaque] = useState<{ titulo: string; edicao: string | null; capa_url: string | null; link_pdf: string | null } | null>(null);
+  const [revistaDestaque, setRevistaDestaque] = useState<{ titulo: string; edicao: string | null; capa_url: string | null; link_pdf?: string | null } | null>(null);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -190,7 +190,7 @@ export default function LandingPage() {
         const supabase = createClient();
         const { data } = await supabase
           .from('revistas')
-          .select('titulo, edicao, capa_url, link_pdf')
+          .select('titulo, edicao, capa_url')
           .eq('ativo', true)
           .order('criado_em', { ascending: false })
           .limit(1)

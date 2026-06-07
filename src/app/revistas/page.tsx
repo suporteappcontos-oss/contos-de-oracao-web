@@ -140,27 +140,15 @@ export default async function RevistasPage() {
                   {/* Botões */}
                   <div className="mt-auto flex flex-col gap-2">
                     {revista.link_pdf ? (
-                      <>
-                        <a
-                          href={revista.link_pdf}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-black transition-all hover:scale-[1.03] hover:brightness-110"
-                          style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', color: '#fff', boxShadow: '0 4px 20px rgba(124,58,237,0.3)' }}
-                        >
-                          <ExternalLink size={13} />
-                          Ler Online
-                        </a>
-                        <a
-                          href={revista.link_pdf}
-                          download
-                          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-black transition-all hover:scale-[1.03]"
-                          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
-                        >
-                          <Download size={13} />
-                          Baixar PDF
-                        </a>
-                      </>
+                      <a
+                        href={revista.link_pdf}
+                        download
+                        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-black transition-all hover:scale-[1.03] hover:brightness-110"
+                        style={{ background: 'linear-gradient(135deg,#7c3aed,#4f46e5)', color: '#fff', boxShadow: '0 4px 20px rgba(124,58,237,0.3)' }}
+                      >
+                        <Download size={13} />
+                        Baixar PDF
+                      </a>
                     ) : (
                       <div className="text-white/20 text-xs text-center py-2">Em breve</div>
                     )}

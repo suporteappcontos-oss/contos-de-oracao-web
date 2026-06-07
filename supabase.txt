@@ -836,10 +836,9 @@ CREATE INDEX IF NOT EXISTS idx_revistas_criado_em
 -- Liga a segurança por linha (RLS)
 ALTER TABLE public.revistas ENABLE ROW LEVEL SECURITY;
 
--- Somente assinantes autenticados podem ler as revistas ativas
-CREATE POLICY "Assinantes leem revistas"
+-- Qualquer visitante (anon ou autenticado) pode ler as revistas ativas (para a Landing Page)
+CREATE POLICY "Leitura pública de revistas ativas"
   ON public.revistas FOR SELECT
-  TO authenticated
   USING (ativo = true);
 
 -- Somente admin pode inserir, editar e deletar
@@ -851,12 +850,12 @@ CREATE POLICY "Admin gerencia revistas"
       SELECT 1 FROM public.perfis
       WHERE id = auth.uid() AND role = 'admin'
     )
-    OR (SELECT email FROM auth.users WHERE id = auth.uid()) = 'suporte.appcontos@gmail.com'
+    OR (auth.jwt() ->> 'email') = 'suporte.appcontos@gmail.com'
   )
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.perfis
       WHERE id = auth.uid() AND role = 'admin'
     )
-    OR (SELECT email FROM auth.users WHERE id = auth.uid()) = 'suporte.appcontos@gmail.com'
+    OR (auth.jwt() ->> 'email') = 'suporte.appcontos@gmail.com'
   );
