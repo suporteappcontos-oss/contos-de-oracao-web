@@ -1,11 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowLeft } from 'lucide-react'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
+import Navbar from '@/components/Navbar'
 import VideoTematicoCard from './VideoTematicoCard'
 
 export const metadata: Metadata = {
@@ -66,6 +64,9 @@ export default async function VideosTematicosPage() {
   return (
     <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
 
+      {/* Navbar com botão MENU */}
+      <Navbar />
+
       {/* Fundo com gradiente Instagram sutil */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div
@@ -74,29 +75,11 @@ export default async function VideosTematicosPage() {
         />
       </div>
 
-      {/* Header */}
-      <header
-        className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-[60px] md:h-[68px] backdrop-blur-xl border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.05)', backgroundColor: 'rgba(10, 13, 20, 0.85)' }}
-      >
-        <Link href="/watch" className="flex items-center gap-3 transition-transform hover:scale-105">
-          <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="rounded-lg shadow-lg" />
-          <span className="font-bold text-[16px] tracking-tight hidden sm:block">Contos de Oração</span>
-        </Link>
-        <Link
-          href="/watch"
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:bg-white/10"
-          style={{ border: '1px solid rgba(255,255,255,0.1)' }}
-        >
-          <ArrowLeft size={14} /> Voltar
-        </Link>
-      </header>
-
       {/* Hero */}
-      <div className="relative z-10 pt-28 pb-10 px-6">
-        <div className="max-w-[1200px] mx-auto text-center flex flex-col items-center">
+      <div className="relative z-10 pt-24 pb-6 px-6">
+        <div className="max-w-[1400px] mx-auto text-center flex flex-col items-center">
           <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 shadow-lg"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 shadow-lg"
             style={{ background: 'linear-gradient(135deg, rgba(131,58,180,0.2), rgba(225,48,108,0.2), rgba(247,119,55,0.15))', border: '1px solid rgba(225,48,108,0.35)' }}
           >
             <IgIcon size={14} />
@@ -104,7 +87,7 @@ export default async function VideosTematicosPage() {
           </div>
 
           <h1
-            className="text-4xl md:text-6xl font-black tracking-tight leading-tight mb-4"
+            className="text-3xl md:text-4xl font-black tracking-tight leading-tight mb-3"
             style={{ background: 'linear-gradient(135deg,#c084fc,#E1306C,#F77737)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
             Vídeos Temáticos
@@ -114,7 +97,7 @@ export default async function VideosTematicosPage() {
       </div>
 
       {/* Grade de Vídeos */}
-      <div className="relative z-10 max-w-[1200px] mx-auto px-6 pb-28">
+      <div className="relative z-10 max-w-[1600px] mx-auto px-4 pb-20">
         {lista.length === 0 ? (
           <div className="text-center py-20 text-white/30">
             <IgIcon size={48} className="mx-auto mb-4 opacity-30" />
@@ -122,7 +105,7 @@ export default async function VideosTematicosPage() {
             <p className="text-sm mt-1">Em breve novos conteúdos serão publicados aqui.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {lista.map((video) => (
               <VideoTematicoCard key={video.id} video={video} />
             ))}

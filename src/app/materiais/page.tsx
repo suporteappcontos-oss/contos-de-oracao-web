@@ -2,9 +2,10 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { BookOpen, Gamepad2, Pencil, Library, ArrowLeft, ChevronRight } from 'lucide-react'
+import { BookOpen, Gamepad2, Pencil, Library, ChevronRight } from 'lucide-react'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
+import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = {
   title: 'Material Pedagógico | Contos de Oração',
@@ -98,23 +99,8 @@ export default async function MateriaisPage() {
   return (
     <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
 
-      {/* Navbar Oficial - Contos de Oração */}
-      <header
-        className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-[60px] md:h-[68px] backdrop-blur-xl border-b"
-        style={{ borderColor: 'rgba(255,255,255,0.05)', backgroundColor: 'rgba(10, 13, 20, 0.7)' }}
-      >
-        <Link href="/watch" className="flex items-center gap-3 transition-transform hover:scale-105">
-          <Image src="/logo.png" alt="Contos de Oração" width={38} height={38} className="rounded-lg shadow-lg" />
-          <span className="font-bold text-[17px] tracking-tight hidden sm:block">
-            Contos de Oração
-          </span>
-        </Link>
-        <Link href="/watch"
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all hover:bg-white/10"
-          style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
-          <ArrowLeft size={14} /> Voltar ao Início
-        </Link>
-      </header>
+      {/* Navbar com botão MENU */}
+      <Navbar />
 
       {/* Fundo com Imagem */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -129,7 +115,7 @@ export default async function MateriaisPage() {
       </div>
 
       {/* ── HERO ── */}
-      <div className="relative z-10 pt-36 pb-12 px-6">
+      <div className="relative z-10 pt-28 pb-12 px-6">
         <div className="max-w-[1200px] mx-auto text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 shadow-lg"
             style={{ background: 'linear-gradient(90deg, rgba(212,175,55,0.2) 0%, rgba(212,175,55,0.05) 100%)', border: '1px solid rgba(212,175,55,0.3)' }}>
