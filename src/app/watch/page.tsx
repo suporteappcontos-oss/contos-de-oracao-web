@@ -225,7 +225,7 @@ export default async function WatchPage() {
                           <div className="relative aspect-video w-full overflow-hidden rounded-xl">
                             <img
                               src="/insta.png"
-                              alt="Vídeos Temáticos"
+                              alt="Vídeos Instagram"
                               className="w-full h-full object-cover"
                             />
                             <div
@@ -238,7 +238,7 @@ export default async function WatchPage() {
                           <span className="text-[0.6rem] font-extrabold uppercase tracking-widest block mb-1" style={{ color: '#E1306C' }}>VÍDEOS EXCLUSIVOS</span>
                           <h3 className="text-white text-base font-extrabold leading-tight transition-all"
                             style={{ backgroundImage: 'linear-gradient(135deg,#c084fc,#E1306C)', WebkitBackgroundClip: 'text' }}>
-                            Vídeos Temáticos
+                            Vídeos Instagram
                           </h3>
                           <p className="text-white/70 text-xs mt-1.5 leading-snug">
                             Conteúdo exclusivo em vídeo. Assista e faça download direto pelo site.

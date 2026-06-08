@@ -114,15 +114,21 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
         </div>
       </div>
 
-      {/* ── Modal Player ── */}
+      {/* ── Modal Player 9:16 ── */}
       {modalAberto && (
         <div
           className="fixed inset-0 z-[999] flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(8px)' }}
+          style={{ backgroundColor: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(8px)' }}
           onClick={(e) => { if (e.target === e.currentTarget) setModalAberto(false) }}
         >
-          <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl"
-            style={{ border: '1px solid rgba(225,48,108,0.3)' }}
+          {/* Container 9:16 — ocupa no máximo 90vh de altura e a largura proporcional */}
+          <div
+            className="relative rounded-2xl overflow-hidden shadow-2xl"
+            style={{
+              height: 'min(90vh, 800px)',
+              width: 'calc(min(90vh, 800px) * 9 / 16)',
+              border: '1px solid rgba(225,48,108,0.3)',
+            }}
           >
             {/* Botão fechar */}
             <button
@@ -133,8 +139,8 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
               <X size={16} className="text-white" />
             </button>
 
-            {/* Título no topo */}
-            <div className="absolute top-3 left-4 z-10 flex items-center gap-2">
+            {/* Badge Instagram no topo */}
+            <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
               <div
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-wider"
                 style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
@@ -144,15 +150,13 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
               <span className="text-white/80 text-xs font-bold hidden sm:block">{video.titulo}</span>
             </div>
 
-          {/* iframe em portrait 9:16 dentro do modal */}
-          <div className="relative w-full max-h-[85vh]" style={{ aspectRatio: '9/16' }}>
+            {/* iframe ocupa 100% do container 9:16 */}
             <iframe
               src={`${video.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
               className="absolute inset-0 w-full h-full border-0"
               allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen"
               allowFullScreen
             />
-          </div>
           </div>
         </div>
       )}

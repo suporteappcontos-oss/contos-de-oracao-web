@@ -38,69 +38,9 @@ export default async function CategoriaPage({ params }: Props) {
   if (!user) redirect('/login')
 
   const planoAtivo = user.user_metadata?.plano_ativo === true
-  const { data: perfil } = await supabase.from('perfis').select('role, plano').eq('id', user.id).single()
+  const { data: perfil } = await supabase.from('perfis').select('role, plano').eq('id', user.id).maybeSingle()
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
   if (!isAdmin && !planoAtivo) redirect('/?acesso=expirado')
-
-  const etiquetaPlano = (user.user_metadata?.etiqueta_plano || perfil?.plano || '').toLowerCase()
-  const isBasico = !isAdmin && (etiquetaPlano.includes('basico') || etiquetaPlano.includes('básico'))
-
-  if (isBasico) {
-    const nome = (user.user_metadata?.nome || user.email?.split('@')[0] || 'assinante').split(' ')[0]
-    return (
-      <main className="min-h-screen text-white overflow-x-hidden relative flex items-center justify-center" style={{ backgroundColor: '#0A0D14' }}>
-        {/* Fundo com Imagem e Blur */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <Image
-            src="/background.jpg"
-            alt="Background"
-            fill
-            className="object-cover opacity-20 filter blur-sm"
-            priority
-          />
-          <div className="absolute inset-0 bg-[#0A0D14]/90" />
-        </div>
-
-        <div className="relative z-10 max-w-md w-full mx-6 p-8 md:p-10 rounded-[32px] border border-white/10 text-center shadow-2xl backdrop-blur-xl"
-             style={{ backgroundColor: 'rgba(15, 20, 30, 0.75)', boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)' }}>
-          
-          {/* Ícone com gradiente dourado */}
-          <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-8 relative animate-[pulse_3s_infinite]"
-               style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(212,175,55,0.05) 100%)', border: '1px solid rgba(212,175,55,0.3)' }}>
-            <div className="absolute inset-0 rounded-full opacity-25" style={{ backgroundColor: '#D4AF37' }} />
-            <BookOpen size={36} className="text-[#D4AF37]" />
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-black mb-4 tracking-tight leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Material Exclusivo
-          </h2>
-          
-          <p className="text-white/70 text-sm md:text-base mb-8 leading-relaxed">
-            Olá, <strong className="text-white">{nome}</strong>. O acesso a HQs, Livros Digitais e Jogos Educativos está disponível apenas para assinantes do plano <strong className="text-[#D4AF37]">Essencial</strong> ou <strong className="text-[#D4AF37]">Pro</strong>.
-          </p>
-
-          <div className="flex flex-col gap-3">
-            <Link
-              href="/planos"
-              className="w-full py-4 rounded-2xl font-black text-sm transition-all hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2"
-              style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #AA8A2A 100%)', color: '#090B10' }}
-            >
-              Fazer Upgrade de Plano
-            </Link>
-            
-            <Link
-              href="/watch"
-              className="w-full py-4 rounded-2xl font-bold text-sm transition-all hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 text-white/80 hover:text-white"
-            >
-              Voltar aos Vídeos
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  const etiqueta = (user.user_metadata?.etiqueta_plano || '').toLowerCase()
 
   const { data: itens } = await supabase
     .from('materiais').select('*')
@@ -171,11 +111,7 @@ export default async function CategoriaPage({ params }: Props) {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
             {itens.map(item => {
-              const temAcesso = isAdmin || (
-                item.planos_acesso?.some((p: string) =>
-                  etiqueta.includes(p.toLowerCase()) || p.toLowerCase().includes(etiqueta)
-                )
-              )
+              const temAcesso = true
 
               return (
                 <div key={item.id} className="flex flex-col gap-2.5">

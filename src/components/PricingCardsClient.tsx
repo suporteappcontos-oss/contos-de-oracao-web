@@ -19,7 +19,7 @@ type ProdutoInfo = {
   destaque: boolean;
 };
 
-// Remove itens duplicados e filtra "perfis de usuário"
+// Remove itens duplicados e filtra "perfis de usuário" e menções a "telas"
 function filtrarBeneficios(lista: string[]): string[] {
   const vistos = new Set<string>();
   return lista
@@ -28,6 +28,8 @@ function filtrarBeneficios(lista: string[]): string[] {
       const chave = b.toLowerCase();
       // remove menções a perfis de usuário (confunde clientes)
       if (chave.includes('perfis de usu')) return false;
+      // remove menções redundantes a telas simultâneas
+      if (chave.includes('tela') || chave.includes('telas')) return false;
       if (vistos.has(chave)) return false;
       vistos.add(chave);
       return true;

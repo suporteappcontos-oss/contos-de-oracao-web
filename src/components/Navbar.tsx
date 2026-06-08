@@ -470,6 +470,27 @@ export default function Navbar() {
             </Link>
           )}
 
+          {/* ── Vídeos Temáticos ── */}
+          {pathname !== '/videos-tematicos' && (
+            <Link
+              href={isLoggedIn ? "/videos-tematicos" : "/?modal=login"}
+              onClick={(e) => {
+                setSidebarOpen(false);
+                if (!isLoggedIn) {
+                  e.preventDefault();
+                  handleEntrar();
+                }
+              }}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#E1306C]/10 hover:to-transparent group no-underline relative overflow-hidden"
+            >
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-gradient-to-b from-[#833AB4] via-[#E1306C] to-[#F77737] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+              <span className="text-white/60 group-hover:text-[#E1306C] group-hover:drop-shadow-[0_0_8px_rgba(225,48,108,0.6)] transition-all duration-300">
+                <IconVideos />
+              </span>
+              <span className="text-white/70 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[#833AB4] group-hover:via-[#E1306C] group-hover:to-[#F77737] text-sm font-semibold transition-all duration-300">Vídeos Instagram</span>
+            </Link>
+          )}
+
           <Link
             href={isLoggedIn ? "/revistas" : "/?modal=login"}
             onClick={(e) => {

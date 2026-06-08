@@ -7,7 +7,7 @@ import Navbar from '@/components/Navbar'
 import VideoTematicoCard from './VideoTematicoCard'
 
 export const metadata: Metadata = {
-  title: 'Vídeos Temáticos | Contos de Oração',
+  title: 'Vídeos Instagram | Contos de Oração',
   description: 'Conteúdo exclusivo em vídeo para assinantes.',
 }
 
@@ -90,7 +90,7 @@ export default async function VideosTematicosPage() {
             className="text-3xl md:text-4xl font-black tracking-tight leading-tight mb-3"
             style={{ background: 'linear-gradient(135deg,#c084fc,#E1306C,#F77737)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
           >
-            Vídeos Temáticos
+            Vídeos Instagram
           </h1>
 
         </div>
