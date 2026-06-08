@@ -538,30 +538,37 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           BANNER REVISTA DO MÊS
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-8 px-6 lg:px-10 max-w-6xl mx-auto">
+      <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
         <div
-          className="rounded-3xl overflow-hidden p-6 md:p-10 flex flex-col md:flex-row gap-8 items-center"
+          className="relative rounded-3xl overflow-hidden p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center border transition-all duration-500 hover:shadow-2xl group"
           style={{
-            background: 'linear-gradient(135deg, #0D1625 0%, #1a2a40 50%, #0D1625 100%)',
-            border: `1px solid ${PRIMARY}33`,
+            background: 'linear-gradient(135deg, rgba(20, 25, 40, 0.7) 0%, rgba(10, 14, 25, 0.9) 100%)',
+            backdropFilter: 'blur(20px)',
+            borderColor: 'rgba(212, 175, 55, 0.2)',
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
           }}
         >
+          {/* Efeito de brilho de fundo */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+             <div className="absolute top-[-50%] left-[-20%] w-[100%] h-[150%] opacity-20 transition-opacity duration-500 group-hover:opacity-40" style={{ background: `radial-gradient(ellipse at center, ${PRIMARY}40 0%, transparent 60%)` }} />
+          </div>
+
           {/* Col esquerda */}
-          <div className="flex-1">
+          <div className="flex-1 relative z-10">
             <div
-              className="inline-block text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-full mb-3"
-              style={{ background: `${PRIMARY}22`, color: PRIMARY }}
+              className="inline-block text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full mb-4 shadow-lg border"
+              style={{ background: 'rgba(212,175,55,0.1)', color: PRIMARY, borderColor: 'rgba(212,175,55,0.3)' }}
             >
               📰 Revista do mês
             </div>
-            <h3 className="text-white font-black text-xl md:text-2xl mb-2">Contos de Oração</h3>
-            <p className="text-white/60 text-sm leading-relaxed mb-5">
+            <h3 className="text-white font-black text-2xl md:text-3xl mb-3 leading-tight" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>Contos de Oração</h3>
+            <p className="text-white/70 text-sm md:text-base leading-relaxed mb-6 font-medium">
               Histórias, passatempos, formação e muito mais para toda a família!
             </p>
             <Link
               href={session ? "/revistas" : "/planos"}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-black text-sm transition-all hover:brightness-110"
-              style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm transition-all duration-300 hover:scale-[1.03] shadow-lg hover:shadow-xl"
+              style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none', boxShadow: `0 10px 25px -5px ${PRIMARY}66` }}
             >
               <BookOpen size={16} /> LER REVISTA
             </Link>
@@ -569,10 +576,11 @@ export default function LandingPage() {
 
           {/* Col centro — capa */}
           <div
-            className="w-40 h-52 rounded-xl shrink-0 relative overflow-hidden"
+            className="w-44 h-60 md:w-52 md:h-72 rounded-xl shrink-0 relative overflow-hidden transition-transform duration-500 hover:scale-[1.03] z-10"
             style={{
               background: 'linear-gradient(135deg, #D4AF37, #8B7322)',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+              border: '1px solid rgba(212, 175, 55, 0.4)'
             }}
           >
             {revistaDestaque?.capa_url ? (
@@ -584,36 +592,41 @@ export default function LandingPage() {
             ) : (
               <div className="flex items-center justify-center w-full h-full text-center px-4">
                 <div>
-                  <div className="text-5xl mb-2">📖</div>
-                  <p className="text-black font-black text-sm leading-tight">Contos de Oração</p>
-                  <p className="text-black/70 text-[10px] font-bold mt-1">Edição de Maio</p>
+                  <div className="text-6xl mb-3 drop-shadow-lg">📖</div>
+                  <p className="text-black font-black text-sm md:text-base leading-tight">Contos de Oração</p>
+                  <p className="text-black/80 text-[11px] font-bold mt-1.5 uppercase tracking-wider">Edição de Maio</p>
                 </div>
               </div>
             )}
             <div
-              className="absolute top-2 right-2 text-[9px] font-black px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(0,0,0,0.6)', color: '#fff' }}
+              className="absolute top-3 right-3 text-[10px] tracking-widest font-black px-2.5 py-1 rounded-full shadow-lg"
+              style={{ background: 'rgba(0,0,0,0.8)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)' }}
             >
               NOVO
             </div>
           </div>
 
           {/* Col direita — lista */}
-          <div className="flex-1">
-            <ul className="flex flex-col gap-2.5">
+          <div className="flex-1 relative z-10 md:pl-4">
+            <ul className="flex flex-col gap-3.5">
               {[
-                '📖 História em quadrinhos',
-                '✝️ Formação Católica',
-                '🎯 Passatempos',
-                '🙏 Orações e devoções',
-                '❓ Curiosidades da fé',
+                { icon: '📖', text: 'História em quadrinhos' },
+                { icon: '✝️', text: 'Formação Católica' },
+                { icon: '🎯', text: 'Passatempos' },
+                { icon: '🙏', text: 'Orações e devoções' },
+                { icon: '❓', text: 'Curiosidades da fé' },
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-white/70 text-sm">{item}</li>
+                <li key={i} className="flex items-center gap-3 group">
+                  <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 group-hover:scale-110 transition-transform">
+                    {item.icon}
+                  </span>
+                  <span className="text-white/80 font-medium text-sm md:text-base group-hover:text-white transition-colors">{item.text}</span>
+                </li>
               ))}
             </ul>
             <div
-              className="mt-4 inline-block text-xs font-black px-3 py-1.5 rounded-full"
-              style={{ background: PRIMARY, color: BG_ROOT }}
+              className="mt-6 inline-block text-xs font-black px-4 py-2 rounded-full uppercase tracking-wider"
+              style={{ background: 'rgba(212,175,55,0.15)', color: PRIMARY, border: `1px dashed ${PRIMARY}40` }}
             >
               Nova edição todo mês!
             </div>
