@@ -162,6 +162,14 @@ export default function LandingPage() {
   const [videos, setVideos] = useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(true);
   const [revistaDestaque, setRevistaDestaque] = useState<{ titulo: string; edicao: string | null; capa_url: string | null; link_pdf?: string | null } | null>(null);
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, sess) => setSession(sess));
+    return () => authListener.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -551,7 +559,7 @@ export default function LandingPage() {
               Histórias, passatempos, formação e muito mais para toda a família!
             </p>
             <Link
-              href="/planos"
+              href={session ? "/revistas" : "/planos"}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-black text-sm transition-all hover:brightness-110"
               style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
             >

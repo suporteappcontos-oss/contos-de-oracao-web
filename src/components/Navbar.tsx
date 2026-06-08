@@ -492,13 +492,9 @@ export default function Navbar() {
           )}
 
           <Link
-            href={isLoggedIn ? "/revistas" : "/?modal=login"}
+            href={isLoggedIn ? "/revistas" : "/planos"}
             onClick={(e) => {
               setSidebarOpen(false);
-              if (!isLoggedIn) {
-                e.preventDefault();
-                handleEntrar();
-              }
             }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
           >
