@@ -617,6 +617,36 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
+          CTA ASSINATURA (COMPACTO)
+      ══════════════════════════════════════════════════════════════════════ */}
+      <section className="py-10 px-6 w-full border-t border-b border-[#D4AF37]/20" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
+        <div className="max-w-[1000px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="flex-1">
+            <h2 className="text-white font-black text-xl md:text-2xl mb-2" style={{ fontFamily: FONT }}>
+              Pronto para fortalecer a fé da sua família?
+            </h2>
+            <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-[600px] mx-auto md:mx-0">
+              Tenha acesso a filmes, vídeos, revistas, atividades e conteúdos católicos exclusivos em um único lugar.
+            </p>
+          </div>
+          <div className="shrink-0 mt-2 md:mt-0">
+            <Link 
+              href="/planos"
+              className="inline-block py-4 px-10 rounded-full font-black text-sm md:text-base uppercase tracking-wider transition-all hover:scale-[1.03]"
+              style={{ 
+                background: `linear-gradient(90deg, #D4AF37, #FFF8D6, #D4AF37)`, 
+                backgroundSize: '200% auto',
+                color: '#000',
+                boxShadow: `0 4px 20px rgba(212,175,55,0.4)`
+              }}
+            >
+              Assinar Agora
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════
           MODAL DE LOGIN
       ══════════════════════════════════════════════════════════════════════ */}
       </div>
