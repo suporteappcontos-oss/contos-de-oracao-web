@@ -1,13 +1,77 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 export default function DynamicBackground() {
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function loadThumbnails() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('videos')
+        .select('thumbnail_url, bunny_video_id, id')
+        .eq('ativo', true)
+        .limit(30);
+
+      if (data && data.length > 0) {
+        // Usa a thumbnail ou a imagem estática do bunny
+        const urls = data.map(v => v.thumbnail_url || `https://vz-74ee79ad-843.b-cdn.net/${v.bunny_video_id}/preview.webp`);
+        // Embaralha para ficar mais dinâmico
+        const shuffled = urls.sort(() => 0.5 - Math.random());
+        setThumbnails(shuffled);
+      } else {
+        // Fallback placeholders caso não tenha vídeos
+        setThumbnails(Array(15).fill('/background.jpg'));
+      }
+    }
+    loadThumbnails();
+  }, []);
+
+  if (thumbnails.length === 0) {
+    return <div className="fixed inset-0 z-[-1] bg-[#090B10]" />;
+  }
+
+  // Dividir em 4 linhas para animação
+  const row1 = thumbnails.slice(0, 8);
+  const row2 = thumbnails.slice(8, 16);
+  const row3 = thumbnails.slice(16, 24);
+  const row4 = thumbnails.slice(24, 30);
+
+  // Duplicar arrays para o efeito infinito funcionar sem quebrar
+  const renderRow = (rowItems: string[], directionClass: string) => {
+    if (rowItems.length === 0) return null;
+    const items = [...rowItems, ...rowItems, ...rowItems, ...rowItems]; // Suficiente para preencher a tela
+
+    return (
+      <div className={`flex gap-4 mb-4 ${directionClass}`}>
+        {items.map((url, idx) => (
+          <div 
+            key={idx} 
+            className="w-40 sm:w-56 md:w-64 lg:w-72 aspect-video rounded-xl bg-cover bg-center shrink-0 border border-white/5 opacity-50"
+            style={{ backgroundImage: `url(${url})` }}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="fixed inset-0 z-[-1] bg-[#090B10]">
+    <div className="fixed inset-0 z-[-1] bg-[#090B10] overflow-hidden flex items-center justify-center">
+      {/* Container "entortado" e expandido para cobrir as bordas giradas */}
       <div 
-        className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-        style={{ backgroundImage: `url('/background.jpg')`, opacity: 0.30 }}
-      />
+        className="absolute w-[150vw] h-[150vh] flex flex-col justify-center"
+        style={{ transform: 'rotate(-8deg) scale(1.1)' }}
+      >
+        {renderRow(row1.length ? row1 : thumbnails.slice(0,5), 'animate-marquee')}
+        {renderRow(row2.length ? row2 : thumbnails.slice(0,5), 'animate-marquee-reverse')}
+        {renderRow(row3.length ? row3 : thumbnails.slice(0,5), 'animate-marquee')}
+        {renderRow(row4.length ? row4 : thumbnails.slice(0,5), 'animate-marquee-reverse')}
+      </div>
+
+      {/* Sobreposição escura (Gradient) para escurecer o fundo e permitir leitura do texto */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-[#090B10]/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#090B10] via-transparent to-[#090B10] pointer-events-none opacity-50" />
     </div>
   );
 }
