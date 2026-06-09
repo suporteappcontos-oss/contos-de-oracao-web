@@ -234,6 +234,21 @@ export default function LandingPage() {
         className="relative min-h-screen lg:h-screen flex items-center justify-center overflow-hidden pt-28 pb-16 lg:py-0"
         style={{ paddingTop: '0px' }}
       >
+        <style>{`
+          @keyframes animado-bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-4px) rotate(-3deg) scale(1.02); }
+            50% { transform: translateY(0) rotate(0deg) scale(1.05); }
+            75% { transform: translateY(-4px) rotate(3deg) scale(1.02); }
+          }
+          .animado-text {
+            display: inline-block;
+            animation: animado-bounce 2.5s infinite ease-in-out;
+            color: #D4AF37; /* Dourado */
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+          }
+        `}</style>
+
         {/* Brilho dourado sutil */}
         <div
           className="absolute bottom-0 left-0 w-[60vw] h-[60vh] z-0 blur-[120px] opacity-20"
@@ -252,7 +267,7 @@ export default function LandingPage() {
               }}
             >
               <span className="block whitespace-nowrap">O maior canal <span style={{ color: PRIMARY }}>CATÓLICO</span></span>
-              <span className="block whitespace-nowrap">em desenho animado do Brasil</span>
+              <span className="block whitespace-nowrap">em desenho <span className="animado-text">animado</span> do Brasil</span>
             </h1>
 
             <p
