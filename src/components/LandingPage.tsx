@@ -1,7 +1,7 @@
-﻿'use client';
+'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Play, ChevronRight, ChevronLeft, Star, BookOpen, CheckCircle, Users, Eye, Shield, Smartphone } from 'lucide-react';
+import { Play, ChevronRight, ChevronLeft, Star, BookOpen, CheckCircle, Users, Eye, Shield, Smartphone, Tv, Download, Printer, ShieldCheck } from 'lucide-react';
 import { login } from '@/app/login/actions';
 import PasswordField from '@/components/PasswordField';
 import SubmitButton from '@/components/SubmitButton';
@@ -570,22 +570,22 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {[
             {
-              emoji: '🎬',
+              icon: <Tv size={32} strokeWidth={1.5} />,
               title: 'Assista Novos Filmes',
               desc: 'Histórias animadas sobre Jesus, Nossa Senhora, os santos e a Bíblia para fortalecer a fé de toda a família.',
             },
             {
-              emoji: '⬇️',
+              icon: <Download size={32} strokeWidth={1.5} />,
               title: 'Leve o Contos de Oração com Você',
               desc: 'Baixe os vídeos curtos do Contos de Oração para assistir offline, compartilhar e evangelizar onde estiver.',
             },
             {
-              emoji: '🖨️',
+              icon: <Printer size={32} strokeWidth={1.5} />,
               title: 'Conteúdo para Baixar e Imprimir',
               desc: 'Revistas mensais, jogos, músicas, atividades e materiais pedagógicos prontos para usar em casa ou na catequese.',
             },
             {
-              emoji: '🛡️',
+              icon: <ShieldCheck size={32} strokeWidth={1.5} />,
               title: 'Ambiente 100% Católico',
               desc: 'Conteúdo seguro para crianças e famílias, produzido com fidelidade à doutrina da Igreja Católica. Sem ideologias e com valores cristãos para todas as idades.',
             },
@@ -603,21 +603,18 @@ export default function LandingPage() {
               <p className="text-white/60 text-sm leading-relaxed relative z-10">{c.desc}</p>
               
               <div
-                className="absolute bottom-4 right-4 w-12 h-12 flex items-center justify-center text-2xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 opacity-80"
+                className="absolute bottom-4 right-4 w-12 h-12 flex items-center justify-center text-[#D4AF37] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 opacity-80"
                 style={{ 
-                  background: 'radial-gradient(circle, rgba(212,175,55,0.2) 0%, transparent 70%)',
-                  textShadow: '0 5px 15px rgba(0,0,0,0.5)'
+                  background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%)',
+                  filter: 'drop-shadow(0 5px 15px rgba(212,175,55,0.3))'
                 }}
               >
-                {c.emoji}
+                {c.icon}
               </div>
             </div>
           ))}
         </div>
       </section>
-
-
-
 
       {/* ══════════════════════════════════════════════════════════════════════
           MODAL DE LOGIN
