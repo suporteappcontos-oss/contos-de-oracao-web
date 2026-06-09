@@ -313,12 +313,12 @@ export default function LandingPage() {
       {/* =========================================================================
           DIVISOR CURVO (Estilo Netflix) E FUNDO SÓLIDO PARA O RESTO DA PÁGINA
       ========================================================================= */}
-      <div className="relative bg-[#090B10] z-20 pt-10 pb-4">
-        <div className="absolute top-0 left-0 right-0 h-[60px] md:h-[100px] overflow-hidden -mt-[59px] md:-mt-[99px] z-20 pointer-events-none">
-          <div 
-            className="absolute left-1/2 -translate-x-1/2 top-0 w-[150%] sm:w-[130%] md:w-[120%] h-[300px] md:h-[600px] rounded-[100%] border-t-[3px]"
-            style={{ borderColor: PRIMARY, background: '#090B10', boxShadow: '0 -20px 50px rgba(212,175,55,0.15)' }}
-          />
+      <div className="relative bg-[#090B10] z-20 pt-10 pb-4 mt-8 md:mt-16">
+        <div className="absolute left-0 right-0 top-0 -translate-y-full w-full overflow-hidden leading-none pointer-events-none">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-[40px] md:h-[80px] block drop-shadow-[0_-15px_15px_rgba(212,175,55,0.15)]">
+            <path d="M0,100 Q50,0 100,100 Z" fill="#090B10" />
+            <path d="M0,100 Q50,0 100,100" fill="none" stroke="#D4AF37" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+          </svg>
         </div>
 
       {/* ══════════════════════════════════════════════════════════════════════
