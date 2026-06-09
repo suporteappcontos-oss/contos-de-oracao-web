@@ -265,13 +265,20 @@ export default function LandingPage() {
             </h1>
 
             <p
-              className="text-white/80 leading-relaxed mb-8 max-w-[440px] mx-auto lg:mx-0 font-medium"
+              className="text-white/80 leading-relaxed mb-2 max-w-[440px] mx-auto lg:mx-0 font-medium"
               style={{
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
                 fontSize: '0.9rem',
               }}
             >
               Assista, leia, aprenda e evangelize com filmes, revistas, aplicativos e materiais exclusivos.
+            </p>
+
+            <p 
+              className="text-white/90 font-bold mb-8 text-center lg:text-left text-[0.85rem]"
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.95)' }}
+            >
+              A partir de R$ 27,90. <span className="opacity-70 font-normal">Cancele quando quiser.</span>
             </p>
 
             <div className="flex flex-wrap gap-3.5 justify-center lg:justify-start">
