@@ -41,14 +41,21 @@ export default function DynamicBackground() {
   // Duplicar arrays para o efeito infinito funcionar sem quebrar
   const renderRow = (rowItems: string[], directionClass: string) => {
     if (rowItems.length === 0) return null;
-    const items = [...rowItems, ...rowItems, ...rowItems, ...rowItems]; // Suficiente para preencher a tela
+    
+    // Garantir que a sequência base tenha no mínimo 15 itens
+    let repeatedBase = [...rowItems];
+    while (repeatedBase.length < 15) {
+      repeatedBase = [...repeatedBase, ...rowItems];
+    }
+    // Duplicar exatamente a sequência inteira para o loop de -50% funcionar perfeitamente
+    const items = [...repeatedBase, ...repeatedBase];
 
     return (
       <div className={`flex gap-4 mb-4 ${directionClass}`}>
         {items.map((url, idx) => (
           <div 
             key={idx} 
-            className="w-40 sm:w-56 md:w-64 lg:w-72 aspect-video rounded-xl bg-cover bg-center shrink-0 border border-white/5 opacity-50"
+            className="w-40 sm:w-56 md:w-64 lg:w-72 aspect-video rounded-xl bg-cover bg-center shrink-0 border border-white/5 opacity-70"
             style={{ backgroundImage: `url(${url})` }}
           />
         ))}
@@ -70,8 +77,8 @@ export default function DynamicBackground() {
       </div>
 
       {/* Sobreposição escura (Gradient) para escurecer o fundo e permitir leitura do texto */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/80 to-[#090B10]/60 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#090B10] via-transparent to-[#090B10] pointer-events-none opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-[#090B10]/60 to-[#090B10]/40 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#090B10] via-transparent to-[#090B10] pointer-events-none opacity-40" />
     </div>
   );
 }

@@ -293,41 +293,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Card de benefícios (extrema direita, elegante e translúcido) */}
-          <div
-            className="w-full max-w-[400px] lg:max-w-none lg:w-[320px] shrink-0 rounded-2xl p-5 transition-all duration-300 lg:-mr-8"
-            style={{
-              background: 'rgba(15,22,42,0.85)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 15px 35px rgba(0,0,0,0.6)',
-            }}
-          >
-            <p className="text-white font-extrabold text-sm mb-4 flex items-center gap-1.5">
-              <span style={{ color: PRIMARY }}>★</span> Conteúdo exclusivo para assinantes
-            </p>
-            <ul className="flex flex-col gap-3 mb-5">
-              {[
-                'Novos vídeos toda semana',
-                'Materiais para catequistas',
-                'Atividades para imprimir',
-                'Jogos educativos',
-                'Revista mensal digital',
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-xs text-white/90 font-medium">
-                  <CheckCircle size={14} style={{ color: PRIMARY, flexShrink: 0 }} />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/planos"
-              className="block w-full text-center py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all hover:brightness-110 active:scale-95"
-              style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
-            >
-              ASSINAR AGORA
-            </Link>
-          </div>
+
         </div>
 
       </section>
