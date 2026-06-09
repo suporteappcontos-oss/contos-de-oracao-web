@@ -234,20 +234,7 @@ export default function LandingPage() {
         className="relative min-h-screen lg:h-screen flex items-center overflow-hidden pt-28 pb-16 lg:py-0"
         style={{ paddingTop: '0px' }}
       >
-        {/* Imagem de fundo premium enquadrada com perfeição para se encaixar perfeitamente e cobrir toda a tela no desktop e celular */}
-        <div
-          className="absolute inset-0 z-0 transition-all duration-500 bg-[#090B10] bg-no-repeat bg-[position:62%_center] lg:bg-[position:50%_22%] bg-cover"
-          style={{
-            backgroundImage: "linear-gradient(rgba(9, 11, 16, 0.05), rgba(9, 11, 16, 0.1)), url('/background.jpg')",
-          }}
-        />
-        {/* Gradiente azul de transição suave para fundir a imagem ao fundo preto absoluto (sem desfoque) */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-40 z-[1] pointer-events-none"
-          style={{
-            background: 'linear-gradient(to bottom, transparent 0%, rgba(30, 58, 138, 0.1) 40%, rgba(13, 22, 38, 0.4) 70%, rgba(9, 11, 16, 0.8) 90%, #090B10 100%)',
-          }}
-        />
+        {/* O fundo dinâmico agora é renderizado pelo DynamicBackground em page.tsx (ficando atrás de tudo) */}
         {/* Brilho dourado sutil */}
         <div
           className="absolute bottom-0 left-0 w-[60vw] h-[60vh] z-0 blur-[120px] opacity-20"
