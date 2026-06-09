@@ -619,13 +619,27 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           CTA ASSINATURA (COMPACTO)
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-10 px-6 w-full border-t border-b border-[#D4AF37]/20" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
-        <div className="max-w-[1000px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+      <section className="relative overflow-hidden py-12 px-6 w-full border-t border-b border-[#D4AF37]/20 flex justify-center" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
+        
+        {/* Imagens decorativas nas bordas */}
+        <img 
+          src="/jesus-criancas.png" 
+          alt="Jesus e Crianças" 
+          className="absolute left-0 bottom-0 h-[140%] object-contain object-left-bottom opacity-15 md:opacity-80 pointer-events-none z-0 md:translate-x-4"
+        />
+        
+        <img 
+          src="/mulher-orando.png" 
+          alt="Mulher Orando" 
+          className="absolute right-0 bottom-0 h-[140%] object-contain object-right-bottom opacity-15 md:opacity-80 pointer-events-none z-0 md:-translate-x-4"
+        />
+
+        <div className="relative z-10 max-w-[900px] w-full flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex-1">
-            <h2 className="text-white font-black text-xl md:text-2xl mb-2" style={{ fontFamily: FONT }}>
+            <h2 className="text-white font-black text-xl md:text-2xl mb-2" style={{ fontFamily: FONT, textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
               Pronto para fortalecer a fé da sua família?
             </h2>
-            <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-[600px] mx-auto md:mx-0">
+            <p className="text-white/90 text-sm md:text-base leading-relaxed max-w-[600px] mx-auto md:mx-0" style={{ textShadow: '0 2px 5px rgba(0,0,0,0.8)' }}>
               Tenha acesso a filmes, vídeos, revistas, atividades e conteúdos católicos exclusivos em um único lugar.
             </p>
           </div>
@@ -634,10 +648,10 @@ export default function LandingPage() {
               href="/planos"
               className="inline-block py-4 px-10 rounded-full font-black text-sm md:text-base uppercase tracking-wider transition-all hover:scale-[1.03]"
               style={{ 
-                background: `linear-gradient(90deg, #D4AF37, #FFF8D6, #D4AF37)`, 
+                background: 'linear-gradient(90deg, #D4AF37, #FFF8D6, #D4AF37)', 
                 backgroundSize: '200% auto',
                 color: '#000',
-                boxShadow: `0 4px 20px rgba(212,175,55,0.4)`
+                boxShadow: '0 4px 20px rgba(212,175,55,0.4)'
               }}
             >
               Assinar Agora
