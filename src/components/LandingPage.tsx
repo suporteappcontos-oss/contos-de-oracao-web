@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Play, ChevronRight, ChevronLeft, Star, BookOpen, CheckCircle, Users, Eye, Shield, Smartphone, Tv, Download, Printer, ShieldCheck } from 'lucide-react';
@@ -619,22 +619,22 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           CTA ASSINATURA (COMPACTO)
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden py-12 px-6 w-full border-t border-b border-[#D4AF37]/20 flex justify-center" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
+      <section className="relative py-12 px-6 w-full border-t border-b border-[#D4AF37]/20 flex justify-center mt-12" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
         
         {/* Imagens decorativas nas bordas */}
         <img 
           src="/jesus-criancas.png" 
           alt="Jesus e Crianças" 
-          className="absolute left-0 bottom-0 h-[140%] object-contain object-left-bottom opacity-15 md:opacity-80 pointer-events-none z-0 md:translate-x-4"
+          className="hidden md:block absolute left-0 bottom-0 h-[150%] object-contain object-left-bottom pointer-events-none z-10"
         />
         
         <img 
           src="/mulher-orando.png" 
           alt="Mulher Orando" 
-          className="absolute right-0 bottom-0 h-[140%] object-contain object-right-bottom opacity-15 md:opacity-80 pointer-events-none z-0 md:-translate-x-4"
+          className="hidden md:block absolute right-0 bottom-0 h-[150%] object-contain object-right-bottom pointer-events-none z-10"
         />
 
-        <div className="relative z-10 max-w-[900px] w-full flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+        <div className="relative z-20 max-w-[900px] w-full flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex-1">
             <h2 className="text-white font-black text-xl md:text-2xl mb-2" style={{ fontFamily: FONT, textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
               Pronto para fortalecer a fé da sua família?
