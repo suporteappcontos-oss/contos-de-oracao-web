@@ -231,77 +231,66 @@ export default function LandingPage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative min-h-screen lg:h-screen flex items-center overflow-hidden pt-28 pb-16 lg:py-0"
+        className="relative min-h-screen lg:h-screen flex items-center justify-center overflow-hidden pt-28 pb-16 lg:py-0"
         style={{ paddingTop: '0px' }}
       >
-        {/* O fundo dinâmico agora é renderizado pelo DynamicBackground em page.tsx (ficando atrás de tudo) */}
         {/* Brilho dourado sutil */}
         <div
           className="absolute bottom-0 left-0 w-[60vw] h-[60vh] z-0 blur-[120px] opacity-20"
           style={{ background: 'radial-gradient(circle, #D4AF37, transparent)' }}
         />
 
-        <div className="relative z-10 w-full max-w-[1650px] mx-auto px-6 lg:px-20 pb-28 pt-12 flex flex-col lg:flex-row justify-between items-center gap-12 h-full">
-          {/* Coluna esquerda (Fontes elegantes, compacta e alinhada à extrema esquerda) */}
-          <div className="flex-1 text-center lg:text-left max-w-[550px] lg:-ml-8">
-            <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
-              <span className="text-xs font-black uppercase tracking-widest" style={{ color: PRIMARY, textShadow: '0 1px 4px rgba(0,0,0,0.6)' }}>
-                Biblioteca Católica
-              </span>
-              <span className="w-10 h-[1.5px]" style={{ background: PRIMARY }} />
-            </div>
+        <div className="relative z-10 w-full max-w-[1200px] mx-auto px-6 lg:px-20 pb-28 pt-20 flex flex-col justify-center items-center h-full">
+          <div className="w-full text-center max-w-[800px] flex flex-col items-center">
 
             <h1
               className="font-extrabold leading-tight mb-4 text-white"
               style={{
-                fontSize: 'clamp(2rem, 3.8vw, 2.8rem)',
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+                fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)',
+                textShadow: '0 4px 15px rgba(0, 0, 0, 0.95), 0 2px 5px rgba(0, 0, 0, 0.9)',
                 fontFamily: FONT,
               }}
             >
-              O maior ecossistema <span style={{ color: PRIMARY }}>católico digital</span><br />
-              em desenho animado do Brasil<br />
-              para toda a família.
+              O maior canal <span style={{ color: PRIMARY }}>CATÓLICO</span><br />
+              em desenho animado do Brasil
             </h1>
 
             <p
-              className="text-white/80 leading-relaxed mb-2 max-w-[440px] mx-auto lg:mx-0 font-medium"
+              className="text-white/90 leading-relaxed mb-3 max-w-[600px] mx-auto font-medium"
               style={{
-                textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
-                fontSize: '0.9rem',
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.95)',
+                fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
               }}
             >
               Assista, leia, aprenda e evangelize com filmes, revistas, aplicativos e materiais exclusivos.
             </p>
 
             <p 
-              className="text-white/90 font-bold mb-8 text-center lg:text-left text-[0.85rem]"
-              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.95)' }}
+              className="text-white font-bold mb-10 text-center"
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.95)', fontSize: 'clamp(0.9rem, 1.2vw, 1rem)' }}
             >
-              A partir de R$ 27,90. <span className="opacity-70 font-normal">Cancele quando quiser.</span>
+              A partir de R$ 27,90. <span className="opacity-80 font-normal">Cancele quando quiser.</span>
             </p>
 
-            <div className="flex flex-wrap gap-3.5 justify-center lg:justify-start">
+            <div className="flex flex-col items-center gap-5">
               <Link
                 href="/planos"
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all hover:brightness-110 hover:scale-[1.02] shadow-md shadow-[#D4AF37]/15"
-                style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none' }}
+                className="flex items-center justify-center gap-2 px-10 py-4 rounded-xl font-black text-sm md:text-base transition-all hover:brightness-110 hover:scale-[1.03] shadow-xl shadow-[#D4AF37]/20"
+                style={{ background: PRIMARY, color: BG_ROOT, textDecoration: 'none', minWidth: '260px' }}
               >
-                COMEÇAR AGORA <ChevronRight size={16} />
+                COMEÇAR AGORA <ChevronRight size={18} strokeWidth={3} />
               </Link>
+              
               <Link
-                href="/planos"
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all hover:bg-white/10 backdrop-blur-sm"
-                style={{ border: '1px solid rgba(255,255,255,0.3)', color: '#fff', textDecoration: 'none', background: 'rgba(255,255,255,0.05)' }}
+                href="/materiais"
+                className="flex items-center gap-2 text-white/60 hover:text-white font-bold text-xs uppercase tracking-widest transition-all"
+                style={{ textDecoration: 'none', textShadow: '0 2px 5px rgba(0,0,0,0.8)' }}
               >
-                <Play size={16} fill="currentColor" /> EXPLORAR CONTEÚDOS
+                EXPLORAR CONTEÚDOS
               </Link>
             </div>
           </div>
-
-
         </div>
-
       </section>
 
 
