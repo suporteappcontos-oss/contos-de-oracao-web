@@ -310,6 +310,17 @@ export default function LandingPage() {
 
 
 
+      {/* =========================================================================
+          DIVISOR CURVO (Estilo Netflix) E FUNDO SÓLIDO PARA O RESTO DA PÁGINA
+      ========================================================================= */}
+      <div className="relative bg-[#090B10] z-20 pt-10 pb-4">
+        <div className="absolute top-0 left-0 right-0 h-[60px] md:h-[100px] overflow-hidden -mt-[59px] md:-mt-[99px] z-20 pointer-events-none">
+          <div 
+            className="absolute left-1/2 -translate-x-1/2 top-0 w-[150%] sm:w-[130%] md:w-[120%] h-[300px] md:h-[600px] rounded-[100%] border-t-[3px]"
+            style={{ borderColor: PRIMARY, background: '#090B10', boxShadow: '0 -20px 50px rgba(212,175,55,0.15)' }}
+          />
+        </div>
+
       {/* ══════════════════════════════════════════════════════════════════════
           VÍDEOS EM DESTAQUE (Carrossel dinâmico do catálogo do Supabase)
       ══════════════════════════════════════════════════════════════════════ */}
@@ -606,6 +617,8 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           MODAL DE LOGIN
       ══════════════════════════════════════════════════════════════════════ */}
+      </div>
+
       {showLogin && (
         <div
           className="fixed inset-0 z-[150] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
