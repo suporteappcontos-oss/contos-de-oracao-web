@@ -32,11 +32,21 @@ export default function DynamicBackground() {
     return <div className="fixed inset-0 z-[-1] bg-[#090B10]" />;
   }
 
-  // Dividir em 4 linhas para animação
-  const row1 = thumbnails.slice(0, 8);
-  const row2 = thumbnails.slice(8, 16);
-  const row3 = thumbnails.slice(16, 24);
-  const row4 = thumbnails.slice(24, 30);
+  // Cria linhas misturadas a partir do array completo para garantir que não haja repetições feias (caso tenham poucos vídeos)
+  const getMixedRow = (offset: number) => {
+    if (thumbnails.length === 0) return [];
+    const mixed = [...thumbnails];
+    // Rotaciona o array baseado no offset para que cada linha comece diferente
+    for(let i=0; i < offset % mixed.length; i++) {
+        mixed.push(mixed.shift()!);
+    }
+    return mixed;
+  };
+
+  const row1 = getMixedRow(0);
+  const row2 = getMixedRow(3);
+  const row3 = getMixedRow(6);
+  const row4 = getMixedRow(9);
 
   // Duplicar arrays para o efeito infinito funcionar sem quebrar
   const renderRow = (rowItems: string[], directionClass: string) => {
