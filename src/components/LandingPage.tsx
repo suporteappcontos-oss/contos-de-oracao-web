@@ -298,8 +298,8 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           VÍDEOS EM DESTAQUE (Carrossel dinâmico do catálogo do Supabase)
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6 lg:px-16 max-w-[1400px] mx-auto relative">
-        <div className="flex items-center justify-between mb-8">
+      <section className="py-12 w-full relative">
+        <div className="flex items-center justify-between mb-8 px-6 lg:px-16">
           <h2 className="text-white font-black text-xl md:text-2xl" style={{ fontFamily: FONT, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
             Vídeos em destaque
           </h2>
@@ -317,7 +317,7 @@ export default function LandingPage() {
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2" style={{ borderColor: PRIMARY }}></div>
           </div>
         ) : videos.length === 0 ? (
-          <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
+          <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10 mx-6 lg:mx-16">
             <p className="text-white/60 text-sm">Nenhum vídeo disponível no catálogo no momento.</p>
           </div>
         ) : (
@@ -362,17 +362,6 @@ export default function LandingPage() {
                 );
               })}
             </div>
-
-            {/* Botão Direita */}
-            <button
-              onClick={() => {
-                const el = document.getElementById('featured-videos-scroll');
-                if (el) el.scrollBy({ left: 320, behavior: 'smooth' });
-              }}
-              className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full z-20 flex items-center justify-center transition-all bg-[#090B10]/80 border border-white/10 opacity-0 group-hover/carousel:opacity-100 shadow-lg hover:scale-110 active:scale-95 cursor-pointer"
-            >
-              <ChevronRight size={20} style={{ color: PRIMARY }} />
-            </button>
           </div>
         )}
       </section>
@@ -380,8 +369,8 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           MATERIAIS PEDAGÓGICOS
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6 lg:px-16 max-w-[1400px] mx-auto relative">
-        <div className="flex items-center justify-between mb-8">
+      <section className="py-12 w-full relative">
+        <div className="flex items-center justify-between mb-8 px-6 lg:px-16">
           <h2 className="text-white font-black text-xl md:text-2xl" style={{ fontFamily: FONT, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
             Materiais pedagógicos em PDF
           </h2>
