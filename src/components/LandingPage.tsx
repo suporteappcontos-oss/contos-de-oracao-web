@@ -224,7 +224,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div style={{ fontFamily: FONT, background: BG_ROOT, color: '#fff', overflowX: 'hidden' }}>
+    <div style={{ fontFamily: FONT, background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
 
       {/* ══════════════════════════════════════════════════════════════════════
           HERO
