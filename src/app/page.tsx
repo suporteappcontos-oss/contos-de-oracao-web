@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 import LandingPage from "@/components/LandingPage";
-import { createClient } from '@/utils/supabase/server';
 
 export const metadata = {
   title: 'Contos de Oração — Biblioteca Católica para Crianças',
@@ -19,19 +18,9 @@ export const revalidate = 0;
 export default async function Home({ searchParams }: Props) {
   const { acesso } = await searchParams;
 
-  const supabase = await createClient();
-  const { data: videos } = await supabase
-    .from('videos')
-    .select('thumbnail_url')
-    .eq('ativo', true)
-    .order('criado_em', { ascending: false })
-    .limit(30);
-
-  const images = videos?.map(v => v.thumbnail_url).filter(Boolean) || [];
-
   return (
     <main>
-      <DynamicBackground images={images} />
+      <DynamicBackground />
       <Navbar />
 
       {/* Banner de acesso expirado */}
