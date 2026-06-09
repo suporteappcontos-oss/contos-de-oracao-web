@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Play, ChevronRight, ChevronLeft, Star, BookOpen, CheckCircle, Users, Eye, Shield, Smartphone } from 'lucide-react';
@@ -560,52 +560,57 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════
-          PARA CATEQUISTAS E FAMÍLIAS
+          TUDO PARA EVANGELIZAR SUA FAMÍLIA EM UM SÓ LUGAR
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="py-12 px-6 lg:px-10 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="py-16 px-6 lg:px-10 max-w-[1200px] mx-auto">
+        <h2 className="text-white font-black text-2xl md:text-3xl mb-8" style={{ fontFamily: FONT, textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+          Tudo para evangelizar sua família em um só lugar
+        </h2>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {[
             {
-              emoji: '🎓',
-              title: 'Formação para Catequistas',
-              desc: 'Cursos, ferramentas e materiais exclusivos para sua missão.',
-              href: '/planos',
+              emoji: '🎬',
+              title: 'Assista Novos Filmes',
+              desc: 'Histórias animadas sobre Jesus, Nossa Senhora, os santos e a Bíblia para fortalecer a fé de toda a família.',
             },
             {
-              emoji: '👨‍👩‍👧',
-              title: 'Conteúdo para Famílias',
-              desc: 'Recursos para viver a fé em casa com as crianças.',
-              href: '/planos',
+              emoji: '⬇️',
+              title: 'Leve o Contos de Oração com Você',
+              desc: 'Baixe os vídeos curtos do Contos de Oração para assistir offline, compartilhar e evangelizar onde estiver.',
             },
             {
-              emoji: '🔒',
-              title: 'Ambiente Seguro',
-              desc: 'Todo conteúdo é revisado por especialistas e 100% seguro para crianças.',
-              href: '/planos',
+              emoji: '🖨️',
+              title: 'Conteúdo para Baixar e Imprimir',
+              desc: 'Revistas mensais, jogos, músicas, atividades e materiais pedagógicos prontos para usar em casa ou na catequese.',
+            },
+            {
+              emoji: '🛡️',
+              title: 'Ambiente 100% Católico',
+              desc: 'Conteúdo seguro para crianças e famílias, produzido com fidelidade à doutrina da Igreja Católica. Sem ideologias e com valores cristãos para todas as idades.',
             },
           ].map((c, i) => (
             <div
               key={i}
-              className="rounded-2xl p-6 flex flex-col gap-4 transition-all hover:scale-[1.02]"
-              style={{ background: BG_CARD, border: '1px solid rgba(255,255,255,0.07)' }}
+              className="rounded-2xl p-6 md:p-8 flex flex-col relative overflow-hidden transition-all duration-300 hover:scale-[1.03] group min-h-[260px]"
+              style={{ 
+                background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.8), rgba(10, 14, 25, 0.9))', 
+                border: '1px solid rgba(255,255,255,0.05)',
+                boxShadow: '0 10px 30px -10px rgba(0,0,0,0.5)'
+              }}
             >
+              <h3 className="text-white font-black text-lg md:text-xl mb-3 leading-tight relative z-10">{c.title}</h3>
+              <p className="text-white/60 text-sm leading-relaxed relative z-10">{c.desc}</p>
+              
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-                style={{ background: 'rgba(212,175,55,0.1)', border: `1px solid ${PRIMARY}33` }}
+                className="absolute bottom-4 right-4 w-12 h-12 flex items-center justify-center text-2xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 opacity-80"
+                style={{ 
+                  background: 'radial-gradient(circle, rgba(212,175,55,0.2) 0%, transparent 70%)',
+                  textShadow: '0 5px 15px rgba(0,0,0,0.5)'
+                }}
               >
                 {c.emoji}
               </div>
-              <div>
-                <h3 className="text-white font-black text-base mb-1">{c.title}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{c.desc}</p>
-              </div>
-              <Link
-                href={c.href}
-                className="flex items-center gap-1 text-xs font-black transition-all hover:brightness-125 mt-auto"
-                style={{ color: PRIMARY, textDecoration: 'none' }}
-              >
-                SAIBA MAIS <ChevronRight size={13} />
-              </Link>
             </div>
           ))}
         </div>
