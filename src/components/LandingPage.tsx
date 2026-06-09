@@ -241,35 +241,35 @@ export default function LandingPage() {
         />
 
         <div className="relative z-10 w-full max-w-[1200px] mx-auto px-6 lg:px-20 pb-28 pt-20 flex flex-col justify-center items-center h-full">
-          <div className="w-full text-center max-w-[800px] flex flex-col items-center">
+          <div className="w-full text-center max-w-[1200px] flex flex-col items-center">
 
             <h1
               className="font-extrabold leading-tight mb-4 text-white"
               style={{
-                fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)',
+                fontSize: 'clamp(1.8rem, 4.2vw, 3.5rem)',
                 textShadow: '0 4px 15px rgba(0, 0, 0, 0.95), 0 2px 5px rgba(0, 0, 0, 0.9)',
                 fontFamily: FONT,
               }}
             >
-              O maior canal <span style={{ color: PRIMARY }}>CATÓLICO</span><br />
-              em desenho animado do Brasil
+              <span className="block whitespace-nowrap">O maior canal <span style={{ color: PRIMARY }}>CATÓLICO</span></span>
+              <span className="block whitespace-nowrap">em desenho animado do Brasil</span>
             </h1>
 
             <p
-              className="text-white/90 leading-relaxed mb-3 max-w-[600px] mx-auto font-medium"
+              className="text-white/90 leading-relaxed mb-3 w-full max-w-none font-medium"
               style={{
                 textShadow: '0 2px 10px rgba(0, 0, 0, 0.95)',
-                fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
+                fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)',
               }}
             >
-              Assista, leia, aprenda e evangelize com filmes, revistas, aplicativos e materiais exclusivos.
+              <span className="md:whitespace-nowrap">Assista, leia, aprenda e evangelize com filmes, revistas, aplicativos e materiais exclusivos.</span>
             </p>
 
             <p 
-              className="text-white font-bold mb-10 text-center"
-              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.95)', fontSize: 'clamp(0.9rem, 1.2vw, 1rem)' }}
+              className="text-white font-bold mb-10 text-center w-full max-w-none"
+              style={{ textShadow: '0 2px 8px rgba(0,0,0,0.95)', fontSize: 'clamp(0.85rem, 1.2vw, 1rem)' }}
             >
-              A partir de R$ 27,90. <span className="opacity-80 font-normal">Cancele quando quiser.</span>
+              <span className="md:whitespace-nowrap">A partir de R$ 27,90. <span className="opacity-80 font-normal">Cancele quando quiser.</span></span>
             </p>
 
             <div className="flex flex-col items-center gap-5">
