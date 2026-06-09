@@ -259,9 +259,9 @@ export default function LandingPage() {
                 fontFamily: FONT,
               }}
             >
-              Universo católico<br />
-              para crianças,<br />
-              <span style={{ color: PRIMARY }}>de forma divertida e<br />encantadora.</span>
+              O maior ecossistema <span style={{ color: PRIMARY }}>católico digital</span><br />
+              em desenho animado do Brasil<br />
+              para toda a família.
             </h1>
 
             <p
@@ -271,8 +271,7 @@ export default function LandingPage() {
                 fontSize: '0.9rem',
               }}
             >
-              Histórias, vídeos, jogos, atividades e muito mais para ensinar a fé católica de
-              maneira moderna, segura e emocionante.
+              Assista, leia, aprenda e evangelize com filmes, revistas, aplicativos e materiais exclusivos.
             </p>
 
             <div className="flex flex-wrap gap-3.5 justify-center lg:justify-start">
@@ -298,45 +297,7 @@ export default function LandingPage() {
 
       </section>
 
-      {/* Cards de Métricas Premium posicionados exatamente no meio da divisória (overlap) de forma segura fora do overflow-hidden */}
-      <div 
-        className="relative z-30 -mt-10 sm:-mt-12 w-full max-w-[1300px] mx-auto px-6"
-      >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          {[
-            { icon: <Users size={18} />, val: '+850 mil',   label: 'seguidores' },
-            { icon: <Play size={18} fill="currentColor" />,   val: '+120 milhões', label: 'visualizações' },
-            { icon: <Users size={18} />, val: '+200 mil',   label: 'famílias' },
-            { icon: <Shield size={18} />, val: 'Ambiente 100%', label: 'seguro para crianças' },
-          ].map((m, i) => (
-            <div 
-              key={i} 
-              className="flex items-center gap-3 p-3 sm:p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.03] hover:border-[#D4AF37]/45"
-              style={{ 
-                background: 'rgba(15, 18, 29, 0.92)', 
-                borderColor: 'rgba(212, 175, 55, 0.22)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-                backdropFilter: 'blur(12px)',
-              }}
-            >
-              <div 
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: 'rgba(212, 175, 55, 0.1)', color: PRIMARY }}
-              >
-                {m.icon}
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-white font-extrabold text-sm sm:text-base tracking-tight leading-none">
-                  {m.val}
-                </span>
-                <span className="text-white/60 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mt-1 truncate">
-                  {m.label}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+
 
       {/* ══════════════════════════════════════════════════════════════════════
           VÍDEOS EM DESTAQUE (Carrossel dinâmico do catálogo do Supabase)
