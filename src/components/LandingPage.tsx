@@ -225,7 +225,8 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div style={{ fontFamily: FONT, background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
+    <div style={{ position: 'relative', fontFamily: FONT, background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
+      <CometTrailEffect />
 
       {/* ══════════════════════════════════════════════════════════════════════
           HERO
@@ -474,7 +475,6 @@ export default function LandingPage() {
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
           }}
         >
-          <CometTrailEffect />
           {/* Efeito de brilho de fundo */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
              <div className="absolute top-[-50%] left-[-20%] w-[100%] h-[150%] opacity-20 transition-opacity duration-500 group-hover:opacity-40" style={{ background: `radial-gradient(ellipse at center, ${PRIMARY}40 0%, transparent 60%)` }} />
@@ -600,7 +600,6 @@ export default function LandingPage() {
                 borderColor: 'rgba(255,255,255,0.05)',
               }}
             >
-              <CometTrailEffect />
               
               <h3 className="text-white font-black text-lg md:text-xl mb-3 leading-tight relative z-10">{c.title}</h3>
               <p className="text-white/60 text-sm leading-relaxed relative z-10">{c.desc}</p>
@@ -624,10 +623,6 @@ export default function LandingPage() {
       ══════════════════════════════════════════════════════════════════════ */}
         <section className="relative py-12 px-6 w-full border-t border-b border-[#D4AF37]/20 flex justify-center mt-12 group" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
           
-          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            <CometTrailEffect />
-          </div>
-        
         {/* Imagens decorativas nas bordas */}
         <img 
           src="/jesus-criancas.png" 
