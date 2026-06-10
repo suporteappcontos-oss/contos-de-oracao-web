@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Play, ChevronRight, ChevronLeft, Star, BookOpen, CheckCircle, Users, Eye, Shield, Smartphone, Tv, Download, Printer, ShieldCheck } from 'lucide-react';
@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { CATEGORIAS_CONFIG } from '@/app/materiais/constants';
+import CometTrailEffect from './CometTrailEffect';
 const QRLogin = dynamic(() => import('@/components/QRLogin'), { ssr: false });
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
@@ -467,12 +468,13 @@ export default function LandingPage() {
         <div
           className="relative rounded-3xl overflow-hidden p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center border transition-all duration-500 hover:shadow-2xl group"
           style={{
-            background: 'linear-gradient(135deg, rgba(20, 25, 40, 0.7) 0%, rgba(10, 14, 25, 0.9) 100%)',
+            background: 'linear-gradient(145deg, #1A1025 0%, #0A0514 100%)',
             backdropFilter: 'blur(20px)',
             borderColor: 'rgba(212, 175, 55, 0.2)',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
           }}
         >
+          <CometTrailEffect />
           {/* Efeito de brilho de fundo */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
              <div className="absolute top-[-50%] left-[-20%] w-[100%] h-[150%] opacity-20 transition-opacity duration-500 group-hover:opacity-40" style={{ background: `radial-gradient(ellipse at center, ${PRIMARY}40 0%, transparent 60%)` }} />
@@ -589,16 +591,17 @@ export default function LandingPage() {
               title: 'Ambiente 100% Católico',
               desc: 'Conteúdo seguro para crianças e famílias, produzido com fidelidade à doutrina da Igreja Católica. Sem ideologias e com valores cristãos para todas as idades.',
             },
-          ].map((c, i) => (
+          ].map((c, index) => (
             <div
-              key={i}
-              className="rounded-2xl p-6 md:p-8 flex flex-col relative overflow-hidden transition-all duration-300 hover:scale-[1.03] group min-h-[260px]"
-              style={{ 
-                background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.8), rgba(10, 14, 25, 0.9))', 
-                border: '1px solid rgba(255,255,255,0.05)',
-                boxShadow: '0 10px 30px -10px rgba(0,0,0,0.5)'
+              key={index}
+              className="group relative rounded-2xl p-6 border transition-all duration-300 overflow-hidden cursor-default flex flex-col h-full"
+              style={{
+                background: 'linear-gradient(180deg, rgba(26,16,37,0.6) 0%, rgba(10,5,20,0.8) 100%)',
+                borderColor: 'rgba(255,255,255,0.05)',
               }}
             >
+              <CometTrailEffect />
+              
               <h3 className="text-white font-black text-lg md:text-xl mb-3 leading-tight relative z-10">{c.title}</h3>
               <p className="text-white/60 text-sm leading-relaxed relative z-10">{c.desc}</p>
               
@@ -619,7 +622,11 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════════════════════════════════
           CTA ASSINATURA (COMPACTO)
       ══════════════════════════════════════════════════════════════════════ */}
-      <section className="relative py-12 px-6 w-full border-t border-b border-[#D4AF37]/20 flex justify-center mt-12" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
+        <section className="relative py-12 px-6 w-full border-t border-b border-[#D4AF37]/20 flex justify-center mt-12 group" style={{ background: 'linear-gradient(135deg, rgba(25, 30, 50, 0.4), rgba(10, 14, 25, 0.8))' }}>
+          
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            <CometTrailEffect />
+          </div>
         
         {/* Imagens decorativas nas bordas */}
         <img 
