@@ -9,53 +9,60 @@ export default function CometTrailEffect() {
 
     let particles: HTMLSpanElement[] = [];
     
-    // Throttle particle creation
-    let lastSpawn = 0;
+    // Track last mouse position to interpolate if it moves too fast
+    let lastPos: { x: number, y: number } | null = null;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const now = Date.now();
-      if (now - lastSpawn < 15) return; // spawn every 15ms max (super smooth)
-      lastSpawn = now;
-
       const rect = parent.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      // Spawn 3 to 6 particles per move for a thick trail
-      const count = Math.floor(Math.random() * 4) + 3;
-      for (let i = 0; i < count; i++) {
+      if (lastPos) {
+        // Calculate distance
+        const dx = x - lastPos.x;
+        const dy = y - lastPos.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        // If mouse moved really fast, interpolate to avoid gaps in the "snake"
+        const steps = Math.max(1, Math.floor(dist / 5)); // spawn a particle every 5px
+        for (let i = 1; i <= steps; i++) {
+          const interpX = lastPos.x + (dx * (i / steps));
+          const interpY = lastPos.y + (dy * (i / steps));
+          createParticle(interpX, interpY);
+        }
+      } else {
         createParticle(x, y);
       }
+
+      lastPos = { x, y };
+    };
+
+    const handleMouseLeave = () => {
+      lastPos = null; // reset when mouse leaves
     };
 
     const createParticle = (x: number, y: number) => {
       const particle = document.createElement('span');
-      // Set z-index high so it's above other elements if used globally
-      particle.className = 'pointer-events-none absolute rounded-full bg-gradient-to-r from-[#D4AF37] to-[#FFF8D6] shadow-[0_0_15px_rgba(212,175,55,1)] z-[100]';
+      // Set z-index high and a strong golden glow
+      particle.className = 'pointer-events-none absolute rounded-full bg-gradient-to-r from-[#FFF8D6] to-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,1)] z-[100]';
       
-      const size = Math.random() * 6 + 3; // 3px to 9px (larger)
+      const size = 10; // fixed size for the snake body
       
       particle.style.width = `${size}px`;
       particle.style.height = `${size}px`;
       particle.style.left = `${x}px`;
       particle.style.top = `${y}px`;
       
-      // Random movement (falling down and drifting much further)
-      const angle = Math.random() * Math.PI * 2;
-      // Drift horizontally and vertically by 50 to 150 pixels (roughly 3cm on screens)
-      const velocity = Math.random() * 100 + 50; 
-      const tx = Math.cos(angle) * velocity;
-      const ty = Math.sin(angle) * velocity + 80; // strong gravity effect
-      
-      // Animate using Web Animations API for extreme performance
+      // Animate: shrink and fade in place (no gravity, no drift)
+      // This creates the "snake/tail" effect
       particle.animate(
         [
           { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-          { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0)`, opacity: 0 }
+          { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 }
         ],
         {
-          duration: Math.random() * 800 + 800, // 800ms to 1600ms (lives much longer)
-          easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+          duration: 600, // trail length (600ms makes it nicely visible)
+          easing: 'ease-out',
           fill: 'forwards'
         }
       ).onfinish = () => {
@@ -68,8 +75,11 @@ export default function CometTrailEffect() {
     };
 
     parent.addEventListener('mousemove', handleMouseMove);
+    parent.addEventListener('mouseleave', handleMouseLeave);
+    
     return () => {
       parent.removeEventListener('mousemove', handleMouseMove);
+      parent.removeEventListener('mouseleave', handleMouseLeave);
       particles.forEach(p => p.remove());
     };
   }, []);
