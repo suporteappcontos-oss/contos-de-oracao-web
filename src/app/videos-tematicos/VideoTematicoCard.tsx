@@ -114,49 +114,92 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
         </div>
       </div>
 
-      {/* ── Modal Player 9:16 ── */}
+      {/* ── Modal Player c/ Descrição à esquerda ── */}
       {modalAberto && (
         <div
-          className="fixed inset-0 z-[999] flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(8px)' }}
+          className="fixed inset-0 z-[999] flex items-center justify-center p-0 md:p-6"
+          style={{ backgroundColor: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(10px)' }}
           onClick={(e) => { if (e.target === e.currentTarget) setModalAberto(false) }}
         >
-          {/* Container 9:16 — ocupa no máximo 90vh de altura e a largura proporcional */}
-          <div
-            className="relative rounded-2xl overflow-hidden shadow-2xl"
-            style={{
-              height: 'min(90vh, 800px)',
-              width: 'calc(min(90vh, 800px) * 9 / 16)',
-              border: '1px solid rgba(225,48,108,0.3)',
+          {/* Main Modal Container */}
+          <div 
+            className="relative w-full h-full md:h-auto md:max-w-6xl flex flex-col-reverse md:flex-row bg-[#0A0D14] md:rounded-[32px] overflow-hidden shadow-2xl border-0 md:border"
+            style={{ 
+              borderColor: 'rgba(225,48,108,0.3)', 
             }}
           >
             {/* Botão fechar */}
             <button
               onClick={() => setModalAberto(false)}
-              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)' }}
+              className="absolute top-4 right-4 md:top-6 md:right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+              style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}
             >
-              <X size={16} className="text-white" />
+              <X size={20} className="text-white" />
             </button>
 
-            {/* Badge Instagram no topo */}
-            <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-              <div
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.6rem] font-black uppercase tracking-wider"
-                style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
-              >
-                <IgIcon size={9} /> Instagram
+            {/* Lado Esquerdo: Detalhes e Descrição */}
+            <div className="flex-1 p-6 md:p-12 flex flex-col relative overflow-y-auto"
+                 style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(225,48,108,0.5) transparent' }}>
+              
+              {/* Efeito de brilho de fundo */}
+              <div 
+                className="absolute top-0 left-0 w-full h-64 opacity-[0.15] pointer-events-none"
+                style={{ background: 'radial-gradient(circle at top left, #E1306C 0%, transparent 70%)' }}
+              />
+              
+              <div className="relative z-10 flex flex-col h-full">
+                {/* Badge */}
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[0.7rem] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(225,48,108,0.3)]"
+                    style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
+                  >
+                    <IgIcon size={12} /> Instagram
+                  </div>
+                  <span className="text-white/40 text-xs font-semibold uppercase tracking-wider border border-white/10 px-2.5 py-1 rounded-full">
+                    {new Date(video.criado_em).toLocaleDateString('pt-BR')}
+                  </span>
+                </div>
+
+                {/* Título */}
+                <h2 className="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight">
+                  {video.titulo}
+                </h2>
+
+                {/* Descrição */}
+                <div className="text-white/70 text-sm md:text-base leading-relaxed flex-1 space-y-4 whitespace-pre-wrap">
+                  {video.descricao || <span className="italic opacity-50">Nenhuma descrição disponível para este vídeo.</span>}
+                </div>
+
+                {/* Ações / Footer da esquerda */}
+                <div className="mt-8 pt-8 border-t border-white/10 flex flex-wrap gap-4 shrink-0">
+                  <a
+                    href={`/api/download-video?videoId=${extrairVideoId(video.video_url)}&titulo=${encodeURIComponent(video.titulo)}`}
+                    download
+                    className="flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-sm font-black transition-all hover:scale-[1.03] hover:shadow-[0_0_25px_rgba(225,48,108,0.4)]"
+                    style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
+                  >
+                    <Download size={20} />
+                    Baixar Vídeo
+                  </a>
+                </div>
               </div>
-              <span className="text-white/80 text-xs font-bold hidden sm:block">{video.titulo}</span>
             </div>
 
-            {/* iframe ocupa 100% do container 9:16 */}
-            <iframe
-              src={`${video.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
-              className="absolute inset-0 w-full h-full border-0"
-              allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen"
-              allowFullScreen
-            />
+            {/* Lado Direito: Player (9:16) */}
+            <div className="relative bg-black flex-shrink-0 md:border-l border-white/5">
+              <div 
+                className="relative w-full aspect-[9/16] md:aspect-auto md:h-[min(90vh,800px)] md:w-[calc(min(90vh,800px)*9/16)]"
+              >
+                <iframe
+                  src={`${video.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
+                  className="absolute inset-0 w-full h-full border-0"
+                  allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       )}
