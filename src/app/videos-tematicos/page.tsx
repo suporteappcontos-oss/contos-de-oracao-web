@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
-import VideoTematicoCard from './VideoTematicoCard'
+import VideosTematicosGaleria from './VideosTematicosGaleria'
 
 export const metadata: Metadata = {
   title: 'Vídeos Instagram | Contos de Oração',
@@ -96,21 +96,9 @@ export default async function VideosTematicosPage() {
         </div>
       </div>
 
-      {/* Grade de Vídeos */}
+      {/* Grade de Vídeos (Galeria Dinâmica) */}
       <div className="relative z-10 max-w-[1600px] mx-auto px-4 pb-20">
-        {lista.length === 0 ? (
-          <div className="text-center py-20 text-white/30">
-            <IgIcon size={48} className="mx-auto mb-4 opacity-30" />
-            <p className="text-lg font-bold">Nenhum vídeo disponível ainda.</p>
-            <p className="text-sm mt-1">Em breve novos conteúdos serão publicados aqui.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-            {lista.map((video) => (
-              <VideoTematicoCard key={video.id} video={video} />
-            ))}
-          </div>
-        )}
+        <VideosTematicosGaleria videos={lista} />
       </div>
 
       <Footer />
