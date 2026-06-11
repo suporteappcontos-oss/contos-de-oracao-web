@@ -50,24 +50,51 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
     setCancelouProximo(false)
   }, [videoAtualIndex])
 
-  // Lida com as mensagens do iframe (Bunny.net envia eventos via postMessage)
-  useEffect(() => {
-    const handleMessage = (e: MessageEvent) => {
-      // Ignora eventos que não sejam strings ou objetos
-      if (!e.data) return
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
-      let eventData = e.data
-      if (typeof e.data === 'string') {
-        try { eventData = JSON.parse(e.data) } catch (err) { /* ignore */ }
+  // Lida com as mensagens do iframe (Bunny.net usa o protocolo player.js)
+  useEffect(() => {
+    if (videoAtualIndex === null) return
+
+    // Tenta forçar a inscrição caso o "ready" tenha sido disparado antes do nosso useEffect
+    const inscreverEventos = () => {
+      if (iframeRef.current?.contentWindow) {
+        const win = iframeRef.current.contentWindow
+        win.postMessage(JSON.stringify({
+          context: 'player.js', version: '0.0.11', method: 'addEventListener', value: 'ended', listener: 'ended-listener'
+        }), '*')
+        win.postMessage(JSON.stringify({
+          context: 'player.js', version: '0.0.11', method: 'addEventListener', value: 'timeupdate', listener: 'time-listener'
+        }), '*')
+      }
+    }
+
+    // Tenta agora e mais uma vez depois de 1.5s pra garantir
+    inscreverEventos()
+    const fallbackTimer = setTimeout(inscreverEventos, 1500)
+
+    const handleMessage = (e: MessageEvent) => {
+      let data
+      try {
+        data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data
+      } catch (err) { return }
+
+      // Aceita apenas mensagens no formato player.js
+      if (data.context !== 'player.js') return
+
+      // Quando o player estiver pronto, nos inscrevemos nos eventos
+      if (data.event === 'ready') {
+        inscreverEventos()
       }
 
-      // Se o player enviar evento de "ended" ou o tempo atualizar
-      if (eventData === 'ended' || eventData?.event === 'ended') {
+      // Processa os eventos recebidos
+      if (data.event === 'ended') {
         iniciarContagemProximo()
-      } else if (eventData?.event === 'timeupdate') {
-        const current = eventData.currentTime || 0
-        const duration = eventData.duration || 0
-        // Se faltar menos de 10 segundos e o vídeo for maior que 10s
+      } else if (data.event === 'timeupdate' && data.value) {
+        const current = data.value.seconds || 0
+        const duration = data.value.duration || 0
+        
+        // Se faltar 10 segundos ou menos, inicia a contagem do card
         if (duration > 10 && (duration - current) <= 10 && (duration - current) > 0) {
           iniciarContagemProximo((duration - current).toFixed(0))
         }
@@ -75,7 +102,10 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
     }
 
     window.addEventListener('message', handleMessage)
-    return () => window.removeEventListener('message', handleMessage)
+    return () => {
+      window.removeEventListener('message', handleMessage)
+      clearTimeout(fallbackTimer)
+    }
   }, [videoAtualIndex])
 
   const iniciarContagemProximo = (initialSeconds?: string) => {
@@ -320,7 +350,7 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
                 className="relative w-full aspect-[9/16] md:aspect-auto md:h-[min(85vh,800px)] md:w-[calc(min(85vh,800px)*9/16)]"
               >
                 <iframe
-                  // Forçamos a key do iframe para que ele recarregue quando mudar o video
+                  ref={iframeRef}
                   key={`iframe-${videoAtivo.id}`}
                   src={`${videoAtivo.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
                   className="absolute inset-0 w-full h-full border-0"
