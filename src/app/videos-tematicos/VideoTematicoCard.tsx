@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Download, Play } from 'lucide-react'
 
 function IgIcon({ size = 10 }: { size?: number }) {
@@ -33,6 +34,12 @@ function construirDownloadUrl(embedUrl: string): string {
 
 export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
   const [modalAberto, setModalAberto] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const downloadUrl = construirDownloadUrl(video.video_url)
   const capaUrl = video.capa_url || '/insta.png'
 
@@ -115,20 +122,20 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
       </div>
 
       {/* ── Modal Player c/ Descrição à esquerda ── */}
-      {modalAberto && (
+      {modalAberto && mounted && createPortal(
         <div
-          className="fixed inset-0 z-[999] flex items-center justify-center p-0 md:p-6"
-          style={{ backgroundColor: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(10px)' }}
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-0 md:p-8"
+          style={{ backgroundColor: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(15px)' }}
           onClick={(e) => { if (e.target === e.currentTarget) setModalAberto(false) }}
         >
           {/* Main Modal Container */}
           <div 
-            className="relative w-full h-full md:h-auto md:max-w-6xl flex flex-col-reverse md:flex-row bg-[#0A0D14] md:rounded-[32px] overflow-hidden shadow-2xl border-0 md:border"
+            className="relative w-full h-full md:h-auto md:max-w-[1100px] flex flex-col-reverse md:flex-row bg-[#0A0D14] md:rounded-[32px] overflow-hidden shadow-2xl border-0 md:border"
             style={{ 
-              borderColor: 'rgba(225,48,108,0.3)', 
+              borderColor: 'rgba(225,48,108,0.2)', 
             }}
           >
-            {/* Botão fechar */}
+            {/* Botão fechar (no mobile fica dentro do lado esquerdo para não sumir no topo) */}
             <button
               onClick={() => setModalAberto(false)}
               className="absolute top-4 right-4 md:top-6 md:right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
@@ -138,49 +145,46 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
             </button>
 
             {/* Lado Esquerdo: Detalhes e Descrição */}
-            <div className="flex-1 p-6 md:p-12 flex flex-col relative overflow-y-auto"
+            <div className="flex-1 p-8 md:p-14 flex flex-col justify-center relative overflow-y-auto"
                  style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(225,48,108,0.5) transparent' }}>
               
               {/* Efeito de brilho de fundo */}
               <div 
-                className="absolute top-0 left-0 w-full h-64 opacity-[0.15] pointer-events-none"
-                style={{ background: 'radial-gradient(circle at top left, #E1306C 0%, transparent 70%)' }}
+                className="absolute top-0 left-0 w-full h-full opacity-[0.08] pointer-events-none"
+                style={{ background: 'radial-gradient(circle at center, #E1306C 0%, transparent 60%)' }}
               />
               
-              <div className="relative z-10 flex flex-col h-full">
+              <div className="relative z-10 flex flex-col">
                 {/* Badge */}
                 <div className="flex items-center gap-3 mb-6">
                   <div
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[0.7rem] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(225,48,108,0.3)]"
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[0.75rem] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(225,48,108,0.3)]"
                     style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
                   >
-                    <IgIcon size={12} /> Instagram
+                    <IgIcon size={12} /> Exclusivo Instagram
                   </div>
-                  <span className="text-white/40 text-xs font-semibold uppercase tracking-wider border border-white/10 px-2.5 py-1 rounded-full">
-                    {new Date(video.criado_em).toLocaleDateString('pt-BR')}
-                  </span>
                 </div>
 
                 {/* Título */}
-                <h2 className="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight">
+                <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
                   {video.titulo}
                 </h2>
 
                 {/* Descrição */}
-                <div className="text-white/70 text-sm md:text-base leading-relaxed flex-1 space-y-4 whitespace-pre-wrap">
-                  {video.descricao || <span className="italic opacity-50">Nenhuma descrição disponível para este vídeo.</span>}
+                <div className="text-white/70 text-base md:text-lg leading-relaxed space-y-4 whitespace-pre-wrap font-medium">
+                  {video.descricao || <span className="italic opacity-50 font-normal">Nenhuma descrição disponível para este vídeo.</span>}
                 </div>
 
                 {/* Ações / Footer da esquerda */}
-                <div className="mt-8 pt-8 border-t border-white/10 flex flex-wrap gap-4 shrink-0">
+                <div className="mt-10 pt-8 flex flex-wrap gap-4 shrink-0">
                   <a
                     href={`/api/download-video?videoId=${extrairVideoId(video.video_url)}&titulo=${encodeURIComponent(video.titulo)}`}
                     download
-                    className="flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-sm font-black transition-all hover:scale-[1.03] hover:shadow-[0_0_25px_rgba(225,48,108,0.4)]"
+                    className="flex items-center justify-center gap-2 px-8 py-4 rounded-[18px] text-sm font-black transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(225,48,108,0.5)] w-full md:w-auto"
                     style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
                   >
                     <Download size={20} />
-                    Baixar Vídeo
+                    Fazer Download
                   </a>
                 </div>
               </div>
@@ -189,7 +193,7 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
             {/* Lado Direito: Player (9:16) */}
             <div className="relative bg-black flex-shrink-0 md:border-l border-white/5">
               <div 
-                className="relative w-full aspect-[9/16] md:aspect-auto md:h-[min(90vh,800px)] md:w-[calc(min(90vh,800px)*9/16)]"
+                className="relative w-full aspect-[9/16] md:aspect-auto md:h-[min(85vh,800px)] md:w-[calc(min(85vh,800px)*9/16)]"
               >
                 <iframe
                   src={`${video.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
@@ -202,7 +206,7 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
 
           </div>
         </div>
-      )}
+      , document.body)}
     </>
   )
 }
