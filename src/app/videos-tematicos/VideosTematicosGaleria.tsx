@@ -69,9 +69,10 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
       }
     }
 
-    // Tenta agora e mais uma vez depois de 1.5s pra garantir
+    // Tenta agora e mais uma vez depois de alguns intervalos para garantir
     inscreverEventos()
-    const fallbackTimer = setTimeout(inscreverEventos, 1500)
+    const timer1 = setTimeout(inscreverEventos, 1000)
+    const timer2 = setTimeout(inscreverEventos, 2500)
 
     const handleMessage = (e: MessageEvent) => {
       let data
@@ -79,22 +80,22 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
         data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data
       } catch (err) { return }
 
-      // Aceita apenas mensagens no formato player.js
       if (data.context !== 'player.js') return
 
-      // Quando o player estiver pronto, nos inscrevemos nos eventos
+      console.log('[Bunny Player Event]', data.event, data)
+
       if (data.event === 'ready') {
         inscreverEventos()
       }
 
-      // Processa os eventos recebidos
-      if (data.event === 'ended') {
+      if (data.event === 'ended' || data.event === 'finish') {
+        console.log('[Bunny Player] Vídeo terminou!')
         iniciarContagemProximo()
       } else if (data.event === 'timeupdate' && data.value) {
         const current = data.value.seconds || 0
         const duration = data.value.duration || 0
         
-        // Se faltar 10 segundos ou menos, inicia a contagem do card
+        // Se faltar 10 segundos ou menos
         if (duration > 10 && (duration - current) <= 10 && (duration - current) > 0) {
           iniciarContagemProximo((duration - current).toFixed(0))
         }
@@ -104,7 +105,8 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
     window.addEventListener('message', handleMessage)
     return () => {
       window.removeEventListener('message', handleMessage)
-      clearTimeout(fallbackTimer)
+      clearTimeout(timer1)
+      clearTimeout(timer2)
     }
   }, [videoAtualIndex])
 
@@ -349,10 +351,10 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
               <div 
                 className="relative w-full aspect-[9/16] md:aspect-auto md:h-[min(85vh,800px)] md:w-[calc(min(85vh,800px)*9/16)]"
               >
-                <iframe
+                  <iframe
                   ref={iframeRef}
                   key={`iframe-${videoAtivo.id}`}
-                  src={`${videoAtivo.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true`}
+                  src={`${videoAtivo.video_url}?autoplay=true&loop=false&muted=false&preload=true&responsive=true&title=false&show_title=false&info=false`}
                   className="absolute inset-0 w-full h-full border-0"
                   allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen"
                   allowFullScreen
