@@ -29,18 +29,21 @@ export async function GET(request: Request) {
   // O caminho da assinatura para "Directory Authentication"
   const signaturePath = `/${videoId}/`;
 
-  // String a ser hashada (no formato padrão Bunny CDN)
-  // Normalmente é SecurityKey + Path + Expires + IP
-  const hashableBase = securityKey + signaturePath + expires;
+  // Mensagem a ser assinada (path + expires + signingData)
+  const message = signaturePath + expires + `token_path=${signaturePath}`;
   
-  // Hash padrão SHA256 do Bunny CDN
-  const hashBase64 = crypto.createHash('sha256').update(hashableBase).digest('base64');
+  // HMAC-SHA256 usando o securityKey como chave secreta
+  const hmac = crypto.createHmac('sha256', securityKey);
+  hmac.update(message);
+  const hashBase64 = hmac.digest('base64');
   
   // Transformar base64 em URL-Safe Base64
-  const token = hashBase64
+  const base64Url = hashBase64
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=/g, '');
+
+  const token = `HS256-${base64Url}`;
 
   // URL de PullZone completa montada
   const hlsUrl = `https://${cdnUrl}/bcdn_token=${token}&expires=${expires}&token_path=%2F${videoId}%2F/${videoId}/playlist.m3u8`;
