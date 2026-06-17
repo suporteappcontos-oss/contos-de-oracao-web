@@ -265,11 +265,11 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   if (emBreve) {
     const bgUrl = thumbnailUrl || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1600&q=80';
     return (
-      <div className="bg-black w-full relative">
+      <div className="w-full relative px-0 md:px-6 lg:px-8 xl:px-12 pt-0 md:pt-6 pb-2 md:pb-6" style={{ background: '#090B10' }}>
         <div 
-          className="relative w-full aspect-video mx-auto flex items-center justify-center overflow-hidden bg-cover bg-center"
+          className="relative w-full aspect-video mx-auto flex items-center justify-center overflow-hidden bg-cover bg-center md:rounded-2xl border-y md:border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
           style={{ 
-            maxWidth: '1600px', 
+            maxWidth: '1280px', 
             backgroundImage: `url(${bgUrl})` 
           }}
         >
@@ -292,16 +292,18 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   // ── ESTADO: Verificando ──
   if (status === 'verificando') {
     return (
-      <div
-        className="bg-black w-full flex items-center justify-center"
-        style={{ aspectRatio: '16/9', maxWidth: '1600px', margin: '0 auto' }}
-      >
-        <div className="flex flex-col items-center gap-4">
-          <div
-            className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-            style={{ borderColor: '#D4AF37', borderTopColor: 'transparent' }}
-          />
-          <p className="text-white/40 text-sm">Verificando acesso...</p>
+      <div className="w-full relative px-0 md:px-6 lg:px-8 xl:px-12 pt-0 md:pt-6 pb-2 md:pb-6" style={{ background: '#090B10' }}>
+        <div
+          className="bg-black w-full flex items-center justify-center mx-auto md:rounded-2xl border-y md:border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+          style={{ aspectRatio: '16/9', maxWidth: '1280px' }}
+        >
+          <div className="flex flex-col items-center gap-4">
+            <div
+              className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
+              style={{ borderColor: '#D4AF37', borderTopColor: 'transparent' }}
+            />
+            <p className="text-white/40 text-sm">Verificando acesso...</p>
+          </div>
         </div>
       </div>
     )
@@ -316,25 +318,27 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   // ── ESTADO: Derrubado (Login em outro lugar) ──
   if (status === 'derrubado') {
     return (
-      <div
-        className="bg-black w-full flex items-center justify-center"
-        style={{ aspectRatio: '16/9', maxWidth: '1600px', margin: '0 auto' }}
-      >
-        <div className="flex flex-col items-center gap-5 px-6 text-center">
-          <div className="w-14 h-14 rounded-full border-2 border-[#EF4444] flex items-center justify-center animate-pulse">
-            <span className="text-[#EF4444] text-2xl font-bold">!</span>
+      <div className="w-full relative px-0 md:px-6 lg:px-8 xl:px-12 pt-0 md:pt-6 pb-2 md:pb-6" style={{ background: '#090B10' }}>
+        <div
+          className="bg-black w-full flex items-center justify-center mx-auto md:rounded-2xl border-y md:border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+          style={{ aspectRatio: '16/9', maxWidth: '1280px' }}
+        >
+          <div className="flex flex-col items-center gap-5 px-6 text-center">
+            <div className="w-14 h-14 rounded-full border-2 border-[#EF4444] flex items-center justify-center animate-pulse">
+              <span className="text-[#EF4444] text-2xl font-bold">!</span>
+            </div>
+            <h2 className="text-white text-lg font-bold">Acesso Interrompido</h2>
+            <p className="text-[#94A3B8] text-sm max-w-sm">
+              Sua conta entrou em outro dispositivo e a reprodução foi encerrada automaticamente.
+            </p>
+            <button
+              onClick={() => router.push('/watch')}
+              className="mt-2 px-8 py-3 font-bold rounded-xl hover:brightness-110 transition-all"
+              style={{ background: '#D4AF37', color: '#090B10' }}
+            >
+              Voltar ao Catálogo
+            </button>
           </div>
-          <h2 className="text-white text-lg font-bold">Acesso Interrompido</h2>
-          <p className="text-[#94A3B8] text-sm max-w-sm">
-            Sua conta entrou em outro dispositivo e a reprodução foi encerrada automaticamente.
-          </p>
-          <button
-            onClick={() => router.push('/watch')}
-            className="mt-2 px-8 py-3 font-bold rounded-xl hover:brightness-110 transition-all"
-            style={{ background: '#D4AF37', color: '#090B10' }}
-          >
-            Voltar ao Catálogo
-          </button>
         </div>
       </div>
     )
@@ -342,8 +346,8 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
 
   // ── ESTADO: Liberado ──
   return (
-    <div className="bg-black w-full relative">
-      <div className="relative w-full aspect-video mx-auto group" style={{ maxWidth: '1600px' }}>
+    <div className="w-full relative px-0 md:px-6 lg:px-8 xl:px-12 pt-0 md:pt-6 pb-2 md:pb-6" style={{ background: '#090B10' }}>
+      <div className="relative w-full aspect-video mx-auto group md:rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-y md:border border-white/5 bg-black" style={{ maxWidth: '1280px' }}>
         <iframe
           ref={iframeRef}
           src={embedUrl}
