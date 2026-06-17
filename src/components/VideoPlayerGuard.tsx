@@ -312,7 +312,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
               </div>
             </div>
             <p className="text-white font-bold tracking-widest uppercase text-[11px] sm:text-xs animate-pulse opacity-80" style={{ letterSpacing: '0.2em' }}>
-              Carregando Player...
+              Carregando Vídeo...
             </p>
           </div>
         </div>
