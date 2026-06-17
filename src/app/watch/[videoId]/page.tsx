@@ -150,22 +150,27 @@ export default async function VideoPlayerPage({ params }: Props) {
       {/* ── CONTEÚDO ── */}
       <main className="pt-[72px]">
 
-        {/* ── PLAYER (protegido pelo guarda de sessões) ── */}
-        <VideoPlayerGuard 
-          videoId={videoId} 
-          embedUrl={embedUrl} 
-          proximoVideo={proximoVideo} 
-          emBreve={video.em_breve}
-          thumbnailUrl={video.thumbnail_url}
-        />
+        {/* ── YOUTUBE LAYOUT: CONTAINER PRINCIPAL ── */}
+        <div className="max-w-[1600px] mx-auto pt-0 md:pt-6 pb-8 flex flex-col lg:flex-row gap-6 lg:gap-8">
 
-        {/* ── INFO + RELACIONADOS ── */}
-        <div className="max-w-[1400px] mx-auto px-4 md:px-8 lg:px-12 py-8 flex flex-col lg:flex-row gap-8">
-
-          {/* Coluna principal */}
+          {/* Coluna principal (Vídeo + Info) */}
           <div className="flex-1 min-w-0">
 
-            <div className="flex flex-wrap items-center gap-2 mb-3">
+            {/* ── PLAYER (protegido pelo guarda de sessões) ── */}
+            <div className="w-full md:px-6 lg:px-8 mb-4 md:mb-6">
+              <VideoPlayerGuard 
+                videoId={videoId} 
+                embedUrl={embedUrl} 
+                proximoVideo={proximoVideo} 
+                emBreve={video.em_breve}
+                thumbnailUrl={video.thumbnail_url}
+              />
+            </div>
+
+            {/* ── INFORMAÇÕES DO VÍDEO ── */}
+            <div className="px-4 md:px-6 lg:px-8">
+
+              <div className="flex flex-wrap items-center gap-2 mb-3">
               {video.duracao && (
                 <div className="flex items-center gap-1 text-[#8197a4] text-xs">
                   <Clock size={11} /> {video.duracao}
@@ -208,11 +213,13 @@ export default async function VideoPlayerPage({ params }: Props) {
                 <div className="text-[#64748B] text-xs">Assinante ativo</div>
               </div>
             </div>
+
+            </div> {/* Fecha a div de padding do INFO */}
           </div>
 
           {/* Coluna lateral: vídeos relacionados */}
           {relacionados && relacionados.length > 0 && (
-            <div className="lg:w-[340px] shrink-0">
+            <div className="px-4 md:px-6 lg:px-0 lg:pr-8 lg:w-[380px] xl:w-[420px] shrink-0">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-white font-bold text-base">Mais Vídeos</h2>
               </div>
