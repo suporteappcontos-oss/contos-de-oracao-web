@@ -5,7 +5,7 @@ import LandingPage from "@/components/LandingPage";
 
 export const metadata = {
   title: 'Contos de Oração — Biblioteca Católica para Crianças',
-  description: 'Universo católico para crianças de forma divertida e encantadora. Vídeos, jogos, HQs, atividades, apostilas e conteúdos exclusivos para ensinar a fé católica.',
+  description: 'Universo católico infantil de forma divertida. Vídeos, jogos, HQs, atividades e conteúdos exclusivos para ensinar a fé católica às crianças.',
 };
 
 type Props = {
