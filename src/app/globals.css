@@ -195,7 +195,7 @@ select option { background: #090B10; color: #F8FAFC; }
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 25s linear infinite;
+  animation: marquee 35s linear infinite;
   will-change: transform;
   transform: translate3d(0, 0, 0);
 }
@@ -212,7 +212,7 @@ select option { background: #090B10; color: #F8FAFC; }
 .animate-marquee-reverse {
   display: flex;
   width: max-content;
-  animation: marquee-reverse 25s linear infinite;
+  animation: marquee-reverse 35s linear infinite;
   will-change: transform;
   transform: translate3d(0, 0, 0);
 }
