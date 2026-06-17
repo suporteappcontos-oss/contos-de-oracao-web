@@ -7,6 +7,14 @@ import {
 } from 'lucide-react'
 import { deletarVideoTematico, toggleVideoTematicoAtivo, editarVideoTematico } from './actions'
 
+const sanitizeUrl = (url: string | null) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('/')) {
+    return url;
+  }
+  return '';
+};
+
 function IgIcon({ size = 14 }: { size?: number }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -130,7 +138,7 @@ function ModalEdicao({
           {/* Capa preview + URL */}
           {capaUrl && (
             <div className="w-full aspect-video rounded-xl overflow-hidden border border-white/5 bg-black/30">
-              <img src={capaUrl} alt="preview" className="w-full h-full object-cover" />
+              <img src={sanitizeUrl(capaUrl)} alt="preview" className="w-full h-full object-cover" />
             </div>
           )}
 
@@ -255,7 +263,7 @@ function VideoCard({
         {/* Capa */}
         <div className="relative aspect-video w-full bg-[#090B10] overflow-hidden">
           <img
-            src={video.capa_url || '/insta.png'}
+            src={sanitizeUrl(video.capa_url) || '/insta.png'}
             alt={video.titulo}
             className="w-full h-full object-cover"
           />

@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
   const videoId = searchParams.get('videoId')
   const titulo = searchParams.get('titulo') || 'video'
 
-  if (!videoId) {
-    return new NextResponse('Video ID obrigatório', { status: 400 })
+  if (!videoId || !/^[a-zA-Z0-9-]+$/.test(videoId)) {
+    return new NextResponse('Video ID inválido ou obrigatório', { status: 400 })
   }
 
   const cdnHostname = process.env.BUNNY_INSTAGRAM_CDN_URL || 'vz-f8cf772c-1bd.b-cdn.net'

@@ -7,8 +7,8 @@ export async function GET(request: Request) {
   const libraryId = searchParams.get('libraryId');
   const platform = searchParams.get('platform');
 
-  if (!videoId || !libraryId) {
-    return NextResponse.json({ error: 'videoId e libraryId são obrigatórios' }, { status: 400 });
+  if (!videoId || !libraryId || !/^[a-zA-Z0-9-]+$/.test(videoId) || !/^[0-9]+$/.test(libraryId)) {
+    return NextResponse.json({ error: 'Parâmetros inválidos ou obrigatórios' }, { status: 400 });
   }
 
   let securityKey = process.env.BUNNY_STREAM_TOKEN_KEY;

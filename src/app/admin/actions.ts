@@ -519,9 +519,13 @@ export async function publicarMaterial(formData: FormData) {
     let linkPdf = (formData.get('link_pdf') as string | null)?.trim() || null;
 
     // Segurança: limpa AccessKey se vier no link
-    if (linkPdf?.includes('br.storage.bunnycdn.com')) {
-      linkPdf = linkPdf.split('?')[0];
-      linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-midia-app', 'contos-midia-app.b-cdn.net');
+    if (linkPdf) {
+      try {
+        if (new URL(linkPdf).hostname === 'br.storage.bunnycdn.com') {
+          linkPdf = linkPdf.split('?')[0];
+          linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-midia-app', 'contos-midia-app.b-cdn.net');
+        }
+      } catch {}
     }
 
     // Gera slug
@@ -616,9 +620,13 @@ export async function publicarRevista(formData: FormData) {
     const capaUrl  = (formData.get('capa_url') as string | null) || null
     let   linkPdf  = (formData.get('link_pdf') as string | null)?.trim() || null
 
-    if (linkPdf?.includes('br.storage.bunnycdn.com')) {
-      linkPdf = linkPdf.split('?')[0]
-      linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-midia-app', 'contos-midia-app.b-cdn.net')
+    if (linkPdf) {
+      try {
+        if (new URL(linkPdf).hostname === 'br.storage.bunnycdn.com') {
+          linkPdf = linkPdf.split('?')[0];
+          linkPdf = linkPdf.replace('br.storage.bunnycdn.com/contos-midia-app', 'contos-midia-app.b-cdn.net');
+        }
+      } catch {}
     }
 
     const slug = titulo.toLowerCase()
@@ -730,8 +738,8 @@ export async function criarUsuarioVitalicio(formData: FormData) {
     return { success: false, error: 'Todos os campos são obrigatórios' }
   }
 
-  // Gera uma senha aleatória de 12 caracteres (letras maiúsculas, minúsculas e números)
-  const senhaGerada = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-4)
+  // Gera uma senha aleatória de 12 caracteres segura criptograficamente
+  const senhaGerada = require('crypto').randomBytes(6).toString('hex')
 
   // Determinar telas baseado no plano
   let maxTelas = 1

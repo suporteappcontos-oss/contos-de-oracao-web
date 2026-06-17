@@ -3,6 +3,14 @@
 import { useState, useRef } from 'react';
 import { Upload, CheckCircle, AlertCircle, ImageIcon } from 'lucide-react';
 
+const sanitizeUrl = (url: string | null) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('/')) {
+    return url;
+  }
+  return '';
+};
+
 export default function UploadFundoClient() {
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -84,7 +92,7 @@ export default function UploadFundoClient() {
           <label className={labelCls}>Fundo Desktop (16:9)</label>
           {previewDesk && (
             <div className="mb-4 relative rounded-xl overflow-hidden border border-white/10 aspect-video max-h-40">
-              <img src={previewDesk} alt="Preview Desktop" className="w-full h-full object-cover" />
+              <img src={sanitizeUrl(previewDesk)} alt="Preview Desktop" className="w-full h-full object-cover" />
             </div>
           )}
           <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 hover:border-[#D4AF37]/40 rounded-xl cursor-pointer bg-[#0f171e] hover:bg-[#D4AF37]/5 transition-all group">
@@ -101,7 +109,7 @@ export default function UploadFundoClient() {
           <label className={labelCls}>Fundo Mobile/App (9:16)</label>
           {previewMob && (
             <div className="mb-4 relative rounded-xl overflow-hidden border border-white/10 aspect-[9/16] max-h-40 mx-auto w-fit">
-              <img src={previewMob} alt="Preview Mobile" className="w-full h-full object-cover" />
+              <img src={sanitizeUrl(previewMob)} alt="Preview Mobile" className="w-full h-full object-cover" />
             </div>
           )}
           <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 hover:border-[#D4AF37]/40 rounded-xl cursor-pointer bg-[#0f171e] hover:bg-[#D4AF37]/5 transition-all group">

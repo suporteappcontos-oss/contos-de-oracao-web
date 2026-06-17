@@ -8,9 +8,14 @@ export async function GET(request: Request) {
     return new NextResponse('URL não fornecida', { status: 400 })
   }
 
-  // Aceita apenas URLs do nosso CDN
-  if (!fileUrl.includes('contos-midia-app.b-cdn.net')) {
-    return new NextResponse('URL não autorizada', { status: 403 })
+  // Aceita apenas URLs do nosso CDN validando o hostname corretamente
+  try {
+    const parsedUrl = new URL(fileUrl);
+    if (parsedUrl.hostname !== 'contos-midia-app.b-cdn.net' && !parsedUrl.hostname.endsWith('.b-cdn.net')) {
+      return new NextResponse('URL não autorizada', { status: 403 })
+    }
+  } catch {
+    return new NextResponse('URL inválida', { status: 400 })
   }
 
   try {
