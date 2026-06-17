@@ -141,10 +141,12 @@ export default async function WatchPage() {
             {videoDestaque && <HeroBanner video={videoDestaque as any} />}
 
             {/* Separador com estilo ouro */}
-            <div className="flex items-center gap-4 px-5 md:px-10 lg:px-16 mt-10 mb-6">
-              <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
-              <span className="text-[#D4AF37] text-[0.6rem] font-extrabold tracking-[0.2em] uppercase">Catálogo</span>
-              <div className="h-px flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            <div className="flex items-center gap-6 px-5 md:px-10 lg:px-16 mt-12 mb-8">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent" />
+              <span className="text-[#D4AF37] text-xs md:text-sm font-black tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]">
+                Catálogo
+              </span>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent" />
             </div>
 
             <div className="space-y-4">
