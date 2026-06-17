@@ -402,7 +402,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
 
         {/* OVERLAY DE PRÓXIMO VÍDEO (ESTILO YOUTUBE) */}
         {showNextOverlay && proximoVideo && (
-          <div className="absolute bottom-16 sm:bottom-20 right-4 sm:right-8 z-40 bg-[#0B0F19]/95 backdrop-blur-md border border-[#D4AF37]/30 rounded-2xl p-4 w-[290px] min-[380px]:w-[320px] sm:w-[360px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col gap-3 animate-in slide-in-from-bottom duration-300">
+          <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-40 bg-[#0B0F19]/95 backdrop-blur-md border border-[#D4AF37]/30 rounded-2xl p-4 w-[290px] min-[380px]:w-[320px] sm:w-[360px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col gap-3 animate-in slide-in-from-bottom duration-300">
             <div className="flex gap-3">
               <div 
                 className="w-24 sm:w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-[#15243E]"
