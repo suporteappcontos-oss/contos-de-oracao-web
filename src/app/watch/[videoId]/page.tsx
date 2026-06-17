@@ -219,7 +219,7 @@ export default async function VideoPlayerPage({ params }: Props) {
 
           {/* Coluna lateral: vídeos relacionados */}
           {relacionados && relacionados.length > 0 && (
-            <div className="px-4 md:px-6 lg:px-0 lg:pr-8 lg:w-[380px] xl:w-[420px] shrink-0">
+            <div className="px-4 md:px-6 lg:px-0 lg:pr-8 lg:w-[280px] xl:w-[320px] shrink-0">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-white font-bold text-base">Mais Vídeos</h2>
               </div>
@@ -227,11 +227,11 @@ export default async function VideoPlayerPage({ params }: Props) {
                 {relacionados.map(v => (
                   <Link key={v.id} href={`/watch/${v.id}`}
                     className="flex gap-3 group rounded-xl p-2 transition-all hover:bg-white/5">
-                    <div className="w-32 aspect-video rounded-lg shrink-0 overflow-hidden bg-[#15243E]"
+                    <div className="w-24 sm:w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-[#15243E]"
                       style={{ backgroundImage: `url(${v.thumbnail_url || getFallback(v.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <p className="text-white text-xs font-bold line-clamp-2 mb-1 group-hover:text-[#D4AF37] transition-colors">
+                      <p className="text-white text-xs font-bold line-clamp-2 mb-1 group-hover:text-[#D4AF37] transition-colors whitespace-normal">
                         {v.titulo}
                       </p>
                       {v.duracao && <p className="text-[#64748B] text-[0.65rem] mt-0.5">⏱ {v.duracao}</p>}
