@@ -56,6 +56,40 @@ export default async function RootLayout({
     <html lang="pt-BR" className="antialiased overflow-x-hidden">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://contosdeoracao.com.br/#organization",
+                  "name": "Contos de Oração",
+                  "url": "https://contosdeoracao.com.br",
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://contosdeoracao.com.br/logo_stripe.png"
+                  }
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://contosdeoracao.com.br/#website",
+                  "url": "https://contosdeoracao.com.br",
+                  "name": "Contos de Oração",
+                  "publisher": {
+                    "@id": "https://contosdeoracao.com.br/#organization"
+                  },
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://contosdeoracao.com.br/?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                }
+              ]
+            })
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
         <GlobalLoader />
