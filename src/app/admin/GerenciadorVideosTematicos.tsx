@@ -9,8 +9,13 @@ import { deletarVideoTematico, toggleVideoTematicoAtivo, editarVideoTematico } f
 
 const sanitizeUrl = (url: string | null) => {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('/')) {
-    return url;
+  try {
+    const parsed = new URL(url, 'https://localhost');
+    if (['http:', 'https:', 'blob:'].includes(parsed.protocol)) {
+      return parsed.href;
+    }
+  } catch (e) {
+    if (url.startsWith('/')) return url;
   }
   return '';
 };

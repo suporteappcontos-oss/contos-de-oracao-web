@@ -8,10 +8,10 @@ export async function GET(request: Request) {
     return new NextResponse('URL não fornecida', { status: 400 })
   }
 
-  // Aceita apenas URLs do nosso CDN validando o hostname corretamente
+  let validUrl: URL;
   try {
-    const parsedUrl = new URL(fileUrl);
-    if (parsedUrl.hostname !== 'contos-midia-app.b-cdn.net' && !parsedUrl.hostname.endsWith('.b-cdn.net')) {
+    validUrl = new URL(fileUrl);
+    if (validUrl.hostname !== 'contos-midia-app.b-cdn.net' && !validUrl.hostname.endsWith('.b-cdn.net')) {
       return new NextResponse('URL não autorizada', { status: 403 })
     }
   } catch {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const upstream = await fetch(fileUrl)
+    const upstream = await fetch(validUrl.href)
     if (!upstream.ok) {
       return new NextResponse('Arquivo não encontrado no CDN', { status: 502 })
     }

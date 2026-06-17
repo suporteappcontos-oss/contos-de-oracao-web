@@ -5,8 +5,13 @@ import { Upload, CheckCircle, AlertCircle, ImageIcon } from 'lucide-react';
 
 const sanitizeUrl = (url: string | null) => {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('/')) {
-    return url;
+  try {
+    const parsed = new URL(url, 'https://localhost');
+    if (['http:', 'https:', 'blob:'].includes(parsed.protocol)) {
+      return parsed.href;
+    }
+  } catch (e) {
+    if (url.startsWith('/')) return url;
   }
   return '';
 };
