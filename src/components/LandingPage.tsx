@@ -625,13 +625,13 @@ export default function LandingPage() {
           
         {/* Imagens decorativas nas bordas */}
         <img 
-          src="/jesus-criancas.png" 
+          src="/jesus-criancas.webp" 
           alt="Jesus e Crianças" 
           className="hidden md:block absolute left-0 bottom-0 h-[150%] object-contain object-left-bottom pointer-events-none z-10"
         />
         
         <img 
-          src="/mulher-orando.png" 
+          src="/mulher-orando.webp" 
           alt="Mulher Orando" 
           className="hidden md:block absolute right-0 bottom-0 h-[150%] object-contain object-right-bottom pointer-events-none z-10"
         />

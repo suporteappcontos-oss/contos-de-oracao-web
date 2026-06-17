@@ -41,7 +41,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#090B10",
 };
 
@@ -55,7 +54,6 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className="antialiased overflow-x-hidden">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
