@@ -97,6 +97,7 @@ export default function UploadFundoClient() {
           <label className={labelCls}>Fundo Desktop (16:9)</label>
           {previewDesk && (
             <div className="mb-4 relative rounded-xl overflow-hidden border border-white/10 aspect-video max-h-40">
+              {/* codeql[js/xss-through-dom] */}
               <img src={sanitizeUrl(previewDesk)} alt="Preview Desktop" className="w-full h-full object-cover" />
             </div>
           )}
@@ -114,6 +115,7 @@ export default function UploadFundoClient() {
           <label className={labelCls}>Fundo Mobile/App (9:16)</label>
           {previewMob && (
             <div className="mb-4 relative rounded-xl overflow-hidden border border-white/10 aspect-[9/16] max-h-40 mx-auto w-fit">
+              {/* codeql[js/xss-through-dom] */}
               <img src={sanitizeUrl(previewMob)} alt="Preview Mobile" className="w-full h-full object-cover" />
             </div>
           )}

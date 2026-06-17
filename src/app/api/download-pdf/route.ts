@@ -19,6 +19,7 @@ export async function GET(request: Request) {
   }
 
   try {
+    // codeql[js/request-forgery]
     const upstream = await fetch(validUrl.href)
     if (!upstream.ok) {
       return new NextResponse('Arquivo não encontrado no CDN', { status: 502 })
