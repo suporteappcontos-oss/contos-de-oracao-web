@@ -150,8 +150,8 @@ export default async function WatchPage() {
             <div className="space-y-4">
               {recentes.length > 0 && (
                 <div className="mb-6">
-                  <CategoryCarousel title="Continue Assistindo" count={recentes.length}>
-                    {recentes.slice(0, 10).map((video: Video) => (
+                  <CategoryCarousel title="Continue Assistindo" count={1}>
+                    {recentes.slice(0, 1).map((video: Video) => (
                       <VideoCard key={`hist-${video.id}`} video={video} isFavoritado={favoritosSet.has(video.id)} />
                     ))}
                   </CategoryCarousel>
