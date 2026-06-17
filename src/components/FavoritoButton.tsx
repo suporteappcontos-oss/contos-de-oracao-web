@@ -29,39 +29,39 @@ export default function FavoritoButton({ videoId, initialFav }: Props) {
           display: flex;
           justify-content: center;
           align-items: center;
-          padding: 10px 20px 10px 16px;
-          box-shadow: rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-          background-color: #e8e8e8;
-          border-color: #ffe2e2;
+          padding: 8px 18px 8px 14px;
+          background-color: transparent;
+          border-color: rgba(255,255,255,0.05);
           border-style: solid;
-          border-width: 4px;
+          border-width: 3px;
           border-radius: 35px;
-          font-size: 16px;
+          font-size: 14px;
           cursor: pointer;
-          font-weight: 900;
-          color: rgb(134, 124, 124);
-          font-family: monospace;
+          font-weight: 700;
+          color: rgba(255,255,255,0.6);
+          font-family: inherit;
           transition:
             transform 400ms cubic-bezier(0.68, -0.55, 0.27, 2.5),
             border-color 400ms ease-in-out,
-            background-color 400ms ease-in-out;
-          word-spacing: -2px;
+            background-color 400ms ease-in-out,
+            color 400ms ease-in-out;
         }
 
         @keyframes movingBorders {
-          0% { border-color: #fce4e4; }
-          50% { border-color: #ffd8d8; }
-          90% { border-color: #fce4e4; }
+          0% { border-color: rgba(212,175,55,0.2); }
+          50% { border-color: rgba(212,175,55,0.5); }
+          90% { border-color: rgba(212,175,55,0.2); }
         }
 
         .ui-like-button:hover {
-          background-color: #eee;
+          background-color: rgba(255,255,255,0.03);
           transform: scale(105%);
           animation: movingBorders 3s infinite;
+          color: white;
         }
 
         .ui-like-button svg {
-          fill: rgb(255, 110, 110);
+          fill: #D4AF37;
           transition: opacity 100ms ease-in-out;
         }
 
@@ -88,9 +88,9 @@ export default function FavoritoButton({ videoId, initialFav }: Props) {
 
         /* Estado ativo / favoritado */
         .ui-like-button.active {
-          background-color: #ffe2e2;
-          border-color: #ffcccc;
-          color: rgb(255, 110, 110);
+          background-color: rgba(212,175,55,0.1);
+          border-color: rgba(212,175,55,0.3);
+          color: #D4AF37;
         }
         .ui-like-button.active .empty { opacity: 0; }
         .ui-like-button.active .filled { opacity: 1; }
@@ -101,13 +101,13 @@ export default function FavoritoButton({ videoId, initialFav }: Props) {
         disabled={loading}
         className={`ui-like-button ${favoritado ? 'active' : ''} ${loading ? 'opacity-70 pointer-events-none' : ''}`}
       >
-        <div className="relative flex items-center justify-center w-6 h-6 mr-2">
+        <div className="relative flex items-center justify-center w-5 h-5 mr-2">
           <svg
             className="empty absolute inset-0 m-auto"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            width="24"
-            height="24"
+            width="20"
+            height="20"
           >
             <path fill="none" d="M0 0H24V24H0z"></path>
             <path
@@ -116,8 +116,8 @@ export default function FavoritoButton({ videoId, initialFav }: Props) {
           </svg>
           <svg
             className="filled absolute inset-0 m-auto"
-            height="24"
-            width="24"
+            height="20"
+            width="20"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -127,7 +127,7 @@ export default function FavoritoButton({ videoId, initialFav }: Props) {
             ></path>
           </svg>
         </div>
-        {favoritado ? 'Like' : 'Like'}
+        {favoritado ? 'Favoritado' : 'Favoritar'}
       </button>
     </>
   )
