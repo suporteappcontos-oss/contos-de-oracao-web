@@ -167,7 +167,7 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
       )}
 
       {/* ── Cards ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mx-auto">
+      <div className={`grid grid-cols-1 ${produtosOrdenados.length === 1 ? 'max-w-[450px]' : 'md:grid-cols-2 max-w-4xl'} gap-8 w-full mx-auto`}>
         {produtosOrdenados.map((plano) => {
           let precoExibido: PriceInfo | null = null;
           if (ciclo === 'anual'     && plano.priceAnual)     precoExibido = plano.priceAnual;
