@@ -34,7 +34,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   const router = useRouter()
   const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
   const [isPaused, setIsPaused] = useState(false)
-  const [anuncioAtivo, setAnuncioAtivo] = useState<any>(null)
+  const [anuncioAtivo, setAnuncioAtivo] = useState<Record<string, any> | null>(null)
   const [showNextOverlay, setShowNextOverlay] = useState(false)
   const [secondsRemaining, setSecondsRemaining] = useState(10)
   const overlayDismissedRef = useRef(false)
@@ -70,10 +70,10 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   }, [])
 
   // Atualiza status e o ref junto
-  const updateStatus = (s: typeof status) => {
+  const updateStatus = useCallback((s: typeof status) => {
     statusRef.current = s
     setStatus(s)
-  }
+  }, [])
 
   // Registra sessão e inicia escuta em tempo real
   const iniciarSessao = useCallback(async () => {
@@ -111,7 +111,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'sessoes_ativas' },
-          async (payload) => {
+          async () => {
             if (statusRef.current === 'derrubado') return
 
             // Checa se ainda existe nossa sessão
@@ -150,7 +150,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
     } catch {
       updateStatus('liberado')
     }
-  }, [videoId])
+  }, [videoId, updateStatus])
 
   // Remove a sessão ao sair da página
   const encerrarSessao = useCallback(() => {
@@ -215,7 +215,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
              value: 'timeupdate'
            }), '*')
         }
-      } catch (e) {}
+      } catch {}
     }
 
     window.addEventListener('message', handleMessage)
@@ -250,7 +250,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
       window.removeEventListener('message', handleMessage)
       window.removeEventListener('beforeunload', encerrarSessao)
     }
-  }, [iniciarSessao, encerrarSessao, fetchAnuncio])
+  }, [iniciarSessao, encerrarSessao, fetchAnuncio, router])
 
   // Retoma o vídeo enviando comando play via Player.js para o iframe
   const handleResume = useCallback(() => {
