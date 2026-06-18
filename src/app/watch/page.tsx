@@ -8,7 +8,6 @@ import CategoryCarousel from '@/components/CategoryCarousel'
 import NotificationBell from '@/components/NotificationBell'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
-import { LogOut, Settings, BookOpen, Plus } from 'lucide-react'
 
 type Video = {
   id: string
@@ -42,8 +41,6 @@ export default async function WatchPage() {
     redirect('/?acesso=expirado')
   }
 
-  // Etiqueta dinâmica vinda do metadata da Stripe (salva pelo webhook)
-  const planoLabel = isAdmin ? 'Administrador' : (user.user_metadata?.etiqueta_plano || perfil?.plano || 'Assinante')
 
   const { data: videos } = await supabase
     .from('videos').select('*').eq('ativo', true)
@@ -57,7 +54,6 @@ export default async function WatchPage() {
   const favoritosSet = new Set((favoritosData ?? []).map(f => f.video_id))
 
   // Etiqueta do plano para exibição
-  const etiquetaPlano = user.user_metadata?.etiqueta_plano || ''
   const etiquetaPlanoStr = (user.user_metadata?.etiqueta_plano || perfil?.plano || '').toLowerCase()
   const isBasico = !isAdmin && (etiquetaPlanoStr.includes('basico') || etiquetaPlanoStr.includes('básico'))
 
@@ -110,12 +106,6 @@ export default async function WatchPage() {
     )
   );
 
-  async function logout() {
-    'use server'
-    const supab = await createClient()
-    await supab.auth.signOut()
-    redirect('/')
-  }
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
@@ -138,7 +128,7 @@ export default async function WatchPage() {
         {videos && videos.length > 0 && (
           <>
             {/* HeroBanner */}
-            {videoDestaque && <HeroBanner video={videoDestaque as any} />}
+            {videoDestaque && <HeroBanner video={videoDestaque as Video} />}
 
             {/* Separador com estilo ouro */}
             <div className="flex items-center gap-6 px-5 md:px-10 lg:px-16 mt-12 mb-8">
