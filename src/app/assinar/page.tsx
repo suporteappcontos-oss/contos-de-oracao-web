@@ -141,6 +141,33 @@ export default function AssinarPage() {
     }
   }
 
+  async function irParaKiwify() {
+    setLoadingCheckout(true)
+    
+    // Links base provisórios
+    const linkMensal = process.env.NEXT_PUBLIC_KIWIFY_MENSAL_LINK || '#'
+    const linkAnual = process.env.NEXT_PUBLIC_KIWIFY_ANUAL_LINK || '#'
+    
+    const linkBase = planoDetalhe?.intervalo === 'year' ? linkAnual : linkMensal
+    
+    if (linkBase === '#') {
+      alert("Aguardando os links da Kiwify configurados pelo patrão!")
+      setLoadingCheckout(false)
+      return
+    }
+    
+    // Passa o email e nome na URL para já preencher o checkout da Kiwify
+    try {
+      const url = new URL(linkBase)
+      url.searchParams.append('email', email)
+      url.searchParams.append('name', nome)
+      window.location.href = url.toString()
+    } catch(e) {
+      alert("Link da Kiwify inválido configurado nas variáveis.")
+      setLoadingCheckout(false)
+    }
+  }
+
   const planoDetalhe = planos.find(p => p.id === planoSelecionado)
 
   return (
@@ -483,15 +510,34 @@ export default function AssinarPage() {
 
                 {/* Botoes: esconde pagamento e voltar se email duplicado */}
                 {erroCheckout?.tipo === 'email_duplicado' ? null : (
-                  <button onClick={finalizarPagamento} disabled={loadingCheckout}
-                    className="w-full py-3.5 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-                    style={{ background: '#D4AF37', color: '#090B10' }}>
-                    {loadingCheckout ? (
-                      <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
-                    ) : (
-                      <><Lock size={16} /> Ir para o Pagamento Seguro <ChevronRight size={16} /></>
-                    )}
-                  </button>
+                  <div className="flex flex-col gap-3 mt-4">
+                    <p className="text-white/60 text-xs text-center font-bold uppercase tracking-widest mb-1">Como deseja pagar?</p>
+                    
+                    {/* Botão Stripe (Cartão) */}
+                    <button onClick={finalizarPagamento} disabled={loadingCheckout}
+                      className="w-full py-3.5 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#D4AF37]/50"
+                      style={{ background: '#D4AF37', color: '#090B10' }}>
+                      {loadingCheckout ? (
+                        <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
+                      ) : (
+                        <><Lock size={16} /> Cartão de Crédito <ChevronRight size={16} /></>
+                      )}
+                    </button>
+
+                    {/* Botão Kiwify (PIX) */}
+                    <button onClick={irParaKiwify} disabled={loadingCheckout}
+                      className="w-full py-3.5 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#22c55e]/50"
+                      style={{ background: '#22c55e', color: '#090B10' }}>
+                      {loadingCheckout ? (
+                        <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
+                      ) : (
+                        <>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                          Pagar com PIX <ChevronRight size={16} />
+                        </>
+                      )}
+                    </button>
+                  </div>
                 )}
               </>
             ) : (
