@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin, buscarUsuarioPorEmail } from '@/lib/supabase-admin'
+import { CircuitBreaker } from '@/lib/circuit-breaker'
+
+// Instanciado fora do escopo da requisição para persistir na memória (estado quente do serverless)
+const stripeCircuitBreaker = new CircuitBreaker({ failureThreshold: 3, resetTimeout: 10000 });
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,9 +21,6 @@ export async function POST(request: NextRequest) {
 
     if (existente) {
       userId = existente.id
-      // Opcional: Se ele digitou senha, podemos atualizar a senha dele? 
-      // Por segurança, se já existe, nós NÃO sobrescrevemos a senha sem login. 
-      // Apenas pegamos o ID.
     } else {
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
@@ -33,36 +34,46 @@ export async function POST(request: NextRequest) {
       userId = newUser.user.id
     }
 
-    // O frontend agora envia diretamente o 'plan' como o priceId (ex: price_123)
     let priceId = plano
 
-    // Valida se o priceId existe no Stripe
     if (!priceId || !priceId.startsWith('price_')) {
       return NextResponse.json({ error: `ID de plano inválido: ${priceId}` }, { status: 400 })
     }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.com.br'
 
-    // Cria sessão de checkout do Stripe
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
+    // Usa o Circuit Breaker para proteger a chamada externa à Stripe
+    try {
+      const session = await stripeCircuitBreaker.execute(() => 
+        stripe.checkout.sessions.create({
+          mode: 'subscription',
+          customer_email: email,
+          client_reference_id: userId,
+          locale: 'pt-BR',
+          line_items: [{ price: priceId, quantity: 1 }],
+          metadata: { nome, email, plano },
+          subscription_data: {
+            metadata: { nome, email, plano },
+          },
+          success_url: `${siteUrl}/sucesso`,
+          cancel_url: `${siteUrl}/assinar?cancelado=true`,
+          allow_promotion_codes: true,
+        })
+      );
 
-      customer_email: email,
-      client_reference_id: userId,
-      locale: 'pt-BR',
-      line_items: [{ price: priceId, quantity: 1 }],
-      metadata: { nome, email, plano },
-      subscription_data: {
-        metadata: { nome, email, plano },
-      },
-      success_url: `${siteUrl}/sucesso`,
-      cancel_url: `${siteUrl}/assinar?cancelado=true`,
-      allow_promotion_codes: true, // Permite cupons de desconto
-    })
-
-    return NextResponse.json({ url: session.url })
+      return NextResponse.json({ url: session.url })
+    } catch (cbError: any) {
+      if (cbError.message === 'CircuitBreaker is OPEN') {
+        console.warn('⚠️ Requisição rejeitada pelo Circuit Breaker. Serviço temporariamente congestionado.');
+        return NextResponse.json(
+          { error: 'Sistema de pagamento temporariamente congestionado. Por favor, tente novamente em alguns instantes.' },
+          { status: 503 }
+        );
+      }
+      throw cbError; // Repassa para o catch principal se não for erro de circuito aberto
+    }
   } catch (error) {
-    console.error('❌ Erro ao criar sessão Stripe:', error)
+    console.error('❌ Erro ao processar requisição de checkout:', error)
     return NextResponse.json({ error: 'Erro interno ao processar pagamento' }, { status: 500 })
   }
 }
