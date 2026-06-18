@@ -208,8 +208,8 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
             <div 
               className="glass-glider"
               style={{
-                width: \`\${100 / opcoesCiclo.length}%\`,
-                transform: \`translateX(\${opcoesCiclo.findIndex(c => c.id === ciclo) * 100}%)\`
+                width: `${100 / opcoesCiclo.length}%`,
+                transform: `translateX(${opcoesCiclo.findIndex(c => c.id === ciclo) * 100}%)`
               }}
             />
           </div>
