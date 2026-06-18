@@ -33,8 +33,6 @@ type Props = {
 export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBreve, thumbnailUrl }: Props) {
   const router = useRouter()
   const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
-  const [isPaused, setIsPaused] = useState(false)
-  const [anuncioAtivo, setAnuncioAtivo] = useState<Record<string, any> | null>(null)
   const [showNextOverlay, setShowNextOverlay] = useState(false)
   const [secondsRemaining, setSecondsRemaining] = useState(10)
   const overlayDismissedRef = useRef(false)
@@ -57,17 +55,6 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
     overlayDismissedRef.current = false;
     navigatingRef.current = false;
   }, [videoId]);
-
-  // Busca o anúncio ativo aleatório do banco de dados
-  const fetchAnuncio = useCallback(async () => {
-    const supabase = createClient()
-    const { data } = await supabase.from('anuncios_pausa').select('*').eq('ativo', true)
-    if (data && data.length > 0) {
-      // Pega um aleatório para rotacionar
-      const randomIndex = Math.floor(Math.random() * data.length)
-      setAnuncioAtivo(data[randomIndex])
-    }
-  }, [])
 
   // Atualiza status e o ref junto
   const updateStatus = useCallback((s: typeof status) => {
@@ -165,18 +152,13 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
 
   useEffect(() => {
     iniciarSessao()
-    fetchAnuncio()
 
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
         
         // Padrão Player.js (usado pelo Bunny) ou eventos genéricos
-        if (data && (data.event === 'pause' || data.type === 'pause')) {
-          setIsPaused(true)
-        } else if (data && (data.event === 'play' || data.event === 'playing' || data.type === 'play' || data.type === 'playing')) {
-          setIsPaused(false)
-        } else if (data && (data.event === 'timeupdate' || data.type === 'timeupdate')) {
+        if (data && (data.event === 'timeupdate' || data.type === 'timeupdate')) {
           const value = data.value || data.data
           if (value && typeof value.seconds === 'number' && typeof value.duration === 'number') {
             const seconds = value.seconds
@@ -250,16 +232,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
       window.removeEventListener('message', handleMessage)
       window.removeEventListener('beforeunload', encerrarSessao)
     }
-  }, [iniciarSessao, encerrarSessao, fetchAnuncio, router])
-
-  // Retoma o vídeo enviando comando play via Player.js para o iframe
-  const handleResume = useCallback(() => {
-    setIsPaused(false)
-    iframeRef.current?.contentWindow?.postMessage(
-      JSON.stringify({ context: 'player.js', method: 'play' }),
-      '*'
-    )
-  }, [])
+  }, [iniciarSessao, encerrarSessao, router])
 
   // ── ESTADO: Em Breve ──
   if (emBreve) {
@@ -366,39 +339,6 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
         />
-        
-        {/* OVERLAY DE ANÚNCIO (MOSTRADO NA PAUSA) */}
-        {isPaused && anuncioAtivo && (
-          <div 
-            onClick={handleResume}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-300 cursor-pointer group/overlay"
-          >
-            <div className="relative w-full h-full flex items-center justify-center">
-              {anuncioAtivo.imagem_url ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img 
-                  src={anuncioAtivo.imagem_url} 
-                  alt={anuncioAtivo.titulo} 
-                  className="w-full h-full object-contain" 
-                />
-              ) : (
-                <div className="p-12 text-center w-full h-full flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #111827 0%, #1a2332 100%)' }}>
-                  <div className="text-[#D4AF37] text-6xl mb-6">📢</div>
-                  <p className="text-white font-black text-3xl leading-snug">{anuncioAtivo.titulo}</p>
-                </div>
-              )}
-              
-              {/* Overlay de Play Hover */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/overlay:opacity-100 transition-opacity duration-300 bg-black/40">
-                <div className="w-24 h-24 bg-[#D4AF37] rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(212,175,55,0.4)] transform hover:scale-110 transition-transform">
-                   <svg width="40" height="40" viewBox="0 0 24 24" fill="black" className="ml-2">
-                     <path d="M8 5v14l11-7z"/>
-                   </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* OVERLAY DE PRÓXIMO VÍDEO (ESTILO YOUTUBE) */}
         {showNextOverlay && proximoVideo && (

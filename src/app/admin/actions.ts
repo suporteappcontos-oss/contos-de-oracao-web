@@ -670,60 +670,6 @@ export async function deletarRevista(id: string) {
   }
 }
 
-// ─── ANÚNCIOS DE PAUSA ───
-
-export async function adicionarAnuncioPausa(formData: FormData) {
-  await verificarAdmin();
-  try {
-    const titulo = formData.get('titulo') as string;
-    const imagemUrl = formData.get('imagem_url') as string | null;
-    const linkDestino = formData.get('link_destino') as string | null;
-    const ativo = formData.get('ativo') === 'true';
-
-    if (!titulo) throw new Error('Título é obrigatório');
-
-    const supabase = await createClient();
-    const { error } = await supabase.from('anuncios_pausa').insert({
-      titulo,
-      imagem_url: imagemUrl,
-      link_destino: linkDestino,
-      ativo,
-    });
-
-    if (error) throw new Error(error.message);
-
-    revalidatePath('/admin');
-    return { success: true };
-  } catch (error: unknown) {
-    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' };
-  }
-}
-
-export async function deletarAnuncioPausa(id: string) {
-  await verificarAdmin();
-  try {
-    const supabase = await createClient();
-    const { error } = await supabase.from('anuncios_pausa').delete().eq('id', id);
-    if (error) throw new Error(error.message);
-    revalidatePath('/admin');
-    return { success: true };
-  } catch (error: unknown) {
-    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' };
-  }
-}
-
-export async function toggleAnuncioAtivo(id: string, ativoAtual: boolean) {
-  await verificarAdmin();
-  try {
-    const supabase = await createClient();
-    const { error } = await supabase.from('anuncios_pausa').update({ ativo: !ativoAtual }).eq('id', id);
-    if (error) throw new Error(error.message);
-    revalidatePath('/admin');
-    return { success: true };
-  } catch (error: unknown) {
-    return { success: false, error: error instanceof Error ? error.message : 'Erro desconhecido' };
-  }
-}
 
 // ─── Criar Usuário Vitalício (Cliente - Role de Membro) ───
 export async function criarUsuarioVitalicio(formData: FormData) {

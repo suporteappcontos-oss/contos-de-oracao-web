@@ -16,7 +16,6 @@ import {
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
 import { GerenciadorMateriais } from './GerenciadorMateriais'
-import { GerenciadorAnuncios } from './GerenciadorAnuncios'
 import { GerenciadorLoja } from './GerenciadorLoja'
 import { FormAcessoVitalicio } from './FormAcessoVitalicio'
 import CriadorConteudoUnificado from './CriadorConteudoUnificado'
@@ -80,7 +79,6 @@ export default async function AdminPage({
   // Videos
   const { data: videos } = await supabase.from('videos').select('*').order('criado_em', { ascending: false })
   const { data: materiaisData } = await supabase.from('materiais').select('*').order('criado_em', { ascending: false })
-  const { data: anunciosPausa } = await supabase.from('anuncios_pausa').select('*').order('criado_em', { ascending: false })
   const { data: produtosLoja } = await supabase.from('produtos_loja').select('*').order('criado_em', { ascending: false })
   const { data: videosTematicos } = await supabase.from('videos_tematicos').select('*').order('criado_em', { ascending: false })
   const { data: revistasData } = await supabase.from('revistas').select('*').order('criado_em', { ascending: false })
@@ -198,7 +196,7 @@ export default async function AdminPage({
   // Mapeia links antigos para as novas abas agrupadas
   const activeTab = ['videos', 'materiais'].includes(tabParam) ? 'catalogo' :
                     ['usuarios', 'stripe'].includes(tabParam) ? 'assinaturas' :
-                    ['relatorios', 'anuncios'].includes(tabParam) ? 'marketing' : tabParam;
+                    ['relatorios'].includes(tabParam) ? 'marketing' : tabParam;
 
   const chartData = Object.entries(viewsByDay).map(([dia, count]) => ({ dia, count }))
   const maxViews = Math.max(...chartData.map(d => d.count), 1) // Prevent division by 0
@@ -251,7 +249,7 @@ export default async function AdminPage({
               { id: 'catalogo', label: 'Catálogo', icon: Film, count: totalVideos },
               { id: 'assinaturas', label: 'Assinaturas', icon: Users, count: totalMembros },
               { id: 'loja', label: 'Loja', icon: ShoppingBag, count: totalProdutos },
-              { id: 'marketing', label: 'Marketing', icon: Megaphone, count: anunciosPausa?.length ?? 0 },
+              { id: 'marketing', label: 'Marketing', icon: Megaphone, count: null },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
                 className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
@@ -395,12 +393,6 @@ export default async function AdminPage({
                 </div>
 
               </div>
-            </div>
-
-            {/* --- ANÚNCIOS PAUSA --- */}
-            <div className="pt-10 border-t border-white/5 relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
-              <GerenciadorAnuncios anuncios={(anunciosPausa ?? []) as any} />
             </div>
 
           </div>
