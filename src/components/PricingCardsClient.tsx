@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Monitor, Check } from 'lucide-react';
+import { Monitor, Check, X, CreditCard, QrCode } from 'lucide-react';
 
 type PriceInfo = { id: string; valor: number };
 
@@ -94,6 +94,16 @@ type Ciclo = 'mensal' | 'semestral' | 'anual';
 
 export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo[] }) {
   const [ciclo, setCiclo] = useState<Ciclo>('mensal');
+  const [modalAberto, setModalAberto] = useState(false);
+  const [precoSelecionado, setPrecoSelecionado] = useState<PriceInfo | null>(null);
+  const [cicloSelecionado, setCicloSelecionado] = useState<Ciclo>('mensal');
+
+  const handleAssinarClick = (preco: PriceInfo, c: Ciclo, e: React.MouseEvent) => {
+    e.preventDefault();
+    setPrecoSelecionado(preco);
+    setCicloSelecionado(c);
+    setModalAberto(true);
+  };
 
   if (produtos.length === 0) {
     return (
@@ -257,8 +267,8 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               </div>
 
               {/* CTA */}
-              <a
-                href={`/assinar?plan=${precoExibido.id}`}
+              <button
+                onClick={(e) => handleAssinarClick(precoExibido!, ciclo, e)}
                 className={`flex items-center justify-center w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-95 ${
                   plano.destaque
                     ? 'bg-[#D4AF37] text-black shadow-[0_5px_20px_rgba(212,175,55,0.3)] hover:brightness-110'
@@ -266,11 +276,62 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 }`}
               >
                 Assinar Agora →
-              </a>
+              </button>
             </div>
           );
         })}
       </div>
+
+      {/* Modal de Pagamento */}
+      {modalAberto && precoSelecionado && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[#111827] border border-white/10 p-6 sm:p-8 rounded-[24px] max-w-md w-full relative shadow-2xl animate-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setModalAberto(false)}
+              className="absolute top-4 right-4 p-2 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+            >
+              <X size={20} />
+            </button>
+            
+            <h2 className="text-2xl font-black text-white mb-2 text-center">Como deseja pagar?</h2>
+            <p className="text-white/50 text-sm text-center mb-8">
+              Escolha a forma de pagamento para o plano {cicloSelecionado === 'anual' ? 'Anual' : 'Mensal'}.
+            </p>
+
+            <div className="space-y-4">
+              <a 
+                href={`/assinar?plan=${precoSelecionado.id}`}
+                className="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:border-[#D4AF37]/50 bg-white/5 hover:bg-[#D4AF37]/10 transition-all group"
+              >
+                <div className="w-12 h-12 rounded-full bg-[#1a1a2e] flex items-center justify-center border border-white/5 group-hover:border-[#D4AF37]/30">
+                  <CreditCard className="text-[#D4AF37]" size={24} />
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 className="font-bold text-white text-lg">Cartão de Crédito</h3>
+                  <p className="text-white/40 text-xs">Liberação imediata (Stripe)</p>
+                </div>
+                <div className="text-[#D4AF37] font-black">→</div>
+              </a>
+
+              <button 
+                onClick={() => {
+                  alert("Integração com Kiwify em andamento! Você será redirecionado assim que o patrão mandar os links.");
+                }}
+                className="w-full flex items-center gap-4 p-4 rounded-xl border border-[#22c55e]/30 hover:border-[#22c55e] bg-[#22c55e]/10 hover:bg-[#22c55e]/20 transition-all group"
+              >
+                <div className="w-12 h-12 rounded-full bg-[#111827] flex items-center justify-center border border-[#22c55e]/20 group-hover:border-[#22c55e]/50">
+                  <QrCode className="text-[#22c55e]" size={24} />
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 className="font-bold text-white text-lg">PIX</h3>
+                  <p className="text-white/40 text-xs">Aprovação na hora (Kiwify)</p>
+                </div>
+                <div className="text-[#22c55e] font-black">→</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
