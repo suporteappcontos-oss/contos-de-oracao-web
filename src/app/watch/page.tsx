@@ -128,7 +128,7 @@ export default async function WatchPage() {
         {videos && videos.length > 0 && (
           <>
             {/* HeroBanner */}
-            {videoDestaque && <HeroBanner video={videoDestaque as Video} />}
+            {videoDestaque && <HeroBanner video={videoDestaque as any} />}
 
             {/* Separador com estilo ouro */}
             <div className="flex items-center gap-6 px-5 md:px-10 lg:px-16 mt-12 mb-8">
