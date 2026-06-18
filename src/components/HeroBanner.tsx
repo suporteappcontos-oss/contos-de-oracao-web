@@ -2,8 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Play, Info } from 'lucide-react'
-import Image from 'next/image'
+import { Play } from 'lucide-react'
 
 const FALLBACK_IMAGES = [
   'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1600&q=80',

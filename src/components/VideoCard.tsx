@@ -29,7 +29,7 @@ type VideoData = {
   em_breve?: boolean
 }
 
-export default function VideoCard({ video, isFavoritado = false, minimal = false }: { video: VideoData, isFavoritado?: boolean, minimal?: boolean }) {
+export default function VideoCard({ video, minimal = false }: { video: VideoData, minimal?: boolean }) {
   const [imgError, setImgError] = useState(false)
 
   const imageUrl = (!imgError && video.thumbnail_url)

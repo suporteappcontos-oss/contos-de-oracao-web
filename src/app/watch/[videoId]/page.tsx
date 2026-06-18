@@ -1,13 +1,13 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+
 import FavoritoButton from '@/components/FavoritoButton'
 
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
-import { ChevronLeft, Clock, ChevronRight } from 'lucide-react'
+import { Clock, ChevronRight } from 'lucide-react'
 import crypto from 'crypto'
 
 type Props = {
@@ -124,6 +124,7 @@ export default async function VideoPlayerPage({ params }: Props) {
   // Implementação da Dica de Ouro: Autenticação por Token (Protege e faz rodar no APK)
   const securityKey = process.env.BUNNY_STREAM_TOKEN_KEY
   if (securityKey) {
+    // eslint-disable-next-line react-hooks/purity
     const expires = Math.floor(Date.now() / 1000) + (3600 * 6) // Expira em 6 horas
     const hashString = securityKey + video.bunny_video_id + expires
     const token = crypto.createHash('sha256').update(hashString).digest('hex')

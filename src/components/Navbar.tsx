@@ -16,25 +16,7 @@ const IconLoja = () => (
     <path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
   </svg>
 );
-const IconBiblia = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2v5M9.5 4.5h5"/><path d="M4 9h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V9z"/>
-    <path d="M4 9c0 0 4-3 8 0s8 0 8 0"/>
-  </svg>
-);
-const IconOracoes = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 3C10 6.5 8.5 9 8.5 12s3.5 6 3.5 9c0-3 3.5-5.5 3.5-9S14 6.5 12 3z"/>
-    <ellipse cx="12" cy="4.5" rx="1" ry="1.5" fill="currentColor" stroke="none" opacity="0.6"/>
-  </svg>
-);
-const IconLiturgia = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-    <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-    <path d="M12 14v4M10 16h4"/>
-  </svg>
-);
+
 const IconPlanos = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
@@ -72,11 +54,9 @@ const IconSobre = () => (
 export default function Navbar() {
   const pathname                      = usePathname();
   const router                        = useRouter();
-  const [versao, setVersao]           = useState<string | null>(null);
-  const [apkUrl, setApkUrl]           = useState('#');
   const [showManual, setShowManual]   = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [user, setUser]               = useState<any>(null);
+  const [user, setUser]               = useState<Record<string, any> | null>(null);
   const [isAdmin, setIsAdmin]         = useState(false);
   const [isLoggedIn, setIsLoggedIn]   = useState(false);
   const [isScrolled, setIsScrolled]   = useState(false);
@@ -94,7 +74,7 @@ export default function Navbar() {
   useEffect(() => {
     const supabase = createClient();
     
-    const registrarAcesso = (userId: string) => {
+    const registrarAcesso = () => {
       const acessoRegistrado = sessionStorage.getItem('cdo_acesso_site_registrado');
       if (!acessoRegistrado) {
         fetch('/api/registrar-acesso', {
@@ -113,7 +93,7 @@ export default function Navbar() {
       setIsLoggedIn(!!session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        registrarAcesso(session.user.id);
+        registrarAcesso();
         setIsAdmin(session.user.email === 'suporte.appcontos@gmail.com' || session.user.user_metadata?.role === 'admin');
         supabase.from('perfis').select('role').eq('id', session.user.id).single().then(({ data }) => {
           if (data?.role === 'admin') {
@@ -127,7 +107,7 @@ export default function Navbar() {
       setIsLoggedIn(!!session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        registrarAcesso(session.user.id);
+        registrarAcesso();
         setIsAdmin(session.user.email === 'suporte.appcontos@gmail.com' || session.user.user_metadata?.role === 'admin');
         supabase.from('perfis').select('role').eq('id', session.user.id).single().then(({ data }) => {
           if (data?.role === 'admin') {
@@ -150,21 +130,7 @@ export default function Navbar() {
     router.push('/');
   };
 
-  // Busca versão APK
-  useEffect(() => {
-    const checkUpdate = async () => {
-      try {
-        const ts   = new Date().getTime();
-        const res  = await fetch(`/api/apk?t=${ts}`, { cache: 'no-store' });
-        const data = await res.json();
-        if (res.ok) {
-          if (data.link_download) setApkUrl(data.link_download);
-          if (data.versao_atual)  setVersao(data.versao_atual);
-        }
-      } catch (e) { console.error('Erro APK', e); }
-    };
-    checkUpdate();
-  }, []);
+
 
   // "Entrar" funciona em QUALQUER página:
   // - Na home: abre o modal via CustomEvent
@@ -178,10 +144,7 @@ export default function Navbar() {
     }
   };
 
-  // Mostra "Início" só quando:
-  // - NÃO está na home (pathname !== '/')
-  // - NÃO está logado
-  const showInicio = pathname !== '/' && !isLoggedIn;
+
 
   // Mostra "Entrar | Inscreva-se" só quando não está logado
   const showAuth = !isLoggedIn;
