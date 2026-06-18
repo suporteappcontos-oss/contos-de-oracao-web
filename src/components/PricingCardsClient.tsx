@@ -126,42 +126,92 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
       {/* ── Seletor de ciclo ── */}
       {temMultiplosCiclos && (
         <div className="flex justify-center mb-10 px-4 w-full">
-          <div
-            className="flex w-full max-w-sm sm:max-w-md rounded-2xl p-1 gap-1 shadow-2xl"
-            style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            {opcoesCiclo.map(({ id, label, badge }) => {
-              const ativo = ciclo === id;
-              return (
-                <button
-                  key={id}
-                  onClick={() => setCiclo(id)}
-                  className="flex-1 relative flex flex-col items-center justify-center rounded-xl py-2 px-1 transition-all duration-200 min-h-[52px]"
-                  style={ativo
-                    ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', boxShadow: '0 4px 15px rgba(212,175,55,0.3)' }
-                    : { background: 'transparent' }
-                  }
-                >
-                  <span
-                    className="text-xs sm:text-sm md:text-base font-black tracking-wide"
-                    style={{ color: ativo ? '#000' : 'rgba(255,255,255,0.5)' }}
-                  >
-                    {label}
-                  </span>
+          <style dangerouslySetInnerHTML={{__html: `
+            .glass-radio-group {
+              --bg: rgba(255, 255, 255, 0.06);
+              --text: rgba(255, 255, 255, 0.5);
+              display: flex;
+              position: relative;
+              background: var(--bg);
+              border-radius: 1.25rem;
+              backdrop-filter: blur(12px);
+              box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.1), inset -1px -1px 6px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3);
+              width: 100%;
+              max-width: 400px;
+              margin: 0 auto;
+            }
+            .glass-radio-group input {
+              display: none;
+            }
+            .glass-radio-group label {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              min-height: 64px;
+              font-size: 16px;
+              cursor: pointer;
+              font-weight: 900;
+              letter-spacing: 0.3px;
+              color: var(--text);
+              position: relative;
+              z-index: 2;
+              transition: color 0.3s ease-in-out;
+            }
+            .glass-radio-group label:hover {
+              color: white;
+            }
+            .glass-radio-group input:checked + label {
+              color: #000;
+            }
+            .glass-glider {
+              position: absolute;
+              top: 0;
+              bottom: 0;
+              border-radius: 1.25rem;
+              z-index: 1;
+              background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+              box-shadow: 0 0 18px rgba(212,175,55,0.4), 0 0 10px rgba(255,235,150,0.2) inset;
+              transition: transform 0.5s cubic-bezier(0.37, 1.95, 0.66, 0.56);
+            }
+            .badge-unselected {
+              background: #22c55e;
+              color: #fff;
+            }
+            .glass-radio-group input:checked + label .badge-unselected {
+              background: rgba(0,0,0,0.25) !important;
+              color: #000 !important;
+            }
+          `}} />
+          <div className="glass-radio-group">
+            {opcoesCiclo.map(({ id, label, badge }) => (
+              <React.Fragment key={id}>
+                <input
+                  type="radio"
+                  name="plan_cycle"
+                  id={`cycle-${id}`}
+                  checked={ciclo === id}
+                  onChange={() => setCiclo(id)}
+                />
+                <label htmlFor={`cycle-${id}`}>
+                  <span>{label}</span>
                   {badge && (
-                    <span
-                      className="mt-0.5 text-[0.55rem] sm:text-[0.6rem] font-black px-1.5 py-0.5 rounded-full tracking-wider whitespace-nowrap"
-                      style={ativo
-                        ? { background: 'rgba(0,0,0,0.25)', color: '#000' }
-                        : { background: '#22c55e', color: '#fff' }
-                      }
-                    >
+                    <span className="badge-unselected mt-0.5 text-[0.6rem] font-black px-2 py-0.5 rounded-full tracking-wider whitespace-nowrap transition-colors">
                       {badge}
                     </span>
                   )}
-                </button>
-              );
-            })}
+                </label>
+              </React.Fragment>
+            ))}
+            
+            <div 
+              className="glass-glider"
+              style={{
+                width: \`\${100 / opcoesCiclo.length}%\`,
+                transform: \`translateX(\${opcoesCiclo.findIndex(c => c.id === ciclo) * 100}%)\`
+              }}
+            />
           </div>
         </div>
       )}
