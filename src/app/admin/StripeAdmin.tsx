@@ -127,14 +127,18 @@ export function StripeAdmin() {
     setLoadingAction(false)
   }
 
-  // Ativa um dos planos padrão diretamente
-  const ativarPlanoPadrao = async (tipo: 'individual' | 'familia') => {
-    setAtivandoPlano(tipo)
-    const cfg = tipo === 'individual'
-      ? { nome: 'Individual', etiqueta: 'Individual', max_telas: 1, precoMensal: 47.9, precoAnual: 334.8,
-          beneficios: 'Acesso a todos os filmes | Materiais didáticos inclusos (HQ, atividades, jogos e mais) | 1 tela simultânea | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento' }
-      : { nome: 'Família', etiqueta: 'Família', max_telas: 5, precoMensal: 49.9, precoAnual: 449.9,
-          beneficios: 'Até 5 telas simultâneas | Até 5 perfis de usuário | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento | Suporte prioritário por e-mail' }
+  // Ativa o plano padrão diretamente
+  const ativarPlanoPadrao = async () => {
+    setAtivandoPlano('padrao')
+    const cfg = { 
+      nome: 'Plano Padrão', 
+      etiqueta: 'Premium', 
+      max_telas: 5, 
+      precoMensal: 47.9, 
+      precoSemestral: null, 
+      precoAnual: 334.8,
+      beneficios: 'Até 5 telas simultâneas | Até 5 perfis de usuário | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento | Suporte prioritário por e-mail' 
+    }
     try {
       const response = await fetch('/api/stripe/produtos', {
         method: 'POST',
@@ -226,32 +230,20 @@ export function StripeAdmin() {
           </div>
           <div>
             <h3 className="text-white font-extrabold text-base">Ativar Planos Padrão</h3>
-            <p className="text-white/40 text-xs">Cria os planos Individual e Família com os ciclos Mensal e Anual automaticamente.</p>
+            <p className="text-white/40 text-xs">Cria o plano padrão com os ciclos Mensal e Anual automaticamente.</p>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Individual */}
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+          {/* Padrão */}
           <div className="bg-[#090B10] border border-white/10 rounded-2xl p-5">
-            <div className="text-[#D4AF37] font-black text-sm mb-1">👤 Plano Individual</div>
-            <div className="text-white/50 text-xs mb-3">1 tela · Mensal R$47,90 · Anual R$334,80</div>
+            <div className="text-[#D4AF37] font-black text-sm mb-1">⭐ Plano Padrão Premium</div>
+            <div className="text-white/50 text-xs mb-3">5 telas · Mensal R$47,90 · Anual R$334,80</div>
             <button
-              onClick={() => ativarPlanoPadrao('individual')}
+              onClick={() => ativarPlanoPadrao()}
               disabled={!!ativandoPlano}
               className="w-full bg-[#D4AF37] text-black py-2.5 rounded-xl font-black text-sm hover:brightness-110 transition-all disabled:opacity-50"
             >
-              {ativandoPlano === 'individual' ? '⏳ Criando...' : '✨ Ativar Plano Individual'}
-            </button>
-          </div>
-          {/* Família */}
-          <div className="bg-[#090B10] border border-white/10 rounded-2xl p-5">
-            <div className="text-[#22c55e] font-black text-sm mb-1">👨‍👩‍👧‍👦 Plano Família</div>
-            <div className="text-white/50 text-xs mb-3">5 telas · Mensal R$49,90 · Anual R$449,90</div>
-            <button
-              onClick={() => ativarPlanoPadrao('familia')}
-              disabled={!!ativandoPlano}
-              className="w-full bg-[#22c55e] text-black py-2.5 rounded-xl font-black text-sm hover:brightness-110 transition-all disabled:opacity-50"
-            >
-              {ativandoPlano === 'familia' ? '⏳ Criando...' : '✨ Ativar Plano Família'}
+              {ativandoPlano === 'padrao' ? '⏳ Criando...' : '✨ Ativar Plano Padrão'}
             </button>
           </div>
         </div>
