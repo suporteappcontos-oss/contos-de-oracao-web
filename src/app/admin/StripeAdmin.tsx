@@ -131,9 +131,9 @@ export function StripeAdmin() {
   const ativarPlanoPadrao = async (tipo: 'individual' | 'familia') => {
     setAtivandoPlano(tipo)
     const cfg = tipo === 'individual'
-      ? { nome: 'Individual', etiqueta: 'Individual', max_telas: 1, precoMensal: 27.9, precoSemestral: 149.9, precoAnual: 249.9,
+      ? { nome: 'Individual', etiqueta: 'Individual', max_telas: 1, precoMensal: 47.9, precoAnual: 334.8,
           beneficios: 'Acesso a todos os filmes | Materiais didáticos inclusos (HQ, atividades, jogos e mais) | 1 tela simultânea | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento' }
-      : { nome: 'Família', etiqueta: 'Família', max_telas: 5, precoMensal: 49.9, precoSemestral: 269.9, precoAnual: 449.9,
+      : { nome: 'Família', etiqueta: 'Família', max_telas: 5, precoMensal: 49.9, precoAnual: 449.9,
           beneficios: 'Até 5 telas simultâneas | Até 5 perfis de usuário | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento | Suporte prioritário por e-mail' }
     try {
       const response = await fetch('/api/stripe/produtos', {
@@ -144,7 +144,7 @@ export function StripeAdmin() {
       if (data.error) {
         alert('Erro ao criar plano ' + cfg.nome + ': ' + data.error)
       } else {
-        alert(`✅ Plano ${cfg.nome} criado com sucesso no Stripe!\n\nMensal: R$ ${cfg.precoMensal}\nSemestral: R$ ${cfg.precoSemestral}\nAnual: R$ ${cfg.precoAnual}`)
+        alert(`✅ Plano ${cfg.nome} criado com sucesso no Stripe!\n\nMensal: R$ ${cfg.precoMensal}\nAnual: R$ ${cfg.precoAnual}`)
         await fetchData()
       }
     } catch {
@@ -226,14 +226,14 @@ export function StripeAdmin() {
           </div>
           <div>
             <h3 className="text-white font-extrabold text-base">Ativar Planos Padrão</h3>
-            <p className="text-white/40 text-xs">Cria os planos Individual e Família com todos os ciclos (Mensal, Semestral e Anual) automaticamente.</p>
+            <p className="text-white/40 text-xs">Cria os planos Individual e Família com os ciclos Mensal e Anual automaticamente.</p>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Individual */}
           <div className="bg-[#090B10] border border-white/10 rounded-2xl p-5">
             <div className="text-[#D4AF37] font-black text-sm mb-1">👤 Plano Individual</div>
-            <div className="text-white/50 text-xs mb-3">1 tela · Mensal R$27,90 · Semestral R$149,90 · Anual R$249,90</div>
+            <div className="text-white/50 text-xs mb-3">1 tela · Mensal R$47,90 · Anual R$334,80</div>
             <button
               onClick={() => ativarPlanoPadrao('individual')}
               disabled={!!ativandoPlano}
@@ -245,7 +245,7 @@ export function StripeAdmin() {
           {/* Família */}
           <div className="bg-[#090B10] border border-white/10 rounded-2xl p-5">
             <div className="text-[#22c55e] font-black text-sm mb-1">👨‍👩‍👧‍👦 Plano Família</div>
-            <div className="text-white/50 text-xs mb-3">5 telas · Mensal R$49,90 · Semestral R$269,90 · Anual R$449,90</div>
+            <div className="text-white/50 text-xs mb-3">5 telas · Mensal R$49,90 · Anual R$449,90</div>
             <button
               onClick={() => ativarPlanoPadrao('familia')}
               disabled={!!ativandoPlano}
