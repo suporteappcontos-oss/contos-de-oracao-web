@@ -144,7 +144,7 @@ export default async function WatchPage() {
                 <div className="mb-6">
                   <CategoryCarousel title="Continue Assistindo" count={1}>
                     {recentes.slice(0, 1).map((video: Video) => (
-                      <VideoCard key={`hist-${video.id}`} video={video} isFavoritado={favoritosSet.has(video.id)} />
+                      <VideoCard key={`hist-${video.id}`} video={video} />
                     ))}
                   </CategoryCarousel>
                 </div>
@@ -153,7 +153,7 @@ export default async function WatchPage() {
               {videosUltimaTemporada.length > 0 && (
                 <CategoryCarousel title={ultimaTemporadaNome || 'Temporada'} count={videosUltimaTemporada.length}>
                   {videosUltimaTemporada.map((video: Video) => (
-                    <VideoCard key={video.id} video={video} isFavoritado={favoritosSet.has(video.id)} />
+                    <VideoCard key={video.id} video={video} />
                   ))}
                 </CategoryCarousel>
               )}
@@ -161,7 +161,7 @@ export default async function WatchPage() {
               {videosClipes.length > 0 && (
                 <CategoryCarousel title="Vídeos Clipes" count={videosClipes.length}>
                   {videosClipes.map((video: Video) => (
-                    <VideoCard key={video.id} video={video} isFavoritado={favoritosSet.has(video.id)} />
+                    <VideoCard key={video.id} video={video} />
                   ))}
                 </CategoryCarousel>
               )}
