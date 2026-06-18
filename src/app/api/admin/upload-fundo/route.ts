@@ -45,6 +45,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
     }
 
+    const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single();
+    if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
+    }
+
     const formData = await request.formData();
     const fileDesk = formData.get('backgroundDesktop') as File;
     const fileMob = formData.get('backgroundMobile') as File;

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
-const BUNNY_ACCESS_KEY = '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c';
 const BUNNY_STORAGE_URL = 'https://br.storage.bunnycdn.com/contos-midia-app/versao.json';
 
 export async function POST(request: Request) {
@@ -34,10 +33,15 @@ export async function POST(request: Request) {
       data_lancamento: new Date().toISOString(),
     };
 
+    const ACCESS_KEY = process.env.BUNNY_API_KEY;
+    if (!ACCESS_KEY) {
+      return NextResponse.json({ error: 'Chave BUNNY_API_KEY não configurada no servidor' }, { status: 500 });
+    }
+
     const res = await fetch(BUNNY_STORAGE_URL, {
       method: 'PUT',
       headers: {
-        'AccessKey': BUNNY_ACCESS_KEY,
+        'AccessKey': ACCESS_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(dados),

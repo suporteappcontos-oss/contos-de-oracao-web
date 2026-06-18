@@ -10,6 +10,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
     }
 
+    const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single();
+    if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
@@ -27,9 +32,14 @@ export async function POST(request: Request) {
     const ext = file.name.split('.').pop() || 'png';
     const fileName = `anuncio_${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
     
-    // Credenciais BunnyCDN (Hardcoded baseadas no seu script bat)
+    // Credenciais BunnyCDN
     const STORAGE_ZONE = 'contos-midia-app';
-    const ACCESS_KEY = '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c';
+    const ACCESS_KEY = process.env.BUNNY_API_KEY;
+    
+    if (!ACCESS_KEY) {
+      return NextResponse.json({ error: 'Chave BUNNY_API_KEY não configurada no servidor' }, { status: 500 });
+    }
+
     const REGION_URL = 'br.storage.bunnycdn.com';
     const PULL_ZONE = 'https://contos-midia-app.b-cdn.net';
     

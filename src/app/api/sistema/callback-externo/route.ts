@@ -19,18 +19,24 @@ export async function POST(request: NextRequest) {
     const signature = request.nextUrl.searchParams.get('signature')
     const webhookToken = process.env.KIWIFY_WEBHOOK_TOKEN
     
-    if (webhookToken && signature) {
-      const calculatedSignature = crypto
-        .createHmac('sha1', webhookToken)
-        .update(rawBody)
-        .digest('hex')
-      
-      if (calculatedSignature !== signature) {
-        console.error('⛔ Assinatura Kiwify inválida. Tentativa de invasão bloqueada.')
-        return NextResponse.json({ error: 'Assinatura inválida' }, { status: 401 })
-      }
-    } else {
-      console.warn('⚠️ Token de Webhook da Kiwify não configurado no .env. Ignorando validação.')
+    if (!webhookToken) {
+      console.error('⛔ ERRO CRÍTICO: KIWIFY_WEBHOOK_TOKEN não está configurado. Rejeitando todas as requisições por segurança.')
+      return NextResponse.json({ error: 'Configuração do servidor ausente' }, { status: 500 })
+    }
+
+    if (!signature) {
+      console.error('⛔ Tentativa de acesso sem assinatura Kiwify bloqueada.')
+      return NextResponse.json({ error: 'Assinatura ausente' }, { status: 401 })
+    }
+
+    const calculatedSignature = crypto
+      .createHmac('sha1', webhookToken)
+      .update(rawBody)
+      .digest('hex')
+    
+    if (calculatedSignature !== signature) {
+      console.error('⛔ Assinatura Kiwify inválida. Tentativa de invasão bloqueada.')
+      return NextResponse.json({ error: 'Assinatura inválida' }, { status: 401 })
     }
 
     const payload = JSON.parse(rawBody)
