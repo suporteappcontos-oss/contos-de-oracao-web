@@ -9,6 +9,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { createClient } from '@/utils/supabase/client'
 import DynamicBackground from '@/components/DynamicBackground'
+import { motion, AnimatePresence } from 'framer-motion'
 
 // Carrega o Stripe public key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
@@ -451,10 +452,19 @@ export default function AssinarPage() {
               ))}
             </div>
 
-            {/* ── STEP 1: Nome e Email ── */}
-        {step === 1 && (
-          <div className="pt-1">
-            <h1 className="text-white text-xl font-black mb-1 tracking-tight">Criar sua conta</h1>
+            {/* ── CONTEÚDO DAS ETAPAS COM ANIMAÇÃO ── */}
+            <AnimatePresence mode="wait">
+              {/* ── STEP 1: Nome e Email ── */}
+              {step === 1 && (
+                <motion.div 
+                  key="step1"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="pt-1"
+                >
+                  <h1 className="text-white text-xl font-black mb-1 tracking-tight">Criar sua conta</h1>
             <p className="text-white/40 text-xs mb-5">Informe seus dados para começar</p>
 
             <div className="flex flex-col gap-3">
@@ -566,13 +576,20 @@ export default function AssinarPage() {
               Já tem uma conta?{' '}
               <Link href="/login" style={{ color: '#D4AF37' }} className="no-underline hover:underline font-bold">Fazer login</Link>
             </p>
-          </div>
-        )}
+                </motion.div>
+              )}
 
-        {/* ── STEP 2: Confirmar e Pagar ── */}
-        {step === 2 && (
-          <div className="pt-1">
-            <h1 className="text-white text-xl font-black mb-1 text-center tracking-tight">Confirmar assinatura</h1>
+              {/* ── STEP 2: Confirmar e Pagar ── */}
+              {step === 2 && (
+                <motion.div 
+                  key="step2"
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 30 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="pt-1"
+                >
+                  <h1 className="text-white text-xl font-black mb-1 text-center tracking-tight">Confirmar assinatura</h1>
             <p className="text-white/40 text-xs mb-5 text-center">Revise seus dados antes de pagar</p>
 
             {/* Formulário Embutido da Stripe ou Resumo */}
