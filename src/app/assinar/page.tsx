@@ -144,9 +144,9 @@ export default function AssinarPage() {
   async function irParaKiwify() {
     setLoadingCheckout(true)
     
-    // Links base provisórios
-    const linkMensal = process.env.NEXT_PUBLIC_KIWIFY_MENSAL_LINK || '#'
-    const linkAnual = process.env.NEXT_PUBLIC_KIWIFY_ANUAL_LINK || '#'
+    // Links oficiais fornecidos (Kiwify apenas PIX/Boleto como configurado no painel)
+    const linkMensal = process.env.NEXT_PUBLIC_KIWIFY_MENSAL_LINK || 'https://pay.kiwify.com.br/jamEpHh'
+    const linkAnual = process.env.NEXT_PUBLIC_KIWIFY_ANUAL_LINK || 'https://pay.kiwify.com.br/rd4ueYB'
     
     const linkBase = planoDetalhe?.intervalo === 'year' ? linkAnual : linkMensal
     
