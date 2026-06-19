@@ -161,6 +161,11 @@ export default function AssinarPage() {
       const url = new URL(linkBase)
       url.searchParams.append('email', email)
       url.searchParams.append('name', nome)
+      
+      // Tentativa de forçar o PIX via parâmetros não-oficiais (a Kiwify não tem suporte oficial para isso)
+      url.searchParams.append('paymentMethod', 'pix')
+      url.searchParams.append('payment_method', 'pix')
+      
       window.location.href = url.toString()
     } catch(e) {
       alert("Link da Kiwify inválido configurado nas variáveis.")
