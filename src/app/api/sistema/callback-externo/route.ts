@@ -67,15 +67,18 @@ export async function POST(request: NextRequest) {
         })
         console.log(`✅ Acesso Kiwify Liberado/Renovado: ${email}`)
       } else {
+        // Define uma senha provisória padrão para facilitar o acesso
+        const senhaProvisoria = 'Contos2026'
+
         const { error } = await supabaseAdmin.auth.admin.createUser({
           email,
+          password: senhaProvisoria,
           email_confirm: true,
           user_metadata: metaAtualizado,
         })
+        
         if (!error) {
-          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.com.br'
-          await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo: `${siteUrl}/atualizar-senha` })
-          console.log(`🎉 Novo Cliente Kiwify Criado: ${email}`)
+          console.log(`🎉 Novo Cliente Kiwify Criado com senha provisória: ${email}`)
         } else {
           console.error('Erro ao criar usuário:', error)
         }

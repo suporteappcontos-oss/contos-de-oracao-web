@@ -144,6 +144,22 @@ export default function AssinarPage() {
   async function irParaKiwify() {
     setLoadingCheckout(true)
     
+    // Antes de ir para a Kiwify, vamos criar a conta do usuário no nosso banco com a SENHA QUE ELE DIGITOU!
+    // Assim, quando o webhook da Kiwify confirmar o pagamento, a conta já existe e ele pode fazer login normalmente.
+    try {
+      await fetch('/api/auth/criar-pre-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, senha })
+      })
+      // Não precisamos nos preocupar com a resposta aqui. 
+      // Se der sucesso, ótimo, a conta e a senha estão salvas.
+      // Se ele já tiver conta, o webhook da Kiwify vai apenas renovar o acesso dele.
+    } catch(e) {
+      console.error("Erro ao salvar conta pre-checkout", e)
+      // Se der erro de conexão, continua mesmo assim. O Webhook criará com a senha padrão (Contos2026).
+    }
+
     // Links oficiais fornecidos (Kiwify apenas PIX/Boleto como configurado no painel)
     const linkMensal = process.env.NEXT_PUBLIC_KIWIFY_MENSAL_LINK || 'https://pay.kiwify.com.br/jamEpHh'
     const linkAnual = process.env.NEXT_PUBLIC_KIWIFY_ANUAL_LINK || 'https://pay.kiwify.com.br/rd4ueYB'
