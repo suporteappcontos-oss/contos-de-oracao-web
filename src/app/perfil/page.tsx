@@ -109,7 +109,7 @@ export default async function PerfilPage() {
   // Etiqueta dinâmica vinda do metadata da Stripe (salva pelo webhook)
   const planoLabel = isAdmin ? 'Administrador' : (user.user_metadata?.etiqueta_plano || perfil?.plano || 'Assinante')
   
-  const isKiwify = !!user.user_metadata?.kiwify_product_id
+  const isKiwify = (user.user_metadata && 'kiwify_product_id' in user.user_metadata) || user.user_metadata?.origem === 'kiwify'
 
   return (
     <div className="min-h-screen text-white pb-20" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>

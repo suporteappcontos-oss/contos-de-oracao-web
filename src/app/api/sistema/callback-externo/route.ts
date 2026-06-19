@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     // -- APROVADO OU RENOVADO --
     if (orderStatus === 'paid' || subStatus === 'active') {
       const usuario = await buscarUsuarioPorEmail(email)
-      const metaAtualizado = { plano_ativo: true, max_telas: maxTelas, kiwify_product_id: productId, etiqueta_plano: etiquetaPlano, nome: formatarNomeCurto(nome) }
+      const metaAtualizado = { plano_ativo: true, max_telas: maxTelas, kiwify_product_id: productId, etiqueta_plano: etiquetaPlano, nome: formatarNomeCurto(nome), origem: 'kiwify' }
 
       if (usuario) {
         await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
