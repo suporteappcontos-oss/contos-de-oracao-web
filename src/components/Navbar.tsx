@@ -237,68 +237,60 @@ export default function Navbar() {
             transform: translate(2px, 2px);
           }
 
-          /* --- Redes Sociais Animadas Navbar --- */
+          /* --- Redes Sociais Animadas Navbar: Estilo Preenchimento --- */
           .social-wrapper-nav {
-            display: inline-flex;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             list-style: none;
             padding: 0;
             margin: 0;
-            gap: 8px;
           }
-
           .social-wrapper-nav .icon-content {
-            margin: 0 4px;
+            margin: 0 6px;
             position: relative;
           }
-
           .social-wrapper-nav .icon-content .tooltip {
             position: absolute;
-            top: 0;
-            font-size: 11px;
-            background: #fff;
-            color: #fff;
-            padding: 4px 6px;
-            border-radius: 5px;
-            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            white-space: nowrap;
-            z-index: 20;
-            font-family: "Outfit", sans-serif;
-            font-weight: 600;
+            top: 30px;
             left: 50%;
             transform: translateX(-50%);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            font-size: 11px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-family: "Outfit", sans-serif;
+            font-weight: 600;
+            z-index: 20;
           }
-
           .social-wrapper-nav .icon-content .tooltip::before {
             position: absolute;
             content: "";
             height: 8px;
             width: 8px;
-            background: #fff;
-            top: -3px;
+            top: -4px;
             left: 50%;
-            transform: translate(-50%) rotate(45deg);
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translate(-50%, 0) rotate(45deg);
+            transition: all 0.3s ease;
             z-index: -1;
           }
-
           .social-wrapper-nav .icon-content:hover .tooltip {
-            top: 45px;
             opacity: 1;
             visibility: visible;
-            pointer-events: auto;
+            top: 45px;
           }
-
           .social-wrapper-nav .icon-content a {
             position: relative;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             color: #fff;
             background-color: rgba(255, 255, 255, 0.08);
@@ -306,21 +298,18 @@ export default function Navbar() {
             transition: all 0.3s ease-in-out;
             text-decoration: none;
           }
-
           .social-wrapper-nav .icon-content a:hover {
-            box-shadow: 3px 2px 25px 0px rgba(0, 0, 0, 0.5);
+            box-shadow: 3px 2px 45px 0px rgba(0, 0, 0, 0.5);
             border-color: transparent;
             color: white;
           }
-
           .social-wrapper-nav .icon-content a svg {
             position: relative;
             z-index: 1;
-            width: 14px;
-            height: 14px;
+            width: 18px;
+            height: 18px;
             fill: currentColor;
           }
-
           .social-wrapper-nav .icon-content a .filled {
             position: absolute;
             top: auto;
@@ -332,30 +321,29 @@ export default function Navbar() {
             transition: all 0.3s ease-in-out;
             z-index: 0;
           }
-
           .social-wrapper-nav .icon-content a:hover .filled {
             height: 100%;
           }
 
-          .social-wrapper-nav .icon-content a[data-social="instagram"] .filled,
-          .social-wrapper-nav .icon-content a[data-social="instagram"] ~ .tooltip,
-          .social-wrapper-nav .icon-content a[data-social="instagram"] ~ .tooltip::before {
-            background: linear-gradient(45deg, #405de6, #5b51db, #b33ab4, #c135b4, #e1306c, #fd1f1f);
-          }
           .social-wrapper-nav .icon-content a[data-social="facebook"] .filled,
           .social-wrapper-nav .icon-content a[data-social="facebook"] ~ .tooltip,
           .social-wrapper-nav .icon-content a[data-social="facebook"] ~ .tooltip::before {
             background-color: #1877f2;
           }
-          .social-wrapper-nav .icon-content a[data-social="tiktok"] .filled,
-          .social-wrapper-nav .icon-content a[data-social="tiktok"] ~ .tooltip,
-          .social-wrapper-nav .icon-content a[data-social="tiktok"] ~ .tooltip::before {
-            background-color: #333333;
+          .social-wrapper-nav .icon-content a[data-social="instagram"] .filled,
+          .social-wrapper-nav .icon-content a[data-social="instagram"] ~ .tooltip,
+          .social-wrapper-nav .icon-content a[data-social="instagram"] ~ .tooltip::before {
+            background: linear-gradient(45deg, #405de6, #5b51db, #b33ab4, #c135b4, #e1306c, #fd1f1f);
           }
           .social-wrapper-nav .icon-content a[data-social="youtube"] .filled,
           .social-wrapper-nav .icon-content a[data-social="youtube"] ~ .tooltip,
           .social-wrapper-nav .icon-content a[data-social="youtube"] ~ .tooltip::before {
-            background-color: #FF0000;
+            background-color: #ff0000;
+          }
+          .social-wrapper-nav .icon-content a[data-social="tiktok"] .filled,
+          .social-wrapper-nav .icon-content a[data-social="tiktok"] ~ .tooltip,
+          .social-wrapper-nav .icon-content a[data-social="tiktok"] ~ .tooltip::before {
+            background-color: #333333;
           }
         `}} />
 
