@@ -207,6 +207,24 @@ export default function AssinarPage() {
           animation: shine 4s infinite;
           pointer-events: none;
         }
+        .btn-animado-cartao, .btn-animado-pix {
+          transition: all 0.3s ease 0s;
+          box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-animado-cartao:hover {
+          box-shadow: 0px 15px 20px rgba(212, 175, 55, 0.4);
+          transform: translateY(-7px);
+        }
+        .btn-animado-cartao:active {
+          transform: translateY(-1px);
+        }
+        .btn-animado-pix:hover {
+          box-shadow: 0px 15px 20px rgba(34, 197, 94, 0.4);
+          transform: translateY(-7px);
+        }
+        .btn-animado-pix:active {
+          transform: translateY(-1px);
+        }
       `}} />
 
       {/* Header */}
@@ -520,7 +538,7 @@ export default function AssinarPage() {
                     
                     {/* Botão Stripe (Cartão) */}
                     <button onClick={finalizarPagamento} disabled={loadingCheckout}
-                      className="w-full py-3.5 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#D4AF37]/50"
+                      className="w-full py-3.5 font-extrabold rounded-[45px] text-sm cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#D4AF37]/50 btn-animado-cartao"
                       style={{ background: '#D4AF37', color: '#090B10' }}>
                       {loadingCheckout ? (
                         <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
@@ -531,7 +549,7 @@ export default function AssinarPage() {
 
                     {/* Botão Kiwify (PIX) */}
                     <button onClick={irParaKiwify} disabled={loadingCheckout}
-                      className="w-full py-3.5 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#22c55e]/50"
+                      className="w-full py-3.5 font-extrabold rounded-[45px] text-sm cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#22c55e]/50 btn-animado-pix"
                       style={{ background: '#22c55e', color: '#090B10' }}>
                       {loadingCheckout ? (
                         <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
