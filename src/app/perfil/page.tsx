@@ -108,6 +108,8 @@ export default async function PerfilPage() {
 
   // Etiqueta dinâmica vinda do metadata da Stripe (salva pelo webhook)
   const planoLabel = isAdmin ? 'Administrador' : (user.user_metadata?.etiqueta_plano || perfil?.plano || 'Assinante')
+  
+  const isKiwify = !!user.user_metadata?.kiwify_product_id
 
   return (
     <div className="min-h-screen text-white pb-20" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
@@ -223,7 +225,7 @@ export default async function PerfilPage() {
             </div>
             <div className="relative z-10">
               {planoAtivo && !isAdmin ? (
-                <GerenciarStripeBtn />
+                <GerenciarStripeBtn isKiwify={isKiwify} />
               ) : !planoAtivo && (
                 <Link href="/#planos" className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(212,175,55,0.3)]" style={{ background: '#D4AF37', color: '#090B10' }}>
                   Renovar Assinatura <Crown size={16} />

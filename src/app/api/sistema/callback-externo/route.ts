@@ -47,7 +47,15 @@ export async function POST(request: NextRequest) {
     // Planos da Kiwify não tem o Max Telas no metadata, então deixaremos 1 como padrão ou 3 (você pode customizar no produto)
     const maxTelas = 3 
     const productId = payload.Product?.id || ''
-    const etiquetaPlano = payload.Product?.name || 'Plano Kiwify'
+    
+    let etiquetaPlano = payload.Product?.name || 'Plano Premium'
+    if (etiquetaPlano.toLowerCase().includes('anual')) {
+      etiquetaPlano = 'Plano Anual'
+    } else if (etiquetaPlano.toLowerCase().includes('mensal')) {
+      etiquetaPlano = 'Plano Mensal'
+    } else {
+      etiquetaPlano = 'Plano Premium' // Fica mais bonito que o nome original do produto na Kiwify
+    }
 
     if (!email) {
       return NextResponse.json({ error: 'Email não encontrado' }, { status: 400 })

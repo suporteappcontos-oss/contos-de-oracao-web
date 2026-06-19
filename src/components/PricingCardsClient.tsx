@@ -158,6 +158,10 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               position: relative;
               z-index: 2;
               transition: color 0.3s ease-in-out;
+              padding-bottom: 12px; /* Espaço para o badge não empurrar o texto */
+            }
+            .glass-radio-group label span.label-text {
+              margin-top: 12px; /* Empurra levemente para o centro visual */
             }
             .glass-radio-group label:hover {
               color: white;
@@ -178,6 +182,8 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
             .badge-unselected {
               background: #22c55e;
               color: #fff;
+              position: absolute;
+              bottom: 6px;
             }
             .glass-radio-group input:checked + label .badge-unselected {
               background: rgba(0,0,0,0.25) !important;
@@ -195,9 +201,9 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                   onChange={() => setCiclo(id)}
                 />
                 <label htmlFor={`cycle-${id}`}>
-                  <span>{label}</span>
+                  <span className="label-text">{label}</span>
                   {badge && (
-                    <span className="badge-unselected mt-0.5 text-[0.6rem] font-black px-2 py-0.5 rounded-full tracking-wider whitespace-nowrap transition-colors">
+                    <span className="badge-unselected text-[0.6rem] font-black px-2 py-0.5 rounded-full tracking-wider whitespace-nowrap transition-colors">
                       {badge}
                     </span>
                   )}
