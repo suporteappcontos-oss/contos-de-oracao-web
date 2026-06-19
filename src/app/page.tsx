@@ -2,50 +2,25 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 import LandingPage from "@/components/LandingPage";
+import ExpiredAccessBanner from "@/components/ExpiredAccessBanner";
+import { Suspense } from "react";
 
 export const metadata = {
   title: 'Contos de Oração — Biblioteca Católica para Crianças',
   description: 'Universo católico infantil de forma divertida. Vídeos, jogos, HQs, atividades e conteúdos exclusivos para ensinar a fé católica às crianças.',
 };
 
-type Props = {
-  searchParams: Promise<{ acesso?: string }>
-}
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-export default async function Home({ searchParams }: Props) {
-  const { acesso } = await searchParams;
-
+export default function Home() {
   return (
     <main>
       <DynamicBackground />
       <Navbar />
 
-      {/* Banner de acesso expirado */}
-      {acesso === 'expirado' && (
-        <div
-          className="fixed top-0 left-0 right-0 z-[999] flex items-center justify-between gap-4 px-5 py-3.5 text-sm font-semibold"
-          style={{
-            background: 'linear-gradient(90deg, #7c1d1d, #991b1b)',
-            borderBottom: '1px solid rgba(239,68,68,0.4)',
-            fontFamily: 'Outfit, sans-serif',
-          }}
-        >
-          <div className="flex items-center gap-2 text-white">
-            <span>🔒</span>
-            <span>Seu acesso expirou ou foi cancelado. Para continuar assistindo, renove sua assinatura.</span>
-          </div>
-          <a
-            href="/planos"
-            className="shrink-0 px-4 py-1.5 rounded-lg font-bold text-xs transition-all hover:brightness-110"
-            style={{ background: '#D4AF37', color: '#090B10' }}
-          >
-            Renovar agora →
-          </a>
-        </div>
-      )}
+      {/* Banner de acesso expirado (Client component) */}
+      <Suspense fallback={null}>
+        <ExpiredAccessBanner />
+      </Suspense>
+
 
       {/* Nova landing page inspirada na imagem de referência */}
       <LandingPage />
