@@ -275,7 +275,7 @@ export default function AssinarPage() {
               Acesso ilimitado a conteúdos exclusivos e mensagens edificantes.
             </p>
 
-            {/* Destaque do Plano Dinâmico no Checkout final */}
+            {/* Destaque do Plano Dinâmico no Checkout final (mantido no desktop também) */}
             {step === 2 && planoDetalhe && (
               <div className="mb-4 p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
                  <p className="text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
@@ -287,9 +287,10 @@ export default function AssinarPage() {
             )}
 
             {/* Caixa de benefícios centralizada dinamicamente */}
-            <div className="rounded-xl p-5 w-full flex-1" style={{ background: 'rgba(21,36,62,0.6)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <p className="text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Check size={14} />
+            <div className="rounded-2xl p-6 w-full flex-1 relative overflow-hidden" style={{ background: 'rgba(21,36,62,0.4)', border: '1px solid rgba(212,175,55,0.15)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)' }}>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 blur-3xl rounded-full pointer-events-none -mt-10 -mr-10"></div>
+              <p className="text-[#D4AF37] text-xs font-black uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                <Check size={16} strokeWidth={3} className="text-[#D4AF37]" />
                 {planoDetalhe ? `Benefícios: ${planoDetalhe.produto.nome}` : 'O que está incluído'}
               </p>
               
@@ -299,33 +300,37 @@ export default function AssinarPage() {
                   .filter(Boolean)
                   .filter((b: string) => !b.toLowerCase().includes('perfis de usuário'))
                   .map((beneficio: string, i: number, arr: any[]) => (
-                  <div key={i} className="flex items-start gap-3 py-2.5" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                    <span style={{ color: '#D4AF37', marginTop: '2px' }}>✓</span>
-                    <span className="text-white/80 text-sm leading-snug">{beneficio.trim()}</span>
+                  <div key={i} className="flex items-start gap-3 py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}>
+                    <div className="bg-[#D4AF37]/10 p-1 rounded-full mt-0.5">
+                      <Check size={12} strokeWidth={3} className="text-[#D4AF37]" />
+                    </div>
+                    <span className="text-white/85 text-sm font-medium leading-snug">{beneficio.trim()}</span>
                   </div>
                 ))
               ) : (
                 // Benefícios padrão quando não há plano selecionado
                 [
-                  '📺 Acesso ilimitado a todos os vídeos',
-                  '❤️ Salve favoritos e assista de onde parou',
-                  '📱 Disponível em qualquer dispositivo',
-                  '🚀 Em breve: App exclusivo iOS/Android',
-                  '🎥 Qualidade de cinema em Full HD',
-                  '⭐ Cancele a qualquer momento'
+                  'Acesso ilimitado a todos os vídeos',
+                  'Salve favoritos e assista de onde parou',
+                  'Disponível em qualquer dispositivo',
+                  'Em breve: App exclusivo iOS/Android',
+                  'Qualidade de cinema em Full HD',
+                  'Cancele a qualquer momento'
                 ].map((text, i) => (
-                  <div key={i} className="flex items-start gap-3 py-2.5" style={{ borderBottom: i < 5 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                    <span style={{ color: '#D4AF37', marginTop: '2px' }}>{text.split(' ')[0]}</span>
-                    <span className="text-white/80 text-sm leading-snug">{text.substring(text.indexOf(' ') + 1)}</span>
+                  <div key={i} className="flex items-start gap-3 py-3" style={{ borderBottom: i < 5 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}>
+                    <div className="bg-[#D4AF37]/10 p-1 rounded-full mt-0.5">
+                      <Check size={12} strokeWidth={3} className="text-[#D4AF37]" />
+                    </div>
+                    <span className="text-white/85 text-sm font-medium leading-snug">{text}</span>
                   </div>
                 ))
               )}
 
               {planoDetalhe && (
-                <div className="mt-5 pt-4 border-t border-white/10">
-                  <div className="flex items-start gap-2">
-                    <Shield size={16} style={{ color: '#D4AF37', marginTop: '1px' }} />
-                    <span className="text-white/60 text-xs">
+                <div className="mt-5 pt-5 border-t border-white/5">
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+                    <Shield size={18} className="text-[#D4AF37] mt-0.5" />
+                    <span className="text-white/70 text-xs leading-snug font-medium">
                       {planoDetalhe.intervalo === 'year' ? 'Economia: 12 meses pelo preço de 10!' : 'Sem fidelidade. Cancele quando quiser, sem multas.'}
                     </span>
                   </div>
@@ -529,6 +534,55 @@ export default function AssinarPage() {
             {/* Formulário Embutido da Stripe ou Resumo */}
             {!clientSecret ? (
               <>
+                {/* Resumo do Pedido no Step 2 (Aparece mais em mobile ou complementa o desktop) */}
+                {planoDetalhe && (
+                  <div className="mb-6 p-4 rounded-xl border border-white/10" style={{ background: 'rgba(0,0,0,0.2)' }}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-white/50 text-xs font-bold uppercase tracking-wider">Resumo do Pedido</span>
+                      <span className="text-[#D4AF37] text-xs font-bold cursor-pointer hover:underline" onClick={() => {
+                        // Rola suavemente para o topo e redireciona (ou algo similar, mas aqui é só visual)
+                        const el = document.getElementById('planos');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }}></span>
+                    </div>
+                    
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <h3 className="text-white font-bold text-base">{planoDetalhe.produto.nome}</h3>
+                        <p className="text-white/40 text-xs">Acesso {planoDetalhe.intervalo === 'year' ? 'por 12 meses' : 'por 1 mês'}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-white font-black text-lg">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                      </div>
+                    </div>
+
+                    {/* Mensagem de Upsell se for plano Mensal e existir plano Anual */}
+                    {planoDetalhe.intervalo === 'month' && planos.some(p => p.intervalo === 'year') && (
+                      <div className="mt-4 pt-3 border-t border-[#D4AF37]/30 bg-gradient-to-r from-[#D4AF37]/10 to-transparent -mx-4 -mb-4 p-4 rounded-b-xl">
+                        {(() => {
+                          const pAnual = planos.find(p => p.intervalo === 'year');
+                          if (!pAnual) return null;
+                          const desconto = (planoDetalhe.valor * 12) - pAnual.valor;
+                          return (
+                            <div className="flex flex-col gap-2">
+                              <p className="text-[#F9E596] text-[0.7rem] font-bold leading-tight">
+                                ✨ Mude para o plano Anual e economize R$ {(desconto / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano!
+                              </p>
+                              <button 
+                                onClick={() => setPlanoSelecionado(pAnual.id)}
+                                className="w-full py-2 rounded-lg text-xs font-bold text-[#090B10] transition-all hover:brightness-110 hover:scale-[1.01] shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                                style={{ background: 'linear-gradient(to right, #D4AF37, #F9E596)' }}
+                              >
+                                Aproveitar desconto
+                              </button>
+                            </div>
+                          )
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Banner de erro inline */}
                 {erroCheckout && (
                   <div className="mb-4 p-4 rounded-xl" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)' }}>
