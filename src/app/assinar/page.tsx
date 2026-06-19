@@ -241,6 +241,56 @@ export default function AssinarPage() {
         .btn-animado-pix:active {
           transform: translateY(-1px);
         }
+        .input-group {
+          position: relative;
+          width: 100%;
+        }
+
+        .input-custom {
+          border: solid 1.5px rgba(255,255,255,0.08);
+          border-radius: 12px;
+          background: rgba(255,255,255,0.04);
+          padding: 16px 16px;
+          font-size: 0.875rem;
+          color: #fff;
+          transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+          width: 100%;
+          outline: none;
+          font-family: 'Outfit', sans-serif;
+        }
+
+        .user-label {
+          position: absolute;
+          left: 14px;
+          color: rgba(255,255,255,0.4);
+          pointer-events: none;
+          transform: translateY(16px);
+          font-size: 0.75rem;
+          transition: 150ms cubic-bezier(0.4,0,0.2,1);
+          background-color: transparent;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .input-custom:focus, .input-custom:not(:placeholder-shown) {
+          border: 1.5px solid rgba(212,175,55,0.5);
+        }
+
+        .input-custom:focus ~ .user-label, .input-custom:not(:placeholder-shown) ~ .user-label {
+          transform: translateY(-50%) scale(0.85);
+          background-color: #17243c; /* approximate blend of checkout panel */
+          padding: 0 0.4em;
+          color: #D4AF37;
+        }
+        
+        .input-error {
+           border-color: rgba(239,68,68,0.6) !important;
+        }
+        
+        .input-error:focus ~ .user-label, .input-error:not(:placeholder-shown) ~ .user-label {
+           color: #f87171 !important;
+        }
       `}} />
 
       {/* Header */}
@@ -275,8 +325,8 @@ export default function AssinarPage() {
               Acesso ilimitado a conteúdos exclusivos e mensagens edificantes.
             </p>
 
-            {/* Destaque do Plano Dinâmico no Checkout final (mantido no desktop também) */}
-            {step === 2 && planoDetalhe && (
+            {/* Destaque do Plano Dinâmico */}
+            {planoDetalhe && (
               <div className="mb-4 p-4 rounded-xl transition-all duration-500" style={{ background: 'linear-gradient(145deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))', border: '1px solid rgba(212,175,55,0.25)' }}>
                  <p className="text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <Check size={12} strokeWidth={3} /> Plano Selecionado
@@ -392,115 +442,91 @@ export default function AssinarPage() {
             <div className="flex flex-col gap-3">
               {/* Nome */}
               <div>
-                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Seu nome completo</label>
-                <input
-                  type="text"
-                  value={nome}
-                  onChange={e => { setNome(e.target.value); setErros(p => ({ ...p, nome: undefined })) }}
-                  placeholder="João Silva"
-                  className="w-full px-3.5 py-2.5 rounded-lg text-white text-sm outline-none transition-all"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: `1.5px solid ${erros.nome ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                    fontFamily: 'Outfit, sans-serif'
-                  }}
-                  onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = erros.nome ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
-                  onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
-                />
-                {erros.nome && <p className="text-red-400 text-xs mt-1.5">{erros.nome}</p>}
+                <div className="input-group">
+                  <input
+                    type="text"
+                    value={nome}
+                    onChange={e => { setNome(e.target.value); setErros(p => ({ ...p, nome: undefined })) }}
+                    placeholder=" "
+                    className={`input-custom ${erros.nome ? 'input-error' : ''}`}
+                    onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
+                  />
+                  <label className="user-label">Seu nome completo</label>
+                </div>
+                {erros.nome && <p className="text-red-400 text-xs mt-1 px-1">{erros.nome}</p>}
               </div>
 
               {/* Email */}
               <div>
-                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Seu e-mail</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => { setEmail(e.target.value); setErros(p => ({ ...p, email: undefined })) }}
-                  placeholder="joao@email.com"
-                  className="w-full px-3.5 py-2.5 rounded-lg text-white text-sm outline-none transition-all"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: `1.5px solid ${erros.email ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                    fontFamily: 'Outfit, sans-serif'
-                  }}
-                  onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = erros.email ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
-                  onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
-                />
-                {erros.email && <p className="text-red-400 text-xs mt-1.5">{erros.email}</p>}
+                <div className="input-group">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => { setEmail(e.target.value); setErros(p => ({ ...p, email: undefined })) }}
+                    placeholder=" "
+                    className={`input-custom ${erros.email ? 'input-error' : ''}`}
+                    onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
+                  />
+                  <label className="user-label">Seu e-mail</label>
+                </div>
+                {erros.email && <p className="text-red-400 text-xs mt-1 px-1">{erros.email}</p>}
               </div>
 
               {/* Senha */}
               <div>
-                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Crie uma senha de acesso</label>
-                <div style={{ position: 'relative' }}>
+                <div className="input-group">
                   <input
                     type={mostrarSenha ? 'text' : 'password'}
                     value={senha}
                     onChange={e => { setSenha(e.target.value); setErros(p => ({ ...p, senha: undefined, confirmarSenha: undefined })) }}
-                    placeholder="Mínimo 6 caracteres"
-                    className="w-full px-3.5 py-2.5 pr-11 rounded-lg text-white text-sm outline-none transition-all"
-                    style={{
-                      background: 'rgba(255,255,255,0.04)',
-                      border: `1.5px solid ${erros.senha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                      fontFamily: 'Outfit, sans-serif'
-                    }}
-                    onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
-                    onBlur={e => { e.currentTarget.style.borderColor = erros.senha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
+                    placeholder=" "
+                    className={`input-custom pr-11 ${erros.senha ? 'input-error' : ''}`}
                     onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
                   />
+                  <label className="user-label">Crie uma senha de acesso</label>
                   <button
                     type="button"
                     onClick={() => setMostrarSenha(!mostrarSenha)}
                     style={{
                       position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#000000', padding: '4px',
+                      color: '#fff', opacity: 0.5, padding: '4px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'color 0.2s',
+                      transition: 'all 0.2s',
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#000000' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.5'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
                   >
                     {mostrarSenha ? <EyeOff size={19} strokeWidth={2.5} /> : <Eye size={19} strokeWidth={2.5} />}
                   </button>
                 </div>
-                {erros.senha && <p className="text-red-400 text-xs mt-1.5">{erros.senha}</p>}
+                {erros.senha && <p className="text-red-400 text-xs mt-1 px-1">{erros.senha}</p>}
               </div>
 
               {/* Confirmar Senha */}
               <div>
-                <label className="text-white/40 text-[0.6rem] uppercase tracking-widest font-bold block mb-1">Confirme sua senha</label>
-                <div style={{ position: 'relative' }}>
+                <div className="input-group">
                   <input
                     type={mostrarConfirmar ? 'text' : 'password'}
                     value={confirmarSenha}
                     onChange={e => { setConfirmarSenha(e.target.value); setErros(p => ({ ...p, confirmarSenha: undefined })) }}
-                    placeholder="Digite a senha novamente"
-                    className="w-full px-3.5 py-2.5 pr-11 rounded-lg text-white text-sm outline-none transition-all"
-                    style={{
-                      background: 'rgba(255,255,255,0.04)',
-                      border: `1.5px solid ${erros.confirmarSenha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                      fontFamily: 'Outfit, sans-serif'
-                    }}
-                    onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
-                    onBlur={e => { e.currentTarget.style.borderColor = erros.confirmarSenha ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.08)' }}
+                    placeholder=" "
+                    className={`input-custom pr-11 ${erros.confirmarSenha ? 'input-error' : ''}`}
                     onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
                   />
+                  <label className="user-label">Confirme sua senha</label>
                   <button
                     type="button"
                     onClick={() => setMostrarConfirmar(!mostrarConfirmar)}
                     style={{
                       position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
                       background: 'none', border: 'none', cursor: 'pointer',
-                      color: '#000000', padding: '4px',
+                      color: '#fff', opacity: 0.5, padding: '4px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'color 0.2s',
+                      transition: 'all 0.2s',
                     }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#000000' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.color = '#D4AF37' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '0.5'; (e.currentTarget as HTMLElement).style.color = '#fff' }}
                   >
                     {mostrarConfirmar ? <EyeOff size={19} strokeWidth={2.5} /> : <Eye size={19} strokeWidth={2.5} />}
                   </button>
