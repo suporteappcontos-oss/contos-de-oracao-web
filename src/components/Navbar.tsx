@@ -164,6 +164,79 @@ export default function Navbar() {
           boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}
       >
+        {/* CSS para o botão Sair Animado */}
+        <style dangerouslySetInnerHTML={{__html: `
+          .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition-duration: .3s;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
+            background-color: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+          }
+
+          .logout-sign {
+            width: 100%;
+            transition-duration: .3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .logout-sign svg {
+            width: 15px;
+            fill: #ef4444;
+            transition-duration: .3s;
+          }
+
+          .logout-text {
+            position: absolute;
+            right: 0%;
+            width: 0%;
+            opacity: 0;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition-duration: .3s;
+          }
+
+          .logout-btn:hover {
+            width: 95px;
+            border-radius: 40px;
+            transition-duration: .3s;
+            background-color: rgb(239, 68, 68);
+          }
+
+          .logout-btn:hover .logout-sign {
+            width: 35%;
+            transition-duration: .3s;
+            padding-left: 12px;
+          }
+          
+          .logout-btn:hover .logout-sign svg {
+            fill: white;
+          }
+
+          .logout-btn:hover .logout-text {
+            opacity: 1;
+            width: 65%;
+            transition-duration: .3s;
+            padding-right: 10px;
+          }
+
+          .logout-btn:active {
+            transform: translate(2px, 2px);
+          }
+        `}} />
+
         {/* Menu Esquerdo (Hambúrguer + "MENU") com visibilidade controlada para evitar layout shift */}
         <button
           onClick={() => setSidebarOpen(true)}
@@ -287,11 +360,13 @@ export default function Navbar() {
                 </div>
               </Link>
 
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] sm:text-xs transition-all h-full bg-red-500/10 text-red-500 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/35 cursor-pointer"
-              >
-                <span>Sair</span>
+              <button onClick={handleLogout} className="logout-btn" title="Sair">
+                <div className="logout-sign">
+                  <svg viewBox="0 0 512 512">
+                    <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path>
+                  </svg>
+                </div>
+                <div className="logout-text">Sair</div>
               </button>
             </div>
           ) : (
