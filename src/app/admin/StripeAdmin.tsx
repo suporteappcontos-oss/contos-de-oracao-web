@@ -137,7 +137,7 @@ export function StripeAdmin() {
       precoMensal: 47.9, 
       precoSemestral: null, 
       precoAnual: 334.8,
-      beneficios: 'Até 5 telas simultâneas | Até 5 perfis de usuário | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento | Suporte prioritário por e-mail' 
+      beneficios: 'Até 5 telas simultâneas | Acesso completo ao catálogo | Filmes, séries e animações católicas | Conteúdo infantil seguro | Novos lançamentos | Acesso via celular, tablet, computador e Smart TV | Cancelamento a qualquer momento | Suporte prioritário por e-mail' 
     }
     try {
       const response = await fetch('/api/stripe/produtos', {

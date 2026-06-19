@@ -295,7 +295,10 @@ export default function AssinarPage() {
               
               {planoDetalhe && planoDetalhe.produto.metadata?.beneficios ? (
                 // Benefícios personalizados do plano selecionado
-                planoDetalhe.produto.metadata.beneficios.split(/\|/).filter(Boolean).map((beneficio: string, i: number, arr: any[]) => (
+                planoDetalhe.produto.metadata.beneficios.split(/\|/)
+                  .filter(Boolean)
+                  .filter((b: string) => !b.toLowerCase().includes('perfis de usuário'))
+                  .map((beneficio: string, i: number, arr: any[]) => (
                   <div key={i} className="flex items-start gap-3 py-2.5" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
                     <span style={{ color: '#D4AF37', marginTop: '2px' }}>✓</span>
                     <span className="text-white/80 text-sm leading-snug">{beneficio.trim()}</span>
