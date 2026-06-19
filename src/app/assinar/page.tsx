@@ -533,13 +533,47 @@ export default function AssinarPage() {
 
                 {/* Botoes: esconde pagamento e voltar se email duplicado */}
                 {erroCheckout?.tipo === 'email_duplicado' ? null : (
-                  <div className="flex flex-col gap-3 mt-4">
+                  <div className="flex flex-col gap-4 mt-4">
+                    <style dangerouslySetInnerHTML={{__html: `
+                      .btn-pagamento {
+                        border: none;
+                        border-radius: 45px;
+                        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+                        transition: all 0.3s ease 0s;
+                        cursor: pointer;
+                        outline: none;
+                        color: #090B10;
+                      }
+
+                      .btn-pagamento:active {
+                        transform: translateY(-1px);
+                      }
+
+                      /* Stripe / Cartão */
+                      .btn-animado-cartao {
+                         background-color: #D4AF37;
+                      }
+                      .btn-animado-cartao:hover {
+                        box-shadow: 0px 15px 20px rgba(212, 175, 55, 0.4);
+                        transform: translateY(-7px);
+                        filter: brightness(1.1);
+                      }
+
+                      /* Kiwify / Pix */
+                      .btn-animado-pix {
+                         background-color: #22c55e;
+                      }
+                      .btn-animado-pix:hover {
+                        box-shadow: 0px 15px 20px rgba(34, 197, 94, 0.4);
+                        transform: translateY(-7px);
+                        filter: brightness(1.1);
+                      }
+                    `}} />
                     <p className="text-white/60 text-xs text-center font-bold uppercase tracking-widest mb-1">Como deseja pagar?</p>
                     
                     {/* Botão Stripe (Cartão) */}
                     <button onClick={finalizarPagamento} disabled={loadingCheckout}
-                      className="w-full py-3.5 font-extrabold rounded-[45px] text-sm cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#D4AF37]/50 btn-animado-cartao"
-                      style={{ background: '#D4AF37', color: '#090B10' }}>
+                      className="w-full py-4 font-extrabold text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed btn-pagamento btn-animado-cartao">
                       {loadingCheckout ? (
                         <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
                       ) : (
@@ -549,8 +583,7 @@ export default function AssinarPage() {
 
                     {/* Botão Kiwify (PIX) */}
                     <button onClick={irParaKiwify} disabled={loadingCheckout}
-                      className="w-full py-3.5 font-extrabold rounded-[45px] text-sm cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed border border-[#22c55e]/50 btn-animado-pix"
-                      style={{ background: '#22c55e', color: '#090B10' }}>
+                      className="w-full py-4 font-extrabold text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed btn-pagamento btn-animado-pix">
                       {loadingCheckout ? (
                         <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
                       ) : (
