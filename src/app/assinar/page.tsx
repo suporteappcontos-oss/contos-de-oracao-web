@@ -284,6 +284,24 @@ export default function AssinarPage() {
           color: #D4AF37;
         }
         
+        /* Corrigir o fundo branco do Autofill do Chrome/Navegador */
+        .input-custom:-webkit-autofill,
+        .input-custom:-webkit-autofill:hover, 
+        .input-custom:-webkit-autofill:focus, 
+        .input-custom:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #17243c inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+            border: 1.5px solid rgba(212,175,55,0.5) !important;
+        }
+
+        .input-custom:-webkit-autofill ~ .user-label {
+          transform: translateY(-50%) scale(0.85);
+          background-color: #17243c;
+          padding: 0 0.4em;
+          color: #D4AF37;
+        }
+        
         .input-error {
            border-color: rgba(239,68,68,0.6) !important;
         }
