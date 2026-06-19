@@ -164,8 +164,9 @@ export default function Navbar() {
           boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.4)' : 'none',
         }}
       >
-        {/* CSS para o botão Sair Animado */}
+        {/* CSS para o botão Sair Animado e Redes Sociais */}
         <style dangerouslySetInnerHTML={{__html: `
+          /* --- Botão Sair Animado --- */
           .logout-btn {
             display: flex;
             align-items: center;
@@ -235,6 +236,99 @@ export default function Navbar() {
           .logout-btn:active {
             transform: translate(2px, 2px);
           }
+
+          /* --- Redes Sociais Animadas Navbar --- */
+          .social-wrapper-nav {
+            display: inline-flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 8px;
+          }
+
+          .social-wrapper-nav .icon {
+            position: relative;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-decoration: none;
+          }
+
+          .social-wrapper-nav .tooltip {
+            position: absolute;
+            top: 0;
+            font-size: 11px;
+            background: #fff;
+            color: #fff;
+            padding: 4px 6px;
+            border-radius: 5px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            white-space: nowrap;
+            z-index: 20;
+            font-family: "Outfit", sans-serif;
+            font-weight: 600;
+          }
+
+          .social-wrapper-nav .tooltip::before {
+            position: absolute;
+            content: "";
+            height: 8px;
+            width: 8px;
+            background: #fff;
+            top: -3px;
+            left: 50%;
+            transform: translate(-50%) rotate(45deg);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          }
+
+          .social-wrapper-nav .icon:hover .tooltip {
+            top: 45px;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+          }
+
+          .social-wrapper-nav .icon:hover span,
+          .social-wrapper-nav .icon:hover .tooltip {
+            text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1);
+          }
+
+          .social-wrapper-nav .instagram { background: linear-gradient(135deg,#833AB4,#FD1D1D,#FCB045); }
+          .social-wrapper-nav .facebook { background: #1877F2; }
+          .social-wrapper-nav .tiktok { background: #000000; border: 1px solid rgba(255, 255, 255, 0.15); }
+          .social-wrapper-nav .youtube { background: #FF0000; }
+
+          .social-wrapper-nav .instagram:hover .tooltip,
+          .social-wrapper-nav .instagram:hover .tooltip::before {
+            background: #e4405f; color: #fff;
+          }
+          .social-wrapper-nav .facebook:hover .tooltip,
+          .social-wrapper-nav .facebook:hover .tooltip::before {
+            background: #1877f2; color: #fff;
+          }
+          .social-wrapper-nav .tiktok:hover .tooltip,
+          .social-wrapper-nav .tiktok:hover .tooltip::before {
+            background: #333333; color: #fff;
+          }
+          .social-wrapper-nav .youtube:hover .tooltip,
+          .social-wrapper-nav .youtube:hover .tooltip::before {
+            background: #FF0000; color: #fff;
+          }
+
+          .social-wrapper-nav .icon:hover {
+            transform: translateY(-3px);
+          }
         `}} />
 
         {/* Menu Esquerdo (Hambúrguer + "MENU") com visibilidade controlada para evitar layout shift */}
@@ -282,16 +376,15 @@ export default function Navbar() {
         {/* Links Direita — ml-auto garante o alinhamento fixado à direita independentemente da visibilidade do botão menu */}
         <div className="flex items-center gap-1.5 sm:gap-4 md:gap-5 ml-auto">
           {/* Redes Sociais no Cabeçalho */}
-          <div className="flex items-center gap-2 mr-1 sm:mr-2">
+          <ul className="social-wrapper-nav mr-1 sm:mr-2">
             {/* Instagram */}
             <a
               href="https://www.instagram.com/contosdeoracao"
               target="_blank"
               rel="noopener noreferrer"
-              title="Instagram"
-              className="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-110 hover:brightness-110"
-              style={{ background: 'linear-gradient(135deg,#833AB4,#FD1D1D,#FCB045)' }}
+              className="icon instagram"
             >
+              <span className="tooltip">Instagram</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </a>
 
@@ -300,10 +393,9 @@ export default function Navbar() {
               href="https://www.facebook.com/share/18cmN9eVCw/"
               target="_blank"
               rel="noopener noreferrer"
-              title="Facebook"
-              className="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-110 hover:brightness-110"
-              style={{ background: '#1877F2' }}
+              className="icon facebook"
             >
+              <span className="tooltip">Facebook</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
 
@@ -312,10 +404,9 @@ export default function Navbar() {
               href="https://www.tiktok.com/@contosdeoracao?_r=1&_t=ZS-96xhLBWCRVc"
               target="_blank"
               rel="noopener noreferrer"
-              title="TikTok"
-              className="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-110 hover:brightness-110"
-              style={{ background: '#000000', border: '1px solid rgba(255, 255, 255, 0.15)' }}
+              className="icon tiktok"
             >
+              <span className="tooltip">TikTok</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M16.6 3c.2 1.8 1.2 3.5 2.8 4.5 1 .7 2.1 1.1 3.3 1.2v3.4c-1.8-.1-3.5-.6-5.1-1.5v6.4c0 3.8-3.1 6.9-6.9 6.9S3.8 20.8 3.8 17s3.1-6.9 6.9-6.9c.3 0 .6 0 .9.1v3.5c-.3-.1-.6-.1-.9-.1-1.9 0-3.4 1.5-3.4 3.4s1.5 3.4 3.4 3.4 3.4-1.5 3.4-3.4V3h2.5z"></path></svg>
             </a>
 
@@ -324,13 +415,12 @@ export default function Navbar() {
               href="https://www.youtube.com/@contosdeoracao"
               target="_blank"
               rel="noopener noreferrer"
-              title="YouTube"
-              className="w-8 h-8 flex items-center justify-center rounded-full transition-all hover:scale-110 hover:brightness-110"
-              style={{ background: '#FF0000' }}
+              className="icon youtube"
             >
+              <span className="tooltip">YouTube</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </a>
-          </div>
+          </ul>
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2 sm:gap-3.5">
