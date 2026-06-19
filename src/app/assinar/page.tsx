@@ -609,60 +609,77 @@ export default function AssinarPage() {
                   <div className="flex flex-col gap-4 mt-4">
                     <style dangerouslySetInnerHTML={{__html: `
                       .btn-pagamento {
-                        border: none;
-                        border-radius: 45px;
-                        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-                        transition: all 0.3s ease 0s;
+                        border: 1px solid rgba(255,255,255,0.15);
+                        border-radius: 16px;
+                        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.25), inset 0px 2px 0px rgba(255,255,255,0.25);
+                        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
                         cursor: pointer;
                         outline: none;
-                        color: #090B10;
+                        position: relative;
+                        overflow: hidden;
+                      }
+
+                      .btn-pagamento::after {
+                        content: '';
+                        position: absolute;
+                        top: 0; left: -100%;
+                        width: 50%; height: 100%;
+                        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+                        transform: skewX(-20deg);
+                        transition: all 0.6s ease;
+                      }
+                      
+                      .btn-pagamento:hover::after {
+                        left: 200%;
                       }
 
                       .btn-pagamento:active {
-                        transform: translateY(-1px);
+                        transform: scale(0.97);
+                        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
                       }
 
                       /* Stripe / Cartão */
                       .btn-animado-cartao {
-                         background-color: #D4AF37;
+                         background: linear-gradient(135deg, #F9E596 0%, #D4AF37 100%);
+                         color: #090B10;
                       }
                       .btn-animado-cartao:hover {
-                        box-shadow: 0px 15px 20px rgba(212, 175, 55, 0.4);
-                        transform: translateY(-7px);
-                        filter: brightness(1.1);
+                        box-shadow: 0px 12px 25px rgba(212, 175, 55, 0.4), inset 0px 2px 0px rgba(255,255,255,0.4);
+                        transform: translateY(-4px);
                       }
 
                       /* Kiwify / Pix */
                       .btn-animado-pix {
-                         background-color: #22c55e;
+                         background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+                         color: #ffffff;
+                         border-color: rgba(255,255,255,0.2);
                       }
                       .btn-animado-pix:hover {
-                        box-shadow: 0px 15px 20px rgba(34, 197, 94, 0.4);
-                        transform: translateY(-7px);
-                        filter: brightness(1.1);
+                        box-shadow: 0px 12px 25px rgba(34, 197, 94, 0.4), inset 0px 2px 0px rgba(255,255,255,0.4);
+                        transform: translateY(-4px);
                       }
                     `}} />
                     <p className="text-white/60 text-xs text-center font-bold uppercase tracking-widest mb-1">Como deseja pagar?</p>
                     
                     {/* Botão Stripe (Cartão) */}
                     <button onClick={finalizarPagamento} disabled={loadingCheckout}
-                      className="w-full py-4 font-extrabold text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed btn-pagamento btn-animado-cartao">
+                      className="w-full py-4 font-extrabold text-[15px] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed btn-pagamento btn-animado-cartao">
                       {loadingCheckout ? (
-                        <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
+                        <><InfinityIcon className="animate-spin" size={20} /> Aguardando...</>
                       ) : (
-                        <><Lock size={16} /> Cartão de Crédito <ChevronRight size={16} /></>
+                        <><Lock size={18} strokeWidth={2.5} /> Pagar com Cartão <ChevronRight size={18} strokeWidth={2.5} className="ml-1" /></>
                       )}
                     </button>
 
                     {/* Botão Kiwify (PIX) */}
                     <button onClick={irParaKiwify} disabled={loadingCheckout}
-                      className="w-full py-4 font-extrabold text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed btn-pagamento btn-animado-pix">
+                      className="w-full py-4 font-extrabold text-[15px] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed btn-pagamento btn-animado-pix mt-2">
                       {loadingCheckout ? (
-                        <><InfinityIcon className="animate-spin" size={20} /> Aguarde...</>
+                        <><InfinityIcon className="animate-spin" size={20} /> Aguardando...</>
                       ) : (
                         <>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                          Pagar com PIX <ChevronRight size={16} />
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                          Pagar com PIX <ChevronRight size={18} strokeWidth={2.5} className="ml-1" />
                         </>
                       )}
                     </button>
@@ -692,9 +709,10 @@ export default function AssinarPage() {
               </button>
             )}
 
-            <p className="text-center text-white/20 text-xs mt-5">
+            <p className="text-center text-white/30 text-xs mt-6 px-4 leading-relaxed">
               Ao continuar você concorda com nossos{' '}
-              <span style={{ color: '#D4AF37' }} className="cursor-pointer hover:underline">Termos de Uso</span>
+              <Link href="/termos" target="_blank" style={{ color: '#D4AF37' }} className="font-bold hover:underline">Termos de Uso</Link>{' '}
+              e Privacidade.
             </p>
           </div>
         )}
