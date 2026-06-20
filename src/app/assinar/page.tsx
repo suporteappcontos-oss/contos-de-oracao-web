@@ -179,9 +179,9 @@ export default function AssinarPage() {
       url.searchParams.append('email', email)
       url.searchParams.append('name', nome)
       
-      // Tentativa de forçar o PIX via parâmetros não-oficiais (a Kiwify não tem suporte oficial para isso)
-      url.searchParams.append('paymentMethod', 'pix')
-      url.searchParams.append('payment_method', 'pix')
+      // Força a exibição apenas do PIX na Kiwify, o que faz ele vir pré-selecionado
+      url.searchParams.append('hideCard', 'true')
+      url.searchParams.append('hideBoleto', 'true')
       
       window.location.href = url.toString()
     } catch(e) {
