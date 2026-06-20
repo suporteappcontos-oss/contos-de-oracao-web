@@ -775,9 +775,9 @@ export default function AssinarPage() {
               <Link href="/termos" target="_blank" style={{ color: '#D4AF37' }} className="font-bold hover:underline">Termos de Uso</Link>{' '}
               e Privacidade.
             </p>
-          </div>
+          </motion.div>
         )}
-
+            </AnimatePresence>
           </div>
         </div>
       </div>
