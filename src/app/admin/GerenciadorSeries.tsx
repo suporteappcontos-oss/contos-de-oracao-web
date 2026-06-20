@@ -3,7 +3,7 @@
 import { useState, useRef, useTransition } from 'react'
 import { Plus, Loader2, CheckCircle2, Tv, Image as ImageIcon, Trash2, Edit2, X } from 'lucide-react'
 import { adicionarSerie, editarSerie, deletarSerie, toggleSerieAtiva } from './actions'
-import { converterImagemParaWebP } from '@/utils/imageUtils'
+import { convertToWebP } from '@/utils/imageUtils'
 
 export function GerenciadorSeries({ seriesExistentes }: { seriesExistentes: any[] }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -88,7 +88,7 @@ export function GerenciadorSeries({ seriesExistentes }: { seriesExistentes: any[
         setProgressCapa(0)
         
         // Converto para WebP (Magia do painel)
-        const optimizedFile = await converterImagemParaWebP(coverFile, 1280, 720)
+        const optimizedFile = await convertToWebP(coverFile)
         
         const slug = titulo.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
         const fileExt = '.webp'
