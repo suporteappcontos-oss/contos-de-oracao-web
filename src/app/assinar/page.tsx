@@ -280,8 +280,10 @@ export default function AssinarPage() {
 
         .input-custom:focus ~ .user-label, .input-custom:not(:placeholder-shown) ~ .user-label {
           transform: translateY(-50%) scale(0.85);
-          background-color: #090B10;
-          padding: 0 0.4em;
+          background-color: #0d121c;
+          border: 1px solid rgba(212,175,55,0.3);
+          border-radius: 6px;
+          padding: 0.1em 0.6em;
           color: #D4AF37;
         }
         
@@ -290,7 +292,7 @@ export default function AssinarPage() {
         .input-custom:-webkit-autofill:hover, 
         .input-custom:-webkit-autofill:focus, 
         .input-custom:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 30px #090B10 inset !important;
+            -webkit-box-shadow: 0 0 0 30px #0d121c inset !important;
             -webkit-text-fill-color: white !important;
             transition: background-color 5000s ease-in-out 0s;
             border: 1.5px solid rgba(212,175,55,0.5) !important;
@@ -298,8 +300,10 @@ export default function AssinarPage() {
 
         .input-custom:-webkit-autofill ~ .user-label {
           transform: translateY(-50%) scale(0.85);
-          background-color: #090B10;
-          padding: 0 0.4em;
+          background-color: #0d121c;
+          border: 1px solid rgba(212,175,55,0.3);
+          border-radius: 6px;
+          padding: 0.1em 0.6em;
           color: #D4AF37;
         }
         
