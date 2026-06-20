@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { createClient } from '@/utils/supabase/server'
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
@@ -31,7 +31,7 @@ function gerarSlug(texto: string) {
     .replace(/\s+/g, '-');
 }
 
-// ─── Helper de Upload pro Bunny.net ───
+// â”€â”€â”€ Helper de Upload pro Bunny.net â”€â”€â”€
 async function uploadToBunny(file: File, prefix: string): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const extensao = file.name.split('.').pop() || 'jpg';
@@ -50,7 +50,7 @@ async function uploadToBunny(file: File, prefix: string): Promise<string> {
   return `https://contos-midia-app.b-cdn.net/${fileName}`;
 }
 
-// ─── Adicionar Vídeo Temático (Instagram) ───
+// â”€â”€â”€ Adicionar VÃ­deo TemÃ¡tico (Instagram) â”€â”€â”€
 export async function adicionarVideoTematico(formData: FormData) {
   const { supabase } = await verificarAdmin()
 
@@ -59,8 +59,8 @@ export async function adicionarVideoTematico(formData: FormData) {
   const bunnyId   = formData.get('bunny_video_id') as string
   const capaUrl   = formData.get('capa_url') as string | null
 
-  if (!titulo?.trim()) return { success: false, error: 'Título obrigatório.' }
-  if (!bunnyId?.trim()) return { success: false, error: 'Video ID do Bunny obrigatório.' }
+  if (!titulo?.trim()) return { success: false, error: 'TÃ­tulo obrigatÃ³rio.' }
+  if (!bunnyId?.trim()) return { success: false, error: 'Video ID do Bunny obrigatÃ³rio.' }
 
   // Monta a video_url usando a biblioteca Instagram dedicada
   const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_INSTAGRAM_LIBRARY_ID || process.env.BUNNY_INSTAGRAM_LIBRARY_ID || '678138'
@@ -81,7 +81,7 @@ export async function adicionarVideoTematico(formData: FormData) {
   return { success: true }
 }
 
-// ─── Deletar Vídeo Temático ───
+// â”€â”€â”€ Deletar VÃ­deo TemÃ¡tico â”€â”€â”€
 export async function deletarVideoTematico(id: string) {
   const { supabase } = await verificarAdmin()
   const { error } = await supabase.from('videos_tematicos').delete().eq('id', id)
@@ -91,7 +91,7 @@ export async function deletarVideoTematico(id: string) {
   return { success: true }
 }
 
-// ─── Toggle Ativo Vídeo Temático ───
+// â”€â”€â”€ Toggle Ativo VÃ­deo TemÃ¡tico â”€â”€â”€
 export async function toggleVideoTematicoAtivo(id: string, ativo: boolean) {
   const { supabase } = await verificarAdmin()
   const { error } = await supabase.from('videos_tematicos').update({ ativo }).eq('id', id)
@@ -101,7 +101,7 @@ export async function toggleVideoTematicoAtivo(id: string, ativo: boolean) {
   return { success: true }
 }
 
-// ─── Editar Vídeo Temático ───
+// â”€â”€â”€ Editar VÃ­deo TemÃ¡tico â”€â”€â”€
 export async function editarVideoTematico(formData: FormData) {
   const { supabase } = await verificarAdmin()
 
@@ -111,9 +111,9 @@ export async function editarVideoTematico(formData: FormData) {
   const bunnyId  = formData.get('bunny_video_id') as string
   const capaUrl  = formData.get('capa_url') as string | null
 
-  if (!id?.trim())     return { success: false, error: 'ID inválido.' }
-  if (!titulo?.trim()) return { success: false, error: 'Título obrigatório.' }
-  if (!bunnyId?.trim()) return { success: false, error: 'Bunny Video ID obrigatório.' }
+  if (!id?.trim())     return { success: false, error: 'ID invÃ¡lido.' }
+  if (!titulo?.trim()) return { success: false, error: 'TÃ­tulo obrigatÃ³rio.' }
+  if (!bunnyId?.trim()) return { success: false, error: 'Bunny Video ID obrigatÃ³rio.' }
 
   const bunnyLibraryId = process.env.NEXT_PUBLIC_BUNNY_INSTAGRAM_LIBRARY_ID
     || process.env.BUNNY_INSTAGRAM_LIBRARY_ID
@@ -138,7 +138,7 @@ export async function editarVideoTematico(formData: FormData) {
 }
 
 
-// ─── Adicionar vídeo ───
+// â”€â”€â”€ Adicionar vÃ­deo â”€â”€â”€
 export async function adicionarVideo(formData: FormData) {
   const { supabase } = await verificarAdmin()
 
@@ -153,8 +153,8 @@ export async function adicionarVideo(formData: FormData) {
       thumbnailUrl = await uploadToBunny(thumbFile, `capas_videos/${slug}/capa`);
     }
   } catch (error: any) {
-    console.error('❌ Erro no upload da thumbnail pro Bunny:', error.message)
-    // Continua salvando o vídeo mesmo sem thumbnail, para não quebrar a tela
+    console.error('âŒ Erro no upload da thumbnail pro Bunny:', error.message)
+    // Continua salvando o vÃ­deo mesmo sem thumbnail, para nÃ£o quebrar a tela
   }
 
   const bunnyVideoId = (formData.get('bunny_video_id') as string) || null;
@@ -180,14 +180,14 @@ export async function adicionarVideo(formData: FormData) {
   })
 
   if (error) {
-    console.error('❌ Erro ao adicionar vídeo:', error.message)
+    console.error('âŒ Erro ao adicionar vÃ­deo:', error.message)
   } else {
-    // ─── Enviar Notificação Push (Apenas se NÃO for vídeo em breve) ───
+    // â”€â”€â”€ Enviar NotificaÃ§Ã£o Push (Apenas se NÃƒO for vÃ­deo em breve) â”€â”€â”€
     if (!emBreve) {
       try {
         const admin = require('firebase-admin');
         if (!admin.apps.length) {
-          // Usa variáveis de ambiente em vez de arquivo JSON para segurança (evita bloqueio no GitHub)
+          // Usa variÃ¡veis de ambiente em vez de arquivo JSON para seguranÃ§a (evita bloqueio no GitHub)
           const projectId = process.env.FIREBASE_PROJECT_ID;
           const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
           const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
@@ -204,28 +204,28 @@ export async function adicionarVideo(formData: FormData) {
         }
 
         if (admin.apps.length) {
-          const title = '✨ Novo Vídeo Disponível!';
-          const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
+          const title = 'âœ¨ Novo VÃ­deo DisponÃ­vel!';
+          const body = `O vÃ­deo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
           
           const message = {
             notification: { title, body },
             topic: 'novos_videos',
           };
 
-          // Salva a notificação no banco de dados para o histórico do "Sino"
+          // Salva a notificaÃ§Ã£o no banco de dados para o histÃ³rico do "Sino"
           await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
 
-          // Dispara notificação push em segundo plano para não travar a Server Action
+          // Dispara notificaÃ§Ã£o push em segundo plano para nÃ£o travar a Server Action
           admin.messaging().send(message).then(() => {
-            console.log('✅ Notificação Push enviada com sucesso!');
+            console.log('âœ… NotificaÃ§Ã£o Push enviada com sucesso!');
           }).catch((pushError: any) => {
-            console.error('❌ Erro ao enviar notificação Push:', pushError.message);
+            console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push:', pushError.message);
           });
         } else {
-          console.log('⚠️ Firebase Admin não inicializado. Push não enviado.');
+          console.log('âš ï¸ Firebase Admin nÃ£o inicializado. Push nÃ£o enviado.');
         }
       } catch (pushError: any) {
-        console.error('❌ Erro ao enviar notificação Push:', pushError.message);
+        console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push:', pushError.message);
       }
     }
   }
@@ -234,7 +234,7 @@ export async function adicionarVideo(formData: FormData) {
   revalidatePath('/watch')
 }
 
-// ─── Editar vídeo ───
+// â”€â”€â”€ Editar vÃ­deo â”€â”€â”€
 export async function editarVideo(videoId: string, formData: FormData) {
   const { supabase } = await verificarAdmin()
 
@@ -251,10 +251,10 @@ export async function editarVideo(videoId: string, formData: FormData) {
       thumbnailUrl = await uploadToBunny(thumbFile, `capas_videos/${slug}/capa`);
     }
   } catch (error: any) {
-    console.error('❌ Erro no upload da thumbnail:', error.message)
+    console.error('âŒ Erro no upload da thumbnail:', error.message)
   }
 
-  // Busca estado antigo do vídeo para saber se foi lançado agora (era em_breve e deixou de ser)
+  // Busca estado antigo do vÃ­deo para saber se foi lanÃ§ado agora (era em_breve e deixou de ser)
   const { data: videoAntigo } = await supabase.from('videos').select('em_breve').eq('id', videoId).single();
 
   const categoria = (formData.get('categoria') as string) || 'Geral';
@@ -275,9 +275,9 @@ export async function editarVideo(videoId: string, formData: FormData) {
   }).eq('id', videoId)
 
   if (error) {
-    console.error('❌ Erro ao editar vídeo:', error.message)
+    console.error('âŒ Erro ao editar vÃ­deo:', error.message)
   } else {
-    // Se o vídeo deixou de ser em_breve, dispara notificação push de lançamento!
+    // Se o vÃ­deo deixou de ser em_breve, dispara notificaÃ§Ã£o push de lanÃ§amento!
     if (videoAntigo && videoAntigo.em_breve && !emBreve) {
       try {
         const admin = require('firebase-admin');
@@ -298,8 +298,8 @@ export async function editarVideo(videoId: string, formData: FormData) {
         }
 
         if (admin.apps.length) {
-          const title = '✨ Novo Vídeo Disponível!';
-          const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
+          const title = 'âœ¨ Novo VÃ­deo DisponÃ­vel!';
+          const body = `O vÃ­deo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
           
           const message = {
             notification: { title, body },
@@ -308,15 +308,15 @@ export async function editarVideo(videoId: string, formData: FormData) {
 
           await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
           
-          // Dispara notificação em background para evitar lentidão
+          // Dispara notificaÃ§Ã£o em background para evitar lentidÃ£o
           admin.messaging().send(message).then(() => {
-            console.log('✅ Notificação Push de lançamento enviada com sucesso!');
+            console.log('âœ… NotificaÃ§Ã£o Push de lanÃ§amento enviada com sucesso!');
           }).catch((pushError: any) => {
-            console.error('❌ Erro ao enviar notificação Push de lançamento:', pushError.message);
+            console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push de lanÃ§amento:', pushError.message);
           });
         }
       } catch (pushError: any) {
-        console.error('❌ Erro ao enviar notificação Push de lançamento:', pushError.message);
+        console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push de lanÃ§amento:', pushError.message);
       }
     }
   }
@@ -326,7 +326,7 @@ export async function editarVideo(videoId: string, formData: FormData) {
   redirect('/admin?tab=videos')
 }
 
-// ─── Ativar / Desativar vídeo ───
+// â”€â”€â”€ Ativar / Desativar vÃ­deo â”€â”€â”€
 export async function toggleVideoAtivo(videoId: string, ativoAtual: boolean) {
   const { supabase } = await verificarAdmin()
   await supabase.from('videos').update({ ativo: !ativoAtual }).eq('id', videoId)
@@ -335,7 +335,7 @@ export async function toggleVideoAtivo(videoId: string, ativoAtual: boolean) {
   redirect('/admin?tab=videos')
 }
 
-// ─── Deletar vídeo ───
+// â”€â”€â”€ Deletar vÃ­deo â”€â”€â”€
 export async function deletarVideo(videoId: string) {
   const { supabase } = await verificarAdmin()
   await supabase.from('videos').delete().eq('id', videoId)
@@ -344,26 +344,26 @@ export async function deletarVideo(videoId: string) {
   redirect('/admin?tab=videos')
 }
 
-// ─── Ativar / Bloquear assinante ───
+// â”€â”€â”€ Ativar / Bloquear assinante â”€â”€â”€
 export async function togglePlanoUsuario(userId: string, planoAtual: boolean) {
   await verificarAdmin()
   const admin = getAdminClient()
   const { error } = await admin.auth.admin.updateUserById(userId, {
     user_metadata: { plano_ativo: !planoAtual },
   })
-  if (error) console.error('❌ Erro ao atualizar plano:', error.message)
+  if (error) console.error('âŒ Erro ao atualizar plano:', error.message)
   revalidatePath('/admin')
 }
 
-// ─── Alterar o Plano Manualmente (Básico, Essencial, Pro) ───
+// â”€â”€â”€ Alterar o Plano Manualmente (BÃ¡sico, Essencial, Pro) â”€â”€â”€
 export async function alterarPlanoUsuario(userId: string, novoMaxTelas: number, novaEtiqueta: string) {
   await verificarAdmin()
   const admin = getAdminClient()
   
-  // Primeiro, busca o usuário atual para não perder nenhum dado antigo do user_metadata
+  // Primeiro, busca o usuÃ¡rio atual para nÃ£o perder nenhum dado antigo do user_metadata
   const { data: userResponse, error: fetchError } = await admin.auth.admin.getUserById(userId)
   if (fetchError || !userResponse.user) {
-    console.error('❌ Erro ao buscar usuário para alterar plano:', fetchError?.message)
+    console.error('âŒ Erro ao buscar usuÃ¡rio para alterar plano:', fetchError?.message)
     return
   }
 
@@ -378,11 +378,11 @@ export async function alterarPlanoUsuario(userId: string, novoMaxTelas: number, 
       plano_ativo: true 
     },
   })
-  if (error) console.error('❌ Erro ao alterar plano do usuário:', error.message)
+  if (error) console.error('âŒ Erro ao alterar plano do usuÃ¡rio:', error.message)
   revalidatePath('/admin')
 }
 
-// ─── Salvar Configuração Global (Fundo do app/site) ───
+// â”€â”€â”€ Salvar ConfiguraÃ§Ã£o Global (Fundo do app/site) â”€â”€â”€
 export async function salvarConfiguracao(formData: FormData) {
   await verificarAdmin();
 
@@ -390,7 +390,7 @@ export async function salvarConfiguracao(formData: FormData) {
     const file = formData.get('backgroundImage') as File | null;
 
     if (!file || typeof file === 'string' || file.size === 0) {
-      console.error('Nenhum arquivo válido recebido.');
+      console.error('Nenhum arquivo vÃ¡lido recebido.');
       return;
     }
 
@@ -412,7 +412,7 @@ export async function salvarConfiguracao(formData: FormData) {
 
     const bgUrl = `https://contos-midia-app.b-cdn.net/${fileName}`;
     const config = { background_url: bgUrl };
-    console.log("✅ Nova imagem de fundo salva no Storage:", bgUrl);
+    console.log("âœ… Nova imagem de fundo salva no Storage:", bgUrl);
 
     // 2. Atualiza o config.json apontando para a imagem
     console.log("Enviando PUT para o config.json no Bunny Storage...");
@@ -427,15 +427,15 @@ export async function salvarConfiguracao(formData: FormData) {
     });
 
     if (!resConf.ok) throw new Error(`Erro config.json: ${resConf.statusText}`);
-    console.log("✅ config.json atualizado com sucesso no Storage!");
+    console.log("âœ… config.json atualizado com sucesso no Storage!");
 
     revalidatePath('/', 'layout');
   } catch (error: any) {
-    console.error('❌ Erro no salvarConfiguracao:', error.message || error);
+    console.error('âŒ Erro no salvarConfiguracao:', error.message || error);
   }
 }
 
-// ─── Atualizar Permissões de Acesso (Config.json) ───
+// â”€â”€â”€ Atualizar PermissÃµes de Acesso (Config.json) â”€â”€â”€
 export async function salvarPermissoesPlanos(planosApp: string[], planosHq: string[]) {
   await verificarAdmin();
   try {
@@ -472,12 +472,12 @@ export async function salvarPermissoesPlanos(planosApp: string[], planosHq: stri
     revalidatePath('/admin');
     return { success: true };
   } catch (error: any) {
-    console.error('❌ Erro no salvarPermissoesPlanos:', error.message || error);
+    console.error('âŒ Erro no salvarPermissoesPlanos:', error.message || error);
     return { success: false, error: error.message };
   }
 }
 
-// ─── Atualizar versao.json (Controle de APK) ───
+// â”€â”€â”€ Atualizar versao.json (Controle de APK) â”€â”€â”€
 export async function salvarVersaoApk(versao: string, linkDownload: string, mensagem: string, obrigatorio: boolean) {
   await verificarAdmin();
   try {
@@ -499,12 +499,12 @@ export async function salvarVersaoApk(versao: string, linkDownload: string, mens
     revalidatePath('/', 'layout');
     return { success: true };
   } catch (error: any) {
-    console.error('❌ Erro no salvarVersaoApk:', error.message || error);
+    console.error('âŒ Erro no salvarVersaoApk:', error.message || error);
     return { success: false, error: error.message };
   }
 }
 
-// ─── Publicar Material (HQ, Jogo, Desenho) ─── Upload já foi feito no cliente
+// â”€â”€â”€ Publicar Material (HQ, Jogo, Desenho) â”€â”€â”€ Upload jÃ¡ foi feito no cliente
 export async function publicarMaterial(formData: FormData) {
   await verificarAdmin();
   try {
@@ -514,11 +514,11 @@ export async function publicarMaterial(formData: FormData) {
     const categoria = formData.get('categoria') as string;
     const planosAcesso = JSON.parse(formData.get('planos_acesso') as string) as string[];
 
-    // URLs já prontas vindas do cliente (upload foi feito direto no Bunny)
+    // URLs jÃ¡ prontas vindas do cliente (upload foi feito direto no Bunny)
     const capaUrl = (formData.get('capa_url') as string | null) || null;
     let linkPdf = (formData.get('link_pdf') as string | null)?.trim() || null;
 
-    // Segurança: limpa AccessKey se vier no link
+    // SeguranÃ§a: limpa AccessKey se vier no link
     if (linkPdf) {
       try {
         if (new URL(linkPdf).hostname === 'br.storage.bunnycdn.com') {
@@ -547,7 +547,7 @@ export async function publicarMaterial(formData: FormData) {
 
     if (error) throw new Error(error.message);
 
-    // ─── Enviar Notificação Push para Materiais ───
+    // â”€â”€â”€ Enviar NotificaÃ§Ã£o Push para Materiais â”€â”€â”€
     try {
       const admin = require('firebase-admin');
       if (!admin.apps.length) {
@@ -567,34 +567,34 @@ export async function publicarMaterial(formData: FormData) {
       }
 
       if (admin.apps.length) {
-        const title = '📚 Novo Material Adicionado!';
-        const body = `"${titulo}" já está disponível na aba Pedagógica. Aproveite!`;
+        const title = 'ðŸ“š Novo Material Adicionado!';
+        const body = `"${titulo}" jÃ¡ estÃ¡ disponÃ­vel na aba PedagÃ³gica. Aproveite!`;
 
         const message = {
           notification: { title, body },
-          topic: 'novos_videos', // usamos o mesmo tópico geral do app
+          topic: 'novos_videos', // usamos o mesmo tÃ³pico geral do app
         };
 
-        // Salva a notificação no banco de dados para o histórico do "Sino"
+        // Salva a notificaÃ§Ã£o no banco de dados para o histÃ³rico do "Sino"
         await supabase.from('notificacoes').insert({ titulo: title, mensagem: body });
 
         await admin.messaging().send(message);
-        console.log('✅ Notificação Push (Material) enviada com sucesso!');
+        console.log('âœ… NotificaÃ§Ã£o Push (Material) enviada com sucesso!');
       }
     } catch (pushError: any) {
-      console.error('❌ Erro ao enviar notificação Push (Material):', pushError.message);
+      console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push (Material):', pushError.message);
     }
 
     revalidatePath('/materiais');
     revalidatePath('/admin');
     return { success: true };
   } catch (error: any) {
-    console.error('❌ Erro no publicarMaterial:', error.message);
+    console.error('âŒ Erro no publicarMaterial:', error.message);
     return { success: false, error: error.message };
   }
 }
 
-// ─── Deletar Material ───
+// â”€â”€â”€ Deletar Material â”€â”€â”€
 export async function deletarMaterial(id: string) {
   await verificarAdmin();
   try {
@@ -609,10 +609,10 @@ export async function deletarMaterial(id: string) {
   }
 }
 
-// ─── Publicar Revista ─── Upload já foi feito no cliente
+// â”€â”€â”€ Publicar Revista â”€â”€â”€ Upload jÃ¡ foi feito no cliente
 export async function publicarRevista(formData: FormData) {
-  await verificarAdmin()                 // garante que é admin
-  const supabase = getAdminClient()      // usa service role → bypassa RLS
+  await verificarAdmin()                 // garante que Ã© admin
+  const supabase = getAdminClient()      // usa service role â†’ bypassa RLS
   try {
     const titulo   = formData.get('titulo') as string
     const descricao = (formData.get('descricao') as string) || null
@@ -650,15 +650,15 @@ export async function publicarRevista(formData: FormData) {
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
-    console.error('❌ Erro no publicarRevista:', error.message)
+    console.error('âŒ Erro no publicarRevista:', error.message)
     return { success: false, error: error.message }
   }
 }
 
-// ─── Deletar Revista ───
+// â”€â”€â”€ Deletar Revista â”€â”€â”€
 export async function deletarRevista(id: string) {
-  await verificarAdmin()               // garante que é admin
-  const supabase = getAdminClient()    // usa service role → bypassa RLS
+  await verificarAdmin()               // garante que Ã© admin
+  const supabase = getAdminClient()    // usa service role â†’ bypassa RLS
   try {
     const { error } = await supabase.from('revistas').delete().eq('id', id)
     if (error) throw new Error(error.message)
@@ -671,7 +671,7 @@ export async function deletarRevista(id: string) {
 }
 
 
-// ─── Criar Usuário Vitalício (Cliente - Role de Membro) ───
+// â”€â”€â”€ Criar UsuÃ¡rio VitalÃ­cio (Cliente - Role de Membro) â”€â”€â”€
 export async function criarUsuarioVitalicio(formData: FormData) {
   await verificarAdmin()
   const admin = getAdminClient()
@@ -681,21 +681,21 @@ export async function criarUsuarioVitalicio(formData: FormData) {
   const plano = formData.get('plano') as string
 
   if (!email || !nome || !plano) {
-    return { success: false, error: 'Todos os campos são obrigatórios' }
+    return { success: false, error: 'Todos os campos sÃ£o obrigatÃ³rios' }
   }
 
-  // Gera uma senha aleatória de 12 caracteres segura criptograficamente
+  // Gera uma senha aleatÃ³ria de 12 caracteres segura criptograficamente
   const senhaGerada = require('crypto').randomBytes(6).toString('hex')
 
   // Determinar telas baseado no plano
   let maxTelas = 1
-  if (plano === 'Família') maxTelas = 5
+  if (plano === 'FamÃ­lia') maxTelas = 5
 
-  // Cria o usuário via Admin API do Supabase Auth
+  // Cria o usuÃ¡rio via Admin API do Supabase Auth
   const { data: authData, error: authError } = await admin.auth.admin.createUser({
     email,
     password: senhaGerada,
-    email_confirm: true, // Auto-confirmação do e-mail do usuário
+    email_confirm: true, // Auto-confirmaÃ§Ã£o do e-mail do usuÃ¡rio
     user_metadata: {
       nome,
       plano_ativo: true,
@@ -706,14 +706,14 @@ export async function criarUsuarioVitalicio(formData: FormData) {
   })
 
   if (authError) {
-    console.error('❌ Erro ao criar usuário vitalício no auth:', authError.message)
+    console.error('âŒ Erro ao criar usuÃ¡rio vitalÃ­cio no auth:', authError.message)
     return { success: false, error: authError.message }
   }
 
   const userId = authData.user.id
 
-  // Nota: o trigger no Supabase 'on_auth_user_created' já cria automaticamente o perfil do usuário
-  // na tabela public.perfis com a role padrão de 'membro' (cliente comum), garantindo segurança total.
+  // Nota: o trigger no Supabase 'on_auth_user_created' jÃ¡ cria automaticamente o perfil do usuÃ¡rio
+  // na tabela public.perfis com a role padrÃ£o de 'membro' (cliente comum), garantindo seguranÃ§a total.
 
   revalidatePath('/admin')
   
@@ -726,29 +726,29 @@ export async function criarUsuarioVitalicio(formData: FormData) {
   }
 }
 
-// ─── Deletar Assinante / Usuário (Auth e Tabelas vinculadas) ───
+// â”€â”€â”€ Deletar Assinante / UsuÃ¡rio (Auth e Tabelas vinculadas) â”€â”€â”€
 export async function deletarUsuario(userId: string) {
   await verificarAdmin()
   const admin = getAdminClient()
   const supabase = await createClient()
 
   try {
-    // 1. Limpa tabelas vinculadas que possam impedir a exclusão por Foreign Key
+    // 1. Limpa tabelas vinculadas que possam impedir a exclusÃ£o por Foreign Key
     await supabase.from('favoritos').delete().eq('user_id', userId)
     await supabase.from('visualizacoes').delete().eq('user_id', userId)
     await supabase.from('perfis').delete().eq('id', userId)
 
-    // 2. Deleta o usuário permanentemente do Supabase Auth
+    // 2. Deleta o usuÃ¡rio permanentemente do Supabase Auth
     const { error } = await admin.auth.admin.deleteUser(userId)
     if (error) throw new Error(error.message)
 
     revalidatePath('/admin')
   } catch (error: any) {
-    console.error('❌ Erro ao deletar usuário:', error.message)
+    console.error('âŒ Erro ao deletar usuÃ¡rio:', error.message)
   }
 }
 
-// ─── LOJA DE AFILIADOS ───
+// â”€â”€â”€ LOJA DE AFILIADOS â”€â”€â”€
 
 export async function adicionarProdutoLoja(formData: FormData) {
   const { supabase } = await verificarAdmin()
@@ -763,7 +763,7 @@ export async function adicionarProdutoLoja(formData: FormData) {
     const imagensUrls = imagensUrlsStr ? JSON.parse(imagensUrlsStr) as string[] : [];
 
     if (!titulo || !descricao || !linkAfiliado) {
-      throw new Error('Título, descrição e link de afiliado são obrigatórios.');
+      throw new Error('TÃ­tulo, descriÃ§Ã£o e link de afiliado sÃ£o obrigatÃ³rios.');
     }
 
     const { error } = await supabase.from('produtos_loja').insert({
@@ -801,7 +801,7 @@ export async function editarProdutoLoja(id: string, formData: FormData) {
     const imagensUrls = imagensUrlsStr ? JSON.parse(imagensUrlsStr) as string[] : [];
 
     if (!titulo || !descricao || !linkAfiliado) {
-      throw new Error('Título, descrição e link de afiliado são obrigatórios.');
+      throw new Error('TÃ­tulo, descriÃ§Ã£o e link de afiliado sÃ£o obrigatÃ³rios.');
     }
 
     const { error } = await supabase.from('produtos_loja').update({
@@ -857,7 +857,7 @@ export async function toggleProdutoLojaAtivo(id: string, ativoAtual: boolean) {
 }
 
 
-// --- S�RIES ---
+// --- SÉRIES ---
 export async function adicionarSerie(formData: FormData) {
   const { supabase } = await verificarAdmin()
   const titulo = formData.get('titulo') as string
