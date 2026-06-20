@@ -41,17 +41,15 @@ export function GerenciadorSeries({ seriesExistentes }: { seriesExistentes: any[
 
   // Faz o upload da imagem WebP para o Bunny (usando a mesma lógica)
   async function uploadFileWithProgress(file: File, path: string, onProgress: (p: number) => void): Promise<string> {
-    const REGION = process.env.NEXT_PUBLIC_BUNNY_STORAGE_REGION || ''
-    const ZONE = process.env.NEXT_PUBLIC_BUNNY_STORAGE_ZONE || 'contos-midia-app'
-    const PASS = process.env.NEXT_PUBLIC_BUNNY_STORAGE_PASSWORD || ''
-    const HOST = REGION === '' ? 'storage.bunnycdn.com' : `${REGION}.storage.bunnycdn.com`
-    const baseURL = `https://${HOST}/${ZONE}`
-    const finalUrl = `${baseURL}/${path}`
+    const BUNNY_STORAGE_KEY = '0109d994-0c03-4a29-a9e89c3a3287-5e82-4d9c'
+    const BUNNY_STORAGE_URL = 'https://br.storage.bunnycdn.com/contos-midia-app'
+    const BUNNY_CDN_URL = 'https://contos-midia-app.b-cdn.net'
+    const finalUrl = `${BUNNY_STORAGE_URL}/${path}`
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
       xhr.open('PUT', finalUrl, true)
-      xhr.setRequestHeader('AccessKey', PASS)
+      xhr.setRequestHeader('AccessKey', BUNNY_STORAGE_KEY)
       xhr.setRequestHeader('Content-Type', 'application/octet-stream')
 
       xhr.upload.onprogress = (e) => {
@@ -63,7 +61,7 @@ export function GerenciadorSeries({ seriesExistentes }: { seriesExistentes: any[
 
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(`https://contos-midia-app.b-cdn.net/${path}`)
+          resolve(`${BUNNY_CDN_URL}/${path}`)
         } else {
           reject(new Error(`Erro no Bunny: ${xhr.status} ${xhr.statusText}`))
         }
