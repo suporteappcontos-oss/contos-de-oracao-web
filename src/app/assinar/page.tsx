@@ -281,7 +281,7 @@ export default function AssinarPage() {
         .input-custom:focus ~ .user-label, .input-custom:not(:placeholder-shown) ~ .user-label {
           transform: translateY(-50%) scale(0.85);
           background-color: #0d121c;
-          border: 1px solid rgba(212,175,55,0.3);
+          border: 1.5px solid rgba(212,175,55,0.3);
           border-radius: 6px;
           padding: 0.1em 0.6em;
           color: #D4AF37;
@@ -301,7 +301,7 @@ export default function AssinarPage() {
         .input-custom:-webkit-autofill ~ .user-label {
           transform: translateY(-50%) scale(0.85);
           background-color: #0d121c;
-          border: 1px solid rgba(212,175,55,0.3);
+          border: 1.5px solid rgba(212,175,55,0.3);
           border-radius: 6px;
           padding: 0.1em 0.6em;
           color: #D4AF37;
