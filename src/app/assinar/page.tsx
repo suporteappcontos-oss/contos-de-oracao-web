@@ -350,7 +350,7 @@ export default function AssinarPage() {
                  <p className="text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
                     <Check size={12} strokeWidth={3} /> Plano Selecionado
                  </p>
-                 <p className="text-white font-black text-lg">{planoDetalhe.produto.nome}</p>
+                 <p className="text-white font-black text-lg">{planoDetalhe.intervalo === 'month' ? 'Plano Mensal' : planoDetalhe.intervalo === 'year' ? 'Plano Anual' : planoDetalhe.produto.nome}</p>
                  <p className="text-white/60 text-xs font-semibold mt-0.5">R$ {(planoDetalhe.valor / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / {planoDetalhe.intervalo === 'month' ? 'mês' : planoDetalhe.intervalo === 'year' ? 'ano' : 'ciclo'}</p>
               </div>
             )}
@@ -360,7 +360,7 @@ export default function AssinarPage() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 blur-3xl rounded-full pointer-events-none -mt-10 -mr-10"></div>
               <p className="text-[#D4AF37] text-xs font-black uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
                 <Check size={16} strokeWidth={3} className="text-[#D4AF37]" />
-                {planoDetalhe ? `Benefícios: ${planoDetalhe.produto.nome}` : 'O que está incluído'}
+                {planoDetalhe ? `Benefícios: ${planoDetalhe.intervalo === 'month' ? 'Plano Mensal' : planoDetalhe.intervalo === 'year' ? 'Plano Anual' : planoDetalhe.produto.nome}` : 'O que está incluído'}
               </p>
               
               {planoDetalhe && planoDetalhe.produto.metadata?.beneficios ? (
@@ -609,7 +609,7 @@ export default function AssinarPage() {
                     
                     <div className="flex justify-between items-end">
                       <div>
-                        <h3 className="text-white font-bold text-base">{planoDetalhe.produto.nome}</h3>
+                        <h3 className="text-white font-bold text-base">{planoDetalhe.intervalo === 'month' ? 'Plano Mensal' : planoDetalhe.intervalo === 'year' ? 'Plano Anual' : planoDetalhe.produto.nome}</h3>
                         <p className="text-white/40 text-xs">Acesso {planoDetalhe.intervalo === 'year' ? 'por 12 meses' : 'por 1 mês'}</p>
                       </div>
                       <div className="text-right">
