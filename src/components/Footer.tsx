@@ -134,7 +134,7 @@ export default function Footer() {
         .social-wrapper .icon-content a[data-social="tiktok"] .filled,
         .social-wrapper .icon-content a[data-social="tiktok"] ~ .tooltip,
         .social-wrapper .icon-content a[data-social="tiktok"] ~ .tooltip::before {
-          background-color: #333333;
+          background-color: #000000;
         }
       `}} />
       {/* ── Linha principal: Logo + links à esquerda | Redes sociais à direita ── */}
