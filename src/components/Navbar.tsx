@@ -343,7 +343,7 @@ export default function Navbar() {
           .social-wrapper-nav .icon-content a[data-social="tiktok"] .filled,
           .social-wrapper-nav .icon-content a[data-social="tiktok"] ~ .tooltip,
           .social-wrapper-nav .icon-content a[data-social="tiktok"] ~ .tooltip::before {
-            background-color: #333333;
+            background-color: #000000;
           }
         `}} />
 
