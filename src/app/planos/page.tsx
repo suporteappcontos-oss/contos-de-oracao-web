@@ -1,3 +1,4 @@
+import React from "react";
 import Navbar from "@/components/Navbar";
 import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
@@ -97,7 +98,16 @@ export default function PlanosPage() {
 
           {/* Central: Planos da Stripe */}
           <div className="relative z-10 w-full max-w-5xl mx-auto px-4 mt-4 pb-12">
-            <Pricing />
+            <React.Suspense fallback={
+              <div className="flex flex-col justify-center items-center h-64 text-[#D4AF37]">
+                <div className="animate-spin mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/></svg>
+                </div>
+                <p className="font-outfit tracking-wider">Carregando planos...</p>
+              </div>
+            }>
+              <Pricing />
+            </React.Suspense>
           </div>
         </div>
       </section>
