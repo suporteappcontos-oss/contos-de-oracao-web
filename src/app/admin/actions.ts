@@ -856,3 +856,80 @@ export async function toggleProdutoLojaAtivo(id: string, ativoAtual: boolean) {
   }
 }
 
+
+// --- SÉRIES ---
+export async function adicionarSerie(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+  const titulo = formData.get('titulo') as string
+  const descricao = formData.get('descricao') as string
+  const capa_url = formData.get('capa_url') as string
+
+  try {
+    const { error } = await supabase.from('series').insert([{
+      titulo,
+      descricao,
+      capa_url
+    }])
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/admin')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao adicionar serie:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function editarSerie(id: string, formData: FormData) {
+  const { supabase } = await verificarAdmin()
+  const titulo = formData.get('titulo') as string
+  const descricao = formData.get('descricao') as string
+  const capa_url = formData.get('capa_url') as string
+
+  try {
+    const { error } = await supabase.from('series').update({
+      titulo,
+      descricao,
+      capa_url
+    }).eq('id', id)
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/admin')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao editar serie:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function deletarSerie(id: string) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase.from('series').delete().eq('id', id)
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/admin')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao deletar serie:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function toggleSerieAtiva(id: string, ativoAtual: boolean) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase.from('series').update({ ativo: !ativoAtual }).eq('id', id)
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/admin')
+    revalidatePath('/')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao alternar status da serie:', error.message)
+    return { success: false, error: error.message }
+  }
+}

@@ -26,6 +26,7 @@ import { AssinantesComFiltros } from './AssinantesComFiltros'
 import SubmitButton from '@/components/SubmitButton'
 import GerenciadorVideosTematicos from './GerenciadorVideosTematicos'
 import { GerenciadorRevistas } from './GerenciadorRevistas'
+import { GerenciadorSeries } from './GerenciadorSeries'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -82,6 +83,7 @@ export default async function AdminPage({
   const { data: produtosLoja } = await supabase.from('produtos_loja').select('*').order('criado_em', { ascending: false })
   const { data: videosTematicos } = await supabase.from('videos_tematicos').select('*').order('criado_em', { ascending: false })
   const { data: revistasData } = await supabase.from('revistas').select('*').order('criado_em', { ascending: false })
+  const { data: series } = await supabase.from('series').select('*').order('criado_em', { ascending: false })
 
   // Busca visualizações para computar estatísticas gerais e individuais
   let views: any[] = []
@@ -402,6 +404,11 @@ export default async function AdminPage({
         {activeTab === 'catalogo' && (
           <div className="space-y-20">
             <div className="space-y-10">
+              {/* --- SÉRIES --- */}
+              <GerenciadorSeries seriesExistentes={(series ?? []) as any} />
+
+              <hr className="border-white/5" />
+
               {/* Criador Unificado de Conteúdo */}
               <CriadorConteudoUnificado temporadasExistentes={temporadasExistentes} />
 
