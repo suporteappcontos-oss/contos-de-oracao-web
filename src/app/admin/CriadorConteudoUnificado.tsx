@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
 import { adicionarVideo, publicarMaterial, adicionarVideoTematico, publicarRevista } from './actions'
+import { convertToWebP } from '@/utils/imageUtils'
 
 // SVG do Instagram (lucide-react desta versão não tem o ícone)
 function IgIcon({ size = 14 }: { size?: number }) {
@@ -174,8 +175,11 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
     try {
       // 1. Upload da Capa direto para o Bunny
-      const capaFile = capaRef.current?.files?.[0]
+      let capaFile = capaRef.current?.files?.[0]
       if (capaFile) {
+        if (capaFile.type.startsWith('image/')) {
+          capaFile = await convertToWebP(capaFile)
+        }
         const ext = capaFile.name.split('.').pop() || 'jpg'
         const path = `pdf/${matCategoria}/${slug}_capa.${ext}`
         capaUrl = await uploadParaBunny(capaFile, path, setProgressCapa)
@@ -229,8 +233,11 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
     let pdfUrl: string | null = revLinkPdf.trim() || null
 
     try {
-      const capaFile = revCapaRef.current?.files?.[0]
+      let capaFile = revCapaRef.current?.files?.[0]
       if (capaFile) {
+        if (capaFile.type.startsWith('image/')) {
+          capaFile = await convertToWebP(capaFile)
+        }
         const ext = capaFile.name.split('.').pop() || 'jpg'
         capaUrl = await uploadParaBunny(capaFile, `revistas/${slug}_capa.${ext}`, setProgressRevCapa)
       }
@@ -276,8 +283,11 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
     let capaUrl: string | null = null
     try {
-      const capaFile = instaCapaRef.current?.files?.[0]
+      let capaFile = instaCapaRef.current?.files?.[0]
       if (capaFile) {
+        if (capaFile.type.startsWith('image/')) {
+          capaFile = await convertToWebP(capaFile)
+        }
         const ext = capaFile.name.split('.').pop() || 'jpg'
         const slug = gerarSlug(instaTitulo)
         const path = `videos_tematicos/${slug}/capa.${ext}`

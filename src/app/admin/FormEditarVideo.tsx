@@ -5,6 +5,7 @@ import { Edit3, X, Tv2 } from 'lucide-react'
 import Link from 'next/link'
 import SubmitButton from '@/components/SubmitButton'
 import { editarVideo } from './actions'
+import { convertToWebP } from '@/utils/imageUtils'
 
 const inputCls = 'w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm'
 const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold'
@@ -44,6 +45,16 @@ export function FormEditarVideo({ video, temporadasExistentes = [] }: Props) {
 
   const temporadaNome = modoTemporada === 'existente' ? temporadaSelecionada : novaTemporada
 
+  const handleSubmit = async (formData: FormData) => {
+    const file = formData.get('thumbnail_file') as File | null
+    if (file && file.size > 0 && file.type.startsWith('image/')) {
+      const webpFile = await convertToWebP(file)
+      formData.set('thumbnail_file', webpFile)
+    }
+    const editFn = editarVideo.bind(null, video.id)
+    await editFn(formData)
+  }
+
   return (
     <div className="bg-[#111827] border-2 border-[#D4AF37] rounded-3xl p-6 shadow-[0_0_30px_rgba(212,175,55,0.15)] z-20">
       <div className="flex items-center justify-between mb-5 border-b border-white/10 pb-4">
@@ -54,7 +65,7 @@ export function FormEditarVideo({ video, temporadasExistentes = [] }: Props) {
          <Link href="/admin?tab=catalogo" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
       </div>
       
-      <form action={editarVideo.bind(null, video.id)} encType="multipart/form-data" className="space-y-4">
+      <form action={handleSubmit} encType="multipart/form-data" className="space-y-4">
         <div>
           <label className={labelCls}>Título</label>
           <input name="titulo" required defaultValue={video.titulo} className={inputCls} />

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Plus, Tv2 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
 import { adicionarVideo } from './actions'
+import { convertToWebP } from '@/utils/imageUtils'
 
 const inputCls = 'w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm'
 const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb-2 font-bold'
@@ -27,8 +28,17 @@ export function FormAdicionarVideo({ temporadasExistentes = [] }: Props) {
   // O valor final do nome da temporada
   const temporadaNome = modoTemporada === 'existente' ? temporadaSelecionada : novaTemporada
 
+  const handleSubmit = async (formData: FormData) => {
+    const file = formData.get('thumbnail_file') as File | null
+    if (file && file.size > 0 && file.type.startsWith('image/')) {
+      const webpFile = await convertToWebP(file)
+      formData.set('thumbnail_file', webpFile)
+    }
+    await adicionarVideo(formData)
+  }
+
   return (
-    <form action={adicionarVideo} encType="multipart/form-data">
+    <form action={handleSubmit} encType="multipart/form-data">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         <div className="md:col-span-8">
           <label className={labelCls}>Título *</label>
