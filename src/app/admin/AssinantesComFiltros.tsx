@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Users, TrendingUp, Clock, Star, Filter, ChevronDown, X, ArrowDown, ArrowUp, BarChart2, Eye, Monitor, Smartphone, Film } from 'lucide-react'
+import { Users, Clock, Filter, ChevronDown, X, BarChart2, Eye, Monitor, Smartphone, Film } from 'lucide-react'
 import { BotoesControleUsuario } from './BotoesControleUsuario'
 
 type Usuario = {
@@ -30,8 +30,6 @@ type FiltroOrdem =
   | 'mais_acessos_app'
   | 'novos_7dias'
   | 'novos_30dias'
-  | 'ativos'
-  | 'inativos'
   | 'vitalicios'
   | 'ultimo_login'
 
@@ -43,8 +41,6 @@ const FILTROS: { id: FiltroOrdem; label: string; icon: string; color: string }[]
   { id: 'ultimo_login',     label: 'Login Mais Recente',    icon: '⏱️', color: 'text-cyan-400' },
   { id: 'novos_7dias',      label: 'Novos (7 dias)',         icon: '🔥', color: 'text-orange-400' },
   { id: 'novos_30dias',     label: 'Novos (30 dias)',        icon: '📅', color: 'text-pink-400' },
-  { id: 'ativos',           label: 'Plano Ativo',           icon: '✅', color: 'text-emerald-400' },
-  { id: 'inativos',         label: 'Sem Plano Ativo',       icon: '⚠️', color: 'text-amber-400' },
   { id: 'vitalicios',       label: 'Vitalícios',            icon: '♾️', color: 'text-amber-300' },
 ]
 
@@ -205,14 +201,19 @@ function GraficoEngajamento({ usuarios }: { usuarios: Usuario[] }) {
   )
 }
 
-export function AssinantesComFiltros({ usuarios, membrosAtivos }: Props) {
+const SETE_DIAS = 7 * 24 * 60 * 60 * 1000
+const TRINTA_DIAS = 30 * 24 * 60 * 60 * 1000
+
+export function AssinantesComFiltros({ usuarios }: Props) {
+  const [subAba, setSubAba] = useState<'ativos' | 'leads'>('ativos')
   const [filtro, setFiltro] = useState<FiltroOrdem>('recentes')
   const [comboOpen, setComboOpen] = useState(false)
   const [busca, setBusca] = useState('')
 
-  const agora = Date.now()
-  const SETE_DIAS = 7 * 24 * 60 * 60 * 1000
-  const TRINTA_DIAS = 30 * 24 * 60 * 60 * 1000
+  const [agora] = useState(() => Date.now())
+
+  const totalAtivos = useMemo(() => usuarios.filter(u => u.plano_ativo).length, [usuarios])
+  const totalLeads = useMemo(() => usuarios.filter(u => !u.plano_ativo).length, [usuarios])
 
   const maxViews = useMemo(() => Math.max(...usuarios.map(u => u.total_views || 0), 1), [usuarios])
   const maxSite  = useMemo(() => Math.max(...usuarios.map(u => u.acessos_site || 0), 1), [usuarios])
@@ -221,11 +222,16 @@ export function AssinantesComFiltros({ usuarios, membrosAtivos }: Props) {
   const usuariosFiltrados = useMemo(() => {
     let lista = [...usuarios]
 
+    // Primeiro filtra pela SubAba (Ativos vs Leads)
+    if (subAba === 'ativos') {
+      lista = lista.filter(u => u.plano_ativo)
+    } else {
+      lista = lista.filter(u => !u.plano_ativo)
+    }
+
     // Filtros de tipo
     if (filtro === 'novos_7dias') lista = lista.filter(u => agora - new Date(u.criado_em).getTime() <= SETE_DIAS)
     if (filtro === 'novos_30dias') lista = lista.filter(u => agora - new Date(u.criado_em).getTime() <= TRINTA_DIAS)
-    if (filtro === 'ativos') lista = lista.filter(u => u.plano_ativo)
-    if (filtro === 'inativos') lista = lista.filter(u => !u.plano_ativo)
     if (filtro === 'vitalicios') lista = lista.filter(u => u.vitalicio)
 
     // Ordenação
@@ -242,7 +248,7 @@ export function AssinantesComFiltros({ usuarios, membrosAtivos }: Props) {
     }
 
     return lista
-  }, [usuarios, filtro, busca, agora])
+  }, [usuarios, subAba, filtro, busca, agora])
 
   const filtroAtual = FILTROS.find(f => f.id === filtro)!
 
@@ -251,6 +257,32 @@ export function AssinantesComFiltros({ usuarios, membrosAtivos }: Props) {
       {/* Gráficos */}
       <GraficoCadastrosMes usuarios={usuarios} />
       <GraficoEngajamento usuarios={usuarios} />
+
+      {/* Seletor de Sub-Abas (Assinantes vs Leads) */}
+      <div className="flex bg-[#111827] border border-white/5 rounded-2xl p-1.5 w-fit shadow-xl mb-6 flex-wrap">
+        <button
+          onClick={() => setSubAba('ativos')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer ${subAba === 'ativos' ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+          style={subAba === 'ativos' ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' } : {}}
+        >
+          <Users size={14} />
+          Assinantes Ativos
+          <span className={`text-[9px] px-2 py-0.5 rounded-full font-black ml-1 ${subAba === 'ativos' ? 'bg-black/20 text-black' : 'bg-white/10 text-white/70'}`}>
+            {totalAtivos}
+          </span>
+        </button>
+        <button
+          onClick={() => setSubAba('leads')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer ${subAba === 'leads' ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+          style={subAba === 'leads' ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' } : {}}
+        >
+          <Clock size={14} />
+          Leads (Sem Plano)
+          <span className={`text-[9px] px-2 py-0.5 rounded-full font-black ml-1 ${subAba === 'leads' ? 'bg-black/20 text-black' : 'bg-white/10 text-white/70'}`}>
+            {totalLeads}
+          </span>
+        </button>
+      </div>
 
       {/* Barra de Filtros */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-5">
@@ -320,7 +352,7 @@ export function AssinantesComFiltros({ usuarios, membrosAtivos }: Props) {
       {/* Contador de resultados */}
       <div className="flex items-center gap-2 mb-4">
         <span className="text-white/30 text-xs">
-          Exibindo <span className="text-white font-bold">{usuariosFiltrados.length}</span> de <span className="text-white font-bold">{usuarios.length}</span> assinantes
+          Exibindo <span className="text-white font-bold">{usuariosFiltrados.length}</span> de <span className="text-white font-bold">{subAba === 'ativos' ? totalAtivos : totalLeads}</span> {subAba === 'ativos' ? 'assinantes' : 'leads'}
         </span>
         {(busca || filtro !== 'recentes') && (
           <button
@@ -338,13 +370,15 @@ export function AssinantesComFiltros({ usuarios, membrosAtivos }: Props) {
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
             <Users size={28} className="text-white/20" />
           </div>
-          <p className="text-white/40 text-sm">Nenhum assinante encontrado com esse filtro.</p>
+          <p className="text-white/40 text-sm">
+            Nenhum {subAba === 'ativos' ? 'assinante ativo' : 'lead'} encontrado com esse filtro.
+          </p>
         </div>
       ) : (
         <div className="bg-[#111827] border border-white/5 rounded-[2rem] overflow-hidden shadow-2xl">
           {/* Header */}
           <div className="grid grid-cols-12 gap-4 px-8 py-5 border-b border-white/5 bg-[#090B10]/50">
-            <div className="col-span-6 md:col-span-4 text-white/40 text-xs uppercase tracking-widest font-bold">Assinante</div>
+            <div className="col-span-6 md:col-span-4 text-white/40 text-xs uppercase tracking-widest font-bold">{subAba === 'ativos' ? 'Assinante' : 'Lead'}</div>
             <div className="col-span-4 text-white/40 text-xs uppercase tracking-widest font-bold hidden md:block">Engajamento</div>
             <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold">Status</div>
             <div className="col-span-3 md:col-span-2 text-white/40 text-xs uppercase tracking-widest font-bold text-right">Controle</div>
