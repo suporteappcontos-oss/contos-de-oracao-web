@@ -482,9 +482,8 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             </div>
             
             <div className="md:col-span-5">
-              <label className={labelCls}>Thumbnail (URL ou Arquivo)</label>
+              <label className={labelCls}>Thumbnail (Apenas Arquivo)</label>
               <div className="space-y-2">
-                <input name="thumbnail_url" placeholder="URL opcional (ex: https://...)" className={inputCls} />
                 <input type="file" name="thumbnail_file" accept="image/*" className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-2 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37] file:text-black hover:file:brightness-110 cursor-pointer" />
               </div>
             </div>
