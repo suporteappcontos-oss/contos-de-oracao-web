@@ -182,7 +182,12 @@ export default function AcervoVideosAdmin({
     )
   }
 
-  const nomesTemporadas = Object.keys(temporadas).sort()
+  const nomesTemporadas = Array.from(
+    new Set([
+      ...(seriesExistentes?.map(s => s.titulo) || []),
+      ...Object.keys(temporadas)
+    ])
+  ).filter(Boolean).sort()
 
   // Estado accordion para Vídeos Avulsos
   const [avulsosAbertos, setAvulsosAbertos] = useState(false)
@@ -220,7 +225,7 @@ export default function AcervoVideosAdmin({
         ) : (
           <div className="space-y-4">
             {nomesTemporadas.map(nomeTemp => {
-              const eps = temporadas[nomeTemp]
+              const eps = temporadas[nomeTemp] || []
               const estaAberta = !!temporadasAbertas[nomeTemp]
               const seriesMeta = seriesExistentes.find(s => s.titulo === nomeTemp)
 
@@ -302,9 +307,13 @@ export default function AcervoVideosAdmin({
                   {/* Lista de episódios colapsável */}
                   {estaAberta && (
                     <div className="border-t border-white/5 p-6 bg-black/10">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {eps.map(ep => renderCardVideo(ep))}
-                      </div>
+                      {eps.length === 0 ? (
+                        <p className="text-white/30 text-sm text-center py-4">Nenhum episódio cadastrado nesta série.</p>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {eps.map(ep => renderCardVideo(ep))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
