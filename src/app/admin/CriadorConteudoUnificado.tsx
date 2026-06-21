@@ -320,7 +320,6 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
     }
   }
 
-  const tipoAtual = TIPO_CONFIG[tipoCriacao]
 
   if (!isExpanded) {
     return (
