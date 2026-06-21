@@ -870,7 +870,12 @@ export async function adicionarSerie(formData: FormData) {
       descricao,
       capa_url
     }])
-    if (error) throw new Error(error.message)
+    if (error) {
+      if (error.message.includes('duplicate key value violates unique constraint') || error.code === '23505') {
+        throw new Error('Já existe uma série com este título. Escolha um nome diferente.');
+      }
+      throw new Error(error.message)
+    }
 
     revalidatePath('/admin')
     revalidatePath('/')

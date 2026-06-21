@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition, useRef, useEffect } from 'react'
+import React, { useState, useTransition, useRef } from 'react'
 
 // Keyframes para animação ao trocar de tipo
 const ANIM_STYLE = `
@@ -48,6 +48,7 @@ const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb
 
 type Props = {
   temporadasExistentes?: string[]
+  seriesExistentes?: { id: string; titulo: string; descricao?: string | null; capa_url?: string | null }[]
 }
 
 // Upload direto browser → Bunny
@@ -95,7 +96,14 @@ const TIPO_CONFIG: any = {
   add_episodio: { border: '#10b981', glow: 'rgba(16,185,129,0.15)', label: 'Adicionar Episódio' },
 }
 
-export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: Props) {
+export default function CriadorConteudoUnificado({ temporadasExistentes = [], seriesExistentes = [] }: Props) {
+  // Combina as séries cadastradas na tabela 'series' com quaisquer temporadas existentes legadas
+  const seriesParaExibir = Array.from(
+    new Set([
+      ...(seriesExistentes?.map(s => s.titulo) || []),
+      ...temporadasExistentes
+    ])
+  ).filter(Boolean) as string[]
   const [isExpanded, setIsExpanded] = useState(false)
   const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | 'add_episodio' | null>(null)
   const [isModalSerieOpen, setIsModalSerieOpen] = useState(false)
@@ -117,13 +125,14 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
   const [emBreve, setEmBreve] = useState(false)
   const [videoCategoria, setVideoCategoria] = useState('Geral')
   const [modoTemporada, setModoTemporada] = useState<'existente' | 'nova'>(
-    temporadasExistentes.length > 0 ? 'existente' : 'nova'
+    seriesParaExibir.length > 0 ? 'existente' : 'nova'
   )
   const [temporadaSelecionada, setTemporadaSelecionada] = useState(
-    temporadasExistentes[0] || ''
+    seriesParaExibir[0] || ''
   )
   const [novaTemporada, setNovaTemporada] = useState('')
   const temporadaNome = modoTemporada === 'existente' ? temporadaSelecionada : novaTemporada
+
 
   // --- Estados do Formulário de Material ---
   const [isPending, startTransition] = useTransition()
@@ -471,7 +480,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
       {tipoCriacao === 'add_episodio' && (
         <div key="form-add-episodio" className="admin-form-anim">
           <h2 className="text-xl font-bold text-white mb-6">Em qual série você quer adicionar este episódio?</h2>
-          {temporadasExistentes.length === 0 ? (
+          {seriesParaExibir.length === 0 ? (
             <div className="bg-[#1a2234] border border-white/10 rounded-2xl p-8 text-center">
               <p className="text-white/50 mb-4">Nenhuma série existente encontrada.</p>
               <button 
@@ -483,7 +492,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {temporadasExistentes.map(temp => (
+              {seriesParaExibir.map(temp => (
                 <button
                   key={temp}
                   onClick={() => {
@@ -581,7 +590,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
                       <span className="text-white/70 text-sm font-bold">Temporada</span>
                     </div>
                     <div className="flex bg-[#0f171e] border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
-                      {temporadasExistentes.length > 0 && (
+                      {seriesParaExibir.length > 0 && (
                         <button
                           type="button"
                           onClick={() => setModoTemporada('existente')}
@@ -602,7 +611,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      {modoTemporada === 'existente' && temporadasExistentes.length > 0 ? (
+                      {modoTemporada === 'existente' && seriesParaExibir.length > 0 ? (
                         <>
                           <label className={labelCls}>Selecionar Temporada Existente *</label>
                           <select
@@ -611,7 +620,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
                             className={inputCls}
                             required
                           >
-                            {temporadasExistentes.map(t => (
+                            {seriesParaExibir.map(t => (
                               <option key={t} value={t}>{t}</option>
                             ))}
                           </select>

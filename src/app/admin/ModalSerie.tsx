@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useTransition, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Loader2, Image as ImageIcon, X } from 'lucide-react'
 import { adicionarSerie, editarSerie } from './actions'
 import { convertToWebP } from '@/utils/imageUtils'
@@ -20,6 +21,8 @@ export function ModalSerie({
   
   const [mensagem, setMensagem] = useState('')
   const [erro, setErro] = useState('')
+
+  const router = useRouter()
 
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
@@ -115,6 +118,7 @@ export function ModalSerie({
 
         if (result.success) {
           setMensagem(serieEditando ? 'Série atualizada com sucesso!' : 'Série criada com sucesso!')
+          router.refresh()
           setTimeout(() => {
             onClose()
           }, 1500)

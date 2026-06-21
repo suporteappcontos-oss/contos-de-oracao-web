@@ -403,7 +403,7 @@ export default async function AdminPage({
         {/* ══════════ ABA CATÁLOGO ══════════ */}
         {activeTab === 'catalogo' && (
           <CatalogoTabsLayout
-            criador={<CriadorConteudoUnificado temporadasExistentes={temporadasExistentes} />}
+            criador={<CriadorConteudoUnificado temporadasExistentes={temporadasExistentes} seriesExistentes={series || []} />}
             series={
               <AcervoVideosAdmin 
                 videos={(videos || []) as any} 
