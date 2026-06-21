@@ -26,7 +26,6 @@ import { AssinantesComFiltros } from './AssinantesComFiltros'
 import SubmitButton from '@/components/SubmitButton'
 import GerenciadorVideosTematicos from './GerenciadorVideosTematicos'
 import { GerenciadorRevistas } from './GerenciadorRevistas'
-import { GerenciadorSeries } from './GerenciadorSeries'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -404,10 +403,6 @@ export default async function AdminPage({
         {activeTab === 'catalogo' && (
           <div className="space-y-20">
             <div className="space-y-10">
-              {/* --- SÉRIES --- */}
-              <GerenciadorSeries seriesExistentes={(series ?? []) as any} />
-
-              <hr className="border-white/5" />
 
               {/* Criador Unificado de Conteúdo */}
               <CriadorConteudoUnificado temporadasExistentes={temporadasExistentes} />
@@ -417,7 +412,8 @@ export default async function AdminPage({
               {/* Acervo de Vídeos (Agrupado por Temporadas e Colapsável) */}
               <AcervoVideosAdmin 
                 videos={(videos || []) as any} 
-                temporadasExistentes={temporadasExistentes} 
+                temporadasExistentes={temporadasExistentes}
+                seriesExistentes={(series ?? []) as any}
                 editId={editId} 
                 editingVideo={editingVideo as any} 
               />

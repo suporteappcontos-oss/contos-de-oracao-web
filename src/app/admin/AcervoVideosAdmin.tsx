@@ -4,10 +4,11 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { 
   ChevronDown, ChevronUp, Film, ExternalLink, 
-  Edit3, EyeOff, Eye, Trash2, Tv2 
+  Edit3, EyeOff, Eye, Trash2, Tv2, Plus, Edit2
 } from 'lucide-react'
 import { toggleVideoAtivo, deletarVideo } from './actions'
 import { FormEditarVideo } from './FormEditarVideo'
+import { ModalSerie } from './ModalSerie'
 
 type VideoType = {
   id: string
@@ -28,6 +29,7 @@ type VideoType = {
 type Props = {
   videos: VideoType[]
   temporadasExistentes: string[]
+  seriesExistentes: any[]
   editId: string | null
   editingVideo: VideoType | null
 }
@@ -47,9 +49,12 @@ function getFallback(id: string) {
 export default function AcervoVideosAdmin({ 
   videos = [], 
   temporadasExistentes = [], 
+  seriesExistentes = [],
   editId, 
   editingVideo 
 }: Props) {
+  const [isModalSerieOpen, setIsModalSerieOpen] = useState(false)
+  const [serieEmEdicao, setSerieEmEdicao] = useState<any>(null)
   // Controle de abas colapsadas por temporada
   const [temporadasAbertas, setTemporadasAbertas] = useState<Record<string, boolean>>({})
 
@@ -178,14 +183,26 @@ export default function AcervoVideosAdmin({
     <div className="space-y-12">
       {/* SEÇÃO TEMPORADAS (SÉRIES) */}
       <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
-            <Tv2 size={16} className="text-[#D4AF37]" />
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
+              <Tv2 size={16} className="text-[#D4AF37]" />
+            </div>
+            <div>
+              <h3 className="text-white text-xl font-bold tracking-tight">Séries e Temporadas</h3>
+              <p className="text-white/40 text-xs">Vídeos organizados em ordem de episódios por temporada.</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-white text-xl font-bold tracking-tight">Séries e Temporadas</h3>
-            <p className="text-white/40 text-xs">Vídeos organizados em ordem de episódios por temporada.</p>
-          </div>
+          <button
+            onClick={() => {
+              setSerieEmEdicao(null)
+              setIsModalSerieOpen(true)
+            }}
+            className="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-black px-4 py-2 rounded-xl font-bold transition-all text-sm"
+          >
+            <Plus size={16} />
+            Nova Série
+          </button>
         </div>
 
         {nomesTemporadas.length === 0 ? (
@@ -197,6 +214,7 @@ export default function AcervoVideosAdmin({
             {nomesTemporadas.map(nomeTemp => {
               const eps = temporadas[nomeTemp]
               const estaAberta = !!temporadasAbertas[nomeTemp]
+              const seriesMeta = seriesExistentes.find(s => s.titulo === nomeTemp)
 
               return (
                 <div 
@@ -204,26 +222,55 @@ export default function AcervoVideosAdmin({
                   className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-lg transition-all"
                 >
                   {/* Cabeçalho do Accordion */}
-                  <button
-                    type="button"
-                    onClick={() => toggleTemporada(nomeTemp)}
-                    className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/[0.02] transition-colors text-left"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${estaAberta ? 'bg-[#D4AF37] text-black' : 'bg-white/5 text-white/70'}`}>
-                        <Tv2 size={18} />
-                      </div>
+                  <div className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/[0.02] transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => toggleTemporada(nomeTemp)}
+                      className="flex-1 flex items-center gap-4 text-left"
+                    >
+                      {seriesMeta && seriesMeta.capa_url ? (
+                        <div 
+                          className="w-16 h-10 rounded-lg bg-cover bg-center border border-white/10" 
+                          style={{ backgroundImage: `url(${seriesMeta.capa_url})` }}
+                        />
+                      ) : (
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${estaAberta ? 'bg-[#D4AF37] text-black' : 'bg-white/5 text-white/70'}`}>
+                          <Tv2 size={18} />
+                        </div>
+                      )}
                       <div>
-                        <h4 className="text-white font-extrabold text-base tracking-wide">{nomeTemp}</h4>
+                        <h4 className="text-white font-extrabold text-base tracking-wide flex items-center gap-2">
+                          {nomeTemp}
+                        </h4>
                         <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mt-0.5">
                           {eps.length} {eps.length === 1 ? 'episódio' : 'episódios'}
+                          {seriesMeta && seriesMeta.descricao && <span className="ml-2 normal-case truncate max-w-[200px] md:max-w-[400px] inline-block align-bottom text-[10px] text-white/30 font-normal border-l border-white/10 pl-2"> {seriesMeta.descricao} </span>}
                         </p>
                       </div>
+                    </button>
+                    
+                    <div className="flex items-center gap-3">
+                      {seriesMeta && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSerieEmEdicao(seriesMeta)
+                            setIsModalSerieOpen(true)
+                          }}
+                          className="p-2 text-white/50 hover:text-[#D4AF37] hover:bg-white/5 rounded-lg transition-all"
+                          title="Editar Série"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => toggleTemporada(nomeTemp)}
+                        className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                      >
+                        {estaAberta ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </button>
                     </div>
-                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 group-hover:text-white hover:bg-white/10 transition-all">
-                      {estaAberta ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </div>
-                  </button>
+                  </div>
 
                   {/* Lista de episódios colapsável */}
                   {estaAberta && (
@@ -277,6 +324,12 @@ export default function AcervoVideosAdmin({
           </div>
         )}
       </div>
+
+      <ModalSerie 
+        isOpen={isModalSerieOpen} 
+        onClose={() => setIsModalSerieOpen(false)} 
+        serieEditando={serieEmEdicao} 
+      />
     </div>
   )
 }
