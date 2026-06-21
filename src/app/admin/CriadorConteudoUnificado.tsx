@@ -378,7 +378,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
     )
   }
 
-  const tipoAtual = TIPO_CONFIG[tipoCriacao!]
+  const tipoAtual = TIPO_CONFIG[tipoCriacao || 'video']
 
   return (
     <div
