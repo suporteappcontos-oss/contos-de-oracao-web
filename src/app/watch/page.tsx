@@ -77,6 +77,7 @@ export default async function WatchPage() {
   // 🎬 ORGANIZAÇÃO DE CATEGORIAS EXCLUSIVAS (Última Temporada e Clipes)
   const videosTemporadaTodos = (videos ?? []).filter(v => v.categoria === 'Temporada' && v.temporada_nome);
   let ultimaTemporadaNome: string | null = null;
+  let exibirTituloCarrossel: string = 'Temporada';
   let videosUltimaTemporada: Video[] = [];
 
   if (videosTemporadaTodos.length > 0) {
@@ -87,6 +88,9 @@ export default async function WatchPage() {
     ultimaTemporadaNome = ordenadosPorCriadoEm[0].temporada_nome;
     
     if (ultimaTemporadaNome) {
+      exibirTituloCarrossel = ultimaTemporadaNome.includes(' | ')
+        ? ultimaTemporadaNome.replace(' | ', ' - ')
+        : ultimaTemporadaNome;
       // Filtramos todos os episódios dessa temporada específica e ordenamos por número de episódio em ordem crescente (1, 2, 3...)
       videosUltimaTemporada = (videos ?? [])
         .filter(v => v.categoria === 'Temporada' && v.temporada_nome === ultimaTemporadaNome)
@@ -151,7 +155,7 @@ export default async function WatchPage() {
               )}
 
               {videosUltimaTemporada.length > 0 && (
-                <CategoryCarousel title={ultimaTemporadaNome || 'Temporada'} count={videosUltimaTemporada.length}>
+                <CategoryCarousel title={exibirTituloCarrossel} count={videosUltimaTemporada.length}>
                   {videosUltimaTemporada.map((video: Video) => (
                     <VideoCard key={video.id} video={video} />
                   ))}

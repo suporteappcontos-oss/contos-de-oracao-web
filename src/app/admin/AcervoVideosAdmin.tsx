@@ -65,27 +65,48 @@ export default function AcervoVideosAdmin({
     }))
   }
 
-  // Lógica de Agrupamento
-  const temporadas: Record<string, VideoType[]> = {}
+  // Lógica de Agrupamento em Série ➔ Temporada
+  const seriesAgrupadas: Record<string, Record<string, VideoType[]>> = {}
   const videosAvulsos: VideoType[] = []
+
+  // Inicializa com as séries que existem na tabela series (para garantir que mesmo as vazias apareçam)
+  seriesExistentes.forEach(s => {
+    if (s.titulo) {
+      seriesAgrupadas[s.titulo] = {}
+    }
+  })
 
   videos.forEach(v => {
     if (v.categoria === 'Temporada' && v.temporada_nome) {
-      if (!temporadas[v.temporada_nome]) {
-        temporadas[v.temporada_nome] = []
+      let nomeSerie = v.temporada_nome
+      let nomeTemporada = 'Temporada 1' // Default caso não haja o divisor
+
+      if (v.temporada_nome.includes(' | ')) {
+        const partes = v.temporada_nome.split(' | ')
+        nomeSerie = partes[0]
+        nomeTemporada = partes[1] || 'Temporada 1'
       }
-      temporadas[v.temporada_nome].push(v)
+
+      if (!seriesAgrupadas[nomeSerie]) {
+        seriesAgrupadas[nomeSerie] = {}
+      }
+      if (!seriesAgrupadas[nomeSerie][nomeTemporada]) {
+        seriesAgrupadas[nomeSerie][nomeTemporada] = []
+      }
+      seriesAgrupadas[nomeSerie][nomeTemporada].push(v)
     } else {
       videosAvulsos.push(v)
     }
   })
 
   // Ordena os episódios de cada temporada pelo número do episódio
-  Object.keys(temporadas).forEach(nomeTemp => {
-    temporadas[nomeTemp].sort((a, b) => {
-      const numA = a.episodio_numero ?? 0
-      const numB = b.episodio_numero ?? 0
-      return numA - numB
+  Object.keys(seriesAgrupadas).forEach(nomeSerie => {
+    Object.keys(seriesAgrupadas[nomeSerie]).forEach(nomeTemp => {
+      seriesAgrupadas[nomeSerie][nomeTemp].sort((a, b) => {
+        const numA = a.episodio_numero ?? 0
+        const numB = b.episodio_numero ?? 0
+        return numA - numB
+      })
     })
   })
 
@@ -182,12 +203,7 @@ export default function AcervoVideosAdmin({
     )
   }
 
-  const nomesTemporadas = Array.from(
-    new Set([
-      ...(seriesExistentes?.map(s => s.titulo) || []),
-      ...Object.keys(temporadas)
-    ])
-  ).filter(Boolean).sort()
+  const listaNomesSeries = Object.keys(seriesAgrupadas).sort()
 
   // Estado accordion para Vídeos Avulsos
   const [avulsosAbertos, setAvulsosAbertos] = useState(false)
@@ -206,39 +222,31 @@ export default function AcervoVideosAdmin({
               <p className="text-white/40 text-xs">Vídeos organizados em ordem de episódios por temporada.</p>
             </div>
           </div>
-          <button
-            onClick={() => {
-              setSerieEmEdicao(null)
-              setIsModalSerieOpen(true)
-            }}
-            className="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#D4AF37]/90 text-black px-4 py-2 rounded-xl font-bold transition-all text-sm"
-          >
-            <Plus size={16} />
-            Nova Série
-          </button>
         </div>
 
-        {nomesTemporadas.length === 0 ? (
+        {listaNomesSeries.length === 0 ? (
           <div className="text-white/20 text-sm text-center py-8 border border-white/5 rounded-2xl bg-white/[0.01]">
             Nenhuma temporada ou série cadastrada no momento.
           </div>
         ) : (
           <div className="space-y-4">
-            {nomesTemporadas.map(nomeTemp => {
-              const eps = temporadas[nomeTemp] || []
-              const estaAberta = !!temporadasAbertas[nomeTemp]
-              const seriesMeta = seriesExistentes.find(s => s.titulo === nomeTemp)
+            {listaNomesSeries.map(nomeSerie => {
+              const temporadasDaSerie = seriesAgrupadas[nomeSerie] || {}
+              const estaAberta = !!temporadasAbertas[nomeSerie]
+              const seriesMeta = seriesExistentes.find(s => s.titulo === nomeSerie)
+              const totalEpisodios = Object.values(temporadasDaSerie).reduce((acc, e) => acc + e.length, 0)
+              const nomesSubTemps = Object.keys(temporadasDaSerie).sort()
 
               return (
                 <div 
-                  key={nomeTemp} 
+                  key={nomeSerie} 
                   className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-lg transition-all"
                 >
                   {/* Cabeçalho do Accordion */}
                   <div className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/[0.02] transition-colors">
                     <button
                       type="button"
-                      onClick={() => toggleTemporada(nomeTemp)}
+                      onClick={() => toggleTemporada(nomeSerie)}
                       className="flex-1 flex items-center gap-4 text-left"
                     >
                       {seriesMeta && seriesMeta.capa_url ? (
@@ -253,10 +261,10 @@ export default function AcervoVideosAdmin({
                       )}
                       <div>
                         <h4 className="text-white font-extrabold text-base tracking-wide flex items-center gap-2">
-                          {nomeTemp}
+                          {nomeSerie}
                         </h4>
                         <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mt-0.5">
-                          {eps.length} {eps.length === 1 ? 'episódio' : 'episódios'}
+                          {totalEpisodios} {totalEpisodios === 1 ? 'episódio' : 'episódios'}
                           {seriesMeta && seriesMeta.descricao && <span className="ml-2 normal-case truncate max-w-[200px] md:max-w-[400px] inline-block align-bottom text-[10px] text-white/30 font-normal border-l border-white/10 pl-2"> {seriesMeta.descricao} </span>}
                         </p>
                       </div>
@@ -296,7 +304,7 @@ export default function AcervoVideosAdmin({
                         </form>
                       )}
                       <button
-                        onClick={() => toggleTemporada(nomeTemp)}
+                        onClick={() => toggleTemporada(nomeSerie)}
                         className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all"
                       >
                         {estaAberta ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -304,15 +312,28 @@ export default function AcervoVideosAdmin({
                     </div>
                   </div>
 
-                  {/* Lista de episódios colapsável */}
+                  {/* Lista de episódios colapsável por sub-temporada */}
                   {estaAberta && (
-                    <div className="border-t border-white/5 p-6 bg-black/10">
-                      {eps.length === 0 ? (
+                    <div className="border-t border-white/5 p-6 bg-black/10 space-y-8">
+                      {nomesSubTemps.length === 0 ? (
                         <p className="text-white/30 text-sm text-center py-4">Nenhum episódio cadastrado nesta série.</p>
                       ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {eps.map(ep => renderCardVideo(ep))}
-                        </div>
+                        nomesSubTemps.map(nomeSubTemp => {
+                          const eps = temporadasDaSerie[nomeSubTemp]
+                          return (
+                            <div key={nomeSubTemp} className="space-y-4">
+                              <div className="flex items-center gap-3 border-b border-white/5 pb-2">
+                                <div className="w-1.5 h-4 rounded bg-[#D4AF37]" />
+                                <span className="text-white font-extrabold text-sm uppercase tracking-wider">{nomeSubTemp}</span>
+                                <span className="text-white/30 text-xs font-semibold">({eps.length} {eps.length === 1 ? 'episódio' : 'episódios'})</span>
+                              </div>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {eps.map(ep => renderCardVideo(ep))}
+                              </div>
+                            </div>
+                          )
+                        })
                       )}
                     </div>
                   )}

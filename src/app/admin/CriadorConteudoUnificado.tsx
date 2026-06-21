@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition, useRef } from 'react'
+import React, { useState, useTransition, useRef, useEffect } from 'react'
 
 // Keyframes para animação ao trocar de tipo
 const ANIM_STYLE = `
@@ -131,7 +131,35 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
     seriesParaExibir[0] || ''
   )
   const [novaTemporada, setNovaTemporada] = useState('')
-  const temporadaNome = modoTemporada === 'existente' ? temporadaSelecionada : novaTemporada
+
+  // Estados para as sub-temporadas dentro da série
+  const [modoSubTemporada, setModoSubTemporada] = useState<'existente' | 'nova'>('nova')
+  const [subTemporadaSelecionada, setSubTemporadaSelecionada] = useState('')
+  const [novaSubTemporada, setNovaSubTemporada] = useState('Temporada 1')
+
+  // Filtra as temporadas já cadastradas para a série selecionada
+  const subTemporadasDaSerie = Array.from(
+    new Set(
+      temporadasExistentes
+        .filter(t => t && t.split(' | ')[0] === temporadaSelecionada)
+        .map(t => t.split(' | ')[1])
+        .filter(Boolean)
+    )
+  ) as string[]
+
+  useEffect(() => {
+    if (subTemporadasDaSerie.length > 0) {
+      setModoSubTemporada('existente')
+      setSubTemporadaSelecionada(subTemporadasDaSerie[0])
+    } else {
+      setModoSubTemporada('nova')
+      setSubTemporadaSelecionada('')
+      setNovaSubTemporada('Temporada 1')
+    }
+  }, [temporadaSelecionada])
+
+  const subTemp = modoSubTemporada === 'existente' ? subTemporadaSelecionada : novaSubTemporada
+  const temporadaNome = subTemp ? `${temporadaSelecionada} | ${subTemp}` : temporadaSelecionada
 
 
   // --- Estados do Formulário de Material ---
@@ -584,36 +612,17 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                 <input type="hidden" name="temporada_nome" value={temporadaNome} />
 
                 <div className="md:col-span-12">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Tv2 size={16} className="text-[#D4AF37]" />
-                      <span className="text-white/70 text-sm font-bold">Temporada</span>
+                  <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 md:p-6 space-y-6">
+                    <div className="flex items-center gap-2 text-[#D4AF37] border-b border-white/5 pb-3">
+                      <Tv2 size={16} />
+                      <span className="text-white font-bold text-sm">Vincular Episódio à Série e Temporada</span>
                     </div>
-                    <div className="flex bg-[#0f171e] border border-white/10 rounded-xl overflow-hidden text-xs font-bold">
-                      {seriesParaExibir.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setModoTemporada('existente')}
-                          className={`px-4 py-2 transition-all ${modoTemporada === 'existente' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
-                        >
-                          Selecionar Existente
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => setModoTemporada('nova')}
-                        className={`px-4 py-2 transition-all ${modoTemporada === 'nova' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
-                      >
-                        + Nova Temporada
-                      </button>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      {modoTemporada === 'existente' && seriesParaExibir.length > 0 ? (
-                        <>
-                          <label className={labelCls}>Selecionar Temporada Existente *</label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* Seleção de Série */}
+                      <div>
+                        <label className={labelCls}>Série *</label>
+                        {seriesParaExibir.length > 0 ? (
                           <select
                             value={temporadaSelecionada}
                             onChange={(e) => setTemporadaSelecionada(e.target.value)}
@@ -624,40 +633,80 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                               <option key={t} value={t}>{t}</option>
                             ))}
                           </select>
-                          <p className="text-white/30 text-[0.65rem] mt-1.5">
-                            ✓ O episódio será adicionado a esta temporada
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <label className={labelCls}>Nome da Nova Temporada *</label>
-                          <input 
-                            value={novaTemporada}
-                            onChange={(e) => setNovaTemporada(e.target.value)}
-                            placeholder="Ex: Temporada 1, Especial de Natal..." 
-                            className={inputCls}
-                            required={modoTemporada === 'nova'}
-                          />
-                          <p className="text-white/30 text-[0.65rem] mt-1.5">
-                            Uma nova temporada será criada com este nome
-                          </p>
-                        </>
-                      )}
-                    </div>
+                        ) : (
+                          <div className="text-xs text-white/40 bg-[#0f171e] rounded-xl p-3 border border-white/10">
+                            Nenhuma série cadastrada. Crie uma série primeiro!
+                          </div>
+                        )}
+                        <p className="text-white/20 text-[0.65rem] mt-2">
+                          Escolha a série onde o vídeo pertence.
+                        </p>
+                      </div>
 
-                    <div>
-                      <label className={labelCls}>Número do Episódio *</label>
-                      <input 
-                        type="number" 
-                        name="episodio_numero" 
-                        required 
-                        min={1} 
-                        placeholder="Ex: 1" 
-                        className={inputCls} 
-                      />
-                      <p className="text-white/30 text-[0.65rem] mt-1.5">
-                        Sequência do episódio dentro da temporada
-                      </p>
+                      {/* Seleção de Temporada */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className={labelCls}>Temporada *</label>
+                          {subTemporadasDaSerie.length > 0 && (
+                            <div className="flex bg-[#0f171e] border border-white/10 rounded-lg overflow-hidden text-[9px] font-bold">
+                              <button
+                                type="button"
+                                onClick={() => setModoSubTemporada('existente')}
+                                className={`px-2 py-1 transition-all ${modoSubTemporada === 'existente' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
+                              >
+                                Existente
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setModoSubTemporada('nova')}
+                                className={`px-2 py-1 transition-all ${modoSubTemporada === 'nova' ? 'bg-[#D4AF37] text-black' : 'text-white/50 hover:text-white'}`}
+                              >
+                                + Nova
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {modoSubTemporada === 'existente' && subTemporadasDaSerie.length > 0 ? (
+                          <select
+                            value={subTemporadaSelecionada}
+                            onChange={(e) => setSubTemporadaSelecionada(e.target.value)}
+                            className={inputCls}
+                            required
+                          >
+                            {subTemporadasDaSerie.map(st => (
+                              <option key={st} value={st}>{st}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            value={novaSubTemporada}
+                            onChange={(e) => setNovaSubTemporada(e.target.value)}
+                            placeholder="Ex: Temporada 1, Especiais..."
+                            className={inputCls}
+                            required
+                          />
+                        )}
+                        <p className="text-white/20 text-[0.65rem] mt-2">
+                          Escolha ou crie a temporada desta série.
+                        </p>
+                      </div>
+
+                      {/* Número do Episódio */}
+                      <div>
+                        <label className={labelCls}>Número do Episódio *</label>
+                        <input 
+                          type="number" 
+                          name="episodio_numero" 
+                          required 
+                          min={1} 
+                          placeholder="Ex: 1" 
+                          className={inputCls} 
+                        />
+                        <p className="text-white/20 text-[0.65rem] mt-2">
+                          Sequência do episódio dentro da temporada.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
