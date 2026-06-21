@@ -201,12 +201,20 @@ export function FormEditarVideo({ video, temporadasExistentes = [] }: Props) {
           </div>
         </div>
 
-        <SubmitButton 
-          textLoading="Salvando..."
-          className="w-full mt-2 bg-[#D4AF37] text-black font-black flex justify-center items-center gap-2 py-3 rounded-xl hover:brightness-110 disabled:opacity-70"
-          style={{}}>
-          Salvar
-        </SubmitButton>
+        <div className="flex gap-3 mt-4">
+          <Link
+            href="/admin?tab=catalogo"
+            className="flex-1 text-center bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl transition-all"
+          >
+            Cancelar
+          </Link>
+          <SubmitButton 
+            textLoading="Salvando..."
+            className="flex-1 bg-[#D4AF37] text-black font-black flex justify-center items-center gap-2 py-3 rounded-xl hover:brightness-110 disabled:opacity-70"
+            style={{}}>
+            Salvar
+          </SubmitButton>
+        </div>
       </form>
     </div>
   )

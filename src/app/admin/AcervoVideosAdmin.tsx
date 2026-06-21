@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronUp, Film, ExternalLink, 
   Edit3, EyeOff, Eye, Trash2, Tv2, Plus, Edit2
 } from 'lucide-react'
-import { toggleVideoAtivo, deletarVideo } from './actions'
+import { toggleVideoAtivo, deletarVideo, deletarSerie } from './actions'
 import { FormEditarVideo } from './FormEditarVideo'
 import { ModalSerie } from './ModalSerie'
 
@@ -159,11 +159,19 @@ export default function AcervoVideosAdmin({
                 {video.ativo ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </form>
-            <form action={deletarVideo.bind(null, video.id)} className="col-span-1">
+            <form 
+              action={deletarVideo.bind(null, video.id)} 
+              className="col-span-1"
+              onSubmit={(e) => {
+                if (!confirm('Tem certeza que deseja excluir este episódio? Essa ação não pode ser desfeita.')) {
+                  e.preventDefault();
+                }
+              }}
+            >
               <button 
                 type="submit" 
                 className="w-full flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl py-2.5 transition-colors" 
-                title="Deletar"
+                title="Deletar Episódio"
               >
                 <Trash2 size={16} />
               </button>
@@ -262,6 +270,25 @@ export default function AcervoVideosAdmin({
                         >
                           <Edit2 size={16} />
                         </button>
+                      )}
+                      {seriesMeta && (
+                        <form 
+                          action={deletarSerie.bind(null, seriesMeta.id)}
+                          onSubmit={(e) => {
+                            if (!confirm('Tem certeza que deseja excluir esta série inteira? Os episódios não serão excluídos, mas ficarão sem série (em "Vídeos Avulsos").')) {
+                              e.preventDefault()
+                            }
+                          }}
+                        >
+                          <button
+                            type="submit"
+                            className="p-2 text-white/50 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                            title="Excluir Série"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </form>
                       )}
                       <button
                         onClick={() => toggleTemporada(nomeTemp)}
