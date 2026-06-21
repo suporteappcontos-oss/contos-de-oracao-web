@@ -50,22 +50,22 @@ export function BotoesControleUsuario({
       </div>
       {planoAtivo && (
         <div className="flex gap-1 mt-1">
-          <form action={alterarPlanoUsuario.bind(null, userId, 1, 'Individual')}>
+          <form action={alterarPlanoUsuario.bind(null, userId, 5, 'Mensal')}>
             <button
               type="submit"
               className="text-[10px] bg-[#D4AF37]/10 hover:bg-[#D4AF37]/30 text-[#D4AF37] px-2 py-1 rounded transition-colors cursor-pointer"
-              title="Mudar para Individual (1 tela)"
+              title="Mudar para Mensal (5 telas)"
             >
-              I
+              M
             </button>
           </form>
-          <form action={alterarPlanoUsuario.bind(null, userId, 5, 'Família')}>
+          <form action={alterarPlanoUsuario.bind(null, userId, 5, 'Anual')}>
             <button
               type="submit"
               className="text-[10px] bg-[#22c55e]/10 hover:bg-[#22c55e]/30 text-[#22c55e] px-2 py-1 rounded transition-colors cursor-pointer"
-              title="Mudar para Família (5 telas)"
+              title="Mudar para Anual (5 telas)"
             >
-              F
+              A
             </button>
           </form>
         </div>

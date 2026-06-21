@@ -23,7 +23,7 @@ export default function FAQPage() {
     },
     {
       q: 'Quantas telas posso usar ao mesmo tempo?',
-      a: 'Depende do plano escolhido. Planos familiares e para paróquias geralmente permitem múltiplas telas simultâneas. Consulte os detalhes do seu plano na página de assinaturas.',
+      a: 'Tanto o plano Mensal quanto o Anual dão direito a até 5 telas simultâneas por padrão para que toda a sua família possa assistir junta.',
     },
     {
       q: 'Como baixo os materiais em PDF?',

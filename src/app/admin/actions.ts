@@ -687,9 +687,8 @@ export async function criarUsuarioVitalicio(formData: FormData) {
   // Gera uma senha aleatÃ³ria de 12 caracteres segura criptograficamente
   const senhaGerada = require('crypto').randomBytes(6).toString('hex')
 
-  // Determinar telas baseado no plano
-  let maxTelas = 1
-  if (plano === 'FamÃ­lia') maxTelas = 5
+  // Determinar telas baseado no plano (todos agora têm 5 telas)
+  const maxTelas = 5
 
   // Cria o usuÃ¡rio via Admin API do Supabase Auth
   const { data: authData, error: authError } = await admin.auth.admin.createUser({
