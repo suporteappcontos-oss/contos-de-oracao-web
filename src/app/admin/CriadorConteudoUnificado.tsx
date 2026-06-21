@@ -19,6 +19,7 @@ import SubmitButton from '@/components/SubmitButton'
 import { adicionarVideo, publicarMaterial, adicionarVideoTematico, publicarRevista } from './actions'
 import { convertToWebP } from '@/utils/imageUtils'
 import { GtaRadialMenu } from './GtaRadialMenu'
+import { ModalSerie } from './ModalSerie'
 // SVG do Instagram (lucide-react desta versão não tem o ícone)
 function IgIcon({ size = 14 }: { size?: number }) {
   return (
@@ -97,12 +98,13 @@ const TIPO_CONFIG: any = {
 export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | 'add_episodio' | null>(null)
+  const [isModalSerieOpen, setIsModalSerieOpen] = useState(false)
 
   const handleRadialMenuSelect = (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'add_episodio') => {
     if (tipo === 'nova_serie') {
-      setTipoCriacao('video')
-      setVideoCategoria('Temporada')
-      setModoTemporada('nova')
+      setIsModalSerieOpen(true)
+      setIsExpanded(false)
+      setTipoCriacao(null)
     } else {
       setTipoCriacao(tipo as any)
       if (tipo === 'video') {
@@ -337,15 +339,18 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
   if (!isExpanded) {
     return (
-      <button
-        onClick={() => { setIsExpanded(true); setTipoCriacao(null); }}
-        className="w-full flex items-center justify-center gap-3 bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl border border-white/5 hover:bg-[#1a2234] hover:border-[#D4AF37]/30 hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] transition-all duration-300 group"
-      >
-        <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#D4AF37]/20 transition-all">
-          <Plus size={24} className="text-[#D4AF37]" />
-        </div>
-        <span className="text-white font-bold text-xl group-hover:text-[#D4AF37] transition-colors tracking-tight">Adicionar Novo Conteúdo</span>
-      </button>
+      <>
+        <button
+          onClick={() => { setIsExpanded(true); setTipoCriacao(null); }}
+          className="w-full flex items-center justify-center gap-3 bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl border border-white/5 hover:bg-[#1a2234] hover:border-[#D4AF37]/30 hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] transition-all duration-300 group"
+        >
+          <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#D4AF37]/20 transition-all">
+            <Plus size={24} className="text-[#D4AF37]" />
+          </div>
+          <span className="text-white font-bold text-xl group-hover:text-[#D4AF37] transition-colors tracking-tight">Adicionar Novo Conteúdo</span>
+        </button>
+        <ModalSerie isOpen={isModalSerieOpen} onClose={() => setIsModalSerieOpen(false)} />
+      </>
     )
   }
 
@@ -366,6 +371,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
           onClose={() => setIsExpanded(false)} 
           onSelect={handleRadialMenuSelect} 
         />
+        <ModalSerie isOpen={isModalSerieOpen} onClose={() => setIsModalSerieOpen(false)} />
       </>
     )
   }
@@ -373,9 +379,10 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
   const tipoAtual = TIPO_CONFIG[tipoCriacao || 'video']
 
   return (
-    <div
-      className="bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-500"
-      style={{ border: `1px solid ${tipoAtual.border}40` }}>
+    <>
+      <div
+        className="bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-500"
+        style={{ border: `1px solid ${tipoAtual.border}40` }}>
       <div
         className="absolute top-0 left-0 w-full h-1 transition-all duration-500"
         style={{ background: `linear-gradient(90deg, transparent, ${tipoAtual.border}, transparent)`, opacity: 0.6 }}
@@ -1023,7 +1030,8 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
         </form>
         </div>
       )}
-
     </div>
+    <ModalSerie isOpen={isModalSerieOpen} onClose={() => setIsModalSerieOpen(false)} />
+    </>
   )
 }
