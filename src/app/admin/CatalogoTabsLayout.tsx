@@ -48,11 +48,11 @@ export function CatalogoTabsLayout({
             <nav className="space-y-2">
               <button
                 onClick={() => setActiveSubTab('series')}
-                className={\`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 \${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                   activeSubTab === 'series'
                     ? 'bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black shadow-md'
                     : 'text-white/60 hover:text-white hover:bg-white/5'
-                }\`}
+                }`}
               >
                 <Film size={18} />
                 Séries e Temporadas
@@ -60,11 +60,11 @@ export function CatalogoTabsLayout({
 
               <button
                 onClick={() => setActiveSubTab('materiais')}
-                className={\`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 \${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                   activeSubTab === 'materiais'
                     ? 'bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black shadow-md'
                     : 'text-white/60 hover:text-white hover:bg-white/5'
-                }\`}
+                }`}
               >
                 <BookOpen size={18} />
                 Materiais Didáticos
@@ -72,11 +72,11 @@ export function CatalogoTabsLayout({
 
               <button
                 onClick={() => setActiveSubTab('revistas')}
-                className={\`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 \${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                   activeSubTab === 'revistas'
                     ? 'bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black shadow-md'
                     : 'text-white/60 hover:text-white hover:bg-white/5'
-                }\`}
+                }`}
               >
                 <BookMarked size={18} />
                 Revistas
@@ -84,11 +84,11 @@ export function CatalogoTabsLayout({
 
               <button
                 onClick={() => setActiveSubTab('instagram')}
-                className={\`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 \${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                   activeSubTab === 'instagram'
                     ? 'bg-gradient-to-r from-[#E1306C] to-[#C13584] text-white shadow-md'
                     : 'text-white/60 hover:text-white hover:bg-white/5'
-                }\`}
+                }`}
               >
                 <IgIcon size={18} />
                 Instagram (Clipes)
