@@ -1,4 +1,4 @@
-﻿'use server'
+'use server'
 
 import { createClient } from '@/utils/supabase/server'
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
@@ -906,17 +906,14 @@ export async function editarSerie(id: string, formData: FormData) {
 
 export async function deletarSerie(id: string) {
   const { supabase } = await verificarAdmin()
-  try {
-    const { error } = await supabase.from('series').delete().eq('id', id)
-    if (error) throw new Error(error.message)
-
-    revalidatePath('/admin')
-    revalidatePath('/')
-    return { success: true }
-  } catch (error: any) {
+  const { error } = await supabase.from('series').delete().eq('id', id)
+  if (error) {
     console.error('Erro ao deletar serie:', error.message)
-    return { success: false, error: error.message }
+    throw new Error(error.message)
   }
+
+  revalidatePath('/admin')
+  revalidatePath('/')
 }
 
 export async function toggleSerieAtiva(id: string, ativoAtual: boolean) {
