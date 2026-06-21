@@ -94,6 +94,7 @@ const TIPO_CONFIG = {
 }
 
 export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: Props) {
+  const [isExpanded, setIsExpanded] = useState(false)
   const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista'>('video')
 
   // --- Estados do Formulário de Vídeo ---
@@ -321,6 +322,20 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
   const tipoAtual = TIPO_CONFIG[tipoCriacao]
 
+  if (!isExpanded) {
+    return (
+      <button
+        onClick={() => setIsExpanded(true)}
+        className="w-full flex items-center justify-center gap-3 bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl border border-white/5 hover:bg-[#1a2234] hover:border-[#D4AF37]/30 hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] transition-all duration-300 group"
+      >
+        <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#D4AF37]/20 transition-all">
+          <Plus size={24} className="text-[#D4AF37]" />
+        </div>
+        <span className="text-white font-bold text-xl group-hover:text-[#D4AF37] transition-colors tracking-tight">Adicionar Novo Conteúdo</span>
+      </button>
+    )
+  }
+
   return (
     <div
       className="bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-500"
@@ -329,6 +344,14 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
         className="absolute top-0 left-0 w-full h-1 transition-all duration-500"
         style={{ background: `linear-gradient(90deg, transparent, ${tipoAtual.border}, transparent)`, opacity: 0.6 }}
       />
+      <button 
+        type="button"
+        onClick={() => setIsExpanded(false)}
+        className="absolute top-4 right-4 md:top-6 md:right-6 text-white/40 hover:text-white hover:bg-white/10 rounded-full p-2 transition-colors z-10"
+        title="Fechar painel"
+      >
+        <X size={20} />
+      </button>
       
       {/* Header Unificado */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-white/5">
