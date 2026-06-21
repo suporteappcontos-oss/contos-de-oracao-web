@@ -86,8 +86,8 @@ function gerarSlug(titulo: string) {
 }
 
 // Cores e estilos por tipo
-const TIPO_CONFIG = {
-  video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Vídeo' },
+const TIPO_CONFIG: any = {
+  video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Série' },
   material:  { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
   instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram' },
   revista:   { border: '#7c3aed',  glow: 'rgba(124,58,237,0.15)', label: 'Revista' },
@@ -95,7 +95,7 @@ const TIPO_CONFIG = {
 
 export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista'>('video')
+  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | null>(null)
 
   // --- Estados do Formulário de Vídeo ---
   const [emBreve, setEmBreve] = useState(false)
@@ -325,7 +325,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
   if (!isExpanded) {
     return (
       <button
-        onClick={() => setIsExpanded(true)}
+        onClick={() => { setIsExpanded(true); setTipoCriacao(null); }}
         className="w-full flex items-center justify-center gap-3 bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl border border-white/5 hover:bg-[#1a2234] hover:border-[#D4AF37]/30 hover:shadow-[0_0_20px_rgba(212,175,55,0.1)] transition-all duration-300 group"
       >
         <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#D4AF37]/20 transition-all">
@@ -335,6 +335,50 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
       </button>
     )
   }
+
+  if (isExpanded && tipoCriacao === null) {
+    return (
+      <div className="bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-500 border border-white/5">
+        <button 
+          type="button"
+          onClick={() => setIsExpanded(false)}
+          className="absolute top-4 right-4 md:top-6 md:right-6 text-white/40 hover:text-white hover:bg-white/10 rounded-full p-2 transition-colors z-10"
+          title="Fechar painel"
+        >
+          <X size={20} />
+        </button>
+
+        <div className="text-center mb-8">
+          <h2 className="text-white text-2xl font-extrabold tracking-tight mb-2">O que você quer adicionar?</h2>
+          <p className="text-white/40 text-sm">Escolha o tipo de conteúdo para abrir o criador correspondente.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button onClick={() => setTipoCriacao('video')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#D4AF37]/5 border border-[#D4AF37]/20 hover:bg-[#D4AF37]/10 hover:-translate-y-1 transition-all group">
+            <div className="w-16 h-16 rounded-full bg-[#D4AF37]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><Video size={32} className="text-[#D4AF37]" /></div>
+            <span className="text-white font-bold text-lg">Série</span>
+          </button>
+          
+          <button onClick={() => setTipoCriacao('material')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#10b981]/5 border border-[#10b981]/20 hover:bg-[#10b981]/10 hover:-translate-y-1 transition-all group">
+            <div className="w-16 h-16 rounded-full bg-[#10b981]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><BookOpen size={32} className="text-[#10b981]" /></div>
+            <span className="text-white font-bold text-lg">Material Didático</span>
+          </button>
+
+          <button onClick={() => setTipoCriacao('revista')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#7c3aed]/5 border border-[#7c3aed]/20 hover:bg-[#7c3aed]/10 hover:-translate-y-1 transition-all group">
+            <div className="w-16 h-16 rounded-full bg-[#7c3aed]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><BookMarked size={32} className="text-[#7c3aed]" /></div>
+            <span className="text-white font-bold text-lg">Revista</span>
+          </button>
+
+          <button onClick={() => setTipoCriacao('instagram')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#E1306C]/5 border border-[#E1306C]/20 hover:bg-[#E1306C]/10 hover:-translate-y-1 transition-all group">
+            <div className="w-16 h-16 rounded-full bg-[#E1306C]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><IgIcon size={32} /></div>
+            <span className="text-white font-bold text-lg">Instagram</span>
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const tipoAtual = TIPO_CONFIG[tipoCriacao!]
 
   return (
     <div
@@ -377,7 +421,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
               : { color: 'rgba(255,255,255,0.4)' }}
           >
             <Video size={14} />
-            Vídeo
+            Série
           </button>
 
           {/* Botão Material Didático — Verde */}
