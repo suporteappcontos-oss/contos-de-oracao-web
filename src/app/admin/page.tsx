@@ -26,6 +26,7 @@ import { AssinantesComFiltros } from './AssinantesComFiltros'
 import SubmitButton from '@/components/SubmitButton'
 import GerenciadorVideosTematicos from './GerenciadorVideosTematicos'
 import { GerenciadorRevistas } from './GerenciadorRevistas'
+import { CatalogoTabsLayout } from './CatalogoTabsLayout'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -401,15 +402,9 @@ export default async function AdminPage({
 
         {/* ══════════ ABA CATÁLOGO ══════════ */}
         {activeTab === 'catalogo' && (
-          <div className="space-y-20">
-            <div className="space-y-10">
-
-              {/* Criador Unificado de Conteúdo */}
-              <CriadorConteudoUnificado temporadasExistentes={temporadasExistentes} />
-
-              <hr className="border-white/5" />
-
-              {/* Acervo de Vídeos (Agrupado por Temporadas e Colapsável) */}
+          <CatalogoTabsLayout
+            criador={<CriadorConteudoUnificado temporadasExistentes={temporadasExistentes} />}
+            series={
               <AcervoVideosAdmin 
                 videos={(videos || []) as any} 
                 temporadasExistentes={temporadasExistentes}
@@ -417,27 +412,11 @@ export default async function AdminPage({
                 editId={editId} 
                 editingVideo={editingVideo as any} 
               />
-            </div>
-            
-            {/* --- MATERIAIS --- */}
-            <div className="pt-10 border-t border-white/5 relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-30" />
-              <GerenciadorMateriais materiaisIniciais={(materiaisData ?? []) as any} />
-            </div>
-
-            {/* --- VÍDEOS TEMÁTICOS / INSTAGRAM --- */}
-            <div className="pt-10 border-t border-white/5 relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#E1306C] to-transparent opacity-30" />
-              <GerenciadorVideosTematicos videos={(videosTematicos ?? []) as any} />
-            </div>
-
-            {/* --- REVISTAS --- */}
-            <div className="pt-10 border-t border-white/5 relative">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-gradient-to-r from-transparent via-[#7c3aed] to-transparent opacity-30" />
-              <GerenciadorRevistas revistasIniciais={(revistasData ?? []) as any} />
-            </div>
-
-          </div>
+            }
+            materiais={<GerenciadorMateriais materiaisIniciais={(materiaisData ?? []) as any} />}
+            instagram={<GerenciadorVideosTematicos videos={(videosTematicos ?? []) as any} />}
+            revistas={<GerenciadorRevistas revistasIniciais={(revistasData ?? []) as any} />}
+          />
         )}
 
         {/* ══════════ ABA ASSINATURAS ══════════ */}
