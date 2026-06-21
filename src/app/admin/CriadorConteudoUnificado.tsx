@@ -91,11 +91,25 @@ const TIPO_CONFIG: any = {
   material:  { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
   instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram' },
   revista:   { border: '#7c3aed',  glow: 'rgba(124,58,237,0.15)', label: 'Revista' },
+  add_episodio: { border: '#10b981', glow: 'rgba(16,185,129,0.15)', label: 'Adicionar Episódio' },
 }
 
 export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | null>(null)
+  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | 'add_episodio' | null>(null)
+
+  const handleRadialMenuSelect = (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'add_episodio') => {
+    if (tipo === 'nova_serie') {
+      setTipoCriacao('video')
+      setVideoCategoria('Temporada')
+      setModoTemporada('nova')
+    } else {
+      setTipoCriacao(tipo as any)
+      if (tipo === 'video') {
+         setVideoCategoria('Geral')
+      }
+    }
+  }
 
   // --- Estados do Formulário de Vídeo ---
   const [emBreve, setEmBreve] = useState(false)
@@ -350,7 +364,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
         <GtaRadialMenu 
           onClose={() => setIsExpanded(false)} 
-          onSelect={(tipo) => setTipoCriacao(tipo)} 
+          onSelect={handleRadialMenuSelect} 
         />
       </>
     )
@@ -445,6 +459,44 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
       {/* Injeção dos keyframes (só no cliente) */}
       <style dangerouslySetInnerHTML={{ __html: ANIM_STYLE }} />
+
+      {/* ================= SELEÇÃO DE SÉRIE PARA NOVO EPISÓDIO ================= */}
+      {tipoCriacao === 'add_episodio' && (
+        <div key="form-add-episodio" className="admin-form-anim">
+          <h2 className="text-xl font-bold text-white mb-6">Em qual série você quer adicionar este episódio?</h2>
+          {temporadasExistentes.length === 0 ? (
+            <div className="bg-[#1a2234] border border-white/10 rounded-2xl p-8 text-center">
+              <p className="text-white/50 mb-4">Nenhuma série existente encontrada.</p>
+              <button 
+                onClick={() => handleRadialMenuSelect('nova_serie')}
+                className="bg-[#D4AF37] text-black px-6 py-2 rounded-full font-bold hover:brightness-110 transition-all"
+              >
+                Criar Nova Série
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {temporadasExistentes.map(temp => (
+                <button
+                  key={temp}
+                  onClick={() => {
+                    setVideoCategoria('Temporada')
+                    setModoTemporada('existente')
+                    setTemporadaSelecionada(temp)
+                    setTipoCriacao('video')
+                  }}
+                  className="bg-[#0f171e] hover:bg-[#1a2234] border border-white/5 hover:border-[#D4AF37]/50 transition-all rounded-xl p-6 flex flex-col items-center gap-4 group"
+                >
+                  <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Tv2 size={28} className="text-[#D4AF37]" />
+                  </div>
+                  <span className="text-white font-bold text-center text-sm">{temp}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ================= FORMULÁRIO DE VÍDEO ================= */}
       {tipoCriacao === 'video' && (

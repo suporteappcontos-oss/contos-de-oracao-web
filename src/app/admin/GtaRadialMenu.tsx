@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Film, BookOpen, BookMarked, Video, X, ChevronLeft } from 'lucide-react'
+import { Film, BookOpen, BookMarked, Video, X, ChevronLeft, Plus } from 'lucide-react'
 
 // --- FUNÇÕES MATEMÁTICAS PARA O MENU RADIAL EM SVG ---
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
@@ -36,7 +36,7 @@ function describeArc(x: number, y: number, innerRadius: number, outerRadius: num
 
 type Props = {
   onClose: () => void
-  onSelect: (tipo: 'video' | 'material' | 'revista' | 'instagram') => void
+  onSelect: (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'add_episodio') => void
 }
 
 export function GtaRadialMenu({ onClose, onSelect }: Props) {
@@ -50,11 +50,12 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
     { id: 'revista', label: 'Revista', icon: BookMarked, startAngle: 180, endAngle: 300, iconAngle: 240, color: '#7c3aed' },
   ]
 
-  // Opções Nível 2 (Submenu de Vídeos)
+  // Opções Nível 2 (Submenu de Vídeos - 4 Fatias)
   const level2 = [
-    { id: 'serie', label: 'Série', icon: Video, startAngle: -60, endAngle: 60, iconAngle: 0, color: '#D4AF37' },
-    { id: 'insta', label: 'V. Insta', icon: IgIcon, startAngle: 60, endAngle: 180, iconAngle: 120, color: '#E1306C' },
-    { id: 'back', label: 'Voltar', icon: ChevronLeft, startAngle: 180, endAngle: 300, iconAngle: 240, color: '#ffffff' },
+    { id: 'nova_serie', label: 'Nova Série', icon: Video, startAngle: -135, endAngle: -45, iconAngle: -90, color: '#D4AF37' },
+    { id: 'add_episodio', label: '+ Episódio', icon: Plus, startAngle: -45, endAngle: 45, iconAngle: 0, color: '#10b981' },
+    { id: 'insta', label: 'V. Insta', icon: IgIcon, startAngle: 45, endAngle: 135, iconAngle: 90, color: '#E1306C' },
+    { id: 'back', label: 'Voltar', icon: ChevronLeft, startAngle: 135, endAngle: 225, iconAngle: 180, color: '#ffffff' },
   ]
 
   const currentOptions = level === 1 ? level1 : level2
@@ -68,7 +69,8 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
       setLevel(1)
       setHoveredId(null)
     }
-    else if (id === 'serie') onSelect('video')
+    else if (id === 'nova_serie') onSelect('nova_serie')
+    else if (id === 'add_episodio') onSelect('add_episodio')
     else if (id === 'insta') onSelect('instagram')
     else if (id === 'material') onSelect('material')
     else if (id === 'revista') onSelect('revista')
