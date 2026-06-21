@@ -18,7 +18,7 @@ import {
 import SubmitButton from '@/components/SubmitButton'
 import { adicionarVideo, publicarMaterial, adicionarVideoTematico, publicarRevista } from './actions'
 import { convertToWebP } from '@/utils/imageUtils'
-
+import { GtaRadialMenu } from './GtaRadialMenu'
 // SVG do Instagram (lucide-react desta versão não tem o ícone)
 function IgIcon({ size = 14 }: { size?: number }) {
   return (
@@ -337,43 +337,22 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [] }: 
 
   if (isExpanded && tipoCriacao === null) {
     return (
-      <div className="bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-500 border border-white/5">
-        <button 
-          type="button"
-          onClick={() => setIsExpanded(false)}
-          className="absolute top-4 right-4 md:top-6 md:right-6 text-white/40 hover:text-white hover:bg-white/10 rounded-full p-2 transition-colors z-10"
-          title="Fechar painel"
+      <>
+        {/* Placeholder enquanto a roda estiver ativa por cima (evita salto de layout) */}
+        <button
+          className="w-full flex items-center justify-center gap-3 bg-[#111827]/80 backdrop-blur-xl rounded-[2rem] p-6 shadow-xl border border-white/5 opacity-50 pointer-events-none"
         >
-          <X size={20} />
+          <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center">
+            <Plus size={24} className="text-[#D4AF37]" />
+          </div>
+          <span className="text-white font-bold text-xl tracking-tight">Escolhendo Conteúdo...</span>
         </button>
 
-        <div className="text-center mb-8">
-          <h2 className="text-white text-2xl font-extrabold tracking-tight mb-2">O que você quer adicionar?</h2>
-          <p className="text-white/40 text-sm">Escolha o tipo de conteúdo para abrir o criador correspondente.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button onClick={() => setTipoCriacao('video')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#D4AF37]/5 border border-[#D4AF37]/20 hover:bg-[#D4AF37]/10 hover:-translate-y-1 transition-all group">
-            <div className="w-16 h-16 rounded-full bg-[#D4AF37]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><Video size={32} className="text-[#D4AF37]" /></div>
-            <span className="text-white font-bold text-lg">Série</span>
-          </button>
-          
-          <button onClick={() => setTipoCriacao('material')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#10b981]/5 border border-[#10b981]/20 hover:bg-[#10b981]/10 hover:-translate-y-1 transition-all group">
-            <div className="w-16 h-16 rounded-full bg-[#10b981]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><BookOpen size={32} className="text-[#10b981]" /></div>
-            <span className="text-white font-bold text-lg">Material Didático</span>
-          </button>
-
-          <button onClick={() => setTipoCriacao('revista')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#7c3aed]/5 border border-[#7c3aed]/20 hover:bg-[#7c3aed]/10 hover:-translate-y-1 transition-all group">
-            <div className="w-16 h-16 rounded-full bg-[#7c3aed]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><BookMarked size={32} className="text-[#7c3aed]" /></div>
-            <span className="text-white font-bold text-lg">Revista</span>
-          </button>
-
-          <button onClick={() => setTipoCriacao('instagram')} className="flex flex-col items-center justify-center gap-4 p-8 rounded-2xl bg-[#E1306C]/5 border border-[#E1306C]/20 hover:bg-[#E1306C]/10 hover:-translate-y-1 transition-all group">
-            <div className="w-16 h-16 rounded-full bg-[#E1306C]/20 flex items-center justify-center group-hover:scale-110 transition-transform"><IgIcon size={32} /></div>
-            <span className="text-white font-bold text-lg">Instagram</span>
-          </button>
-        </div>
-      </div>
+        <GtaRadialMenu 
+          onClose={() => setIsExpanded(false)} 
+          onSelect={(tipo) => setTipoCriacao(tipo)} 
+        />
+      </>
     )
   }
 
