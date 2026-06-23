@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
-import { Infinity as InfinityIcon, ShieldAlert } from 'lucide-react'
+import { Infinity as InfinityIcon, ShieldAlert, CheckCircle2, AlertTriangle, MessageSquare } from 'lucide-react'
 import DynamicBackground from '@/components/DynamicBackground'
 import { createClient } from '@/utils/supabase/client'
 
@@ -16,13 +16,27 @@ export default function TestadoresPage() {
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
-  const [modeloTv, setModeloTv] = useState('')
+  const [sistemaCelular, setSistemaCelular] = useState<'android' | 'ios' | ''>('')
+  const [sistemaTv, setSistemaTv] = useState<'android_tv' | 'outra' | ''>('')
   const [compromisso, setCompromisso] = useState(false)
+
+  // Link do grupo de WhatsApp do Contos de Oração
+  const whatsappGroupLink = 'https://chat.whatsapp.com/invite/CwDeOracaoBetaTestes'
+
+  // Validação de elegibilidade (celular deve ser Android E tv deve ser Android TV/Fire TV)
+  const celularPreenchido = sistemaCelular !== ''
+  const tvPreenchida = sistemaTv !== ''
+  
+  const celularElegivel = sistemaCelular === 'android'
+  const tvElegivel = sistemaTv === 'android_tv'
+  
+  const ambosPreenchidos = celularPreenchido && tvPreenchida
+  const isElegivel = celularElegivel && tvElegivel
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!nome.trim() || !email.trim() || !whatsapp.trim() || !modeloTv.trim() || !compromisso) {
-      setErro('Por favor, preencha todos os campos e aceite o compromisso de teste.')
+    if (!nome.trim() || !email.trim() || !whatsapp.trim() || !isElegivel || !compromisso) {
+      setErro('Por favor, preencha todos os requisitos elegíveis e aceite o compromisso de teste.')
       return
     }
 
@@ -38,7 +52,8 @@ export default function TestadoresPage() {
             nome: nome.trim(),
             email: email.trim().toLowerCase(),
             whatsapp: whatsapp.trim(),
-            modelo_tv: modeloTv.trim(),
+            sistema_celular: sistemaCelular,
+            sistema_tv: sistemaTv,
             aceitou_termos: compromisso,
           }
         ])
@@ -47,7 +62,7 @@ export default function TestadoresPage() {
         if (error.code === '23505') {
           setErro('Este e-mail já está cadastrado como testador!')
         } else {
-          setErro('Erro ao salvar cadastro. Certifique-se de que a tabela foi criada no banco de dados.')
+          setErro('Erro ao salvar cadastro. Certifique-se de que a tabela no Supabase foi criada com as novas colunas.')
           console.error(error)
         }
         setLoading(false)
@@ -78,7 +93,7 @@ export default function TestadoresPage() {
       </header>
 
       {/* Card Principal */}
-      <div className="relative z-10 w-full max-w-[480px] mx-4 rounded-2xl p-8 md:p-10"
+      <div className="relative z-10 w-full max-w-[500px] mx-4 rounded-2xl p-8 md:p-10"
         style={{
           background: 'rgba(21,36,62,0.92)', border: '1px solid rgba(255,255,255,0.08)',
           boxShadow: '0 25px 60px rgba(0,0,0,0.6), 0 0 1px rgba(212,175,55,0.2)'
@@ -91,37 +106,44 @@ export default function TestadoresPage() {
         </div>
 
         <h1 className="text-white text-2xl md:text-3xl font-black mb-2">
-          {enviado ? 'Cadastro Recebido!' : 'Seja um Testador Oficial'}
+          {enviado ? 'Vaga Pré-Garantida!' : 'Seja um Testador Oficial'}
         </h1>
-        <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '1.5' }}>
-          {enviado
-            ? 'Agradecemos sua disposição em nos ajudar! Você receberá o convite de instalação e as instruções de teste no e-mail cadastrado em breve.'
-            : 'Ajude-nos a publicar nosso aplicativo na Google Play Store. Precisamos de 12 voluntários para testar o aplicativo da TV por 14 dias.'}
-        </p>
+        
+        <div className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '1.5' }}>
+          {enviado ? (
+            <p>
+              Cadastro efetuado com sucesso! Estamos recrutando um **grupo fechado de apenas 16 testadores** para homologar o aplicativo na Google Play Store.
+            </p>
+          ) : (
+            <p>
+              Estamos selecionando um **grupo fechado de 16 testadores** para homologar nosso aplicativo de TV na Google Play Store. Ajude-nos participando do teste por 14 dias!
+            </p>
+          )}
+        </div>
 
-        {/* Alerta importante sobre o e-mail */}
-        {!enviado && (
-          <div className="flex gap-3 rounded-xl p-4 mb-6 text-xs text-white/95"
-            style={{ background: 'rgba(212,175,55,0.08)', border: '1.5px solid rgba(212,175,55,0.25)', color: '#FFD54F' }}>
-            <ShieldAlert size={28} className="shrink-0" style={{ color: '#D4AF37' }} />
-            <div>
-              <strong className="block mb-0.5 text-[#D4AF37]">IMPORTANTE (CONTA GOOGLE):</strong>
-              O e-mail cadastrado deve ser o mesmo e-mail (Gmail) que você usa na Play Store do seu celular ou TV para poder liberar o download!
-            </div>
-          </div>
-        )}
-
-        {/* Sucesso */}
+        {/* Sucesso / Grupo do WhatsApp */}
         {enviado ? (
           <div className="text-center">
             <div className="rounded-2xl p-6 text-center mb-6"
               style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
-              <div className="text-5xl mb-3">🎉</div>
-              <p className="font-black text-lg mb-2" style={{ color: '#10B981' }}>Tudo Pronto!</p>
-              <p className="text-sm text-white/70" style={{ lineHeight: '1.5' }}>
-                Fique atento à sua caixa de entrada do Gmail. Enviaremos um link de convite oficial da Google Play Store.
+              <CheckCircle2 size={44} className="mx-auto text-[#10B981] mb-3" />
+              <p className="font-black text-lg mb-2" style={{ color: '#10B981' }}>Cadastro Concluído!</p>
+              <p className="text-sm text-white/80 mb-5" style={{ lineHeight: '1.5' }}>
+                Para começar os testes e receber o convite oficial da Google Play Store, entre no nosso grupo fechado de suporte no WhatsApp.
               </p>
+              
+              <a
+                href={whatsappGroupLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full rounded-xl font-black text-base cursor-pointer transition-all hover:brightness-110 flex items-center justify-center gap-2 no-underline"
+                style={{ padding: '14px', background: '#25D366', color: '#fff', border: 'none' }}
+              >
+                <MessageSquare size={20} />
+                Entrar no Grupo do WhatsApp
+              </a>
             </div>
+            
             <Link href="/" className="block text-center text-sm font-bold no-underline transition-colors hover:opacity-80"
               style={{ color: '#D4AF37' }}>
               ← Voltar para a Página Inicial
@@ -142,7 +164,7 @@ export default function TestadoresPage() {
                 value={nome}
                 onChange={e => setNome(e.target.value)}
                 required
-                placeholder="Ex: João Silva da Cruz"
+                placeholder="Seu nome e sobrenome"
                 disabled={loading}
                 className="w-full outline-none transition-all text-sm rounded-xl"
                 style={{
@@ -161,14 +183,14 @@ export default function TestadoresPage() {
             <div>
               <label className="block text-[0.65rem] uppercase tracking-widest font-bold mb-1.5"
                 style={{ color: 'rgba(255,255,255,0.4)' }}>
-                E-mail (Conta Google / Gmail)
+                E-mail (Gmail cadastrado na Play Store)
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                placeholder="seu.email.playstore@gmail.com"
+                placeholder="seu.email@gmail.com"
                 disabled={loading}
                 className="w-full outline-none transition-all text-sm rounded-xl"
                 style={{
@@ -187,7 +209,7 @@ export default function TestadoresPage() {
             <div>
               <label className="block text-[0.65rem] uppercase tracking-widest font-bold mb-1.5"
                 style={{ color: 'rgba(255,255,255,0.4)' }}>
-                WhatsApp / Telefone para Contato
+                WhatsApp para Contato
               </label>
               <input
                 type="tel"
@@ -209,48 +231,102 @@ export default function TestadoresPage() {
               />
             </div>
 
-            {/* Modelo da TV */}
-            <div>
-              <label className="block text-[0.65rem] uppercase tracking-widest font-bold mb-1.5"
-                style={{ color: 'rgba(255,255,255,0.4)' }}>
-                Qual dispositivo você usará para testar?
-              </label>
-              <input
-                type="text"
-                value={modeloTv}
-                onChange={e => setModeloTv(e.target.value)}
-                required
-                placeholder="Ex: Fire TV Stick, Mi Box, Android TV, etc."
-                disabled={loading}
-                className="w-full outline-none transition-all text-sm rounded-xl"
-                style={{
-                  padding: '14px 16px', boxSizing: 'border-box' as const,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1.5px solid rgba(255,255,255,0.08)',
-                  color: '#fff', fontFamily: 'Outfit, sans-serif',
-                  opacity: loading ? 0.6 : 1
-                }}
-                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)' }}
-                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
-              />
+            {/* Requisitos de Dispositivo */}
+            <div className="border border-white/5 bg-white/[0.02] p-4 rounded-xl flex flex-col gap-3">
+              <span className="block text-[0.65rem] uppercase tracking-widest font-black text-[#D4AF37]">
+                🛠️ Verificação de Requisitos
+              </span>
+
+              {/* Sistema do Celular */}
+              <div>
+                <label className="block text-[0.7rem] font-bold text-white/70 mb-1">
+                  Sistema do seu Celular
+                </label>
+                <select
+                  value={sistemaCelular}
+                  onChange={e => setSistemaCelular(e.target.value as any)}
+                  required
+                  disabled={loading}
+                  className="w-full outline-none text-sm rounded-lg"
+                  style={{
+                    padding: '10px 12px',
+                    background: 'rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: '#fff',
+                  }}
+                >
+                  <option value="" style={{ background: '#090B10' }}>Selecione...</option>
+                  <option value="android" style={{ background: '#090B10' }}>Android (Samsung, Motorola, Xiaomi, etc.)</option>
+                  <option value="ios" style={{ background: '#090B10' }}>iPhone (iOS)</option>
+                </select>
+              </div>
+
+              {/* Sistema da TV */}
+              <div>
+                <label className="block text-[0.7rem] font-bold text-white/70 mb-1">
+                  Sistema do seu Aparelho de TV
+                </label>
+                <select
+                  value={sistemaTv}
+                  onChange={e => setSistemaTv(e.target.value as any)}
+                  required
+                  disabled={loading}
+                  className="w-full outline-none text-sm rounded-lg"
+                  style={{
+                    padding: '10px 12px',
+                    background: 'rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: '#fff',
+                  }}
+                >
+                  <option value="" style={{ background: '#090B10' }}>Selecione...</option>
+                  <option value="android_tv" style={{ background: '#090B10' }}>Android TV / Fire TV Stick / Google TV</option>
+                  <option value="outra" style={{ background: '#090B10' }}>Outro (Samsung Tizen, LG WebOS, Apple TV, etc.)</option>
+                </select>
+              </div>
             </div>
 
+            {/* Aviso de Inelegibilidade */}
+            {ambosPreenchidos && !isElegivel && (
+              <div className="flex gap-3 rounded-xl p-4 text-xs"
+                style={{ background: 'rgba(239,68,68,0.08)', border: '1.5px solid rgba(239,68,68,0.25)', color: '#FCA5A5' }}>
+                <AlertTriangle size={24} className="shrink-0 text-red-500" />
+                <div>
+                  <strong className="block mb-0.5 text-red-400">Aparelhos Incompatíveis:</strong>
+                  Infelizmente, as regras da Google exigem um celular Android e um dispositivo de TV com sistema Android (Android TV ou Fire Stick) para validar os testes. Você não poderá prosseguir.
+                </div>
+              </div>
+            )}
+
+            {/* Alerta de Email importante */}
+            {isElegivel && (
+              <div className="flex gap-3 rounded-xl p-4 text-xs"
+                style={{ background: 'rgba(212,175,55,0.08)', border: '1.5px solid rgba(212,175,55,0.2)', color: '#FFD54F' }}>
+                <ShieldAlert size={24} className="shrink-0" style={{ color: '#D4AF37' }} />
+                <div>
+                  Certifique-se de que o e-mail informado acima é o mesmo Gmail que você utiliza logado na Google Play Store.
+                </div>
+              </div>
+            )}
+
             {/* Checkbox de Compromisso */}
-            <div className="flex items-start gap-3 mt-2">
-              <input
-                type="checkbox"
-                id="compromisso"
-                checked={compromisso}
-                onChange={e => setCompromisso(e.target.checked)}
-                required
-                disabled={loading}
-                className="mt-1 accent-[#D4AF37] cursor-pointer"
-              />
-              <label htmlFor="compromisso" className="text-xs select-none cursor-pointer"
-                style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.4' }}>
-                Comprometo-me a manter o aplicativo instalado por 14 dias seguidos e abri-lo diariamente para validar os testes exigidos pela Google.
-              </label>
-            </div>
+            {isElegivel && (
+              <div className="flex items-start gap-3 mt-1">
+                <input
+                  type="checkbox"
+                  id="compromisso"
+                  checked={compromisso}
+                  onChange={e => setCompromisso(e.target.checked)}
+                  required
+                  disabled={loading}
+                  className="mt-1 accent-[#D4AF37] cursor-pointer"
+                />
+                <label htmlFor="compromisso" className="text-xs select-none cursor-pointer"
+                  style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.4' }}>
+                  Comprometo-me a manter o app instalado por 14 dias seguidos e abri-lo diariamente para validar os testes exigidos pela Google.
+                </label>
+              </div>
+            )}
 
             {/* Erro */}
             {erro && (
@@ -263,8 +339,8 @@ export default function TestadoresPage() {
             {/* Botão de Enviar */}
             <button
               type="submit"
-              disabled={loading || !compromisso}
-              className="mt-3 w-full rounded-xl font-extrabold text-base cursor-pointer transition-all hover:brightness-110 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || !isElegivel || !compromisso}
+              className="mt-2 w-full rounded-xl font-extrabold text-base cursor-pointer transition-all hover:brightness-110 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ padding: '14px', background: '#D4AF37', color: '#090B10', border: 'none', fontFamily: 'Outfit, sans-serif' }}>
               {loading ? (
                 <><InfinityIcon className="premium-trace" size={20} /> Enviando Cadastro...</>

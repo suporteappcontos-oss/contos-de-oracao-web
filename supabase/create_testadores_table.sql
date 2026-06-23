@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS public.testadores_playstore (
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     whatsapp VARCHAR(50) NOT NULL,
-    modelo_tv VARCHAR(255) NOT NULL,
+    sistema_celular VARCHAR(50) NOT NULL,
+    sistema_tv VARCHAR(50) NOT NULL,
     aceitou_termos BOOLEAN DEFAULT TRUE,
     criado_em TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -16,13 +17,13 @@ ALTER TABLE public.testadores_playstore ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Permitir insercoes publicas" ON public.testadores_playstore;
 DROP POLICY IF EXISTS "Permitir leitura apenas para admin" ON public.testadores_playstore;
 
--- Política de inserção pública (permite que qualquer visitante insira seu cadastro)
+-- Política de inserção pública
 CREATE POLICY "Permitir insercoes publicas" 
 ON public.testadores_playstore 
 FOR INSERT 
 WITH CHECK (true);
 
--- Política de leitura apenas para administradores/autenticados
+-- Política de leitura apenas para admin
 CREATE POLICY "Permitir leitura apenas para admin" 
 ON public.testadores_playstore 
 FOR SELECT 
