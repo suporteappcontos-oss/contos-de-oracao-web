@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { 
   Search, Copy, Check, MessageSquare, 
-  Smartphone, Tv, RefreshCw, CheckCircle2, AlertCircle
+  Smartphone, Tv, RefreshCw, CheckCircle2, AlertCircle, Trash2
 } from 'lucide-react'
+import { deletarTestador } from './actions'
 
 type Testador = {
   id: string
@@ -35,7 +36,30 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
   const [copiadoId, setCopiadoId] = useState<string | null>(null)
   const [copiadoTipo, setCopiadoTipo] = useState<'email' | 'whatsapp' | 'lote' | null>(null)
 
+  // Estado para controle de exclusão
+  const [excluindoId, setExcluindoId] = useState<string | null>(null)
+
   const supabase = createClient()
+
+  // Função para deletar um testador
+  async function handleExcluir(id: string) {
+    if (!window.confirm('Tem certeza de que deseja remover este voluntário de teste?')) return
+
+    setExcluindoId(id)
+    try {
+      const res = await deletarTestador(id)
+      if (res.success) {
+        setTestadores(prev => prev.filter(t => t.id !== id))
+      } else {
+        alert('Erro ao excluir: ' + res.error)
+      }
+    } catch (err) {
+      console.error('Erro ao excluir testador:', err)
+      alert('Erro ao processar exclusão. Tente novamente.')
+    } finally {
+      setExcluindoId(null)
+    }
+  }
 
   // Salvar Link do WhatsApp no Banco
   async function handleSalvarLink(e: React.FormEvent) {
@@ -381,18 +405,29 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                         })}
                       </td>
 
-                      {/* Ação de Enviar Convite */}
+                      {/* Ação de Enviar Convite / Excluir */}
                       <td className="px-6 py-4 text-right">
-                        <a
-                          href={obterLinkWhatsapp(t.whatsapp)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 ${elegivel ? 'bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20' : 'bg-white/5 text-white/30 border-white/5 pointer-events-none'}`}
-                          title="Enviar convite com link de testes no WhatsApp"
-                        >
-                          <MessageSquare size={13} />
-                          Mandar Convite
-                        </a>
+                        <div className="flex items-center justify-end gap-2">
+                          <a
+                            href={obterLinkWhatsapp(t.whatsapp)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 ${elegivel ? 'bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20' : 'bg-white/5 text-white/30 border-white/5 pointer-events-none'}`}
+                            title="Enviar convite com link de testes no WhatsApp"
+                          >
+                            <MessageSquare size={13} />
+                            Mandar Convite
+                          </a>
+
+                          <button
+                            onClick={() => handleExcluir(t.id)}
+                            disabled={excluindoId === t.id}
+                            className="p-2.5 rounded-xl border border-red-500/10 hover:bg-red-500/10 text-red-500/60 hover:text-red-400 transition-all cursor-pointer shrink-0 disabled:opacity-40 flex items-center justify-center"
+                            title="Excluir voluntário"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
                       </td>
 
                     </tr>

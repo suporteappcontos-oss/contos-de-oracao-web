@@ -934,3 +934,19 @@ export async function toggleSerieAtiva(id: string, ativoAtual: boolean) {
     return { success: false, error: error.message }
   }
 }
+
+// --- TESTADORES ---
+export async function deletarTestador(id: string) {
+  await verificarAdmin()
+  const admin = getAdminClient()
+  try {
+    const { error } = await admin.from('testadores_playstore').delete().eq('id', id)
+    if (error) throw new Error(error.message)
+
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao deletar testador:', error.message)
+    return { success: false, error: error.message }
+  }
+}
