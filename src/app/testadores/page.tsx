@@ -20,9 +20,6 @@ export default function TestadoresPage() {
   const [sistemaTv, setSistemaTv] = useState<'android_tv' | 'outra' | ''>('')
   const [compromisso, setCompromisso] = useState(false)
 
-  // Link do grupo de WhatsApp do Contos de Oração
-  const whatsappGroupLink = 'https://chat.whatsapp.com/invite/CwDeOracaoBetaTestes'
-
   // Validação de elegibilidade (celular deve ser Android E tv deve ser Android TV/Fire TV)
   const celularPreenchido = sistemaCelular !== ''
   const tvPreenchida = sistemaTv !== ''
@@ -121,27 +118,19 @@ export default function TestadoresPage() {
           )}
         </div>
 
-        {/* Sucesso / Grupo do WhatsApp */}
+        {/* Sucesso */}
         {enviado ? (
           <div className="text-center">
             <div className="rounded-2xl p-6 text-center mb-6"
               style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
               <CheckCircle2 size={44} className="mx-auto text-[#10B981] mb-3" />
               <p className="font-black text-lg mb-2" style={{ color: '#10B981' }}>Cadastro Concluído!</p>
-              <p className="text-sm text-white/80 mb-5" style={{ lineHeight: '1.5' }}>
-                Para começar os testes e receber o convite oficial da Google Play Store, entre no nosso grupo fechado de suporte no WhatsApp.
+              <p className="text-sm text-white/90 mb-2 font-bold" style={{ lineHeight: '1.5' }}>
+                Sua vaga de testador está pré-garantida!
               </p>
-              
-              <a
-                href={whatsappGroupLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full rounded-xl font-black text-base cursor-pointer transition-all hover:brightness-110 flex items-center justify-center gap-2 no-underline"
-                style={{ padding: '14px', background: '#25D366', color: '#fff', border: 'none' }}
-              >
-                <MessageSquare size={20} />
-                Entrar no Grupo do WhatsApp
-              </a>
+              <p className="text-xs text-white/70" style={{ lineHeight: '1.5' }}>
+                Seu cadastro foi registrado com sucesso. Em breve, nossa equipe entrará em contato diretamente pelo WhatsApp ou E-mail para fornecer as instruções de instalação e o link de acesso ao grupo fechado.
+              </p>
             </div>
             
             <Link href="/" className="block text-center text-sm font-bold no-underline transition-colors hover:opacity-80"

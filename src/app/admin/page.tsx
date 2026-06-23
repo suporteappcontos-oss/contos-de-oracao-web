@@ -27,6 +27,7 @@ import SubmitButton from '@/components/SubmitButton'
 import GerenciadorVideosTematicos from './GerenciadorVideosTematicos'
 import { GerenciadorRevistas } from './GerenciadorRevistas'
 import { CatalogoTabsLayout } from './CatalogoTabsLayout'
+import { GerenciadorTestadores } from './GerenciadorTestadores'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -84,6 +85,11 @@ export default async function AdminPage({
   const { data: videosTematicos } = await supabase.from('videos_tematicos').select('*').order('criado_em', { ascending: false })
   const { data: revistasData } = await supabase.from('revistas').select('*').order('criado_em', { ascending: false })
   const { data: series } = await supabase.from('series').select('*').order('criado_em', { ascending: false })
+  
+  // Testadores e configurações
+  const { data: testadores } = await supabase.from('testadores_playstore').select('*').order('criado_em', { ascending: false })
+  const { data: configWhatsapp } = await supabase.from('configuracoes_sistema').select('valor').eq('chave', 'whatsapp_link').maybeSingle()
+  const linkWhatsapp = configWhatsapp?.valor || ''
 
   // Busca visualizações para computar estatísticas gerais e individuais
   let views: any[] = []
@@ -251,6 +257,7 @@ export default async function AdminPage({
               { id: 'catalogo', label: 'Catálogo', icon: Film, count: totalVideos },
               { id: 'assinaturas', label: 'Assinaturas', icon: Users, count: totalMembros },
               { id: 'loja', label: 'Loja', icon: ShoppingBag, count: totalProdutos },
+              { id: 'testadores', label: 'Testadores', icon: UserCheck, count: testadores?.length || 0 },
               { id: 'marketing', label: 'Marketing', icon: Megaphone, count: null },
             ].map(tab => (
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
@@ -448,6 +455,11 @@ export default async function AdminPage({
         {/* ══════════ ABA LOJA ══════════ */}
         {activeTab === 'loja' && (
           <GerenciadorLoja produtos={(produtosLoja || []) as any} />
+        )}
+
+        {/* ══════════ ABA TESTADORES ══════════ */}
+        {activeTab === 'testadores' && (
+          <GerenciadorTestadores testadores={(testadores || []) as any} linkWhatsappInicial={linkWhatsapp} />
         )}
 
       </main>
