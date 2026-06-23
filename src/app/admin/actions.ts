@@ -204,8 +204,8 @@ export async function adicionarVideo(formData: FormData) {
         }
 
         if (admin.apps.length) {
-          const title = 'âœ¨ Novo VÃ­deo DisponÃ­vel!';
-          const body = `O vÃ­deo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
+          const title = '✨ Novo Vídeo Disponível!';
+          const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
           
           const message = {
             notification: { title, body },
@@ -298,8 +298,8 @@ export async function editarVideo(videoId: string, formData: FormData) {
         }
 
         if (admin.apps.length) {
-          const title = 'âœ¨ Novo VÃ­deo DisponÃ­vel!';
-          const body = `O vÃ­deo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
+          const title = '✨ Novo Vídeo Disponível!';
+          const body = `O vídeo "${titulo}" acabou de chegar no aplicativo. Vem assistir!`;
           
           const message = {
             notification: { title, body },
@@ -567,8 +567,8 @@ export async function publicarMaterial(formData: FormData) {
       }
 
       if (admin.apps.length) {
-        const title = 'ðŸ“š Novo Material Adicionado!';
-        const body = `"${titulo}" jÃ¡ estÃ¡ disponÃ­vel na aba PedagÃ³gica. Aproveite!`;
+        const title = '📚 Novo Material Adicionado!';
+        const body = `"${titulo}" já está disponível na aba Pedagógica. Aproveite!`;
 
         const message = {
           notification: { title, body },
