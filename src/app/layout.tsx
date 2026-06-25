@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import GlobalLoader from "@/components/GlobalLoader";
 import AuthHashHandler from "@/components/AuthHashHandler";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: {
@@ -92,6 +93,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
         <GlobalLoader />
         <AuthHashHandler />
+        <Navbar />
         {children}
       </body>
     </html>

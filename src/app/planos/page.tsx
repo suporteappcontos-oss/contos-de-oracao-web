@@ -1,5 +1,4 @@
 import React from "react";
-import Navbar from "@/components/Navbar";
 import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
 import HeroParticles from "@/components/HeroParticles";
@@ -14,7 +13,6 @@ export const revalidate = 60; // ISR: Atualiza os planos a cada 60 segundos
 export default function PlanosPage() {
   return (
     <main>
-      <Navbar />
 
       {/* Seção Principal Unificada */}
       <section 

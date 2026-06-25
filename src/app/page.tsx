@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 import LandingPage from "@/components/LandingPage";
@@ -14,7 +13,6 @@ export default function Home() {
   return (
     <main>
       <DynamicBackground />
-      <Navbar />
 
       {/* Banner de acesso expirado (Client component) */}
       <Suspense fallback={null}>

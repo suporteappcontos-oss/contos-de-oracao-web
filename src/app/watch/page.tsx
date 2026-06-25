@@ -7,7 +7,6 @@ import VideoCard from '@/components/VideoCard'
 import CategoryCarousel from '@/components/CategoryCarousel'
 import NotificationBell from '@/components/NotificationBell'
 import Footer from '@/components/Footer'
-import Navbar from '@/components/Navbar'
 
 type Video = {
   id: string
@@ -113,9 +112,6 @@ export default async function WatchPage() {
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
-
-      {/* ── NAVBAR UNIFICADA (com menu lateral) ── */}
-      <Navbar />
 
       {/* ── CONTEÚDO ── */}
       <main className="pt-[72px]">

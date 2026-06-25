@@ -1,7 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   Heart, LogOut, Key, ChevronLeft, Calendar,
   Crown, XCircle, CheckCircle2, Play, Mail,
@@ -113,23 +112,6 @@ export default async function PerfilPage() {
 
   return (
     <div className="min-h-screen text-white pb-20" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
-
-      {/* Navbar */}
-      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-[60px]"
-        style={{ background: '#090B10', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <Link href="/watch" className="flex items-center gap-2.5">
-          <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-contain" />
-          <div className="hidden sm:block">
-            <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
-            <div className="text-[0.5rem] font-extrabold uppercase tracking-widest -mt-0.5" style={{ color: '#D4AF37' }}>{planoLabel}</div>
-          </div>
-        </Link>
-        <Link href="/watch"
-          className="flex items-center gap-1.5 text-[#94A3B8] hover:text-white text-xs px-3 py-1.5 rounded-lg transition-colors"
-          style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-          <ChevronLeft size={12} /> Voltar
-        </Link>
-      </header>
 
       <main className="pt-[80px] px-4 md:px-8 max-w-4xl mx-auto">
 

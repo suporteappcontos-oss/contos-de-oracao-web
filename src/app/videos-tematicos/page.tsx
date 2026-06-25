@@ -3,7 +3,6 @@ import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
-import Navbar from '@/components/Navbar'
 import VideosTematicosGaleria from './VideosTematicosGaleria'
 
 export const metadata: Metadata = {
@@ -63,9 +62,6 @@ export default async function VideosTematicosPage() {
 
   return (
     <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
-
-      {/* Navbar com botão MENU */}
-      <Navbar />
 
       {/* Fundo com gradiente Instagram sutil */}
       <div className="fixed inset-0 pointer-events-none z-0">

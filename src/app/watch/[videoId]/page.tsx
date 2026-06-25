@@ -6,7 +6,6 @@ import FavoritoButton from '@/components/FavoritoButton'
 
 import VideoPlayerGuard from '@/components/VideoPlayerGuard'
 import Footer from '@/components/Footer'
-import Navbar from '@/components/Navbar'
 import { Clock, ChevronRight } from 'lucide-react'
 import crypto from 'crypto'
 
@@ -144,9 +143,6 @@ export default async function VideoPlayerPage({ params }: Props) {
 
   return (
     <div className="min-h-screen text-white" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
-
-      {/* ── NAVBAR UNIFICADA (com menu lateral) ── */}
-      <Navbar />
 
       {/* ── CONTEÚDO ── */}
       <main className="pt-[72px]">

@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 import { createClient } from "@/utils/supabase/server";
@@ -42,7 +41,6 @@ export default async function LojaPage() {
   return (
     <main className="min-h-screen flex flex-col justify-between relative overflow-hidden" style={{ background: '#090B10' }}>
       <DynamicBackground />
-      <Navbar />
 
       {/* Conteúdo Principal */}
       <section className="pt-[110px] md:pt-[130px] pb-24 px-[4%] max-w-7xl mx-auto w-full flex-1 z-10">

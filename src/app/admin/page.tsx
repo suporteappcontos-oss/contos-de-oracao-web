@@ -9,8 +9,8 @@ import {
 } from './actions'
 
 import {
-  LayoutDashboard, Video, Eye, EyeOff, Trash2, ExternalLink,
-  Plus, ChevronLeft, Users, Edit3, X, UserCheck, Film,
+  Video, Eye, EyeOff, Trash2, ExternalLink,
+  Plus, Users, Edit3, X, UserCheck, Film,
   Heart, BarChart3, Trophy, Megaphone, ShoppingBag
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
@@ -212,35 +212,6 @@ export default async function AdminPage({
 
   return (
     <div className="min-h-screen text-white pb-20 selection:bg-[#D4AF37] selection:text-black" style={{ background: 'radial-gradient(circle at top, #111827 0%, #090B10 100%)', fontFamily: 'Outfit, sans-serif' }}>
-
-      {/* NAVBAR */}
-      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-4 md:px-8 h-16 bg-[#090B10]/80 backdrop-blur-md border-b border-white/5">
-        <div className="flex items-center gap-4">
-          <Link href="/watch" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-[36px] h-[36px] shrink-0 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#8b7322] p-[1px] flex-none">
-              <div className="w-full h-full bg-[#090B10] rounded-[11px] flex items-center justify-center overflow-hidden">
-                 <Image src="/logo.png" alt="Logo" width={36} height={36} className="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div className="hidden sm:block">
-              <div className="text-white font-black text-[0.95rem] tracking-tight leading-none">Contos de Oração</div>
-              <div className="text-[#D4AF37] text-[0.6rem] font-black uppercase tracking-[0.2em] mt-0.5">Workspace</div>
-            </div>
-          </Link>
-          <div className="h-6 w-px hidden sm:block bg-white/10" />
-          <div className="flex items-center gap-2">
-            <LayoutDashboard size={14} className="text-[#D4AF37]" />
-            <span className="text-white/90 font-bold text-sm tracking-wide">Painel Administrativo</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-white/40 text-xs hidden md:inline truncate max-w-[200px] font-medium">{user.email}</span>
-          <Link href="/watch"
-            className="flex items-center gap-2 text-white/60 hover:text-white hover:bg-white/5 text-xs px-4 py-2 rounded-xl transition-all border border-white/5">
-            <ChevronLeft size={14} /> Voltar ao App
-          </Link>
-        </div>
-      </header>
 
       <main className="pt-[100px] px-4 md:px-8 max-w-7xl mx-auto">
 

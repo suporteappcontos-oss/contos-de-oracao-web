@@ -54,7 +54,6 @@ const IconSobre = () => (
 export default function Navbar() {
   const pathname                      = usePathname();
   const router                        = useRouter();
-  const [showManual, setShowManual]   = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser]               = useState<Record<string, any> | null>(null);
   const [isAdmin, setIsAdmin]         = useState(false);
@@ -710,72 +709,7 @@ export default function Navbar() {
         </nav>
 
         <div className="flex-1" />
-
-        {/* Manual / App & Suporte */}
-        <div className="px-4 pb-5 flex flex-col gap-2">
-          <div className="h-px mb-2" style={{ background: 'rgba(255,255,255,0.06)' }} />
-          <button
-            onClick={() => setShowManual(true)}
-            className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all duration-300 ease-out hover:scale-[1.03] hover:border-[#D4AF37]/60 text-sm active:scale-95 shadow-lg shadow-[#D4AF37]/5 cursor-pointer"
-            style={{ background: '#15243E', borderColor: 'rgba(255,255,255,0.1)' }}
-          >
-            <div className="w-5 h-5 rounded-full flex items-center justify-center overflow-hidden shrink-0"
-              style={{ background: '#090B10', border: '1px solid #D4AF37' }}>
-              <Image src="/logo.png" alt="Logo" width={20} height={20} className="object-cover" />
-            </div>
-            <span className="text-white font-bold">Manual / App</span>
-          </button>
-          
-          <a
-            href="https://wa.me/5566997182760?text=Ol%C3%A1%2C%20seja%20bem-vindo%20ao%20Contos%20de%20Ora%C3%A7%C3%A3o.%20Em%20breve%2C%20a%20equipe%20de%20suporte%20entrar%C3%A1%20em%20contato%20com%20voc%C3%AA."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center gap-2 justify-center border rounded-xl py-2.5 px-4 transition-all duration-300 ease-out hover:scale-[1.03] hover:border-[#25D366]/60 text-sm no-underline active:scale-95 shadow-lg shadow-[#25D366]/5"
-            style={{ background: '#0E2E1E', borderColor: 'rgba(37, 211, 102, 0.2)' }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366" className="shrink-0">
-              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.182 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.97C16.528 2.015 14.07 1 11.83 1c-5.44 0-9.866 4.372-9.87 9.802 0 1.714.452 3.393 1.312 4.88L2.225 21l5.422-1.846zM18.66 15c-.352-.177-2.09-1.03-2.413-1.147-.324-.117-.56-.177-.796.177-.236.353-.913 1.148-1.12 1.383-.205.234-.412.264-.764.088-.352-.176-1.488-.549-2.836-1.75-1.049-.937-1.758-2.096-1.964-2.45-.205-.353-.022-.544.154-.72.158-.158.352-.412.53-.618.176-.206.236-.353.353-.589.118-.235.059-.441-.03-.617-.088-.177-.795-1.913-1.09-2.618-.287-.69-.578-.596-.795-.607-.205-.011-.44-.011-.676-.011-.235 0-.617.088-.94.44-.324.353-1.236 1.207-1.236 2.941 0 1.734 1.265 3.411 1.442 3.646.177.235 2.49 3.801 6.03 5.33.842.364 1.5.581 2.013.743.845.269 1.615.23 2.223.14.678-.1 2.09-.854 2.383-1.678.293-.824.293-1.53.205-1.678-.088-.148-.324-.236-.677-.413z"/>
-            </svg>
-            <span className="text-[#25D366] font-bold">Suporte</span>
-          </a>
-        </div>
       </aside>
-
-      {/* ════════ MODAL MANUAL ════════ */}
-      {showManual && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-          onClick={() => setShowManual(false)}>
-          <div className="bg-[#090B10] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative login-modal-in"
-            style={{ fontFamily: 'Outfit, sans-serif' }} onClick={e => e.stopPropagation()}>
-            <button onClick={() => setShowManual(false)}
-              className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-            <div className="p-6 md:p-10">
-              <h2 className="text-2xl md:text-3xl font-black text-white mb-8 tracking-tight text-center">Manual de Acesso</h2>
-              <div className="bg-[#15243E]/40 p-6 rounded-xl border border-white/10">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">📺</span>
-                  <h3 className="text-[#D4AF37] font-extrabold text-lg md:text-xl">Para o navegador de Smart TVs e TV Box</h3>
-                </div>
-                <p className="text-white/70 text-sm md:text-base mb-4 leading-relaxed">
-                  Funciona diretamente pelo navegador da sua TV:
-                </p>
-                <ol className="text-white/80 text-sm md:text-base space-y-3 list-decimal list-outside ml-4">
-                  <li>Abra o <strong className="text-white">Navegador de Internet</strong> da sua TV.</li>
-                  <li>Acesse <strong className="text-[#D4AF37]">contosdeoracao.com.br</strong>.</li>
-                  <li>Clique na aba <strong className="text-white">📱 Celular / TV</strong>.</li>
-                  <li>Escaneie o <strong>QR Code</strong> com seu celular.</li>
-                  <li>A TV será logada automaticamente!</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

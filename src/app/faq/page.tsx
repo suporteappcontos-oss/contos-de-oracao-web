@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 
@@ -34,7 +33,6 @@ export default function FAQPage() {
   return (
     <main className="min-h-screen flex flex-col relative bg-transparent">
       <DynamicBackground />
-      <Navbar />
       
       <div className="flex-1 w-full max-w-4xl mx-auto px-6 py-32">
         <h1 

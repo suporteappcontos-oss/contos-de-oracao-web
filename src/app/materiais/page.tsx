@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { BookOpen, Gamepad2, Pencil, Library, ChevronRight } from 'lucide-react'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
-import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = {
   title: 'Material Pedagógico | Contos de Oração',
@@ -42,9 +41,6 @@ export default async function MateriaisPage() {
 
   return (
     <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
-
-      {/* Navbar com botão MENU */}
-      <Navbar />
 
       {/* Fundo com Imagem */}
       <div className="fixed inset-0 pointer-events-none z-0">

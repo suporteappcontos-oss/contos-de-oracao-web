@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import { BookMarked, Download } from 'lucide-react'
 import { Metadata } from 'next'
 import Footer from '@/components/Footer'
-import Navbar from '@/components/Navbar'
 
 export const metadata: Metadata = {
   title: 'Revistas | Contos de Oração',
@@ -39,9 +38,6 @@ export default async function RevistasPage() {
 
   return (
     <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
-
-      {/* Navbar com botão MENU */}
-      <Navbar />
 
       {/* Fundo gradiente sutil */}
       <div className="fixed inset-0 pointer-events-none z-0">

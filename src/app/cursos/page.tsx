@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { GraduationCap, Clock, Sparkles, BookOpen, ShieldCheck, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -36,7 +35,6 @@ export default function CursosPage() {
 
   return (
     <main style={{ backgroundColor: BG_ROOT, minHeight: "100vh", color: "#fff", display: "flex", flexDirection: "column" }}>
-      <Navbar />
 
       <section 
         className="w-full flex-1 pt-[120px] pb-[80px] flex justify-center px-4"

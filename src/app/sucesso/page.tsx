@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin, buscarUsuarioPorEmail } from '@/lib/supabase-admin'
 import DynamicBackground from '@/components/DynamicBackground'
@@ -58,16 +57,6 @@ export default async function SucessoPage(props: any) {
     }}>
       {/* Fundo com blur suave */}
       <DynamicBackground />
-
-      {/* Navbar com logo */}
-      <header style={{ position: 'absolute', top: 0, width: '100%', padding: '1rem 4%', zIndex: 10, display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-          <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} style={{ objectFit: 'contain' }} />
-          <div>
-            <div style={{ color: '#fff', fontWeight: 900, fontSize: '1rem', lineHeight: 1.2 }}>Contos de Oração</div>
-          </div>
-        </Link>
-      </header>
 
       {/* Card */}
       <div style={{
