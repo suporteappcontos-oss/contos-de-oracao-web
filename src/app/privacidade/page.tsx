@@ -37,7 +37,7 @@ export default function PrivacidadePage() {
 
             <h2 className="text-2xl text-white font-bold mt-8 mb-4">3. Proteção de Dados</h2>
             <p className="mb-6 leading-relaxed">
-              Adotamos medidas de segurança apropriadas para proteger contra acesso não autorizado, alteração, divulgação ou destruição dos seus dados pessoais. O processamento de pagamentos é feito por provedores terceirizados seguros (Stripe), e não armazenamos detalhes completos do seu cartão de crédito em nossos servidores.
+              Adotamos medidas de segurança apropriadas para proteger contra acesso não autorizado, alteração, divulgação ou destruição dos seus dados pessoais. O processamento de pagamentos é feito por provedores terceirizados seguros, e não armazenamos detalhes completos do seu cartão de crédito em nossos servidores.
             </p>
 
             <h2 className="text-2xl text-white font-bold mt-8 mb-4">4. Compartilhamento de Informações</h2>
