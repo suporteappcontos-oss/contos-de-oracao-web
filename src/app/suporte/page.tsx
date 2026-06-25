@@ -114,7 +114,7 @@ export default function SuportePage() {
                     <Check className="w-4 h-4 text-green-400" /> E-mail copiado!
                   </span>
                 ) : (
-                  <span>Enviar e-mail (Gmail web)</span>
+                  <span>Enviar e-mail</span>
                 )}
                 <ArrowRight className="w-4 h-4" />
               </div>
