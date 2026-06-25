@@ -176,7 +176,7 @@ export default async function WatchPage() {
 
                       {/* Card — Material Didático */}
                       <div
-                        className="flex flex-col gap-3 shrink-0 group transition-all duration-300 group-hover:scale-[1.04] group-hover:-translate-y-1"
+                        className="flex flex-col gap-3 shrink-0 group"
                         style={{ width: 'clamp(240px, 28vw, 340px)' }}
                       >
                         <Link
@@ -211,7 +211,7 @@ export default async function WatchPage() {
                       <div className="flex flex-col gap-3 shrink-0 group" style={{ width: 'clamp(240px, 28vw, 340px)' }}>
                         <Link
                           href="/videos-tematicos"
-                          className="relative block outline-none cursor-pointer rounded-xl shadow-2xl transition-all duration-300 group-hover:scale-[1.04] group-hover:-translate-y-1"
+                          className="relative block outline-none cursor-pointer rounded-xl shadow-2xl"
                           style={{ background: '#111827', border: '1px solid rgba(225,48,108,0.25)' }}
                         >
                           <div className="relative aspect-video w-full overflow-hidden rounded-xl">

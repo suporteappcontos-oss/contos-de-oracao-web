@@ -152,7 +152,7 @@ export default function Footer() {
 
           <div className="flex flex-wrap gap-x-6 gap-y-3">
             <a href="/faq" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Perguntas frequentes</a>
-            <a href="mailto:contato@contosdeoracao.com.br" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Suporte</a>
+            <a href="/suporte" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Suporte</a>
             <a href="/termos" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Termos de uso</a>
             <a href="/privacidade" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Privacidade</a>
             <a href="/planos" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Planos</a>

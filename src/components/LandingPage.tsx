@@ -594,24 +594,18 @@ export default function LandingPage() {
           ].map((c, index) => (
             <div
               key={index}
-              className="group relative rounded-2xl p-6 border transition-all duration-300 overflow-hidden cursor-default flex flex-col h-full"
+              className="group relative rounded-2xl p-6 border transition-all duration-300 overflow-hidden cursor-default flex flex-col h-full justify-between"
               style={{
                 background: 'linear-gradient(180deg, rgba(26,16,37,0.6) 0%, rgba(10,5,20,0.8) 100%)',
                 borderColor: 'rgba(255,255,255,0.05)',
               }}
             >
-              
-              <h3 className="text-white font-black text-lg md:text-xl mb-3 leading-tight relative z-10">{c.title}</h3>
-              <p className="text-white/60 text-sm leading-relaxed relative z-10">{c.desc}</p>
-              
-              <div
-                className="absolute bottom-4 right-4 w-12 h-12 flex items-center justify-center text-[#D4AF37] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 opacity-80"
-                style={{ 
-                  background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%)',
-                  filter: 'drop-shadow(0 5px 15px rgba(212,175,55,0.3))'
-                }}
-              >
-                {c.icon}
+              <div>
+                <div className="w-14 h-14 rounded-2xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center text-[#D4AF37] mb-6 group-hover:scale-105 transition-transform duration-300 shadow-[0_4px_20px_rgba(212,175,55,0.15)]">
+                  {c.icon}
+                </div>
+                <h3 className="text-white font-black text-lg md:text-xl mb-3 leading-tight relative z-10">{c.title}</h3>
+                <p className="text-white/60 text-sm leading-relaxed relative z-10">{c.desc}</p>
               </div>
             </div>
           ))}
