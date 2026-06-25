@@ -296,7 +296,7 @@ export default function Footer() {
                         <div className="relative w-12 h-12 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                           {/* Glow sutil atrás da logo */}
                           <div className="absolute inset-0 bg-[#D4AF37]/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <Image src="/logo_tv.png" alt="TV Logo" width={76} height={76} className="object-contain relative z-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] max-w-none" />
+                          <Image src="/icone_app.png" alt="TV Logo" width={44} height={44} className="object-contain relative z-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]" />
                         </div>
                         <div className="flex flex-col">
                           <span className="text-white font-black text-xs tracking-wide">Contos de Oração TV</span>

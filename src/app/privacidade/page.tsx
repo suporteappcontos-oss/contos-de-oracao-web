@@ -10,39 +10,41 @@ export default function PrivacidadePage() {
     <main className="min-h-screen flex flex-col relative bg-transparent">
       <DynamicBackground />
       
-      <div className="flex-1 w-full max-w-4xl mx-auto px-6 py-32 text-white">
-        <h1 
-          className="text-3xl md:text-5xl mb-12"
-          style={{ fontFamily: '"Playfair Display", serif' }}
-        >
-          Política de Privacidade
-        </h1>
+      <div className="flex-1 w-full max-w-4xl mx-auto px-6 py-32 text-white relative z-10">
+        <div className="bg-[#090B10]/95 backdrop-blur-xl p-8 md:p-14 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+          <h1 
+            className="text-3xl md:text-5xl mb-12 text-center font-bold text-white"
+            style={{ fontFamily: '"Playfair Display", serif' }}
+          >
+            Política de Privacidade
+          </h1>
 
-        <div 
-          className="prose prose-invert max-w-none prose-p:text-slate-200 prose-headings:text-white prose-strong:text-white prose-a:text-[#D4AF37] text-slate-200"
-          style={{ fontFamily: '"Outfit", sans-serif' }}
-        >
-          <p className="mb-6">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
-          
-          <h2 className="text-2xl text-white font-bold mt-8 mb-4">1. Informações que coletamos</h2>
-          <p className="mb-6">
-            A sua privacidade é importante para nós. Coletamos informações pessoais que você nos fornece diretamente, como nome e e-mail, quando você se registra em nossa plataforma, realiza uma assinatura ou entra em contato conosco.
-          </p>
+          <div 
+            className="prose prose-invert max-w-none prose-p:text-slate-200 prose-headings:text-white prose-strong:text-white prose-a:text-[#D4AF37] text-slate-200"
+            style={{ fontFamily: '"Outfit", sans-serif' }}
+          >
+            <p className="mb-6 text-sm text-[#D4AF37] font-bold tracking-wide uppercase">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
+            
+            <h2 className="text-2xl text-white font-bold mt-8 mb-4">1. Informações que coletamos</h2>
+            <p className="mb-6 leading-relaxed">
+              A sua privacidade é importante para nós. Coletamos informações pessoais que você nos fornece diretamente, como nome e e-mail, quando você se registra em nossa plataforma, realiza uma assinatura ou entra em contato conosco.
+            </p>
 
-          <h2 className="text-2xl text-white font-bold mt-8 mb-4">2. Como usamos suas informações</h2>
-          <p className="mb-6">
-            Utilizamos as informações coletadas para fornecer, manter e melhorar nossos serviços, processar transações, enviar avisos técnicos, atualizações e alertas de segurança, bem como para responder aos seus comentários e perguntas.
-          </p>
+            <h2 className="text-2xl text-white font-bold mt-8 mb-4">2. Como usamos suas informações</h2>
+            <p className="mb-6 leading-relaxed">
+              Utilizamos as informações coletadas para fornecer, manter e melhorar nossos serviços, processar transações, enviar avisos técnicos, atualizações e alertas de segurança, bem como para responder aos seus comentários e perguntas.
+            </p>
 
-          <h2 className="text-2xl text-white font-bold mt-8 mb-4">3. Proteção de Dados</h2>
-          <p className="mb-6">
-            Adotamos medidas de segurança apropriadas para proteger contra acesso não autorizado, alteração, divulgação ou destruição dos seus dados pessoais. O processamento de pagamentos é feito por provedores terceirizados seguros (Stripe), e não armazenamos detalhes completos do seu cartão de crédito em nossos servidores.
-          </p>
+            <h2 className="text-2xl text-white font-bold mt-8 mb-4">3. Proteção de Dados</h2>
+            <p className="mb-6 leading-relaxed">
+              Adotamos medidas de segurança apropriadas para proteger contra acesso não autorizado, alteração, divulgação ou destruição dos seus dados pessoais. O processamento de pagamentos é feito por provedores terceirizados seguros (Stripe), e não armazenamos detalhes completos do seu cartão de crédito em nossos servidores.
+            </p>
 
-          <h2 className="text-2xl text-white font-bold mt-8 mb-4">4. Compartilhamento de Informações</h2>
-          <p className="mb-6">
-            Não compartilhamos suas informações pessoais com terceiros, exceto conforme necessário para fornecer nossos serviços (por exemplo, processadores de pagamento e hospedagem de e-mail), para cumprir com a lei ou para proteger nossos direitos.
-          </p>
+            <h2 className="text-2xl text-white font-bold mt-8 mb-4">4. Compartilhamento de Informações</h2>
+            <p className="mb-6 leading-relaxed">
+              Não compartilhamos suas informações pessoais com terceiros, exceto conforme necessário para fornecer nossos serviços (por exemplo, processadores de pagamento e hospedagem de e-mail), para cumprir com a lei ou para proteger nossos direitos.
+            </p>
+          </div>
         </div>
       </div>
 

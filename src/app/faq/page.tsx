@@ -14,7 +14,7 @@ export default function FAQPage() {
     },
     {
       q: 'Funciona no celular e na TV?',
-      a: 'Sim. Temos um aplicativo exclusivo para Android. Para outros dispositivos (incluindo iPhone, iPad e Smart TVs), você pode acessar a plataforma diretamente pelo navegador web com total compatibilidade.',
+      a: 'Sim! Temos aplicativos exclusivos para smartphones Android e para Smart TVs (Android TV, Google TV, Fire TV e TV Box). Para outros dispositivos (como iPhone, iPad e Smart TVs de outros sistemas), você pode acessar a plataforma diretamente pelo navegador web com total compatibilidade e alta qualidade.',
     },
     {
       q: 'O conteúdo é atualizado com frequência?',
