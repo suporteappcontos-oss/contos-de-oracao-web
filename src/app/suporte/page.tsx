@@ -1,13 +1,24 @@
+"use client";
+
+import React, { useState } from "react";
 import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
-import { MessageCircle, Mail, Clock, HelpCircle, ArrowRight } from "lucide-react";
-
-export const metadata = {
-  title: "Suporte e Atendimento — Contos de Oração",
-  description: "Precisa de ajuda? Entre em contato com a equipe de suporte do Contos de Oração via WhatsApp ou E-mail.",
-};
+import { MessageCircle, Mail, Clock, HelpCircle, ArrowRight, Check } from "lucide-react";
 
 export default function SuportePage() {
+  const [copiado, setCopiado] = useState(false);
+
+  const handleEmailClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Copia o e-mail para a área de transferência
+    navigator.clipboard.writeText("suporte.appcontos@gmail.com");
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 4000);
+
+    // Tenta abrir o webmail do Gmail em nova aba (perfeito para desktop)
+    window.open("https://mail.google.com/mail/?view=cm&fs=1&to=suporte.appcontos@gmail.com", "_blank");
+  };
+
   return (
     <main className="min-h-screen flex flex-col relative bg-transparent">
       <DynamicBackground />
@@ -41,7 +52,7 @@ export default function SuportePage() {
               href="https://wa.me/5564992994823?text=Olá,%20preciso%20de%20suporte%20no%20Contos%20de%20Oração" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col justify-between p-8 rounded-2xl transition-all duration-300 relative overflow-hidden no-underline"
+              className="group flex flex-col justify-between p-8 rounded-2xl transition-all duration-300 relative overflow-hidden no-underline cursor-pointer"
               style={{
                 background: 'linear-gradient(135deg, rgba(37, 211, 102, 0.1), rgba(37, 211, 102, 0.05))',
                 border: '1px solid rgba(37, 211, 102, 0.2)',
@@ -69,10 +80,10 @@ export default function SuportePage() {
               </div>
             </a>
 
-            {/* Botão E-mail */}
-            <a 
-              href="mailto:suporte.appcontos@gmail.com" 
-              className="group flex flex-col justify-between p-8 rounded-2xl transition-all duration-300 relative overflow-hidden no-underline"
+            {/* Botão E-mail com suporte a Desktop e Mobile */}
+            <div 
+              onClick={handleEmailClick}
+              className="group flex flex-col justify-between p-8 rounded-2xl transition-all duration-300 relative overflow-hidden no-underline cursor-pointer"
               style={{
                 background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05))',
                 border: '1px solid rgba(212, 175, 55, 0.2)',
@@ -90,15 +101,24 @@ export default function SuportePage() {
                     <span className="text-xs text-[#D4AF37] font-semibold tracking-wide uppercase">Suporte Dedicado</span>
                   </div>
                 </div>
-                <p className="text-slate-300 text-sm leading-relaxed m-0 mb-6">
-                  Envie sua solicitação ou detalhe seu problema para o nosso e-mail de suporte institucional.
+                <p className="text-slate-300 text-sm leading-relaxed m-0 mb-3">
+                  Envie sua solicitação para o nosso e-mail de suporte institucional:
                 </p>
+                <div className="bg-black/40 px-3 py-2 rounded-lg border border-white/5 select-all text-[#D4AF37] text-sm font-medium mb-6 inline-block">
+                  suporte.appcontos@gmail.com
+                </div>
               </div>
               <div className="flex items-center justify-between text-sm font-bold text-[#D4AF37] group-hover:translate-x-1 transition-transform duration-300">
-                <span>Enviar e-mail</span>
+                {copiado ? (
+                  <span className="flex items-center gap-2 text-green-400">
+                    <Check className="w-4 h-4 text-green-400" /> E-mail copiado!
+                  </span>
+                ) : (
+                  <span>Enviar e-mail (Gmail web)</span>
+                )}
                 <ArrowRight className="w-4 h-4" />
               </div>
-            </a>
+            </div>
 
           </div>
 
