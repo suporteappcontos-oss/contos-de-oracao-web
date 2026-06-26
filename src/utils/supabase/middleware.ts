@@ -31,11 +31,21 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Se a url começar com /watch e não estiver logado, manda pra Home de novo
-  if (request.nextUrl.pathname.startsWith('/watch') && !user) {
+  const { pathname } = request.nextUrl
+
+  // ── Proteção /watch — requer estar logado ──
+  if (pathname.startsWith('/watch') && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
+  }
+
+  // ── Proteção /admin — requer estar logado ──
+  // A verificação de role 'admin' ou email de suporte fica na própria page.tsx
+  if (pathname.startsWith('/admin') && !user) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
   return supabaseResponse

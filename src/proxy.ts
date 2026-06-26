@@ -24,8 +24,6 @@ const strictRatelimit = new Ratelimit({
   analytics: true,
 })
 
-// Rotas que só admin pode acessar
-const ROTAS_ADMIN = ['/admin']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -67,19 +65,6 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-
-  // ── Proteção extra do /admin ──
-  if (ROTAS_ADMIN.some(r => pathname.startsWith(r))) {
-    // Se não há sessão, redireciona para login
-    const sessionCookie = request.cookies.get('sb-simlfedsforfwwtlmshy-auth-token')
-      || request.cookies.get('sb-access-token')
-
-    if (!sessionCookie) {
-      const loginUrl = new URL('/login', request.url)
-      loginUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(loginUrl)
-    }
-  }
 
   return response
 }
