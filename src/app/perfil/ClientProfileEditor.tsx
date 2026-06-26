@@ -170,7 +170,7 @@ export default function ClientProfileEditor({
               src={tempAvatarUrl || fallbackAvatarUrl}
               alt="Preview do avatar"
               className="w-full h-full rounded-full object-contain"
-              style={{ display: 'block' }}
+              style={{ display: 'block', transform: 'scale(1.12)' }}
             />
           </div>
           {tempAvatarUrl && (

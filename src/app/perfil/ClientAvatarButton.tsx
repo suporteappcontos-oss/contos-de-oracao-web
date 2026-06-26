@@ -26,8 +26,10 @@ export default function ClientAvatarButton({
         <img
           src={avatarUrl || fallbackAvatarUrl}
           alt="Avatar"
-          className="w-full h-full object-contain transition-transform group-hover:scale-105 duration-500"
-          style={{ display: 'block' }}
+          className="w-full h-full object-contain duration-500"
+          style={{ display: 'block', transform: 'scale(1.12)', transition: 'transform 0.5s' }}
+          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.18)')}
+          onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1.12)')}
         />
         {/* Hover Overlay com lápis e texto */}
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-white text-[10px] font-black uppercase tracking-wider gap-1.5 duration-300">
