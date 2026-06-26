@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/loja',
     '/materiais',
     '/material-catequese',
+    '/suporte',
   ];
 
   return routes.map((route) => ({
