@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/api/', '/watch/'], // Protege rotas internas de streaming e administrativas
+      disallow: ['/watch/'], // Evita expor caminhos administrativos publicamente, mantendo o bloqueio apenas para streaming interno
     },
     sitemap: 'https://contosdeoracao.com.br/sitemap.xml',
   };
