@@ -34,7 +34,7 @@ type FiltroOrdem =
   | 'ultimo_login'
 
 const FILTROS: { id: FiltroOrdem; label: string; icon: string; color: string }[] = [
-  { id: 'recentes',         label: 'Mais Recentes',         icon: '🆕', color: 'text-purple-400' },
+  { id: 'recentes',         label: 'Mais Recentes',         icon: '🆕', color: 'text-cyan-400' },
   { id: 'mais_assistidos',  label: 'Mais Vídeos Assistidos', icon: '🎬', color: 'text-[#D4AF37]' },
   { id: 'mais_acessos_site',label: 'Mais Acessos no Site',  icon: '🖥️', color: 'text-blue-400' },
   { id: 'mais_acessos_app', label: 'Mais Acessos no App',   icon: '📱', color: 'text-green-400' },
@@ -83,8 +83,8 @@ function GraficoCadastrosMes({ usuarios }: { usuarios: Usuario[] }) {
   return (
     <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 shadow-xl mb-6">
       <div className="flex items-center gap-2 mb-5">
-        <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-          <BarChart2 size={16} className="text-purple-400" />
+        <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+          <BarChart2 size={16} className="text-cyan-400" />
         </div>
         <div>
           <h3 className="text-white font-bold text-sm">Novos Cadastros por Mês</h3>
@@ -102,12 +102,12 @@ function GraficoCadastrosMes({ usuarios }: { usuarios: Usuario[] }) {
             <div key={i} className="flex flex-col items-center flex-1 gap-1 h-full group">
               <div className="flex-1 w-full relative flex flex-col justify-end">
                 {meses.counts[i] > 0 && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-cyan-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                     {meses.counts[i]} cadastros
                   </div>
                 )}
                 <div
-                  className="w-full rounded-t-lg bg-gradient-to-t from-purple-700/40 to-purple-400 transition-all duration-500 group-hover:brightness-125"
+                  className="w-full rounded-t-lg bg-gradient-to-t from-cyan-700/40 to-cyan-400 transition-all duration-500 group-hover:brightness-125"
                   style={{ height: `${pct}%` }}
                 />
               </div>

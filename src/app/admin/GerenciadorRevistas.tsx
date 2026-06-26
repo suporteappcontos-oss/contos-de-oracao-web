@@ -42,8 +42,8 @@ export function GerenciadorRevistas({ revistasIniciais }: { revistasIniciais: Re
         className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/[0.02] transition-colors text-left"
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#7c3aed]/10 border border-[#7c3aed]/20">
-            <BookMarked size={18} className="text-[#7c3aed]" />
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#10b981]/10 border border-[#10b981]/20">
+            <BookMarked size={18} className="text-[#10b981]" />
           </div>
           <div>
             <h3 className="text-white text-base font-extrabold tracking-tight">Revistas</h3>
@@ -67,19 +67,19 @@ export function GerenciadorRevistas({ revistasIniciais }: { revistasIniciais: Re
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {revistas.map(r => (
-                <div key={r.id} className="group relative bg-[#111827] border border-white/5 rounded-2xl overflow-hidden hover:border-[#7c3aed]/40 transition-all">
+                <div key={r.id} className="group relative bg-[#111827] border border-white/5 rounded-2xl overflow-hidden hover:border-[#10b981]/40 transition-all">
                   {/* Capa */}
                   <div className="aspect-[3/4] bg-black/40 relative">
                     {r.capa_url ? (
                       <img src={r.capa_url} alt={r.titulo} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <BookMarked size={32} className="text-[#7c3aed] opacity-30" />
+                        <BookMarked size={32} className="text-[#10b981] opacity-30" />
                       </div>
                     )}
                     {/* Badge edição */}
                     {r.edicao && (
-                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase bg-[#7c3aed]/30 text-[#a78bfa] border border-[#7c3aed]/40">
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase bg-[#10b981]/30 text-[#34d399] border border-[#10b981]/40">
                         {r.edicao}
                       </div>
                     )}

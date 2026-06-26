@@ -47,7 +47,7 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
   const level1 = [
     { id: 'videos', label: 'Vídeos', icon: Film, startAngle: -60, endAngle: 60, iconAngle: 0, color: '#D4AF37' },
     { id: 'material', label: 'Material', icon: BookOpen, startAngle: 60, endAngle: 180, iconAngle: 120, color: '#10b981' },
-    { id: 'revista', label: 'Revista', icon: BookMarked, startAngle: 180, endAngle: 300, iconAngle: 240, color: '#7c3aed' },
+    { id: 'revista', label: 'Revista', icon: BookMarked, startAngle: 180, endAngle: 300, iconAngle: 240, color: '#10b981' },
   ]
 
   // Opções Nível 2 (Submenu de Vídeos - 4 Fatias)

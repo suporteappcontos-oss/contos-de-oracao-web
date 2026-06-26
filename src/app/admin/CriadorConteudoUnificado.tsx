@@ -92,7 +92,7 @@ const TIPO_CONFIG: any = {
   video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Série' },
   material:  { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
   instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram' },
-  revista:   { border: '#7c3aed',  glow: 'rgba(124,58,237,0.15)', label: 'Revista' },
+  revista:   { border: '#10b981',  glow: 'rgba(16,185,129,0.15)', label: 'Revista' },
   add_episodio: { border: '#10b981', glow: 'rgba(16,185,129,0.15)', label: 'Adicionar Episódio' },
 }
 
@@ -479,7 +479,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             onClick={() => setTipoCriacao('revista')}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300"
             style={tipoCriacao === 'revista'
-              ? { background: '#7c3aed', color: '#fff', boxShadow: '0 2px 12px rgba(124,58,237,0.5)' }
+              ? { background: '#10b981', color: '#fff', boxShadow: '0 2px 12px rgba(16,185,129,0.5)' }
               : { color: 'rgba(255,255,255,0.4)' }}
           >
             <BookMarked size={14} />
@@ -915,11 +915,11 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                 ref={revCapaRef}
                 type="file"
                 accept="image/*"
-                className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#7c3aed] file:text-white cursor-pointer text-sm"
+                className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#10b981] file:text-white cursor-pointer text-sm"
               />
               {progressRevCapa > 0 && progressRevCapa < 100 && (
                 <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#7c3aed] transition-all" style={{ width: `${progressRevCapa}%` }} />
+                  <div className="h-full bg-[#10b981] transition-all" style={{ width: `${progressRevCapa}%` }} />
                 </div>
               )}
             </div>
@@ -934,11 +934,11 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                 ref={revPdfRef}
                 type="file"
                 accept="application/pdf"
-                className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#7c3aed] file:text-white cursor-pointer text-sm"
+                className="w-full bg-[#0f171e] border border-white/10 rounded-xl px-4 py-3 text-white file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#10b981] file:text-white cursor-pointer text-sm"
               />
               {progressRevPdf > 0 && progressRevPdf < 100 && (
                 <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#7c3aed] transition-all" style={{ width: `${progressRevPdf}%` }} />
+                  <div className="h-full bg-[#10b981] transition-all" style={{ width: `${progressRevPdf}%` }} />
                 </div>
               )}
               <p className="text-white/20 text-xs mt-2">Ou cole o link público do Bunny:</p>
@@ -958,7 +958,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
           )}
           {uploadingRevista && (
-            <div className="flex items-center gap-3 text-[#7c3aed] text-sm bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-3 text-[#10b981] text-sm bg-[#10b981]/10 border border-[#10b981]/20 rounded-xl px-4 py-3">
               <Loader2 size={16} className="animate-spin shrink-0" />
               Enviando arquivos para o Bunny... aguarde.
             </div>
@@ -975,8 +975,8 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             <button
               type="submit"
               disabled={uploadingRevista || revIsPending}
-              className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-black text-sm text-white disabled:opacity-60 hover:scale-105 transition-all shadow-[0_0_20px_rgba(124,58,237,0.3)]"
-              style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
+              className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-black text-sm text-white disabled:opacity-60 hover:scale-105 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+              style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
             >
               {(uploadingRevista || revIsPending) ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
               {uploadingRevista ? 'Enviando...' : revIsPending ? 'Salvando...' : 'Publicar Revista'}
