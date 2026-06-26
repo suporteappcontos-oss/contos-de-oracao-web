@@ -26,7 +26,7 @@ export default function ClientAvatarButton({
         <img
           src={avatarUrl || fallbackAvatarUrl}
           alt="Avatar"
-          className="w-full h-full object-cover object-center transition-transform group-hover:scale-105 duration-500"
+          className="w-full h-full object-contain transition-transform group-hover:scale-105 duration-500"
           style={{ display: 'block' }}
         />
         {/* Hover Overlay com lápis e texto */}

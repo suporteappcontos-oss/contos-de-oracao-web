@@ -169,7 +169,7 @@ export default function ClientProfileEditor({
             <img
               src={tempAvatarUrl || fallbackAvatarUrl}
               alt="Preview do avatar"
-              className="w-full h-full rounded-full object-cover object-center"
+              className="w-full h-full rounded-full object-contain"
               style={{ display: 'block' }}
             />
           </div>
@@ -250,7 +250,7 @@ export default function ClientProfileEditor({
                           <img
                             src={a.avatar_url}
                             alt={a.nome}
-                            className="w-full h-full object-cover object-center"
+                            className="w-full h-full object-contain"
                             style={{ display: 'block' }}
                           />
                           {isSelected && (
