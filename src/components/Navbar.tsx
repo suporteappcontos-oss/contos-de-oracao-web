@@ -59,6 +59,7 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin]         = useState(false);
   const [isLoggedIn, setIsLoggedIn]   = useState(false);
   const [isScrolled, setIsScrolled]   = useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   // Monitora o scroll para aplicar o efeito de fundo translúcido
   useEffect(() => {
@@ -100,6 +101,7 @@ export default function Navbar() {
           }
         });
       }
+      setIsAuthChecked(true);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -116,6 +118,7 @@ export default function Navbar() {
       } else {
         setIsAdmin(false);
       }
+      setIsAuthChecked(true);
     });
     return () => listener.subscription.unsubscribe();
   }, []);
@@ -145,8 +148,8 @@ export default function Navbar() {
 
 
 
-  // Mostra "Entrar | Inscreva-se" só quando não está logado
-  const showAuth = !isLoggedIn;
+  // Mostra "Entrar | Inscreva-se" só quando não está logado e após checar auth
+  const showAuth = isAuthChecked && !isLoggedIn;
 
   return (
     <>
@@ -429,7 +432,9 @@ export default function Navbar() {
             </li>
           </ul>
 
-          {isLoggedIn ? (
+          {!isAuthChecked ? (
+            <div className="w-[120px] h-[36px]" />
+          ) : isLoggedIn ? (
             <div className="flex items-center gap-2 sm:gap-3.5">
               {isAdmin && (
                 <Link

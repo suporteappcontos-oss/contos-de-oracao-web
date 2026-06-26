@@ -6,8 +6,7 @@ import {
   Crown, XCircle, CheckCircle2, Play, Mail,
   AlertTriangle, MessageCircle
 } from 'lucide-react'
-import ClientEditableName from './ClientEditableName'
-import ClientAvatarSelector from './ClientAvatarSelector'
+import ClientProfileEditor from './ClientProfileEditor'
 import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
 import Pricing from '@/components/Pricing'
 import Footer from '@/components/Footer'
@@ -126,9 +125,16 @@ export default async function PerfilPage() {
           <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#15243E]/50 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8 z-10 text-center md:text-left">
-            {/* Avatar Selector Component */}
+            {/* Avatar Exibição Estática */}
             <div className="relative shrink-0">
-              <ClientAvatarSelector initialAvatarUrl={avatarUrl} fallbackAvatarUrl={fallbackAvatarUrl} />
+              <div className="absolute inset-0 bg-[#D4AF37] blur-md opacity-20 rounded-full" />
+              <div className="relative w-28 h-28 rounded-full overflow-hidden border border-white/10 shadow-2xl bg-[#090B10]">
+                <img
+                  src={avatarUrl || fallbackAvatarUrl}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
               {/* Badge de status */}
               <div className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-xl border-4 border-[#090B10] flex items-center justify-center z-10 ${planoAtivo ? 'bg-emerald-500' : 'bg-red-500'}`}>
                 {planoAtivo ? <CheckCircle2 size={12} className="text-[#090B10]" /> : <XCircle size={12} className="text-[#090B10]" />}
@@ -136,16 +142,23 @@ export default async function PerfilPage() {
             </div>
 
             {/* Info */}
-            <div className="flex-1 flex flex-col items-center md:items-start">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
-                <ClientEditableName initialName={nome} defaultName={displayName} />
-                <span className={`flex items-center gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full ${
-                  planoAtivo
-                    ? 'text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
-                    : 'text-red-400 border border-red-500/30 bg-red-500/10 shadow-[0_0_15px_rgba(239,68,68,0.15)]'
-                }`}>
-                  {planoAtivo ? 'Acesso Ativo' : 'Acesso Expirado'}
-                </span>
+            <div className="flex-1 flex flex-col items-center md:items-start w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4 mb-3">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                  <h1 className="text-white font-black text-xl md:text-2xl capitalize leading-tight">{displayName}</h1>
+                  <span className={`flex items-center gap-1.5 text-[0.65rem] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full ${
+                    planoAtivo
+                      ? 'text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.15)]'
+                      : 'text-red-400 border border-red-500/30 bg-red-500/10 shadow-[0_0_15px_rgba(239,68,68,0.15)]'
+                  }`}>
+                    {planoAtivo ? 'Acesso Ativo' : 'Acesso Expirado'}
+                  </span>
+                </div>
+                <ClientProfileEditor
+                  initialName={nome}
+                  initialAvatarUrl={avatarUrl}
+                  fallbackAvatarUrl={fallbackAvatarUrl}
+                />
               </div>
               
               <div className="flex items-center gap-2 text-[#94A3B8] text-sm mb-5 font-light">

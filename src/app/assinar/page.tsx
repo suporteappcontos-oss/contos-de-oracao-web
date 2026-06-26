@@ -630,7 +630,7 @@ export default function AssinarPage() {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[220px] overflow-y-auto pr-1">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-5 max-h-[220px] overflow-y-auto pr-2 py-2">
                         {avatarsDisponiveis.map((a) => {
                           const isSelected = selectedAvatarUrl === a.avatar_url;
                           return (
@@ -640,14 +640,27 @@ export default function AssinarPage() {
                                 setSelectedAvatarUrl(a.avatar_url);
                                 setPedidoSanto(''); // Limpa o pedido personalizado se escolheu um da lista
                               }}
-                              className={`group relative bg-black/40 border rounded-2xl p-2 flex flex-col items-center text-center cursor-pointer transition-all duration-300 ${
-                                isSelected ? 'border-[#D4AF37] bg-[#D4AF37]/5 scale-[1.03] shadow-[0_0_15px_rgba(212,175,55,0.2)]' : 'border-white/5 hover:border-white/15'
-                              }`}
+                              className="flex flex-col items-center gap-1.5 cursor-pointer group"
                             >
-                              <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 mb-1.5 shrink-0">
+                              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+                                isSelected 
+                                  ? 'border-[#D4AF37] scale-105 shadow-[0_0_20px_rgba(212,175,55,0.6)]' 
+                                  : 'border-white/10 group-hover:border-white/30 group-hover:scale-102'
+                              }`}>
                                 <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                                {isSelected && (
+                                  <div className="absolute inset-0 bg-[#D4AF37]/10 flex items-center justify-center">
+                                    <div className="bg-[#D4AF37] text-[#090B10] rounded-full p-1 shadow-md">
+                                      <Check size={12} strokeWidth={4} />
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                              <span className="text-white text-[10px] font-bold line-clamp-1 w-full">{a.nome}</span>
+                              <span className={`text-[10px] sm:text-xs font-bold text-center transition-colors line-clamp-2 px-0.5 w-full ${
+                                isSelected ? 'text-[#D4AF37]' : 'text-white/60 group-hover:text-white'
+                              }`}>
+                                {a.nome}
+                              </span>
                             </div>
                           );
                         })}

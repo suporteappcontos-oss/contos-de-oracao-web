@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
 import { Upload, Trash2, Loader2, Smile, AlertCircle, Heart } from 'lucide-react'
@@ -267,22 +267,24 @@ export default function GerenciadorAvatares() {
               <p className="text-xs text-white/30">Envie o primeiro usando o formulário ao lado.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto pr-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 max-h-[500px] overflow-y-auto pr-2 py-2">
               {avatars.map((a) => (
-                <div key={a.id} className="group relative bg-black/40 border border-white/5 rounded-2xl p-3 flex flex-col items-center text-center hover:border-[#D4AF37]/30 transition-all">
-                  <div className="w-20 h-20 rounded-full overflow-hidden border border-white/10 mb-3 shrink-0">
+                <div key={a.id} className="group relative flex flex-col items-center gap-2">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border border-white/10 shrink-0 transition-all duration-300 group-hover:border-[#D4AF37]/45 group-hover:scale-105 shadow-lg">
                     <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                    
+                    {/* Overlay de Excluir */}
+                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <button
+                        onClick={() => handleDeleteAvatar(a.id)}
+                        className="w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+                        title="Excluir avatar"
+                      >
+                        <Trash2 size={14} className="text-white" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="text-white text-xs font-bold line-clamp-1 px-1 w-full" title={a.nome}>{a.nome}</div>
-                  
-                  {/* Delete Hover Button */}
-                  <button
-                    onClick={() => handleDeleteAvatar(a.id)}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-red-600/80 hover:bg-red-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Excluir avatar"
-                  >
-                    <Trash2 size={12} className="text-white" />
-                  </button>
+                  <div className="text-white/70 text-xs font-bold transition-colors group-hover:text-white line-clamp-2 px-1 text-center w-full" title={a.nome}>{a.nome}</div>
                 </div>
               ))}
             </div>

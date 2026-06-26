@@ -10,29 +10,30 @@ export async function POST(request: NextRequest) {
     }
 
     const existente = await buscarUsuarioPorEmail(email)
+    let userId = ''
 
     if (existente) {
       // Usuário já existe, apenas prossegue para o checkout Kiwify
-      return NextResponse.json({ success: true, userId: existente.id })
+      userId = existente.id
+    } else {
+      // Cria o usuário com a senha escolhida antes de ir para Kiwify
+      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: senha,
+        email_confirm: true, // Já confirma o e-mail para facilitar
+        user_metadata: { 
+          nome, 
+          plano_ativo: false,
+          avatar_url: avatarUrl || null
+        } // Inicia inativo, o webhook ativará
+      })
+
+      if (createError) {
+        return NextResponse.json({ error: createError.message }, { status: 400 })
+      }
+
+      userId = newUser.user.id
     }
-
-    // Cria o usuário com a senha escolhida antes de ir para Kiwify
-    const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password: senha,
-      email_confirm: true, // Já confirma o e-mail para facilitar
-      user_metadata: { 
-        nome, 
-        plano_ativo: false,
-        avatar_url: avatarUrl || null
-      } // Inicia inativo, o webhook ativará
-    })
-
-    if (createError) {
-      return NextResponse.json({ error: createError.message }, { status: 400 })
-    }
-
-    const userId = newUser.user.id
 
     // Se houver pedido de santo, insere na tabela pedidos_santos
     if (pedidoSanto && pedidoSanto.trim()) {

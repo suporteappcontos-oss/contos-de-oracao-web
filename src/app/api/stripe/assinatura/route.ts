@@ -46,18 +46,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Erro ao criar conta: ' + createError.message }, { status: 400 })
       }
       userId = newUser.user.id
+    }
 
-      // Se houver pedido de santo, insere na tabela pedidos_santos
-      if (pedidoSanto && pedidoSanto.trim()) {
-        try {
-          await supabaseAdmin.from('pedidos_santos').insert({
-            santo_nome: pedidoSanto.trim(),
-            user_id: userId,
-            user_email: email
-          })
-        } catch (dbErr) {
-          console.error('Erro ao registrar pedido de santo:', dbErr)
-        }
+    // Se houver pedido de santo, insere na tabela pedidos_santos
+    if (pedidoSanto && pedidoSanto.trim()) {
+      try {
+        await supabaseAdmin.from('pedidos_santos').insert({
+          santo_nome: pedidoSanto.trim(),
+          user_id: userId,
+          user_email: email
+        })
+      } catch (dbErr) {
+        console.error('Erro ao registrar pedido de santo:', dbErr)
       }
     }
 
