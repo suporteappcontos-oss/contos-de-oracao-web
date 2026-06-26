@@ -97,6 +97,139 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })
+    }
+
+    const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
+    if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })
+    }
+
+    const formData = await request.formData()
+    const id = formData.get('id') as string
+    const nomeSanto = formData.get('nomeSanto') as string
+    const file = formData.get('file') as File | null
+
+    if (!id || !nomeSanto?.trim()) {
+      return NextResponse.json({ error: 'ID e nome do santo são obrigatórios' }, { status: 400 })
+    }
+
+    let fileUrl: string | undefined = undefined
+    let oldFileUrl: string | null = null
+
+    // Se uma nova imagem foi enviada, fazemos o upload
+    if (file && file.size > 0) {
+      if (!file.type.startsWith('image/')) {
+        return NextResponse.json({ error: 'O arquivo deve ser uma imagem válida.' }, { status: 400 })
+      }
+
+      // Busca o avatar antigo para deletar depois
+      const { data: oldAvatar } = await supabase
+        .from('avatars_santos')
+        .select('avatar_url')
+        .eq('id', id)
+        .single()
+      if (oldAvatar) {
+        oldFileUrl = oldAvatar.avatar_url
+      }
+
+      const buffer = Buffer.from(await file.arrayBuffer())
+      
+      const cleanName = nomeSanto.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '_')
+        .replace(/_+/g, '_')
+        .trim()
+      const ext = file.name.split('.').pop() || 'webp'
+      const fileName = `avatar_${cleanName}_${Date.now()}.${ext}`
+      
+      const STORAGE_ZONE = 'contos-midia-app'
+      const ACCESS_KEY = process.env.BUNNY_API_KEY
+      
+      if (!ACCESS_KEY) {
+        return NextResponse.json({ error: 'Chave BUNNY_API_KEY não configurada no servidor' }, { status: 500 })
+      }
+
+      const REGION_URL = 'br.storage.bunnycdn.com'
+      const PULL_ZONE = 'https://contos-midia-app.b-cdn.net'
+      
+      const response = await fetch(`https://${REGION_URL}/${STORAGE_ZONE}/avatars/${fileName}`, {
+        method: 'PUT',
+        headers: {
+          'AccessKey': ACCESS_KEY,
+          'Content-Type': 'application/octet-stream',
+        },
+        body: buffer,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Erro no BunnyCDN: ${response.statusText}`)
+      }
+
+      fileUrl = `${PULL_ZONE}/avatars/${fileName}`
+    }
+
+    // Atualiza no banco de dados
+    const updateData: any = { nome: nomeSanto.trim() }
+    if (fileUrl) {
+      updateData.avatar_url = fileUrl
+    }
+
+    const { data: updatedAvatar, error: dbError } = await supabase
+      .from('avatars_santos')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (dbError) {
+      if (dbError.code === '23505') {
+        return NextResponse.json({ error: 'Já existe um avatar cadastrado com este nome.' }, { status: 400 })
+      }
+      return NextResponse.json({ error: 'Erro ao atualizar no banco: ' + dbError.message }, { status: 500 })
+    }
+
+    // Se o upload de nova imagem deu certo e temos a URL antiga, removemos do BunnyCDN
+    if (oldFileUrl) {
+      try {
+        const STORAGE_ZONE = 'contos-midia-app'
+        const ACCESS_KEY = process.env.BUNNY_API_KEY
+        const REGION_URL = 'br.storage.bunnycdn.com'
+        const fileName = oldFileUrl.split('/').pop()
+        if (fileName && ACCESS_KEY) {
+          await fetch(`https://${REGION_URL}/${STORAGE_ZONE}/avatars/${fileName}`, {
+            method: 'DELETE',
+            headers: {
+              'AccessKey': ACCESS_KEY,
+            }
+          })
+        }
+      } catch (e) {
+        console.error('Falha ao deletar arquivo antigo no Bunny CDN:', e)
+      }
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      avatar: updatedAvatar
+    })
+
+  } catch (error: any) {
+    console.error('Erro ao editar avatar:', error)
+    return NextResponse.json(
+      { error: 'Erro ao processar atualização', details: error.message },
+      { status: 500 }
+    )
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const supabase = await createClient()

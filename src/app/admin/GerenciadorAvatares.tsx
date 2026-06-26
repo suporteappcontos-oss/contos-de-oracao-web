@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Upload, Trash2, Loader2, Smile, AlertCircle, Heart } from 'lucide-react'
+import { Upload, Trash2, Loader2, Smile, AlertCircle, Heart, Pencil, X } from 'lucide-react'
 
 type AvatarType = {
   id: string
@@ -27,6 +27,75 @@ export default function GerenciadorAvatares() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Estados para edição
+  const [editingAvatar, setEditingAvatar] = useState<AvatarType | null>(null)
+  const [editNome, setEditNome] = useState('')
+  const [editFile, setEditFile] = useState<File | null>(null)
+  const [editing, setEditing] = useState(false)
+  const editFileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingAvatar || !editNome.trim()) return
+    setEditing(true)
+
+    try {
+      let fileToUpload: Blob | null = null
+
+      if (editFile) {
+        // Redimensionar para 1024x1024 e converter para WebP
+        const img = document.createElement('img')
+        img.src = URL.createObjectURL(editFile)
+        await new Promise((resolve) => (img.onload = resolve))
+
+        const canvas = document.createElement('canvas')
+        canvas.width = 1024
+        canvas.height = 1024
+        const ctx = canvas.getContext('2d')
+        if (!ctx) throw new Error('Não foi possível obter contexto do canvas')
+
+        const size = Math.min(img.width, img.height)
+        const x = (img.width - size) / 2
+        const y = (img.height - size) / 2
+        ctx.drawImage(img, x, y, size, size, 0, 0, 1024, 1024)
+
+        fileToUpload = await new Promise<Blob | null>((resolve) =>
+          canvas.toBlob((b) => resolve(b), 'image/webp', 0.85)
+        )
+        if (!fileToUpload) throw new Error('Falha ao gerar imagem WebP')
+      }
+
+      const formData = new FormData()
+      formData.append('id', editingAvatar.id)
+      formData.append('nomeSanto', editNome.trim())
+      if (fileToUpload) {
+        formData.append('file', fileToUpload, `${editNome.trim()}.webp`)
+      }
+
+      const res = await fetch('/api/admin/upload-avatar', {
+        method: 'PUT',
+        body: formData,
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erro ao atualizar avatar')
+
+      // Sucesso!
+      setAvatars((prev) => 
+        prev.map((a) => (a.id === editingAvatar.id ? data.avatar : a))
+            .sort((a, b) => a.nome.localeCompare(b.nome))
+      )
+      setEditingAvatar(null)
+      setEditNome('')
+      setEditFile(null)
+      alert('Avatar atualizado com sucesso!')
+    } catch (err: any) {
+      alert(err.message || 'Erro ao editar')
+    } finally {
+      setEditing(false)
+    }
+  }
 
   useEffect(() => {
     carregarDados()
@@ -273,14 +342,27 @@ export default function GerenciadorAvatares() {
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border border-white/10 shrink-0 transition-all duration-300 group-hover:border-[#D4AF37]/45 group-hover:scale-105 shadow-lg">
                     <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
                     
-                    {/* Overlay de Excluir */}
-                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {/* Overlay de Ações */}
+                    <div className="absolute inset-0 bg-black/75 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button
+                        type="button"
+                        onClick={() => {
+                          setEditingAvatar(a)
+                          setEditNome(a.nome)
+                          setEditFile(null)
+                        }}
+                        className="w-8 h-8 rounded-full bg-[#D4AF37] hover:bg-[#F9E596] flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
+                        title="Editar avatar"
+                      >
+                        <Pencil size={13} className="text-[#090B10]" />
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleDeleteAvatar(a.id)}
-                        className="w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+                        className="w-8 h-8 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center shadow-lg transition-transform hover:scale-110 cursor-pointer"
                         title="Excluir avatar"
                       >
-                        <Trash2 size={14} className="text-white" />
+                        <Trash2 size={13} className="text-white" />
                       </button>
                     </div>
                   </div>
@@ -360,6 +442,98 @@ export default function GerenciadorAvatares() {
           </div>
         )}
       </div>
+
+      {/* Modal de Edição de Avatar */}
+      {editingAvatar && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#111827] border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl relative animate-fadeIn">
+            <button 
+              onClick={() => {
+                setEditingAvatar(null)
+                setEditFile(null)
+              }}
+              className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors cursor-pointer"
+            >
+              <X size={20} />
+            </button>
+
+            <h3 className="text-white text-lg font-bold flex items-center gap-2 mb-6 font-Outfit">
+              <Pencil size={18} className="text-[#D4AF37]" />
+              Editar Santo: {editingAvatar.nome}
+            </h3>
+
+            <form onSubmit={handleEditSubmit} className="space-y-5">
+              <div>
+                <label className="block text-white/70 text-xs font-bold uppercase tracking-wider mb-2">Nome do Santo *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: São Francisco de Assis"
+                  value={editNome}
+                  onChange={(e) => setEditNome(e.target.value)}
+                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-white/70 text-xs font-bold uppercase tracking-wider mb-2">Substituir Arte (Opcional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={editFileInputRef}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setEditFile(e.target.files[0])
+                    }
+                  }}
+                  className="hidden"
+                  id="file-avatar-edit"
+                />
+                <label
+                  htmlFor="file-avatar-edit"
+                  className="flex flex-col items-center justify-center w-full aspect-[21/9] bg-black/40 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-[#D4AF37] hover:bg-[#D4AF37]/5 transition-all overflow-hidden relative group"
+                >
+                  {editFile ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
+                      <img
+                        src={URL.createObjectURL(editFile)}
+                        alt="Preview"
+                        className="h-full object-cover rounded-xl"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center text-center p-4 text-white/40">
+                      <Upload size={20} className="mb-2 text-[#D4AF37]" />
+                      <span className="text-[10px] font-bold text-white/70">Selecionar Nova Imagem</span>
+                    </div>
+                  )}
+                </label>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingAvatar(null)
+                    setEditFile(null)
+                  }}
+                  className="flex-1 py-3 font-bold rounded-xl text-sm border border-white/10 hover:bg-white/5 cursor-pointer text-white/70"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={editing}
+                  className="flex-1 py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-1.5"
+                  style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)', color: '#000' }}
+                >
+                  {editing ? <Loader2 className="animate-spin" size={16} /> : 'Salvar Alterações'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

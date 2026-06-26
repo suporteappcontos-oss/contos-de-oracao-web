@@ -151,6 +151,12 @@ export default function Navbar() {
   // Mostra "Entrar | Inscreva-se" só quando não está logado e após checar auth
   const showAuth = isAuthChecked && !isLoggedIn;
 
+  // Oculta a Navbar global nas páginas de checkout e autenticação que possuem cabeçalhos próprios
+  const routesWithoutNavbar = ['/assinar', '/login', '/esqueci-senha', '/atualizar-senha'];
+  if (routesWithoutNavbar.includes(pathname || '')) {
+    return null;
+  }
+
   return (
     <>
       {/* ════════ HEADER HORIZONTAL PREMIUM ════════ */}

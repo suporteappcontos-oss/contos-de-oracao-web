@@ -689,7 +689,20 @@ export default function AssinarPage() {
                           Voltar
                         </button>
                         <button 
-                          onClick={() => setStep(3)}
+                          onClick={async () => {
+                          if (pedidoSanto && pedidoSanto.trim()) {
+                            try {
+                              const supabase = createClient();
+                              await supabase.from('pedidos_santos').insert({
+                                santo_nome: pedidoSanto.trim(),
+                                user_email: email || null
+                              });
+                            } catch (err) {
+                              console.error('Erro ao enviar pedido de santo:', err);
+                            }
+                          }
+                          setStep(3);
+                        }}
                           className="flex-1 py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-1.5"
                           style={{ background: '#D4AF37', color: '#090B10' }}
                         >
