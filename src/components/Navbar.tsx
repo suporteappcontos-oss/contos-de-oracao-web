@@ -450,7 +450,7 @@ export default function Navbar() {
                 <div className="relative w-8 h-8 rounded-xl overflow-hidden border transition-all group-hover:border-[#D4AF37] shrink-0"
                   style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
                   <img
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
+                    src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
                     alt="Avatar"
                     className="w-full h-full object-cover"
                   />

@@ -58,3 +58,35 @@ export async function cancelarPlano() {
 
   redirect('/?acesso=expirado')
 }
+
+// Salva o avatar do usuário
+export async function salvarAvatar(avatarUrl: string | null, pedidoSanto?: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Não autenticado' }
+
+  // Atualiza o user_metadata do próprio usuário
+  const { error } = await supabase.auth.updateUser({
+    data: { avatar_url: avatarUrl }
+  })
+
+  if (error) return { success: false, error: error.message }
+
+  // Se houver pedido de santo, registra na tabela pedidos_santos usando o cliente admin
+  if (pedidoSanto && pedidoSanto.trim()) {
+    try {
+      const { supabaseAdmin } = await import('@/lib/supabase-admin')
+      await supabaseAdmin.from('pedidos_santos').insert({
+        santo_nome: pedidoSanto.trim(),
+        user_id: user.id,
+        user_email: user.email
+      })
+    } catch (err) {
+      console.error('Erro ao registrar pedido de santo no perfil:', err)
+    }
+  }
+
+  revalidatePath('/perfil')
+  revalidatePath('/watch')
+  return { success: true }
+}

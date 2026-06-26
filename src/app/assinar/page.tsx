@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, ChevronRight, Shield, Play, Heart, Download, Monitor, Lock, Eye, EyeOff, Infinity as InfinityIcon } from 'lucide-react'
+import { Check, ChevronRight, Shield, Play, Heart, Download, Monitor, Lock, Eye, EyeOff, Infinity as InfinityIcon, Loader2 } from 'lucide-react'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { createClient } from '@/utils/supabase/client'
@@ -26,6 +26,12 @@ export default function AssinarPage() {
   const [erros, setErros] = useState<{ nome?: string; email?: string; senha?: string; confirmarSenha?: string }>({})
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false)
+  
+  // Estados para seleção do avatar de santo
+  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string | null>(null)
+  const [pedidoSanto, setPedidoSanto] = useState('')
+  const [avatarsDisponiveis, setAvatarsDisponiveis] = useState<any[]>([])
+  const [loadingAvatars, setLoadingAvatars] = useState(false)
 
   // Estados para carregamento dinâmico
   const [planos, setPlanos] = useState<any[]>([])
@@ -63,10 +69,23 @@ export default function AssinarPage() {
         setIsLogged(true)
         setNome(session.user.user_metadata?.nome || '')
         setEmail(session.user.email || '')
-        setStep(2) // Pula direto para o pagamento!
+        setStep(3) // Pula direto para o pagamento!
       }
     })
   }, [])
+
+  useEffect(() => {
+    if (step === 2) {
+      setLoadingAvatars(true)
+      fetch('/api/avatars-santos')
+        .then(r => r.json())
+        .then(data => {
+          if (data.avatars) setAvatarsDisponiveis(data.avatars)
+        })
+        .catch(console.error)
+        .finally(() => setLoadingAvatars(false))
+    }
+  }, [step])
 
   function validarStep1() {
     const novosErros: { nome?: string; email?: string; senha?: string; confirmarSenha?: string } = {}
@@ -98,9 +117,9 @@ export default function AssinarPage() {
         const data = await res.json()
         if (data.existe) {
           setErroCheckout({ msg: 'Este e-mail já possui uma conta cadastrada. Faça login para continuar.', tipo: 'email_duplicado' })
-          setStep(2) // Vai para o step 2 que já tem a UI de login preparada para erros
+          setStep(3) // Vai para o step 3 que já tem a UI de login preparada para erros
         } else {
-          setStep(2)
+          setStep(2) // Vai para a escolha do avatar
         }
       } catch (e) {
         setStep(2)
@@ -121,7 +140,9 @@ export default function AssinarPage() {
           nome,
           email,
           senha,
-          plano: planoSelecionado
+          plano: planoSelecionado,
+          avatarUrl: selectedAvatarUrl,
+          pedidoSanto: pedidoSanto
         })
       })
       const data = await response.json()
@@ -151,7 +172,13 @@ export default function AssinarPage() {
       await fetch('/api/auth/criar-pre-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email, senha })
+        body: JSON.stringify({ 
+          nome, 
+          email, 
+          senha,
+          avatarUrl: selectedAvatarUrl,
+          pedidoSanto: pedidoSanto
+        })
       })
       // Não precisamos nos preocupar com a resposta aqui. 
       // Se der sucesso, ótimo, a conta e a senha estão salvas.
@@ -417,42 +444,42 @@ export default function AssinarPage() {
         <div className="w-full lg:w-1/2">
           <div className="px-6 py-8 sm:px-10 h-full flex flex-col justify-center">
             
-            {/* Indicador de Steps — Pills com destaque */}
-            <div className="flex items-center justify-center mb-8 gap-0 w-full max-w-sm mx-auto">
-              {[1, 2].map((s) => (
-                <div key={s} className="flex items-center flex-1 last:flex-none last:flex-grow-0">
-                  <div className="flex flex-col items-center gap-1">
-                    {/* Bolinha da etapa */}
-                    <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-black transition-all duration-500 ${
-                      step === s
-                        ? 'text-[#090B10] shadow-[0_0_18px_rgba(212,175,55,0.6)] scale-110'
-                        : step > s
-                          ? 'text-[#090B10]'
-                          : 'text-white/30'
-                      }`}
-                      style={step >= s ? { background: '#D4AF37' } : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-                    >
-                      {step > s ? <Check size={14} strokeWidth={3} /> : s}
-                    </div>
-                    {/* Label com pill de destaque no step ativo */}
-                    <div className={`px-2.5 py-0.5 rounded-full transition-all duration-500 mt-0.5 ${
-                      step === s
-                        ? 'bg-[#D4AF37]/15'
-                        : 'bg-transparent'
-                    }`}>
-                      <span className={`text-[0.6rem] font-extrabold uppercase tracking-wider hidden sm:block transition-all duration-500 ${
-                        step === s ? 'text-[#D4AF37]' : step > s ? 'text-[#D4AF37]/50' : 'text-white/20'
-                      }`}>
-                        {s === 1 ? 'Dados' : 'Pagamento'}
-                      </span>
-                    </div>
-                  </div>
-                  {s < 2 && (
-                    <div className="flex-1 h-[1px] mx-4 mt-[-14px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                      <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: 'linear-gradient(to right, #D4AF37, #F9E596)' }} />
-                    </div>
-                  )}
-                </div>
+             {/* Indicador de Steps — Pills com destaque */}
+             <div className="flex items-center justify-center mb-8 gap-0 w-full max-w-sm mx-auto">
+               {[1, 2, 3].map((s) => (
+                 <div key={s} className="flex items-center flex-1 last:flex-none last:flex-grow-0">
+                   <div className="flex flex-col items-center gap-1">
+                     {/* Bolinha da etapa */}
+                     <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-black transition-all duration-500 ${
+                       step === s
+                         ? 'text-[#090B10] shadow-[0_0_18px_rgba(212,175,55,0.6)] scale-110'
+                         : step > s
+                           ? 'text-[#090B10]'
+                           : 'text-white/30'
+                       }`}
+                       style={step >= s ? { background: '#D4AF37' } : { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                     >
+                       {step > s ? <Check size={14} strokeWidth={3} /> : s}
+                     </div>
+                     {/* Label com pill de destaque no step ativo */}
+                     <div className={`px-2.5 py-0.5 rounded-full transition-all duration-500 mt-0.5 ${
+                       step === s
+                         ? 'bg-[#D4AF37]/15'
+                         : 'bg-transparent'
+                     }`}>
+                       <span className={`text-[0.6rem] font-extrabold uppercase tracking-wider hidden sm:block transition-all duration-500 ${
+                         step === s ? 'text-[#D4AF37]' : step > s ? 'text-[#D4AF37]/50' : 'text-white/20'
+                       }`}>
+                         {s === 1 ? 'Dados' : s === 2 ? 'Santo' : 'Pagamento'}
+                       </span>
+                     </div>
+                   </div>
+                   {s < 3 && (
+                     <div className="flex-1 h-[1px] mx-4 mt-[-14px] rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                       <div className="h-full transition-all duration-700 ease-out" style={{ width: step > s ? '100%' : '0%', background: 'linear-gradient(to right, #D4AF37, #F9E596)' }} />
+                     </div>
+                   )}
+                 </div>
               ))}
             </div>
 
@@ -583,10 +610,88 @@ export default function AssinarPage() {
                 </motion.div>
               )}
 
-              {/* ── STEP 2: Confirmar e Pagar ── */}
+              {/* ── STEP 2: Seleção de Santo Avatar (Passo 1.5) ── */}
               {step === 2 && (
                 <motion.div 
-                  key="step2"
+                  key="step2-avatar"
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 30 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="pt-1"
+                >
+                  <h1 className="text-white text-xl font-black mb-1 tracking-tight">Escolha seu Santo Protetor</h1>
+                  <p className="text-white/40 text-xs mb-5">Selecione o avatar que representará seu perfil (você pode alterar depois)</p>
+
+                  {loadingAvatars ? (
+                    <div className="flex flex-col items-center justify-center py-10">
+                      <Loader2 className="animate-spin text-[#D4AF37]" size={32} />
+                      <span className="text-white/40 text-xs mt-2">Carregando avatares...</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[220px] overflow-y-auto pr-1">
+                        {avatarsDisponiveis.map((a) => {
+                          const isSelected = selectedAvatarUrl === a.avatar_url;
+                          return (
+                            <div 
+                              key={a.id} 
+                              onClick={() => {
+                                setSelectedAvatarUrl(a.avatar_url);
+                                setPedidoSanto(''); // Limpa o pedido personalizado se escolheu um da lista
+                              }}
+                              className={`group relative bg-black/40 border rounded-2xl p-2 flex flex-col items-center text-center cursor-pointer transition-all duration-300 ${
+                                isSelected ? 'border-[#D4AF37] bg-[#D4AF37]/5 scale-[1.03] shadow-[0_0_15px_rgba(212,175,55,0.2)]' : 'border-white/5 hover:border-white/15'
+                              }`}
+                            >
+                              <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 mb-1.5 shrink-0">
+                                <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                              </div>
+                              <span className="text-white text-[10px] font-bold line-clamp-1 w-full">{a.nome}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Pedir Santo Personalizado */}
+                      <div className="pt-2 border-t border-white/5">
+                        <label className="block text-white/50 text-[10px] font-bold uppercase tracking-wider mb-2">Não encontrou seu santo protetor? Peça aqui:</label>
+                        <input
+                          type="text"
+                          placeholder="Ex: São Judas Tadeu, Santa Rita..."
+                          value={pedidoSanto}
+                          onChange={(e) => {
+                            setPedidoSanto(e.target.value);
+                            setSelectedAvatarUrl(null); // Limpa o avatar selecionado se digitar
+                          }}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+                        />
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button 
+                          onClick={() => setStep(1)}
+                          className="flex-1 py-3 font-bold rounded-xl text-sm transition-all border border-white/10 hover:bg-white/5 cursor-pointer text-white/70"
+                        >
+                          Voltar
+                        </button>
+                        <button 
+                          onClick={() => setStep(3)}
+                          className="flex-1 py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-1.5"
+                          style={{ background: '#D4AF37', color: '#090B10' }}
+                        >
+                          Avançar <ChevronRight size={16} strokeWidth={3} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* ── STEP 3: Confirmar e Pagar ── */}
+              {step === 3 && (
+                <motion.div 
+                  key="step3"
                   initial={{ opacity: 0, x: 30 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 30 }}
@@ -767,7 +872,7 @@ export default function AssinarPage() {
             )}
 
             {!clientSecret && erroCheckout?.tipo !== 'email_duplicado' && !isLogged && (
-              <button onClick={() => setStep(1)}
+              <button onClick={() => setStep(2)}
                 className="w-full py-3 mt-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 group border border-white/5 hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/5 text-white/40 hover:text-[#D4AF37]"
                 style={{ background: 'transparent' }}>
                 <span className="transition-transform group-hover:-translate-x-1">←</span> Voltar para alterar dados

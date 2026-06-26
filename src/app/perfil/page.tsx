@@ -7,6 +7,7 @@ import {
   AlertTriangle, MessageCircle
 } from 'lucide-react'
 import ClientEditableName from './ClientEditableName'
+import ClientAvatarSelector from './ClientAvatarSelector'
 import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
 import Pricing from '@/components/Pricing'
 import Footer from '@/components/Footer'
@@ -99,7 +100,8 @@ export default async function PerfilPage() {
   const email = user.email || ''
   const nome = user.user_metadata?.nome || ''
   const displayName = nome || email.split('@')[0]
-  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=111827&color=D4AF37&bold=true&size=128`
+  const fallbackAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=111827&color=D4AF37&bold=true&size=128`
+  const avatarUrl = user.user_metadata?.avatar_url || null
 
   const dataCriacao = user.created_at
     ? new Date(user.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
@@ -124,14 +126,11 @@ export default async function PerfilPage() {
           <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#15243E]/50 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8 z-10 text-center md:text-left">
-            {/* Avatar */}
-            <div className="relative shrink-0 group">
-              <div className="absolute inset-0 bg-[#D4AF37] blur-md opacity-20 group-hover:opacity-40 transition-opacity rounded-[2rem]" />
-              <div className="relative w-28 h-28 rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-[#090B10]">
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
-              </div>
+            {/* Avatar Selector Component */}
+            <div className="relative shrink-0">
+              <ClientAvatarSelector initialAvatarUrl={avatarUrl} fallbackAvatarUrl={fallbackAvatarUrl} />
               {/* Badge de status */}
-              <div className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-xl border-4 border-[#090B10] flex items-center justify-center ${planoAtivo ? 'bg-emerald-500' : 'bg-red-500'}`}>
+              <div className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-xl border-4 border-[#090B10] flex items-center justify-center z-10 ${planoAtivo ? 'bg-emerald-500' : 'bg-red-500'}`}>
                 {planoAtivo ? <CheckCircle2 size={12} className="text-[#090B10]" /> : <XCircle size={12} className="text-[#090B10]" />}
               </div>
             </div>

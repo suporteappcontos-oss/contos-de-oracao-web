@@ -11,7 +11,7 @@ import {
 import {
   Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, Users, Edit3, X, UserCheck, Film,
-  Heart, BarChart3, Trophy, Megaphone, ShoppingBag
+  Heart, BarChart3, Trophy, Megaphone, ShoppingBag, Smile
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -28,6 +28,7 @@ import GerenciadorVideosTematicos from './GerenciadorVideosTematicos'
 import { GerenciadorRevistas } from './GerenciadorRevistas'
 import { CatalogoTabsLayout } from './CatalogoTabsLayout'
 import { GerenciadorTestadores } from './GerenciadorTestadores'
+import GerenciadorAvatares from './GerenciadorAvatares'
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -228,6 +229,7 @@ export default async function AdminPage({
               { id: 'catalogo', label: 'Catálogo', icon: Film, count: totalVideos },
               { id: 'assinaturas', label: 'Assinaturas', icon: Users, count: totalMembros },
               { id: 'loja', label: 'Loja', icon: ShoppingBag, count: totalProdutos },
+              { id: 'avatars', label: 'Avatares', icon: Smile, count: null },
               { id: 'testadores', label: 'Testadores', icon: UserCheck, count: testadores?.length || 0 },
               { id: 'marketing', label: 'Marketing', icon: Megaphone, count: null },
             ].map(tab => (
@@ -431,6 +433,11 @@ export default async function AdminPage({
         {/* ══════════ ABA TESTADORES ══════════ */}
         {activeTab === 'testadores' && (
           <GerenciadorTestadores testadores={(testadores || []) as any} linkWhatsappInicial={linkWhatsapp} />
+        )}
+
+        {/* ══════════ ABA AVATARES ══════════ */}
+        {activeTab === 'avatars' && (
+          <GerenciadorAvatares />
         )}
 
       </main>
