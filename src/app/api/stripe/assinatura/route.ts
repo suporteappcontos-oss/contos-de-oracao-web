@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { plano, nome, email, senha } = body
+    const { plano, nome, email, senha, avatarUrl, pedidoSanto } = body
 
     // Verifica se o usuário está logado
     const supabaseClient = await createClient()
@@ -36,12 +36,29 @@ export async function POST(request: NextRequest) {
         email,
         password: senha,
         email_confirm: true,
-        user_metadata: { nome, plano_ativo: false }
+        user_metadata: { 
+          nome, 
+          plano_ativo: false,
+          avatar_url: avatarUrl || null
+        }
       })
       if (createError) {
         return NextResponse.json({ error: 'Erro ao criar conta: ' + createError.message }, { status: 400 })
       }
       userId = newUser.user.id
+
+      // Se houver pedido de santo, insere na tabela pedidos_santos
+      if (pedidoSanto && pedidoSanto.trim()) {
+        try {
+          await supabaseAdmin.from('pedidos_santos').insert({
+            santo_nome: pedidoSanto.trim(),
+            user_id: userId,
+            user_email: email
+          })
+        } catch (dbErr) {
+          console.error('Erro ao registrar pedido de santo:', dbErr)
+        }
+      }
     }
 
     // Cria ou busca o cliente na Stripe
