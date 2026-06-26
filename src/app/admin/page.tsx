@@ -77,7 +77,9 @@ export default async function AdminPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
   const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).single()
-  if (perfil?.role !== 'admin' && user.email !== 'suporte.appcontos@gmail.com') redirect('/')
+  const isAdminRole = perfil?.role === 'admin' || user.user_metadata?.role === 'admin'
+  const isAdminEmail = user.email === 'suporte.appcontos@gmail.com'
+  if (!isAdminRole && !isAdminEmail) redirect('/')
 
   // Videos
   const { data: videos } = await supabase.from('videos').select('*').order('criado_em', { ascending: false })

@@ -33,20 +33,15 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // ── Proteção /watch — requer estar logado ──
+  // Protege /watch — requer login
   if (pathname.startsWith('/watch') && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
 
-  // ── Proteção /admin — requer estar logado ──
-  // A verificação de role 'admin' ou email de suporte fica na própria page.tsx
-  if (pathname.startsWith('/admin') && !user) {
-    const loginUrl = new URL('/login', request.url)
-    loginUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(loginUrl)
-  }
+  // /admin NÃO é protegido aqui — a própria admin/page.tsx faz getUser() + role check
+  // Isso evita que erros transitórios no getUser() do middleware bloqueiem o admin
 
   return supabaseResponse
 }
