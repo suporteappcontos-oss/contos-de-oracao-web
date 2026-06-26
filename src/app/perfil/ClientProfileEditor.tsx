@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { Pencil, X, Check, Loader2, Smile, Trash2 } from 'lucide-react'
 import { salvarNome, salvarAvatar } from './actions'
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
 type AvatarType = {
   id: string
@@ -19,6 +21,7 @@ export default function ClientProfileEditor({
   initialAvatarUrl: string | null
   fallbackAvatarUrl: string
 }) {
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [avatars, setAvatars] = useState<AvatarType[]>([])
   const [loadingAvatars, setLoadingAvatars] = useState(false)
@@ -88,6 +91,13 @@ export default function ClientProfileEditor({
         salvarAvatar(tempAvatarUrl, tempPedidoSanto)
       ])
 
+      // Atualiza a sessão local do Supabase no cliente para atualizar metadados locais
+      const supabase = createClient()
+      await supabase.auth.refreshSession()
+
+      // Revalida a rota no cliente para renderizar com os novos dados
+      router.refresh()
+
       setIsOpen(false)
       alert('Perfil atualizado com sucesso!')
     } catch (e) {
@@ -110,8 +120,8 @@ export default function ClientProfileEditor({
 
       {/* Janela Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-xl bg-[#111827] border border-white/5 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex justify-center items-start overflow-y-auto bg-black/80 backdrop-blur-sm p-4 md:py-10 animate-fadeIn">
+          <div className="relative w-full max-w-xl bg-[#111827] border border-white/5 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-6 my-auto">
             
             {/* Header */}
             <div className="flex justify-between items-start">

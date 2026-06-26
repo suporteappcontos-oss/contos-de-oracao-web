@@ -52,15 +52,7 @@ export default function EsqueciSenhaPage() {
       <DynamicBackground />
       <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-transparent to-[#090B10]/70" />
 
-      {/* Logo no topo */}
-      <header className="absolute top-0 w-full py-4 px-[4%] z-30">
-        <Link href="/" className="flex items-center gap-3 no-underline w-fit">
-          <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain" />
-          <div className="text-white font-black text-base leading-tight">Contos de Oração</div>
-        </Link>
-      </header>
-
-      {/* Card */}
+      {/* ── Card Esqueci Senha ── */}
       <div className="relative z-10 w-full max-w-[420px] mx-4 rounded-2xl p-8 md:p-10"
         style={{
           background: 'rgba(21,36,62,0.88)', border: '1px solid rgba(255,255,255,0.08)',

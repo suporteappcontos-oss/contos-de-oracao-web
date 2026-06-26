@@ -152,7 +152,7 @@ export default function Navbar() {
   const showAuth = isAuthChecked && !isLoggedIn;
 
   // Oculta a Navbar global nas páginas de checkout e autenticação que possuem cabeçalhos próprios
-  const routesWithoutNavbar = ['/assinar', '/login', '/esqueci-senha', '/atualizar-senha'];
+  const routesWithoutNavbar: string[] = [];
   if (routesWithoutNavbar.includes(pathname || '')) {
     return null;
   }

@@ -343,24 +343,8 @@ export default function AssinarPage() {
         }
       `}} />
 
-      {/* Header */}
-      <header className="relative z-10 px-6 py-5 flex items-center justify-between"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <Link href="/" className="flex items-center gap-3 no-underline">
-          <Image src="/logo.png" alt="Contos de Oração" width={36} height={36} className="object-contain" />
-          <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
-        </Link>
-        <Link 
-          href="/login" 
-          className="px-5 py-2 rounded-full font-bold text-xs md:text-sm transition-all hover:scale-105 hover:brightness-110 shadow-[0_0_15px_rgba(212,175,55,0.2)] no-underline"
-          style={{ backgroundColor: '#D4AF37', color: '#090B10' }}
-        >
-          Entrar
-        </Link>
-      </header>
-
       {/* Layout Unificado (Esquerda: Info e Benefícios, Direita: Checkout) */}
-      <div className="relative z-10 flex flex-col lg:flex-row max-w-4xl mx-auto w-full flex-1 mb-16 mt-8 rounded-[1.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
+      <div className="relative z-10 flex flex-col lg:flex-row max-w-4xl mx-auto w-full flex-1 mb-16 mt-24 lg:mt-28 rounded-[1.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
         
         {/* Lado Esquerdo - Info e Benefícios */}
         <div className="hidden lg:flex w-full lg:w-1/2 p-6 lg:p-10 flex-col relative border-b lg:border-b-0 lg:border-r border-white/5" style={{ background: 'rgba(0,0,0,0.2)' }}>

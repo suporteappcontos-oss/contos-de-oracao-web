@@ -18,16 +18,6 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
       <DynamicBackground />
       <div className="absolute inset-0 bg-gradient-to-t from-[#090B10] via-transparent to-[#090B10]/70" />
 
-      {/* Logo no topo */}
-      <header className="absolute top-0 w-full py-4 px-[4%] z-30">
-        <Link href="/" className="flex items-center gap-3 no-underline w-fit">
-          <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain" />
-          <div>
-            <div style={{ color: '#fff', fontWeight: 900, fontSize: '1rem', lineHeight: 1.2 }}>Contos de Oração</div>
-          </div>
-        </Link>
-      </header>
-
       {/* ── Card de Login ── */}
       <div className="relative z-20 w-full max-w-[420px] p-8 md:p-10 rounded-2xl shadow-2xl mb-4"
         style={{ background: 'rgba(21,36,62,0.9)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 25px 60px rgba(0,0,0,0.6)' }}>
