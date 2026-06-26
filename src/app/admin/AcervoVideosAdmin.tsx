@@ -352,8 +352,8 @@ export default function AcervoVideosAdmin({
           className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/[0.02] transition-colors text-left"
         >
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-purple-500/10 border border-purple-500/20">
-              <Film size={18} className="text-purple-400" />
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20">
+              <Film size={18} className="text-emerald-400" />
             </div>
             <div>
               <h3 className="text-white text-base font-extrabold tracking-tight">Vídeos Avulsos</h3>
