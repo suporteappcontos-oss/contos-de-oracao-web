@@ -46,7 +46,7 @@ export function ConfiguracoesAcesso({ initialConfig }: { initialConfig: any }) {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="space-y-8 max-w-3xl" aria-label="Configurações de Acesso">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-white text-2xl font-black mb-1">Controle de Acessos Dinâmico</h2>

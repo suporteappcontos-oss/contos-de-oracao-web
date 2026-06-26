@@ -209,7 +209,7 @@ export default function AcervoVideosAdmin({
   const [avulsosAbertos, setAvulsosAbertos] = useState(false)
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12" aria-label="Gerenciamento de Vídeos">
       {/* SEÇÃO TEMPORADAS (SÉRIES) */}
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

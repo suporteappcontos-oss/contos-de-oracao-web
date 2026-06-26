@@ -24,7 +24,7 @@ export function BotoesControleUsuario({
   }
 
   return (
-    <>
+    <div aria-label="Ações de Controle do Usuário">
       <div className="flex gap-2 items-center">
         <form action={deletarUsuario.bind(null, userId)} onSubmit={handleExcluir}>
           <button
@@ -70,6 +70,6 @@ export function BotoesControleUsuario({
           </form>
         </div>
       )}
-    </>
+    </div>
   )
 }
