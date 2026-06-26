@@ -7,6 +7,7 @@ import {
   AlertTriangle, MessageCircle
 } from 'lucide-react'
 import ClientProfileEditor from './ClientProfileEditor'
+import ClientAvatarButton from './ClientAvatarButton'
 import GerenciarStripeBtn from '@/components/GerenciarStripeBtn'
 import Pricing from '@/components/Pricing'
 import Footer from '@/components/Footer'
@@ -125,16 +126,9 @@ export default async function PerfilPage() {
           <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#15243E]/50 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8 z-10 text-center md:text-left">
-            {/* Avatar Exibição Estática */}
+            {/* Avatar Exibição Interativa */}
             <div className="relative shrink-0">
-              <div className="absolute inset-0 bg-[#D4AF37] blur-md opacity-20 rounded-full" />
-              <div className="relative w-28 h-28 rounded-full overflow-hidden border border-white/10 shadow-2xl bg-[#090B10]">
-                <img
-                  src={avatarUrl || fallbackAvatarUrl}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <ClientAvatarButton avatarUrl={avatarUrl} fallbackAvatarUrl={fallbackAvatarUrl} />
               {/* Badge de status */}
               <div className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-xl border-4 border-[#090B10] flex items-center justify-center z-10 ${planoAtivo ? 'bg-emerald-500' : 'bg-red-500'}`}>
                 {planoAtivo ? <CheckCircle2 size={12} className="text-[#090B10]" /> : <XCircle size={12} className="text-[#090B10]" />}

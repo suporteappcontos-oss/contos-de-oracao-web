@@ -642,17 +642,17 @@ export default function AssinarPage() {
                               }}
                               className="flex flex-col items-center gap-1.5 cursor-pointer group"
                             >
-                              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+                              <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 transition-all duration-300 ${
                                 isSelected 
                                   ? 'border-[#D4AF37] scale-105 shadow-[0_0_20px_rgba(212,175,55,0.6)]' 
                                   : 'border-white/10 group-hover:border-white/30 group-hover:scale-102'
                               }`}>
-                                <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                                <div className="w-full h-full rounded-full overflow-hidden">
+                                  <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                                </div>
                                 {isSelected && (
-                                  <div className="absolute inset-0 bg-[#D4AF37]/10 flex items-center justify-center">
-                                    <div className="bg-[#D4AF37] text-[#090B10] rounded-full p-1 shadow-md">
-                                      <Check size={12} strokeWidth={4} />
-                                    </div>
+                                  <div className="absolute -top-1 -right-1 bg-[#D4AF37] text-[#090B10] rounded-full p-1 shadow-md border border-[#090B10] z-10 flex items-center justify-center">
+                                    <Check size={10} strokeWidth={4} />
                                   </div>
                                 )}
                               </div>

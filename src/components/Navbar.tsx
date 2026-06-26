@@ -121,7 +121,7 @@ export default function Navbar() {
       setIsAuthChecked(true);
     });
     return () => listener.subscription.unsubscribe();
-  }, []);
+  }, [pathname]);
 
   const handleLogout = async () => {
     setSidebarOpen(false);

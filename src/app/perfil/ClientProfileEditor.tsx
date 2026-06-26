@@ -30,6 +30,13 @@ export default function ClientProfileEditor({
   const [tempPedidoSanto, setTempPedidoSanto] = useState('')
   const [showAvatarSelector, setShowAvatarSelector] = useState(false)
 
+  // Escuta o evento global para abrir o modal
+  React.useEffect(() => {
+    const handler = () => abrirModal()
+    window.addEventListener('open-profile-editor', handler)
+    return () => window.removeEventListener('open-profile-editor', handler)
+  }, [initialName, initialAvatarUrl])
+
   const abrirModal = () => {
     setTempName(initialName)
     setTempAvatarUrl(initialAvatarUrl)
@@ -197,17 +204,17 @@ export default function ClientProfileEditor({
                             }}
                             className="flex flex-col items-center gap-1.5 cursor-pointer group"
                           >
-                            <div className={`relative w-14 h-14 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+                            <div className={`relative w-14 h-14 rounded-full border-2 transition-all duration-300 ${
                               isSelected 
                                 ? 'border-[#D4AF37] scale-105 shadow-[0_0_15px_rgba(212,175,55,0.5)]' 
                                 : 'border-white/10 group-hover:border-white/30'
                             }`}>
-                              <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                              <div className="w-full h-full rounded-full overflow-hidden">
+                                <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                              </div>
                               {isSelected && (
-                                <div className="absolute inset-0 bg-[#D4AF37]/10 flex items-center justify-center">
-                                  <div className="bg-[#D4AF37] text-[#090B10] rounded-full p-0.5 shadow-md">
-                                    <Check size={10} strokeWidth={4} />
-                                  </div>
+                                <div className="absolute -top-1 -right-1 bg-[#D4AF37] text-[#090B10] rounded-full p-0.5 shadow-md border border-[#090B10] z-10 flex items-center justify-center">
+                                  <Check size={8} strokeWidth={4} />
                                 </div>
                               )}
                             </div>
