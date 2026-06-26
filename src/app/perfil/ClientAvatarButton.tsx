@@ -15,18 +15,19 @@ export default function ClientAvatarButton({
   }
 
   return (
-    <div 
+    <div
       onClick={handleClick}
       className="relative shrink-0 group cursor-pointer"
       title="Clique para editar seu perfil"
     >
       {/* Glow dourado de fundo no hover */}
       <div className="absolute inset-0 bg-[#D4AF37] blur-md opacity-15 group-hover:opacity-35 transition-opacity rounded-full" />
-      <div className="relative w-28 h-28 rounded-full overflow-hidden border border-white/10 shadow-2xl bg-[#090B10]">
+      <div className="relative w-28 h-28 rounded-full overflow-hidden border border-white/10 shadow-2xl" style={{ background: '#090B10' }}>
         <img
           src={avatarUrl || fallbackAvatarUrl}
           alt="Avatar"
-          className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+          className="w-full h-full object-cover object-center transition-transform group-hover:scale-105 duration-500"
+          style={{ display: 'block' }}
         />
         {/* Hover Overlay com lápis e texto */}
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-white text-[10px] font-black uppercase tracking-wider gap-1.5 duration-300">
