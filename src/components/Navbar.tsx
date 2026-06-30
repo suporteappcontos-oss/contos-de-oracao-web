@@ -705,7 +705,7 @@ export default function Navbar() {
 
           {/* ── Sobre ── */}
           <a
-            href="https://d-biblical-visions.lovable.app/"
+            href="https://doceuparatela20.lovable.app/"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setSidebarOpen(false)}

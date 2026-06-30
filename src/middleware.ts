@@ -10,17 +10,17 @@ const redis = new Redis({
 })
 
 // Criando diferentes limitadores para diferentes necessidades
-// Padrão: 100 requisições por minuto por IP (navegação normal)
+// Padrão: 300 requisições por minuto por IP (navegação normal)
 const globalRatelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(100, '1 m'),
+  limiter: Ratelimit.slidingWindow(300, '1 m'),
   analytics: true,
 })
 
-// Rigoroso: 30 requisições por minuto por IP (webhooks, logins, pagamentos)
+// Rigoroso: 60 requisições por minuto por IP (webhooks, logins, pagamentos)
 const strictRatelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(30, '1 m'),
+  limiter: Ratelimit.slidingWindow(60, '1 m'),
   analytics: true,
 })
 
@@ -30,9 +30,11 @@ export async function middleware(request: NextRequest) {
 
   // ── Rate Limiting nas APIs ──
   if (pathname.startsWith('/api/')) {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    // Tenta pegar o IP nativo do Next.js, senão cai para os headers, senão 127.0.0.1 (local)
+    const ip = request.ip
+      || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
-      || 'unknown'
+      || '127.0.0.1'
 
     // Usa o limitador rigoroso para webhooks ou login, caso contrário usa o padrão
     const ratelimit = (pathname.includes('/webhook') || pathname.includes('/auth') || pathname.includes('/login')) 
