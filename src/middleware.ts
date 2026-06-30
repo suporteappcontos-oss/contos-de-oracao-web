@@ -30,9 +30,7 @@ export async function middleware(request: NextRequest) {
 
   // ── Rate Limiting nas APIs ──
   if (pathname.startsWith('/api/')) {
-    // Tenta pegar o IP nativo do Next.js, senão cai para os headers, senão 127.0.0.1 (local)
-    const ip = request.ip
-      || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
       || '127.0.0.1'
 
