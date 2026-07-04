@@ -15,6 +15,8 @@ export async function POST(req: NextRequest) {
     const { token } = await req.json()
     if (!token) return NextResponse.json({ error: 'Token obrigatório' }, { status: 400 })
 
+    const cleanToken = token.toString().trim().toUpperCase()
+
     // Pega o token do header Authorization enviado pelo App
     const authHeader = req.headers.get('authorization')
     const jwtToken = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
     const { data: session, error: sessionError } = await admin
       .from('qr_sessions')
       .select('*')
-      .eq('token', token.toUpperCase())
+      .eq('token', cleanToken)
       .eq('usado', false)
       .single()
 
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
       usado: true,
       user_id: user.id,
       confirmed_at: new Date().toISOString(),
-    }).eq('token', token.toUpperCase())
+    }).eq('token', cleanToken)
 
     return NextResponse.json({ ok: true, email: user.email })
   } catch (e: any) {
