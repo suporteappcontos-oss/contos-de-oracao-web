@@ -165,7 +165,7 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
               >
                 <div
                   className="relative w-full overflow-hidden cursor-pointer"
-                  style={{ aspectRatio: '9/16' }}
+                  style={{ aspectRatio: '16/9' }}
                   onClick={() => setVideoAtualIndex(idx)}
                 >
                   <img
