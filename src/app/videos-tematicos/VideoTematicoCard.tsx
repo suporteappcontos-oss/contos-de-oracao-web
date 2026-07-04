@@ -50,10 +50,10 @@ export default function VideoTematicoCard({ video }: { video: VideoTematico }) {
         className="group flex flex-col rounded-[20px] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl"
         style={{ background: 'rgba(15,22,35,0.9)', border: '1px solid rgba(225,48,108,0.2)' }}
       >
-        {/* Capa — formato 16:9 landscape */}
+        {/* Capa — formato 9:16 portrait */}
         <div
           className="relative w-full overflow-hidden cursor-pointer"
-          style={{ aspectRatio: '16/9' }}
+          style={{ aspectRatio: '9/16' }}
           onClick={() => setModalAberto(true)}
         >
           <img
