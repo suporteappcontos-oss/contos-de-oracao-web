@@ -35,6 +35,34 @@ export default function GerenciadorAvatares() {
   const [editing, setEditing] = useState(false)
   const editFileInputRef = useRef<HTMLInputElement>(null)
 
+  // Previews de imagem via FileReader (evita alertas CodeQL e vazamento de memória com Blob URLs)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [editPreviewUrl, setEditPreviewUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(null)
+      return
+    }
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }, [file])
+
+  useEffect(() => {
+    if (!editFile) {
+      setEditPreviewUrl(null)
+      return
+    }
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setEditPreviewUrl(reader.result as string)
+    }
+    reader.readAsDataURL(editFile)
+  }, [editFile])
+
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingAvatar || !editNome.trim()) return
@@ -46,7 +74,15 @@ export default function GerenciadorAvatares() {
       if (editFile) {
         // Redimensionar para 1024x1024 e converter para WebP
         const img = document.createElement('img')
-        img.src = URL.createObjectURL(editFile)
+        
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = () => reject(new Error('Erro ao ler arquivo da imagem para edição'))
+          reader.readAsDataURL(editFile)
+        })
+        
+        img.src = dataUrl
         await new Promise((resolve) => (img.onload = resolve))
 
         const canvas = document.createElement('canvas')
@@ -134,7 +170,15 @@ export default function GerenciadorAvatares() {
     try {
       // 1. Redimensionar para 1024x1024 e converter para WebP via Canvas
       const img = document.createElement('img')
-      img.src = URL.createObjectURL(file)
+      
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = () => reject(new Error('Erro ao ler arquivo do novo avatar'))
+        reader.readAsDataURL(file)
+      })
+      
+      img.src = dataUrl
       await new Promise((resolve) => (img.onload = resolve))
 
       const canvas = document.createElement('canvas')
@@ -282,7 +326,7 @@ export default function GerenciadorAvatares() {
                 {file ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={previewUrl || ''}
                       alt="Preview"
                       className="w-full h-full object-cover rounded-xl"
                     />
@@ -496,7 +540,7 @@ export default function GerenciadorAvatares() {
                   {editFile ? (
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
                       <img
-                        src={URL.createObjectURL(editFile)}
+                        src={editPreviewUrl || ''}
                         alt="Preview"
                         className="h-full object-cover rounded-xl"
                       />
