@@ -70,9 +70,25 @@ export default function QRLogin() {
 
   useEffect(() => {
     gerarQR()
+
+    // Regenera o QR quando o usuário voltar para esta aba
+    function onVisible() {
+      if (document.visibilityState === 'visible') {
+        // Se estava expirado ou já faz mais de 4 min esperando, gera novo
+        setStatus(prev => {
+          if (prev === 'expired' || prev === 'error') {
+            gerarQR()
+          }
+          return prev
+        })
+      }
+    }
+    document.addEventListener('visibilitychange', onVisible)
+
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current)
       if (timerRef.current) clearInterval(timerRef.current)
+      document.removeEventListener('visibilitychange', onVisible)
     }
   }, [])
 
