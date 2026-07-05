@@ -76,10 +76,10 @@ export default function QRLogin() {
     }
   }, [])
 
-  // Efeito para desenhar o QR Code assim que o canvas for montado na tela
   useEffect(() => {
     if (status === 'waiting' && token && canvasRef.current) {
-      QRCode.toCanvas(canvasRef.current, `CONTOSQR:SITE:${token}`, {
+      const origin = window.location.origin
+      QRCode.toCanvas(canvasRef.current, `CONTOSQR:SITE:${token}:${origin}`, {
         width: 200,
         margin: 2,
         color: { dark: '#000000', light: '#FFFFFF' },
