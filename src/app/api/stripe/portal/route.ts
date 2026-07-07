@@ -9,7 +9,17 @@ const portalCircuitBreaker = new CircuitBreaker({ failureThreshold: 3, resetTime
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    let { data: { user } } = await supabase.auth.getUser()
+
+    // Se não encontrou pelo cookie, tenta extrair do cabeçalho Authorization (para TV/App)
+    if (!user) {
+      const authHeader = request.headers.get('Authorization')
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7)
+        const { data: { user: jwtUser } } = await supabase.auth.getUser(token)
+        user = jwtUser
+      }
+    }
 
     if (!user?.email) {
       return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
@@ -19,12 +29,20 @@ export async function POST(request: NextRequest) {
 
     try {
       const url = await portalCircuitBreaker.execute(async () => {
-        // Busca ou cria o customer Stripe pelo email
+        // Busca o customer Stripe pelo email
         const customers = await stripe.customers.list({ email: user.email, limit: 1 })
-        const customerId = customers.data[0]?.id
+        let customerId = customers.data[0]?.id
 
         if (!customerId) {
-          throw new Error('NOT_FOUND');
+          // Cria o cliente no Stripe caso ele não exista (ex: usuário criado pelo painel que ainda não comprou)
+          const newCustomer = await stripe.customers.create({
+            email: user.email,
+            name: user.user_metadata?.nome || 'Cliente',
+            metadata: {
+              supabase_user_id: user.id
+            }
+          })
+          customerId = newCustomer.id
         }
 
         // Cria sessão do portal do cliente (gerenciar plano, trocar cartão, cancelar)
