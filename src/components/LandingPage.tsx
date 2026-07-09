@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { CATEGORIAS_CONFIG } from '@/app/materiais/constants';
 import CometTrailEffect from './CometTrailEffect';
+import TouchMarquee from './TouchMarquee';
 const QRLogin = dynamic(() => import('@/components/QRLogin'), { ssr: false });
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
@@ -354,7 +355,7 @@ export default function LandingPage() {
             <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-[#090B10] to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-[#090B10] to-transparent z-10 pointer-events-none" />
 
-            <div className="animate-marquee flex gap-5">
+            <TouchMarquee speed={0.8}>
               {(videos.length < 6 ? [...videos, ...videos, ...videos, ...videos] : [...videos, ...videos]).map((video, idx) => {
                 const imageUrl = video.thumbnail_url || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80';
                 return (
@@ -389,7 +390,7 @@ export default function LandingPage() {
                   </Link>
                 );
               })}
-            </div>
+            </TouchMarquee>
           </div>
         )}
       </section>
@@ -416,7 +417,7 @@ export default function LandingPage() {
           <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-[#090B10] to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-[#090B10] to-transparent z-10 pointer-events-none" />
 
-          <div className="animate-marquee-reverse flex gap-5">
+          <TouchMarquee speed={0.8} reverse={true}>
             {[...CATEGORIAS_CONFIG, ...CATEGORIAS_CONFIG, ...CATEGORIAS_CONFIG, ...CATEGORIAS_CONFIG].map((cat, idx) => {
               const CatIcon = cat.icon;
               return (
@@ -458,7 +459,7 @@ export default function LandingPage() {
                 </Link>
               );
             })}
-          </div>
+          </TouchMarquee>
         </div>
       </section>
 
