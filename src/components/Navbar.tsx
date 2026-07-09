@@ -400,7 +400,7 @@ export default function Navbar() {
         {/* Links Direita — ml-auto garante o alinhamento fixado à direita independentemente da visibilidade do botão menu */}
         <div className="flex items-center gap-1.5 sm:gap-4 md:gap-5 ml-auto">
           {/* Redes Sociais no Cabeçalho */}
-          <ul className="social-wrapper-nav mr-1 sm:mr-2 hidden lg:flex">
+          <ul className="social-wrapper-nav mr-1 sm:mr-2 hidden md:flex">
             {/* Instagram */}
             <li className="icon-content">
               <a href="https://www.instagram.com/contosdeoracao" target="_blank" rel="noopener noreferrer" data-social="instagram" aria-label="Instagram">
@@ -725,7 +725,7 @@ export default function Navbar() {
         <div className="mx-5 h-px my-4" style={{ background: 'rgba(255,255,255,0.06)' }} />
 
         {/* Redes Sociais Mobile (Exclusivo da Sidebar no Mobile/Tablet) */}
-        <div className="px-5 pb-8 lg:hidden">
+        <div className="px-5 pb-8 md:hidden">
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Siga nossas redes</p>
           <div className="flex gap-3">
             <a href="https://www.instagram.com/contosdeoracao" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all">
