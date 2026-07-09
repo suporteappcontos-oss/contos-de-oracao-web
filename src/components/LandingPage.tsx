@@ -268,8 +268,8 @@ export default function LandingPage() {
                 fontFamily: FONT,
               }}
             >
-              <span className="block whitespace-nowrap">O maior canal <span style={{ color: PRIMARY }}>CATÓLICO</span></span>
-              <span className="block whitespace-nowrap">em desenho <span className="animado-text">animado</span> do Brasil</span>
+              <span className="block sm:whitespace-nowrap">O maior canal <span style={{ color: PRIMARY }}>CATÓLICO</span></span>
+              <span className="block sm:whitespace-nowrap">em desenho <span className="animado-text">animado</span> do Brasil</span>
             </h1>
 
             <p

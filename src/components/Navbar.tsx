@@ -247,12 +247,17 @@ export default function Navbar() {
 
           /* --- Redes Sociais Animadas Navbar: Estilo Preenchimento --- */
           .social-wrapper-nav {
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             list-style: none;
             padding: 0;
             margin: 0;
+          }
+          @media (min-width: 768px) {
+            .social-wrapper-nav {
+              display: flex;
+            }
           }
           .social-wrapper-nav .icon-content {
             margin: 0 6px;
