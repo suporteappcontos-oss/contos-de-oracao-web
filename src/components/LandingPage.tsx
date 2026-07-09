@@ -233,7 +233,7 @@ export default function LandingPage() {
       ══════════════════════════════════════════════════════════════════════ */}
       <section
         id="home"
-        className="relative min-h-screen lg:h-screen flex items-center justify-center overflow-hidden pt-28 pb-16 lg:py-0"
+        className="relative min-h-[100dvh] lg:h-[100dvh] flex items-center justify-center overflow-hidden pt-28 pb-16 lg:py-0"
         style={{ paddingTop: '0px' }}
       >
         <style>{`
@@ -694,7 +694,10 @@ export default function LandingPage() {
                   <p className="text-white/70 text-xs mb-5 font-bold">Entre para continuar assistindo.</p>
                   <form className="flex flex-col gap-4">
                     <input type="email" name="email" placeholder="E-mail de acesso" required
-                      className="w-full px-5 py-4 rounded-xl text-white outline-none transition-all text-sm focus:bg-white/10"
+                      className="w-full px-5 py-4 rounded-xl text-white outline-none transition-all text-base focus:bg-white/10"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck="false"
                       style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)' }}
                     />
                     <PasswordField name="password" label="" placeholder="Sua Senha" />
