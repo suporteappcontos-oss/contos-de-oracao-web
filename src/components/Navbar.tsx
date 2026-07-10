@@ -463,7 +463,7 @@ export default function Navbar() {
                 className="group flex items-center gap-1.5 px-1.5 py-1 rounded-xl transition-all hover:bg-white/5 no-underline"
                 title="Meu perfil"
               >
-                <div className="relative w-8 h-8 rounded-xl overflow-hidden border transition-all group-hover:border-[#D4AF37] shrink-0"
+                <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 transition-all group-hover:border-[#D4AF37] shrink-0"
                   style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
                   <img
                     src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
