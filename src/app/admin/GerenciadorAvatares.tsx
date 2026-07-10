@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Upload, Trash2, Loader2, Smile, AlertCircle, Heart, Pencil, X } from 'lucide-react'
+import { Upload, Trash2, Loader2, Smile, AlertCircle, Heart, Pencil, X, Trophy } from 'lucide-react'
 
 type AvatarType = {
   id: string
@@ -20,6 +20,7 @@ type PedidoType = {
 export default function GerenciadorAvatares() {
   const [avatars, setAvatars] = useState<AvatarType[]>([])
   const [pedidos, setPedidos] = useState<PedidoType[]>([])
+  const [avatarStats, setAvatarStats] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   
   // Form estados
@@ -139,16 +140,19 @@ export default function GerenciadorAvatares() {
 
   async function carregarDados() {
     try {
-      const [resAvatars, resPedidos] = await Promise.all([
+      const [resAvatars, resPedidos, resStats] = await Promise.all([
         fetch('/api/avatars-santos'),
-        fetch('/api/admin/pedidos-santos')
+        fetch('/api/admin/pedidos-santos'),
+        fetch('/api/admin/avatar-stats')
       ])
       
       const dataAvatars = await resAvatars.json()
       const dataPedidos = await resPedidos.json()
+      const dataStats = await resStats.json()
 
       if (dataAvatars.avatars) setAvatars(dataAvatars.avatars)
       if (dataPedidos.pedidos) setPedidos(dataPedidos.pedidos)
+      if (dataStats.stats) setAvatarStats(dataStats.stats)
     } catch (e) {
       console.error('Erro ao carregar dados dos avatares/pedidos:', e)
     } finally {
@@ -277,6 +281,14 @@ export default function GerenciadorAvatares() {
     .map(([nome, dados]) => ({ nome, ...dados }))
     .sort((a, b) => b.count - a.count)
 
+  const rankingAvatares = avatars
+    .map((a) => ({
+      ...a,
+      usuariosCount: avatarStats[a.avatar_url] || 0,
+    }))
+    .filter((a) => a.usuariosCount > 0)
+    .sort((a, b) => b.usuariosCount - a.usuariosCount)
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -373,6 +385,39 @@ export default function GerenciadorAvatares() {
             Avatares Disponíveis ({avatars.length})
           </h2>
 
+          {/* Ranking dos Santos Mais Escolhidos */}
+          {rankingAvatares.length > 0 && (
+            <div className="bg-black/35 border border-white/5 rounded-2xl p-4 mb-6 shadow-inner">
+              <h3 className="text-white text-xs font-black uppercase tracking-wider flex items-center gap-1.5 mb-4 text-[#D4AF37]">
+                <Trophy size={14} />
+                Santos Mais Escolhidos (Favoritos)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {rankingAvatares.slice(0, 6).map((a, i) => {
+                  const colors = [
+                    'bg-[#FFD700] text-black', // 1º
+                    'bg-[#C0C0C0] text-black', // 2º
+                    'bg-[#CD7F32] text-black', // 3º
+                  ]
+                  return (
+                    <div key={a.id} className="flex items-center gap-3 bg-white/[0.02] border border-white/5 rounded-xl p-2">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center font-black text-[10px] shrink-0 ${colors[i] || 'bg-white/10 text-white/70'}`}>
+                        {i + 1}
+                      </div>
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10 shrink-0">
+                        <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-bold text-xs truncate" title={a.nome}>{a.nome}</p>
+                        <p className="text-white/40 text-[9px] font-bold">{a.usuariosCount} {a.usuariosCount === 1 ? 'usuário' : 'usuários'}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           {avatars.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-white/40">
               <Smile size={48} className="mb-4 text-[#D4AF37]/20" />
@@ -411,6 +456,9 @@ export default function GerenciadorAvatares() {
                     </div>
                   </div>
                   <div className="text-white/70 text-xs font-bold transition-colors group-hover:text-white line-clamp-2 px-1 text-center w-full" title={a.nome}>{a.nome}</div>
+                  <span className="text-[9px] bg-white/5 border border-white/5 text-white/40 px-2 py-0.5 rounded-full font-bold transition-colors group-hover:text-[#D4AF37]/80 group-hover:border-[#D4AF37]/20 shrink-0">
+                    {avatarStats[a.avatar_url] || 0} { (avatarStats[a.avatar_url] || 0) === 1 ? 'usuário' : 'usuários' }
+                  </span>
                 </div>
               ))}
             </div>
