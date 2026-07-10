@@ -950,3 +950,68 @@ export async function deletarTestador(id: string) {
     return { success: false, error: error.message }
   }
 }
+
+// --- AUTOMAÇÕES INSTAGRAM ---
+export async function adicionarAutomacaoInstagram(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+
+  const palavraChave = formData.get('palavra_chave') as string
+  const resposta     = formData.get('resposta') as string
+  const videoId      = formData.get('video_id') as string | null
+
+  if (!palavraChave?.trim()) return { success: false, error: 'Palavra-chave é obrigatória.' }
+  if (!resposta?.trim()) return { success: false, error: 'Resposta é obrigatória.' }
+
+  const { error } = await supabase.from('automacoes_instagram').insert({
+    palavra_chave: palavraChave.trim(),
+    resposta:      resposta.trim(),
+    video_id:      videoId?.trim() || '',
+    ativo:         true,
+  })
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/admin')
+  return { success: true }
+}
+
+export async function editarAutomacaoInstagram(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+
+  const id           = formData.get('id') as string
+  const palavraChave = formData.get('palavra_chave') as string
+  const resposta     = formData.get('resposta') as string
+  const videoId      = formData.get('video_id') as string | null
+
+  if (!id) return { success: false, error: 'ID da automação é obrigatório.' }
+  if (!palavraChave?.trim()) return { success: false, error: 'Palavra-chave é obrigatória.' }
+  if (!resposta?.trim()) return { success: false, error: 'Resposta é obrigatória.' }
+
+  const { error } = await supabase.from('automacoes_instagram').update({
+    palavra_chave: palavraChave.trim(),
+    resposta:      resposta.trim(),
+    video_id:      videoId?.trim() || '',
+  }).eq('id', id)
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/admin')
+  return { success: true }
+}
+
+export async function deletarAutomacaoInstagram(id: string) {
+  const { supabase } = await verificarAdmin()
+  const { error } = await supabase.from('automacoes_instagram').delete().eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin')
+  return { success: true }
+}
+
+export async function toggleAutomacaoInstagramAtiva(id: string, ativo: boolean) {
+  const { supabase } = await verificarAdmin()
+  const { error } = await supabase.from('automacoes_instagram').update({ ativo }).eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin')
+  return { success: true }
+}
+

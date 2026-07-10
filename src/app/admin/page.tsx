@@ -11,7 +11,7 @@ import {
 import {
   Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, Users, Edit3, X, UserCheck, Film,
-  Heart, BarChart3, Trophy, Megaphone, ShoppingBag, Smile
+  Heart, BarChart3, Trophy, Megaphone, ShoppingBag, Smile, Zap
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -29,6 +29,8 @@ import { GerenciadorRevistas } from './GerenciadorRevistas'
 import { CatalogoTabsLayout } from './CatalogoTabsLayout'
 import { GerenciadorTestadores } from './GerenciadorTestadores'
 import GerenciadorAvatares from './GerenciadorAvatares'
+import GerenciadorAutomacoes from './GerenciadorAutomacoes'
+
 
 type VideoType = {
   id: string; titulo: string; descricao: string | null
@@ -93,6 +95,10 @@ export default async function AdminPage({
   const { data: testadores } = await supabase.from('testadores_playstore').select('*').order('criado_em', { ascending: false })
   const { data: configWhatsapp } = await supabase.from('configuracoes_sistema').select('valor').eq('chave', 'whatsapp_link').maybeSingle()
   const linkWhatsapp = configWhatsapp?.valor || ''
+
+  // Automações Instagram
+  const { data: automacoes } = await supabase.from('automacoes_instagram').select('*').order('criado_em', { ascending: false })
+
 
   // Busca visualizações para computar estatísticas gerais e individuais
   let views: any[] = []
@@ -233,8 +239,10 @@ export default async function AdminPage({
               { id: 'loja', label: 'Loja', icon: ShoppingBag, count: totalProdutos },
               { id: 'avatars', label: 'Avatares', icon: Smile, count: null },
               { id: 'testadores', label: 'Testadores', icon: UserCheck, count: testadores?.length || 0 },
+              { id: 'automacao', label: 'Insta Auto', icon: Zap, count: automacoes?.length || 0 },
               { id: 'marketing', label: 'Marketing', icon: Megaphone, count: null },
             ].map(tab => (
+
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
                 className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
                 style={activeTab === tab.id ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' } : {}}>
@@ -441,6 +449,12 @@ export default async function AdminPage({
         {activeTab === 'avatars' && (
           <GerenciadorAvatares />
         )}
+
+        {/* ══════════ ABA AUTOMAÇÃO ══════════ */}
+        {activeTab === 'automacao' && (
+          <GerenciadorAutomacoes automacoes={automacoes || []} />
+        )}
+
 
       </main>
     </div>
