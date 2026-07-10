@@ -287,7 +287,7 @@ export default function LandingPage() {
               className="text-white font-bold mb-10 text-center w-full max-w-none"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.95)', fontSize: 'clamp(0.85rem, 1.2vw, 1rem)' }}
             >
-              <span className="md:whitespace-nowrap">A partir de R$ 27,90. <span className="opacity-80 font-normal">Cancele quando quiser.</span></span>
+              <span className="md:whitespace-nowrap">A partir de R$ 47,90. <span className="opacity-80 font-normal">Cancele quando quiser.</span></span>
             </p>
 
             <div className="flex flex-col items-center gap-5">
