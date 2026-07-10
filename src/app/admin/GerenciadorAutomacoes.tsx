@@ -40,6 +40,18 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
   const inputCls = 'w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm'
   const labelCls = 'block text-white/50 text-[0.7rem] uppercase tracking-widest mb-1.5 font-bold'
 
+  // Helper to extract Instagram ID from URL
+  const extrairInstagramId = (input: string) => {
+    if (!input) return ''
+    const trimmed = input.trim()
+    // Match patterns like /p/ID, /reel/ID, /tv/ID
+    const match = trimmed.match(/(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel|tv)\/([a-zA-Z0-9_\-]+)/i)
+    if (match && match[1]) {
+      return match[1]
+    }
+    return trimmed // Se não for link, retorna o próprio ID digitado
+  }
+
   // Reset form states
   const resetForm = () => {
     setPalavraChave('')
@@ -54,10 +66,12 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     if (!resposta.trim()) { setErro('Resposta é obrigatória.'); return }
     setErro('')
 
+    const idLimpo = extrairInstagramId(videoId)
+
     const fd = new FormData()
     fd.append('palavra_chave', palavraChave.trim())
     fd.append('resposta', resposta.trim())
-    fd.append('video_id', videoId.trim() || '')
+    fd.append('video_id', idLimpo)
 
     startTransition(async () => {
       const res = await adicionarAutomacaoInstagram(fd)
@@ -79,11 +93,13 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     if (!resposta.trim()) { setErro('Resposta é obrigatória.'); return }
     setErro('')
 
+    const idLimpo = extrairInstagramId(videoId)
+
     const fd = new FormData()
     fd.append('id', automacaoEditando.id)
     fd.append('palavra_chave', palavraChave.trim())
     fd.append('resposta', resposta.trim())
-    fd.append('video_id', videoId.trim() || '')
+    fd.append('video_id', idLimpo)
 
     startTransition(async () => {
       const res = await editarAutomacaoInstagram(fd)
@@ -92,7 +108,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
           ...a,
           palavra_chave: palavraChave.trim(),
           resposta: resposta.trim(),
-          video_id: videoId.trim() || null
+          video_id: idLimpo || null
         } : a))
         setModalEdicaoAberto(false)
         resetForm()
