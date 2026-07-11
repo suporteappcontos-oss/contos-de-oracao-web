@@ -25,11 +25,30 @@ type Automacao = {
   criado_em: string
 }
 
-type Props = {
-  automacoes: Automacao[]
+type LogAutomacao = {
+  id: string
+  automacao_id: string
+  status: string
+  seguidor: string | null
+  comentario: string | null
+  resposta_enviada: string | null
+  criado_em: string
+  automacoes_instagram?: {
+    palavra_chave: string
+  } | null
 }
 
-export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }: Props) {
+type Props = {
+  automacoes: Automacao[]
+  logs?: LogAutomacao[]
+  stats?: Record<string, { sucesso: number; erro: number }>
+}
+
+export default function GerenciadorAutomacoes({ 
+  automacoes: initialAutomacoes,
+  logs = [],
+  stats = {}
+}: Props) {
   const [automacoesList, setAutomacoesList] = useState<Automacao[]>(initialAutomacoes)
   const [modalAberto, setModalAberto] = useState(false)
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false)
@@ -170,6 +189,11 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     setModalEdicaoAberto(true)
   }
 
+  const totalSucesso = Object.values(stats).reduce((acc, curr) => acc + curr.sucesso, 0)
+  const totalErro = Object.values(stats).reduce((acc, curr) => acc + curr.erro, 0)
+  const totalEnvios = totalSucesso + totalErro
+  const taxaSucesso = totalEnvios > 0 ? Math.round((totalSucesso / totalEnvios) * 100) : 100
+
   return (
     <div className="space-y-6">
       {/* Header do Gerenciador */}
@@ -194,6 +218,26 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
         </button>
       </div>
 
+      {/* Dashboard de Métricas */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="relative overflow-hidden bg-[#111827] border border-white/5 rounded-2xl p-5 shadow-lg">
+          <div className="text-white/50 text-[0.65rem] uppercase tracking-wider font-bold mb-1">Total de Disparos</div>
+          <div className="text-2xl font-black text-white">{totalEnvios}</div>
+        </div>
+        <div className="relative overflow-hidden bg-[#111827] border border-white/5 rounded-2xl p-5 shadow-lg">
+          <div className="text-[#10b981]/70 text-[0.65rem] uppercase tracking-wider font-bold mb-1">Sucesso (Entregues)</div>
+          <div className="text-2xl font-black text-[#10b981]">{totalSucesso}</div>
+        </div>
+        <div className="relative overflow-hidden bg-[#111827] border border-white/5 rounded-2xl p-5 shadow-lg">
+          <div className="text-red-400/70 text-[0.65rem] uppercase tracking-wider font-bold mb-1">Falhas / Bloqueios</div>
+          <div className="text-2xl font-black text-red-400">{totalErro}</div>
+        </div>
+        <div className="relative overflow-hidden bg-[#111827] border border-white/5 rounded-2xl p-5 shadow-lg">
+          <div className="text-amber-500/70 text-[0.65rem] uppercase tracking-wider font-bold mb-1">Taxa de Sucesso</div>
+          <div className="text-2xl font-black text-[#D4AF37]">{taxaSucesso}%</div>
+        </div>
+      </div>
+
       {/* Lista de Automações */}
       {automacoesList.length === 0 ? (
         <div className="bg-[#111827] border border-white/5 rounded-3xl p-12 text-center">
@@ -215,6 +259,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
                   <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Palavra Mágica</th>
                   <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Resposta Automática (Direct)</th>
                   <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">ID do Reels/Post (Opcional)</th>
+                  <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Métricas</th>
                   <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Status</th>
                   <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black text-right">Ações</th>
                 </tr>
@@ -230,6 +275,16 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
                     </td>
                     <td className="p-5 text-white/40 text-xs font-mono">
                       {a.video_id ? a.video_id : <span className="opacity-40 italic">Global (Qualquer post)</span>}
+                    </td>
+                    <td className="p-5 text-xs font-bold font-mono">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[#10b981]">
+                          {stats[a.id]?.sucesso || 0} OK
+                        </span>
+                        <span className="text-red-400">
+                          {stats[a.id]?.erro || 0} Erro
+                        </span>
+                      </div>
                     </td>
                     <td className="p-5">
                       <button
@@ -565,6 +620,66 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
           </div>
         </div>
       )}
+      {/* Histórico Recente de Disparos */}
+      <div className="space-y-4 pt-6 border-t border-white/5">
+        <div>
+          <h4 className="text-white text-lg font-black tracking-tight">Histórico Recente de Disparos</h4>
+          <p className="text-white/40 text-xs mt-1">Registros em tempo real dos comentários respondidos e erros capturados.</p>
+        </div>
+
+        {logs.length === 0 ? (
+          <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 text-center text-white/30 text-sm">
+            Nenhum disparo registrado ainda.
+          </div>
+        ) : (
+          <div className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-white/5 bg-white/[0.02]">
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Data/Hora</th>
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Seguidor</th>
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Palavra-chave</th>
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Comentário</th>
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Resposta Enviada</th>
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-sm">
+                  {logs.map(log => {
+                    const dataHora = new Date(log.criado_em).toLocaleString('pt-BR', {
+                      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
+                    })
+                    const palavra = log.automacoes_instagram?.palavra_chave || '—'
+                    return (
+                      <tr key={log.id} className="hover:bg-white/[0.005] transition-colors">
+                        <td className="p-4 text-white/40 font-mono text-xs">{dataHora}</td>
+                        <td className="p-4 font-bold text-white/80">@{log.seguidor || 'desconhecido'}</td>
+                        <td className="p-4 text-[#D4AF37] font-mono uppercase text-xs">{palavra}</td>
+                        <td className="p-4 text-white/60 max-w-[200px] truncate" title={log.comentario || ''}>
+                          {log.comentario || '—'}
+                        </td>
+                        <td className="p-4 text-white/60 max-w-[200px] truncate" title={log.resposta_enviada || ''}>
+                          {log.resposta_enviada || '—'}
+                        </td>
+                        <td className="p-4">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-black uppercase ${
+                            log.status === 'sucesso'
+                              ? 'bg-[#10b981]/10 text-[#10b981]'
+                              : 'bg-red-500/10 text-red-400'
+                          }`}>
+                            {log.status}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

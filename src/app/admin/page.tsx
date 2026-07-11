@@ -99,6 +99,36 @@ export default async function AdminPage({
   // Automações Instagram
   const { data: automacoes } = await supabase.from('automacoes_instagram').select('*').order('criado_em', { ascending: false })
 
+  // Logs e estatísticas das automações
+  let logsAutomacoes: any[] = []
+  let statsMap: Record<string, { sucesso: number; erro: number }> = {}
+  try {
+    const { data: logsData } = await supabase
+      .from('logs_automacoes_instagram')
+      .select('*, automacoes_instagram(palavra_chave)')
+      .order('criado_em', { ascending: false })
+      .limit(30)
+    logsAutomacoes = logsData ?? []
+
+    const { data: statsData } = await supabase
+      .from('logs_automacoes_instagram')
+      .select('automacao_id, status')
+    
+    statsData?.forEach(row => {
+      if (!row.automacao_id) return
+      if (!statsMap[row.automacao_id]) {
+        statsMap[row.automacao_id] = { sucesso: 0, erro: 0 }
+      }
+      if (row.status === 'sucesso') {
+        statsMap[row.automacao_id].sucesso++
+      } else if (row.status === 'erro') {
+        statsMap[row.automacao_id].erro++
+      }
+    })
+  } catch (e) {
+    console.error('Erro ao buscar logs de automação:', e)
+  }
+
 
   // Busca visualizações para computar estatísticas gerais e individuais
   let views: any[] = []
@@ -452,7 +482,11 @@ export default async function AdminPage({
 
         {/* ══════════ ABA AUTOMAÇÃO ══════════ */}
         {activeTab === 'automacao' && (
-          <GerenciadorAutomacoes automacoes={automacoes || []} />
+          <GerenciadorAutomacoes 
+            automacoes={automacoes || []} 
+            logs={logsAutomacoes}
+            stats={statsMap}
+          />
         )}
 
 
