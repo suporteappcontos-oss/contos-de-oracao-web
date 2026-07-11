@@ -15,6 +15,10 @@ type Automacao = {
   id: string
   palavra_chave: string
   resposta: string
+  resposta_2: string | null
+  resposta_3: string | null
+  resposta_4: string | null
+  resposta_5: string | null
   video_id: string | null
   ativo: boolean
   criado_em: string
@@ -33,6 +37,10 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
   // Form State
   const [palavraChave, setPalavraChave] = useState('')
   const [resposta, setResposta] = useState('')
+  const [resposta2, setResposta2] = useState('')
+  const [resposta3, setResposta3] = useState('')
+  const [resposta4, setResposta4] = useState('')
+  const [resposta5, setResposta5] = useState('')
   const [videoId, setVideoId] = useState('')
   const [erro, setErro] = useState('')
   const [isPending, startTransition] = useTransition()
@@ -44,6 +52,10 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
   const resetForm = () => {
     setPalavraChave('')
     setResposta('')
+    setResposta2('')
+    setResposta3('')
+    setResposta4('')
+    setResposta5('')
     setVideoId('')
     setErro('')
   }
@@ -57,6 +69,10 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     const fd = new FormData()
     fd.append('palavra_chave', palavraChave.trim())
     fd.append('resposta', resposta.trim())
+    fd.append('resposta_2', resposta2.trim())
+    fd.append('resposta_3', resposta3.trim())
+    fd.append('resposta_4', resposta4.trim())
+    fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
 
     startTransition(async () => {
@@ -83,6 +99,10 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     fd.append('id', automacaoEditando.id)
     fd.append('palavra_chave', palavraChave.trim())
     fd.append('resposta', resposta.trim())
+    fd.append('resposta_2', resposta2.trim())
+    fd.append('resposta_3', resposta3.trim())
+    fd.append('resposta_4', resposta4.trim())
+    fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
 
     startTransition(async () => {
@@ -92,6 +112,10 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
           ...a,
           palavra_chave: palavraChave.trim(),
           resposta: resposta.trim(),
+          resposta_2: resposta2.trim(),
+          resposta_3: resposta3.trim(),
+          resposta_4: resposta4.trim(),
+          resposta_5: resposta5.trim(),
           video_id: videoId.trim() || null
         } : a))
         setModalEdicaoAberto(false)
@@ -131,6 +155,10 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     setAutomacaoEditando(a)
     setPalavraChave(a.palavra_chave)
     setResposta(a.resposta)
+    setResposta2(a.resposta_2 ?? '')
+    setResposta3(a.resposta_3 ?? '')
+    setResposta4(a.resposta_4 ?? '')
+    setResposta5(a.resposta_5 ?? '')
     setVideoId(a.video_id ?? '')
     setModalEdicaoAberto(true)
   }
@@ -283,16 +311,62 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
                 </p>
               </div>
 
-              {/* Resposta */}
-              <div>
-                <label className={labelCls}>Mensagem de Resposta *</label>
-                <textarea
-                  value={resposta}
-                  onChange={e => setResposta(e.target.value)}
-                  rows={4}
-                  placeholder="Digite o texto que o usuário receberá na Direct Message. Insira links e chamadas para ação."
-                  className={inputCls}
-                />
+              {/* Respostas com variações */}
+              <div className="space-y-3">
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 1 (Padrão) *</label>
+                  <textarea
+                    value={resposta}
+                    onChange={e => setResposta(e.target.value)}
+                    rows={3}
+                    placeholder="Primeira variação de texto ou link principal..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 2 (Opcional)</label>
+                  <textarea
+                    value={resposta2}
+                    onChange={e => setResposta2(e.target.value)}
+                    rows={2}
+                    placeholder="Segunda variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 3 (Opcional)</label>
+                  <textarea
+                    value={resposta3}
+                    onChange={e => setResposta3(e.target.value)}
+                    rows={2}
+                    placeholder="Terceira variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 4 (Opcional)</label>
+                  <textarea
+                    value={resposta4}
+                    onChange={e => setResposta4(e.target.value)}
+                    rows={2}
+                    placeholder="Quarta variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 5 (Opcional)</label>
+                  <textarea
+                    value={resposta5}
+                    onChange={e => setResposta5(e.target.value)}
+                    rows={2}
+                    placeholder="Quinta variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
               </div>
 
               {/* Erro */}
@@ -367,16 +441,62 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
                 />
               </div>
 
-              {/* Resposta */}
-              <div>
-                <label className={labelCls}>Mensagem de Resposta *</label>
-                <textarea
-                  value={resposta}
-                  onChange={e => setResposta(e.target.value)}
-                  rows={4}
-                  placeholder="Digite o texto que o usuário receberá na Direct Message..."
-                  className={inputCls}
-                />
+              {/* Respostas com variações (Edição) */}
+              <div className="space-y-3">
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 1 (Padrão) *</label>
+                  <textarea
+                    value={resposta}
+                    onChange={e => setResposta(e.target.value)}
+                    rows={3}
+                    placeholder="Primeira variação de texto ou link principal..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 2 (Opcional)</label>
+                  <textarea
+                    value={resposta2}
+                    onChange={e => setResposta2(e.target.value)}
+                    rows={2}
+                    placeholder="Segunda variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 3 (Opcional)</label>
+                  <textarea
+                    value={resposta3}
+                    onChange={e => setResposta3(e.target.value)}
+                    rows={2}
+                    placeholder="Terceira variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 4 (Opcional)</label>
+                  <textarea
+                    value={resposta4}
+                    onChange={e => setResposta4(e.target.value)}
+                    rows={2}
+                    placeholder="Quarta variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelCls}>Mensagem de Resposta 5 (Opcional)</label>
+                  <textarea
+                    value={resposta5}
+                    onChange={e => setResposta5(e.target.value)}
+                    rows={2}
+                    placeholder="Quinta variação opcional de texto..."
+                    className={inputCls}
+                  />
+                </div>
               </div>
 
               {/* Erro */}

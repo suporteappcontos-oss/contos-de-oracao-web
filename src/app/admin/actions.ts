@@ -957,6 +957,10 @@ export async function adicionarAutomacaoInstagram(formData: FormData) {
 
   const palavraChave = formData.get('palavra_chave') as string
   const resposta     = formData.get('resposta') as string
+  const resposta2    = formData.get('resposta_2') as string | null
+  const resposta3    = formData.get('resposta_3') as string | null
+  const resposta4    = formData.get('resposta_4') as string | null
+  const resposta5    = formData.get('resposta_5') as string | null
   const videoId      = formData.get('video_id') as string | null
 
   if (!palavraChave?.trim()) return { success: false, error: 'Palavra-chave é obrigatória.' }
@@ -965,6 +969,10 @@ export async function adicionarAutomacaoInstagram(formData: FormData) {
   const { error } = await supabase.from('automacoes_instagram').insert({
     palavra_chave: palavraChave.trim(),
     resposta:      resposta.trim(),
+    resposta_2:    resposta2?.trim() || '',
+    resposta_3:    resposta3?.trim() || '',
+    resposta_4:    resposta4?.trim() || '',
+    resposta_5:    resposta5?.trim() || '',
     video_id:      videoId?.trim() || '',
     ativo:         true,
   })
@@ -981,6 +989,10 @@ export async function editarAutomacaoInstagram(formData: FormData) {
   const id           = formData.get('id') as string
   const palavraChave = formData.get('palavra_chave') as string
   const resposta     = formData.get('resposta') as string
+  const resposta2    = formData.get('resposta_2') as string | null
+  const resposta3    = formData.get('resposta_3') as string | null
+  const resposta4    = formData.get('resposta_4') as string | null
+  const resposta5    = formData.get('resposta_5') as string | null
   const videoId      = formData.get('video_id') as string | null
 
   if (!id) return { success: false, error: 'ID da automação é obrigatório.' }
@@ -990,6 +1002,10 @@ export async function editarAutomacaoInstagram(formData: FormData) {
   const { error } = await supabase.from('automacoes_instagram').update({
     palavra_chave: palavraChave.trim(),
     resposta:      resposta.trim(),
+    resposta_2:    resposta2?.trim() || '',
+    resposta_3:    resposta3?.trim() || '',
+    resposta_4:    resposta4?.trim() || '',
+    resposta_5:    resposta5?.trim() || '',
     video_id:      videoId?.trim() || '',
   }).eq('id', id)
 
