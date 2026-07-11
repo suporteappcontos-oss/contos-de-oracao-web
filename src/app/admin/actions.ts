@@ -962,6 +962,7 @@ export async function adicionarAutomacaoInstagram(formData: FormData) {
   const resposta4    = formData.get('resposta_4') as string | null
   const resposta5    = formData.get('resposta_5') as string | null
   const videoId      = formData.get('video_id') as string | null
+  const linkVendas   = formData.get('link_vendas') as string | null
 
   if (!palavraChave?.trim()) return { success: false, error: 'Palavra-chave é obrigatória.' }
   if (!resposta?.trim()) return { success: false, error: 'Resposta é obrigatória.' }
@@ -974,6 +975,7 @@ export async function adicionarAutomacaoInstagram(formData: FormData) {
     resposta_4:    resposta4?.trim() || '',
     resposta_5:    resposta5?.trim() || '',
     video_id:      videoId?.trim() || '',
+    link_vendas:   linkVendas?.trim() || '',
     ativo:         true,
   })
 
@@ -994,6 +996,7 @@ export async function editarAutomacaoInstagram(formData: FormData) {
   const resposta4    = formData.get('resposta_4') as string | null
   const resposta5    = formData.get('resposta_5') as string | null
   const videoId      = formData.get('video_id') as string | null
+  const linkVendas   = formData.get('link_vendas') as string | null
 
   if (!id) return { success: false, error: 'ID da automação é obrigatório.' }
   if (!palavraChave?.trim()) return { success: false, error: 'Palavra-chave é obrigatória.' }
@@ -1007,6 +1010,7 @@ export async function editarAutomacaoInstagram(formData: FormData) {
     resposta_4:    resposta4?.trim() || '',
     resposta_5:    resposta5?.trim() || '',
     video_id:      videoId?.trim() || '',
+    link_vendas:   linkVendas?.trim() || '',
   }).eq('id', id)
 
   if (error) return { success: false, error: error.message }

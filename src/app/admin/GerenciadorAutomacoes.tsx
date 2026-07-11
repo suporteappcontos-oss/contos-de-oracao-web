@@ -20,6 +20,7 @@ type Automacao = {
   resposta_4: string | null
   resposta_5: string | null
   video_id: string | null
+  link_vendas: string | null
   ativo: boolean
   criado_em: string
 }
@@ -42,6 +43,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
   const [resposta4, setResposta4] = useState('')
   const [resposta5, setResposta5] = useState('')
   const [videoId, setVideoId] = useState('')
+  const [linkVendas, setLinkVendas] = useState('')
   const [erro, setErro] = useState('')
   const [isPending, startTransition] = useTransition()
 
@@ -57,6 +59,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     setResposta4('')
     setResposta5('')
     setVideoId('')
+    setLinkVendas('')
     setErro('')
   }
 
@@ -74,6 +77,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     fd.append('resposta_4', resposta4.trim())
     fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
+    fd.append('link_vendas', linkVendas.trim() || '')
 
     startTransition(async () => {
       const res = await adicionarAutomacaoInstagram(fd)
@@ -104,6 +108,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     fd.append('resposta_4', resposta4.trim())
     fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
+    fd.append('link_vendas', linkVendas.trim() || '')
 
     startTransition(async () => {
       const res = await editarAutomacaoInstagram(fd)
@@ -116,7 +121,8 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
           resposta_3: resposta3.trim(),
           resposta_4: resposta4.trim(),
           resposta_5: resposta5.trim(),
-          video_id: videoId.trim() || null
+          video_id: videoId.trim() || null,
+          link_vendas: linkVendas.trim() || null
         } : a))
         setModalEdicaoAberto(false)
         resetForm()
@@ -160,6 +166,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
     setResposta4(a.resposta_4 ?? '')
     setResposta5(a.resposta_5 ?? '')
     setVideoId(a.video_id ?? '')
+    setLinkVendas(a.link_vendas ?? '')
     setModalEdicaoAberto(true)
   }
 
@@ -266,7 +273,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
       {/* MODAL ADICIONAR REGRA */}
       {modalAberto && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-yellow-500/5 to-amber-500/10">
               <div className="flex items-center gap-2">
@@ -282,7 +289,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
             </div>
 
             {/* Form */}
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
               {/* Palavra Mágica */}
               <div>
                 <label className={labelCls}>Palavra Mágica (Palavra-Chave) *</label>
@@ -308,6 +315,21 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
                 />
                 <p className="text-white/20 text-[0.65rem] mt-1.5">
                   Se preenchido, a automação só responderá a comentários feitos neste post específico.
+                </p>
+              </div>
+
+              {/* Link de Vendas */}
+              <div>
+                <label className={labelCls}>Link de Vendas / Destino (Opcional)</label>
+                <input
+                  type="url"
+                  value={linkVendas}
+                  onChange={e => setLinkVendas(e.target.value)}
+                  placeholder="Ex: https://bibliotecacatolica.lovable.app"
+                  className={inputCls}
+                />
+                <p className="text-white/20 text-[0.65rem] mt-1.5">
+                  Se preenchido, o robô irá anexar esse link automaticamente no final da resposta sorteada.
                 </p>
               </div>
 
@@ -402,7 +424,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
       {/* MODAL EDITAR REGRA */}
       {modalEdicaoAberto && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-yellow-500/5 to-amber-500/10">
               <div className="flex items-center gap-2">
@@ -418,7 +440,7 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
             </div>
 
             {/* Form */}
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
               {/* Palavra Mágica */}
               <div>
                 <label className={labelCls}>Palavra Mágica (Palavra-Chave) *</label>
@@ -439,6 +461,21 @@ export default function GerenciadorAutomacoes({ automacoes: initialAutomacoes }:
                   placeholder="Ex: C8xfG_fP1aB (Vazio = vale para qualquer post)"
                   className={inputCls + ' font-mono'}
                 />
+              </div>
+
+              {/* Link de Vendas */}
+              <div>
+                <label className={labelCls}>Link de Vendas / Destino (Opcional)</label>
+                <input
+                  type="url"
+                  value={linkVendas}
+                  onChange={e => setLinkVendas(e.target.value)}
+                  placeholder="Ex: https://bibliotecacatolica.lovable.app"
+                  className={inputCls}
+                />
+                <p className="text-white/20 text-[0.65rem] mt-1.5">
+                  Se preenchido, o robô irá anexar esse link automaticamente no final da resposta sorteada.
+                </p>
               </div>
 
               {/* Respostas com variações (Edição) */}
