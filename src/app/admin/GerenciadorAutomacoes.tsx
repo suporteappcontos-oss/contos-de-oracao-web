@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useState, useEffect, useTransition } from 'react'
 import {
   Trash2, Plus, Edit3, X, Check, Loader2, Zap, Play, ToggleLeft, ToggleRight
 } from 'lucide-react'
@@ -8,7 +8,8 @@ import {
   adicionarAutomacaoInstagram,
   editarAutomacaoInstagram,
   deletarAutomacaoInstagram,
-  toggleAutomacaoInstagramAtiva
+  toggleAutomacaoInstagramAtiva,
+  resolverErroAutomacao
 } from './actions'
 
 type Automacao = {
@@ -32,6 +33,8 @@ type LogAutomacao = {
   seguidor: string | null
   comentario: string | null
   resposta_enviada: string | null
+  detalhe_erro: string | null
+  resolvido?: boolean
   criado_em: string
   automacoes_instagram?: {
     palavra_chave: string
@@ -50,9 +53,26 @@ export default function GerenciadorAutomacoes({
   stats = {}
 }: Props) {
   const [automacoesList, setAutomacoesList] = useState<Automacao[]>(initialAutomacoes)
+  const [logsList, setLogsList] = useState<LogAutomacao[]>(logs)
   const [modalAberto, setModalAberto] = useState(false)
   const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false)
   const [automacaoEditando, setAutomacaoEditando] = useState<Automacao | null>(null)
+
+  useEffect(() => {
+    setLogsList(logs)
+  }, [logs])
+
+  const handleResolverErro = (logId: string) => {
+    if (!confirm('Deseja realmente marcar este erro como resolvido? Ele sumirá do painel.')) return
+    startTransition(async () => {
+      const res = await resolverErroAutomacao(logId)
+      if (res?.success) {
+        setLogsList(prev => prev.filter(log => log.id !== logId))
+      } else {
+        alert('Erro ao resolver: ' + (res?.error ?? 'Erro desconhecido'))
+      }
+    })
+  }
 
   // Form State
   const [palavraChave, setPalavraChave] = useState('')
@@ -620,16 +640,17 @@ export default function GerenciadorAutomacoes({
           </div>
         </div>
       )}
-      {/* Histórico Recente de Disparos */}
+
+      {/* Histórico de Falhas / Bloqueios (Erros) */}
       <div className="space-y-4 pt-6 border-t border-white/5">
         <div>
-          <h4 className="text-white text-lg font-black tracking-tight">Histórico Recente de Disparos</h4>
-          <p className="text-white/40 text-xs mt-1">Registros em tempo real dos comentários respondidos e erros capturados.</p>
+          <h4 className="text-white text-lg font-black tracking-tight">Histórico de Falhas / Bloqueios (Erros)</h4>
+          <p className="text-white/40 text-xs mt-1">Exibe as últimas falhas e bloqueios relatados pelo Instagram durante as automações.</p>
         </div>
 
-        {logs.length === 0 ? (
+        {logsList.length === 0 ? (
           <div className="bg-[#111827] border border-white/5 rounded-3xl p-8 text-center text-white/30 text-sm">
-            Nenhum disparo registrado ainda.
+            Nenhuma falha registrada recentemente. Tudo rodando perfeitamente!
           </div>
         ) : (
           <div className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
@@ -641,12 +662,12 @@ export default function GerenciadorAutomacoes({
                     <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Seguidor</th>
                     <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Palavra-chave</th>
                     <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Comentário</th>
-                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Resposta Enviada</th>
-                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Status</th>
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Detalhe do Erro</th>
+                    <th className="p-4 text-white/50 text-[0.65rem] uppercase tracking-widest font-black text-right">Ação</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-sm">
-                  {logs.map(log => {
+                  {logsList.map(log => {
                     const dataHora = new Date(log.criado_em).toLocaleString('pt-BR', {
                       day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
                     })
@@ -656,20 +677,21 @@ export default function GerenciadorAutomacoes({
                         <td className="p-4 text-white/40 font-mono text-xs">{dataHora}</td>
                         <td className="p-4 font-bold text-white/80">@{log.seguidor || 'desconhecido'}</td>
                         <td className="p-4 text-[#D4AF37] font-mono uppercase text-xs">{palavra}</td>
-                        <td className="p-4 text-white/60 max-w-[200px] truncate" title={log.comentario || ''}>
+                        <td className="p-4 text-white/60 max-w-[150px] truncate" title={log.comentario || ''}>
                           {log.comentario || '—'}
                         </td>
-                        <td className="p-4 text-white/60 max-w-[200px] truncate" title={log.resposta_enviada || ''}>
-                          {log.resposta_enviada || '—'}
+                        <td className="p-4 text-red-400 max-w-[250px] truncate" title={log.detalhe_erro || 'Erro não especificado'}>
+                          {log.detalhe_erro || 'Erro não especificado'}
                         </td>
-                        <td className="p-4">
-                          <span className={`inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-black uppercase ${
-                            log.status === 'sucesso'
-                              ? 'bg-[#10b981]/10 text-[#10b981]'
-                              : 'bg-red-500/10 text-red-400'
-                          }`}>
-                            {log.status}
-                          </span>
+                        <td className="p-4 text-right">
+                          <button
+                            onClick={() => handleResolverErro(log.id)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all hover:scale-105 border border-emerald-500/10"
+                            title="Marcar como Resolvido"
+                          >
+                            <Check size={12} />
+                            Resolvido
+                          </button>
                         </td>
                       </tr>
                     )

@@ -82,65 +82,84 @@ export default async function AdminPage({
   const isAdminRole = perfil?.role === 'admin' || user.user_metadata?.role === 'admin'
   const isAdminEmail = user.email === 'suporte.appcontos@gmail.com'
   if (!isAdminRole && !isAdminEmail) redirect('/')
-
-  // Videos
-  const { data: videos } = await supabase.from('videos').select('*').order('criado_em', { ascending: false })
-  const { data: materiaisData } = await supabase.from('materiais').select('*').order('criado_em', { ascending: false })
-  const { data: produtosLoja } = await supabase.from('produtos_loja').select('*').order('criado_em', { ascending: false })
-  const { data: videosTematicos } = await supabase.from('videos_tematicos').select('*').order('criado_em', { ascending: false })
-  const { data: revistasData } = await supabase.from('revistas').select('*').order('criado_em', { ascending: false })
-  const { data: series } = await supabase.from('series').select('*').order('criado_em', { ascending: false })
-  
-  // Testadores e configurações
-  const { data: testadores } = await supabase.from('testadores_playstore').select('*').order('criado_em', { ascending: false })
-  const { data: configWhatsapp } = await supabase.from('configuracoes_sistema').select('valor').eq('chave', 'whatsapp_link').maybeSingle()
-  const linkWhatsapp = configWhatsapp?.valor || ''
-
-  // Automações Instagram
-  const { data: automacoes } = await supabase.from('automacoes_instagram').select('*').order('criado_em', { ascending: false })
-
-  // Logs e estatísticas das automações
+  let videos: any[] = []
+  let materiaisData: any[] = []
+  let produtosLoja: any[] = []
+  let videosTematicos: any[] = []
+  let revistasData: any[] = []
+  let series: any[] = []
+  let testadores: any[] = []
+  let configWhatsapp: any = null
+  let automacoes: any[] = []
   let logsAutomacoes: any[] = []
   let statsMap: Record<string, { sucesso: number; erro: number }> = {}
-  try {
-    const { data: logsData } = await supabase
-      .from('logs_automacoes_instagram')
-      .select('*, automacoes_instagram(palavra_chave)')
-      .order('criado_em', { ascending: false })
-      .limit(30)
-    logsAutomacoes = logsData ?? []
+  let views: any[] = []
+  let views7Days: any[] = []
+  let favs: any[] = []
 
-    const { data: statsData } = await supabase
-      .from('logs_automacoes_instagram')
-      .select('automacao_id, status')
-    
-    statsData?.forEach(row => {
-      if (!row.automacao_id) return
-      if (!statsMap[row.automacao_id]) {
-        statsMap[row.automacao_id] = { sucesso: 0, erro: 0 }
-      }
-      if (row.status === 'sucesso') {
-        statsMap[row.automacao_id].sucesso++
-      } else if (row.status === 'erro') {
-        statsMap[row.automacao_id].erro++
+  try {
+    const [
+      resVideos,
+      resMateriais,
+      resProdutos,
+      resVideosTematicos,
+      resRevistas,
+      resSeries,
+      resTestadores,
+      resConfigWhatsapp,
+      resAutomacoes,
+      resLogs,
+      resViews,
+      resViews7Days,
+      resFavs
+    ] = await Promise.all([
+      supabase.from('videos').select('*').order('criado_em', { ascending: false }),
+      supabase.from('materiais').select('*').order('criado_em', { ascending: false }),
+      supabase.from('produtos_loja').select('*').order('criado_em', { ascending: false }),
+      supabase.from('videos_tematicos').select('*').order('criado_em', { ascending: false }),
+      supabase.from('revistas').select('*').order('criado_em', { ascending: false }),
+      supabase.from('series').select('*').order('criado_em', { ascending: false }),
+      supabase.from('testadores_playstore').select('*').order('criado_em', { ascending: false }),
+      supabase.from('configuracoes_sistema').select('valor').eq('chave', 'whatsapp_link').maybeSingle(),
+      supabase.from('automacoes_instagram').select('*').order('criado_em', { ascending: false }),
+      supabase.from('logs_automacoes_instagram').select('*, automacoes_instagram(palavra_chave)').eq('status', 'erro').eq('resolvido', false).order('criado_em', { ascending: false }).limit(20),
+      supabase.from('visualizacoes').select('video_id, user_id'),
+      supabase.from('visualizacoes').select('criado_em').gte('criado_em', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
+      supabase.from('favoritos').select('video_id')
+    ])
+
+    videos = resVideos.data ?? []
+    materiaisData = resMateriais.data ?? []
+    produtosLoja = resProdutos.data ?? []
+    videosTematicos = resVideosTematicos.data ?? []
+    revistasData = resRevistas.data ?? []
+    series = resSeries.data ?? []
+    testadores = resTestadores.data ?? []
+    configWhatsapp = resConfigWhatsapp.data
+    automacoes = resAutomacoes.data ?? []
+    logsAutomacoes = resLogs.data ?? []
+    views = resViews.data ?? []
+    views7Days = resViews7Days.data ?? []
+    favs = resFavs.data ?? []
+
+    // Mapeia estatísticas diretamente dos contadores rápidos da tabela automacoes_instagram
+    automacoes.forEach(a => {
+      statsMap[a.id] = {
+        sucesso: a.envios_sucesso || 0,
+        erro: a.envios_erro || 0
       }
     })
-  } catch (e) {
-    console.error('Erro ao buscar logs de automação:', e)
+  } catch (error) {
+    console.error('Erro ao carregar dados do Supabase:', error)
   }
 
+  const linkWhatsapp = configWhatsapp?.valor || ''
 
-  // Busca visualizações para computar estatísticas gerais e individuais
-  let views: any[] = []
-  let viewsPorUsuario: Record<string, number> = {}
-  try {
-    const { data } = await supabase.from('visualizacoes').select('video_id, user_id, criado_em')
-    views = data ?? []
-    viewsPorUsuario = views.reduce((acc, v) => {
-      if (v.user_id) acc[v.user_id] = (acc[v.user_id] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
-  } catch (e) { console.error('Erro ao buscar visualizações para usuários:', e) }
+  // Processa as visualizações para usuários
+  const viewsPorUsuario = views.reduce((acc, v) => {
+    if (v.user_id) acc[v.user_id] = (acc[v.user_id] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
 
   // Busca nomes de temporadas distintos (para o seletor no FormAdicionarVideo)
   const temporadasExistentes: string[] = [...new Set(
@@ -207,21 +226,17 @@ export default async function AdminPage({
   let topVisualizados: any[] = []
   const viewsByDay: Record<string, number> = {}
   try {
-    const { data: favs } = await supabase.from('favoritos').select('video_id')
     const favCounts = favs?.reduce((acc, f) => { acc[f.video_id] = (acc[f.video_id] || 0) + 1; return acc }, {} as Record<string, number>) || {}
-    topFavoritos = Object.entries(favCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([id, count]) => {
+    topFavoritos = Object.entries(favCounts).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 10).map(([id, count]) => {
       const v = videos?.find(v => v.id === id)
       return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
     })
 
     const viewCounts: Record<string, number> = views.reduce((acc, v) => { acc[v.video_id] = (acc[v.video_id] || 0) + 1; return acc }, {} as Record<string, number>)
-    topVisualizados = Object.entries(viewCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([id, count]) => {
+    topVisualizados = Object.entries(viewCounts).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 10).map(([id, count]) => {
       const v = videos?.find(v => v.id === id)
       return { id, titulo: v?.titulo || 'Desconhecido', thumbnail_url: v?.thumbnail_url, count }
     })
-
-    // Calcula visualizações dos últimos 7 dias
-    const views7Days = views.filter(v => new Date(v.criado_em) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
     
     // Group by Day
     // Inicializa os últimos 7 dias

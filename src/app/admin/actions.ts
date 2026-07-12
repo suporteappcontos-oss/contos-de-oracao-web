@@ -1035,3 +1035,19 @@ export async function toggleAutomacaoInstagramAtiva(id: string, ativo: boolean) 
   return { success: true }
 }
 
+export async function resolverErroAutomacao(id: string) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase
+      .from('logs_automacoes_instagram')
+      .update({ resolvido: true })
+      .eq('id', id)
+    if (error) throw new Error(error.message)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao resolver log de automacao:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
