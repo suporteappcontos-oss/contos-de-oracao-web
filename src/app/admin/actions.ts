@@ -1036,9 +1036,10 @@ export async function toggleAutomacaoInstagramAtiva(id: string, ativo: boolean) 
 }
 
 export async function resolverErroAutomacao(id: string) {
-  const { supabase } = await verificarAdmin()
+  await verificarAdmin()
+  const adminSupabase = getAdminClient()
   try {
-    const { error } = await supabase
+    const { error } = await adminSupabase
       .from('logs_automacoes_instagram')
       .update({ resolvido: true })
       .eq('id', id)
