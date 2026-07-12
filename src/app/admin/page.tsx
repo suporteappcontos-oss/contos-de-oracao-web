@@ -91,6 +91,7 @@ export default async function AdminPage({
   let testadores: any[] = []
   let configWhatsapp: any = null
   let automacoes: any[] = []
+  let automacoesWhatsapp: any[] = []
   let logsAutomacoes: any[] = []
   let statsMap: Record<string, { sucesso: number; erro: number }> = {}
   let views: any[] = []
@@ -108,6 +109,7 @@ export default async function AdminPage({
       resTestadores,
       resConfigWhatsapp,
       resAutomacoes,
+      resAutomacoesWhatsapp,
       resLogs,
       resViews,
       resViews7Days,
@@ -122,6 +124,7 @@ export default async function AdminPage({
       supabase.from('testadores_playstore').select('*').order('criado_em', { ascending: false }),
       supabase.from('configuracoes_sistema').select('valor').eq('chave', 'whatsapp_link').maybeSingle(),
       supabase.from('automacoes_instagram').select('*').order('criado_em', { ascending: false }),
+      supabase.from('automacoes_whatsapp').select('*').order('criado_em', { ascending: false }),
       supabase.from('logs_automacoes_instagram').select('*, automacoes_instagram(palavra_chave)').eq('status', 'erro').eq('resolvido', false).order('criado_em', { ascending: false }).limit(20),
       supabase.from('visualizacoes').select('video_id, user_id'),
       supabase.from('visualizacoes').select('criado_em').gte('criado_em', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
@@ -137,6 +140,7 @@ export default async function AdminPage({
     testadores = resTestadores.data ?? []
     configWhatsapp = resConfigWhatsapp.data
     automacoes = resAutomacoes.data ?? []
+    automacoesWhatsapp = resAutomacoesWhatsapp.data ?? []
     logsAutomacoes = resLogs.data ?? []
     views = resViews.data ?? []
     views7Days = resViews7Days.data ?? []
@@ -499,6 +503,7 @@ export default async function AdminPage({
         {activeTab === 'automacao' && (
           <GerenciadorAutomacoes 
             automacoes={automacoes || []} 
+            automacoesWhatsapp={automacoesWhatsapp || []}
             logs={logsAutomacoes}
             stats={statsMap}
           />

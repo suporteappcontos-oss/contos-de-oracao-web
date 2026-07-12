@@ -1052,3 +1052,80 @@ export async function resolverErroAutomacao(id: string) {
   }
 }
 
+export async function adicionarAutomacaoWhatsapp(data: {
+  palavra_chave: string
+  mensagem_link: string
+  prompt_ia: string
+  link_vendas?: string
+  ativo?: boolean
+  is_fallback?: boolean
+}) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase
+      .from('automacoes_whatsapp')
+      .insert([data])
+    if (error) throw new Error(error.message)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao adicionar automacao WhatsApp:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function editarAutomacaoWhatsapp(id: string, data: {
+  palavra_chave: string
+  mensagem_link: string
+  prompt_ia: string
+  link_vendas?: string
+  ativo?: boolean
+  is_fallback?: boolean
+}) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase
+      .from('automacoes_whatsapp')
+      .update(data)
+      .eq('id', id)
+    if (error) throw new Error(error.message)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao editar automacao WhatsApp:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function deletarAutomacaoWhatsapp(id: string) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase
+      .from('automacoes_whatsapp')
+      .delete()
+      .eq('id', id)
+    if (error) throw new Error(error.message)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao deletar automacao WhatsApp:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function toggleAutomacaoWhatsappAtiva(id: string, ativo: boolean) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase
+      .from('automacoes_whatsapp')
+      .update({ ativo })
+      .eq('id', id)
+    if (error) throw new Error(error.message)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao alterar status da automacao WhatsApp:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
