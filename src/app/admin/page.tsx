@@ -197,7 +197,7 @@ export default async function AdminPage({
       { auth: { autoRefreshToken: false, persistSession: false } }
     )
     const { data: { users: authUsers } } = await adminClient.auth.admin.listUsers({ perPage: 500 })
-    const { data: perfis } = await supabase.from('perfis').select('id, role, acessos_site, acessos_app')
+    const { data: perfis } = await adminClient.from('perfis').select('id, role, acessos_site, acessos_app')
     const adminIds = new Set(perfis?.filter(p => p.role === 'admin').map(p => p.id) || [])
     const perfisMap = new Map((perfis || []).map(p => [p.id, p]))
     
