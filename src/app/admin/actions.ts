@@ -1113,6 +1113,7 @@ export async function deletarAutomacaoWhatsapp(id: string) {
   }
 }
 
+
 export async function toggleAutomacaoWhatsappAtiva(id: string, ativo: boolean) {
   const { supabase } = await verificarAdmin()
   try {
