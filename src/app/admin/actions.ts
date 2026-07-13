@@ -1052,6 +1052,23 @@ export async function resolverErroAutomacao(id: string) {
   }
 }
 
+export async function resolverErroAutomacaoWhatsapp(id: string) {
+  await verificarAdmin()
+  const adminSupabase = getAdminClient()
+  try {
+    const { error } = await adminSupabase
+      .from('logs_automacoes_whatsapp')
+      .update({ resolvido: true })
+      .eq('id', id)
+    if (error) throw new Error(error.message)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao resolver log de automacao WhatsApp:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
 export async function adicionarAutomacaoWhatsapp(data: {
   palavra_chave: string
   mensagem_link: string

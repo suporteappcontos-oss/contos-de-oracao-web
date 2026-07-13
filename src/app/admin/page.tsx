@@ -111,6 +111,7 @@ export default async function AdminPage({
       resAutomacoes,
       resAutomacoesWhatsapp,
       resLogs,
+      resLogsWhats,
       resViews,
       resViews7Days,
       resFavs
@@ -126,6 +127,7 @@ export default async function AdminPage({
       supabase.from('automacoes_instagram').select('*').order('criado_em', { ascending: false }),
       supabase.from('automacoes_whatsapp').select('*').order('criado_em', { ascending: false }),
       supabase.from('logs_automacoes_instagram').select('*, automacoes_instagram(palavra_chave)').eq('status', 'erro').eq('resolvido', false).order('criado_em', { ascending: false }).limit(20),
+      supabase.from('logs_automacoes_whatsapp').select('*, automacoes_whatsapp(palavra_chave)').eq('status', 'erro').eq('resolvido', false).order('criado_em', { ascending: false }).limit(20),
       supabase.from('visualizacoes').select('video_id, user_id'),
       supabase.from('visualizacoes').select('criado_em').gte('criado_em', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
       supabase.from('favoritos').select('video_id')
@@ -141,7 +143,14 @@ export default async function AdminPage({
     configWhatsapp = resConfigWhatsapp.data
     automacoes = resAutomacoes.data ?? []
     automacoesWhatsapp = resAutomacoesWhatsapp.data ?? []
-    logsAutomacoes = resLogs.data ?? []
+    
+    // Combina os logs de erro de Instagram e WhatsApp
+    const logsInsta = (resLogs.data ?? []).map((l: any) => ({ ...l, tipo: 'instagram' }))
+    const logsWhats = (resLogsWhats.data ?? []).map((l: any) => ({ ...l, tipo: 'whatsapp' }))
+    logsAutomacoes = [...logsInsta, ...logsWhats].sort(
+      (a: any, b: any) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime()
+    )
+
     views = resViews.data ?? []
     views7Days = resViews7Days.data ?? []
     favs = resFavs.data ?? []

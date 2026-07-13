@@ -10,6 +10,7 @@ import {
   deletarAutomacaoInstagram,
   toggleAutomacaoInstagramAtiva,
   resolverErroAutomacao,
+  resolverErroAutomacaoWhatsapp,
   adicionarAutomacaoWhatsapp,
   editarAutomacaoWhatsapp,
   deletarAutomacaoWhatsapp,
@@ -55,7 +56,11 @@ type LogAutomacao = {
   detalhe_erro: string | null
   resolvido?: boolean
   criado_em: string
+  tipo?: 'instagram' | 'whatsapp'
   automacoes_instagram?: {
+    palavra_chave: string
+  } | null
+  automacoes_whatsapp?: {
     palavra_chave: string
   } | null
 }
@@ -119,12 +124,14 @@ export default function GerenciadorAutomacoes({
     setLogsList(logs)
   }, [logs])
 
-  const handleResolverErro = (logId: string) => {
+  const handleResolverErro = (log: LogAutomacao) => {
     if (!confirm('Deseja realmente marcar este erro como resolvido? Ele sumirá do painel.')) return
     startTransition(async () => {
-      const res = await resolverErroAutomacao(logId)
+      const res = log.tipo === 'whatsapp'
+        ? await resolverErroAutomacaoWhatsapp(log.id)
+        : await resolverErroAutomacao(log.id)
       if (res?.success) {
-        setLogsList(prev => prev.filter(log => log.id !== logId))
+        setLogsList(prev => prev.filter(l => l.id !== log.id))
       } else {
         alert('Erro ao resolver: ' + (res?.error ?? 'Erro desconhecido'))
       }
@@ -1432,11 +1439,20 @@ export default function GerenciadorAutomacoes({
                     const dataHora = new Date(log.criado_em).toLocaleString('pt-BR', {
                       day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
                     })
-                    const palavra = log.automacoes_instagram?.palavra_chave || '—'
+                    const palavra = log.automacoes_instagram?.palavra_chave || log.automacoes_whatsapp?.palavra_chave || '—'
                     return (
                       <tr key={log.id} className="hover:bg-white/[0.005] transition-colors">
                         <td className="p-4 text-white/40 font-mono text-xs">{dataHora}</td>
-                        <td className="p-4 font-bold text-white/80">@{log.seguidor || 'desconhecido'}</td>
+                        <td className="p-4 font-bold text-white/80">
+                          <div className="flex items-center gap-2">
+                            <span>@{log.seguidor || 'desconhecido'}</span>
+                            {log.tipo === 'whatsapp' ? (
+                              <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase">Whats</span>
+                            ) : (
+                              <span className="px-1.5 py-0.5 rounded bg-[#E1306C]/10 text-[#E1306C] text-[10px] font-black uppercase">Insta</span>
+                            )}
+                          </div>
+                        </td>
                         <td className="p-4 text-[#D4AF37] font-mono uppercase text-xs">{palavra}</td>
                         <td className="p-4 text-white/60 max-w-[150px] truncate" title={log.comentario || ''}>
                           {log.comentario || '—'}
@@ -1446,7 +1462,7 @@ export default function GerenciadorAutomacoes({
                         </td>
                         <td className="p-4 text-right">
                           <button
-                            onClick={() => handleResolverErro(log.id)}
+                            onClick={() => handleResolverErro(log)}
                             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all hover:scale-105 border border-emerald-500/10"
                             title="Marcar como Resolvido"
                           >
