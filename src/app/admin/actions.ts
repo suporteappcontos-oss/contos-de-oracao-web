@@ -1280,6 +1280,12 @@ export async function promoverEmailParaAdmin(email: string) {
 
     if (updateErr) throw updateErr
 
+    // Sincroniza metadados do auth para leitura rápida no front
+    const { error: authMetaErr } = await adminClient.auth.admin.updateUserById(targetUser.id, {
+      user_metadata: { ...targetUser.user_metadata, role: 'admin' }
+    })
+    if (authMetaErr) console.warn('Aviso ao atualizar metadados:', authMetaErr.message)
+
     await registrarLogAuditoria(`Promoveu o usuário ${email} para Administrador`)
     revalidatePath('/admin')
     return { success: true }
@@ -1311,6 +1317,12 @@ export async function rebaixarAdminParaMembro(userId: string) {
       .eq('id', userId)
 
     if (updateErr) throw updateErr
+
+    // Sincroniza metadados do auth para leitura rápida no front
+    const { error: authMetaErr } = await adminClient.auth.admin.updateUserById(userId, {
+      user_metadata: { ...targetAuth.user.user_metadata, role: 'membro' }
+    })
+    if (authMetaErr) console.warn('Aviso ao atualizar metadados:', authMetaErr.message)
 
     await registrarLogAuditoria(`Rebaixou o administrador ${targetAuth?.user?.email || userId} para Membro`)
     revalidatePath('/admin')

@@ -31,7 +31,9 @@ export default async function HQPage({ params }: Props) {
 
   const planoAtivo = user.user_metadata?.plano_ativo === true
   const etiqueta = (user.user_metadata?.etiqueta_plano || '').toLowerCase()
-  const isAdmin = user.email === 'suporte.appcontos@gmail.com'
+  
+  const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).maybeSingle()
+  const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
 
   if (!isAdmin && !planoAtivo) redirect('/?acesso=expirado')
 
