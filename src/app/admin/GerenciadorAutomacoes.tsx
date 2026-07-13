@@ -13,7 +13,9 @@ import {
   adicionarAutomacaoWhatsapp,
   editarAutomacaoWhatsapp,
   deletarAutomacaoWhatsapp,
-  toggleAutomacaoWhatsappAtiva
+  toggleAutomacaoWhatsappAtiva,
+  obterNumeroWhatsapp,
+  salvarNumeroWhatsapp
 } from './actions'
 
 type Automacao = {
@@ -84,6 +86,23 @@ export default function GerenciadorAutomacoes({
   const [modalWhatsEdicaoAberto, setModalWhatsEdicaoAberto] = useState(false)
   const [whatsEditando, setWhatsEditando] = useState<AutomacaoWhatsapp | null>(null)
 
+  // Global WhatsApp number states
+  const [whatsappNumero, setWhatsappNumero] = useState('5564992994823')
+  const [salvandoNumero, setSalvandoNumero] = useState(false)
+  const [numeroSalvoFeedback, setNumeroSalvoFeedback] = useState(false)
+
+  // Instagram automation wa.me helper states
+  const [isWhatsRedirect, setIsWhatsRedirect] = useState(true)
+  const [whatsMsgPredefinida, setWhatsMsgPredefinida] = useState('')
+
+  useEffect(() => {
+    obterNumeroWhatsapp().then(res => {
+      if (res.success && res.valor) {
+        setWhatsappNumero(res.valor)
+      }
+    })
+  }, [])
+
   // WhatsApp Form State
   const [whatsPalavraChave, setWhatsPalavraChave] = useState('')
   const [whatsMensagemLink, setWhatsMensagemLink] = useState('Quero conhecer a Biblioteca')
@@ -137,6 +156,8 @@ export default function GerenciadorAutomacoes({
     setResposta5('')
     setVideoId('')
     setLinkVendas('')
+    setIsWhatsRedirect(true)
+    setWhatsMsgPredefinida('')
     setErro('')
   }
 
@@ -146,6 +167,22 @@ export default function GerenciadorAutomacoes({
     if (!resposta.trim()) { setErro('Resposta é obrigatória.'); return }
     setErro('')
 
+    const duplicadoEmWhats = whatsappList.some(w => !w.is_fallback && w.palavra_chave.trim().toUpperCase() === palavraChave.trim().toUpperCase())
+    if (duplicadoEmWhats) {
+      if (!confirm(`⚠️ A palavra-chave "${palavraChave.trim()}" já está cadastrada no WhatsApp (Whats Auto).\n\nDeseja salvá-la no Instagram assim mesmo?`)) {
+        return
+      }
+    }
+
+    let finalLink = linkVendas.trim()
+    if (isWhatsRedirect) {
+      if (!whatsMsgPredefinida.trim()) {
+        setErro('A mensagem do WhatsApp é obrigatória.')
+        return
+      }
+      finalLink = `https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMsgPredefinida.trim())}`
+    }
+
     const fd = new FormData()
     fd.append('palavra_chave', palavraChave.trim())
     fd.append('resposta', resposta.trim())
@@ -154,14 +191,11 @@ export default function GerenciadorAutomacoes({
     fd.append('resposta_4', resposta4.trim())
     fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
-    fd.append('link_vendas', linkVendas.trim() || '')
+    fd.append('link_vendas', finalLink)
 
     startTransition(async () => {
       const res = await adicionarAutomacaoInstagram(fd)
       if (res?.success) {
-        // Recarregar a página ou atualizar o estado local. Como estamos em Next.js App Router, revalidatePath fará o fetch no server,
-        // mas para atualizarmos o estado local de forma imediata (SPA feeling):
-        // Nota: O ideal é forçar um reload para sincronizar o UUID real retornado do Supabase.
         window.location.reload()
       } else {
         setErro(res?.error ?? 'Erro ao adicionar automação.')
@@ -176,6 +210,22 @@ export default function GerenciadorAutomacoes({
     if (!resposta.trim()) { setErro('Resposta é obrigatória.'); return }
     setErro('')
 
+    const duplicadoEmWhats = whatsappList.some(w => !w.is_fallback && w.palavra_chave.trim().toUpperCase() === palavraChave.trim().toUpperCase())
+    if (duplicadoEmWhats) {
+      if (!confirm(`⚠️ A palavra-chave "${palavraChave.trim()}" já está cadastrada no WhatsApp (Whats Auto).\n\nDeseja salvá-la no Instagram assim mesmo?`)) {
+        return
+      }
+    }
+
+    let finalLink = linkVendas.trim()
+    if (isWhatsRedirect) {
+      if (!whatsMsgPredefinida.trim()) {
+        setErro('A mensagem do WhatsApp é obrigatória.')
+        return
+      }
+      finalLink = `https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMsgPredefinida.trim())}`
+    }
+
     const fd = new FormData()
     fd.append('id', automacaoEditando.id)
     fd.append('palavra_chave', palavraChave.trim())
@@ -185,7 +235,7 @@ export default function GerenciadorAutomacoes({
     fd.append('resposta_4', resposta4.trim())
     fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
-    fd.append('link_vendas', linkVendas.trim() || '')
+    fd.append('link_vendas', finalLink)
 
     startTransition(async () => {
       const res = await editarAutomacaoInstagram(fd)
@@ -199,7 +249,7 @@ export default function GerenciadorAutomacoes({
           resposta_4: resposta4.trim(),
           resposta_5: resposta5.trim(),
           video_id: videoId.trim() || null,
-          link_vendas: linkVendas.trim() || null
+          link_vendas: finalLink || null
         } : a))
         setModalEdicaoAberto(false)
         resetForm()
@@ -233,6 +283,23 @@ export default function GerenciadorAutomacoes({
     }
   }
 
+  const handleSalvarNumeroWhats = async () => {
+    if (!whatsappNumero.trim()) {
+      alert('Por favor, insira um número de WhatsApp válido.')
+      return
+    }
+    setSalvandoNumero(true)
+    const res = await salvarNumeroWhatsapp(whatsappNumero.trim())
+    setSalvandoNumero(false)
+    if (res.success) {
+      setNumeroSalvoFeedback(true)
+      setTimeout(() => setNumeroSalvoFeedback(false), 3000)
+      window.location.reload()
+    } else {
+      alert('Erro ao salvar número do WhatsApp: ' + (res.error ?? 'Erro desconhecido'))
+    }
+  }
+
   // Abrir Modal de Edição
   const abrirEdicao = (a: Automacao) => {
     setAutomacaoEditando(a)
@@ -243,7 +310,22 @@ export default function GerenciadorAutomacoes({
     setResposta4(a.resposta_4 ?? '')
     setResposta5(a.resposta_5 ?? '')
     setVideoId(a.video_id ?? '')
-    setLinkVendas(a.link_vendas ?? '')
+    
+    const link = a.link_vendas ?? ''
+    if (link.startsWith('https://wa.me/')) {
+      setIsWhatsRedirect(true)
+      try {
+        const urlObj = new URL(link)
+        const textParam = urlObj.searchParams.get('text')
+        setWhatsMsgPredefinida(textParam ? decodeURIComponent(textParam) : '')
+      } catch (err) {
+        setIsWhatsRedirect(false)
+        setLinkVendas(link)
+      }
+    } else {
+      setIsWhatsRedirect(false)
+      setLinkVendas(link)
+    }
     setModalEdicaoAberto(true)
   }
 
@@ -266,6 +348,15 @@ export default function GerenciadorAutomacoes({
     if (!whatsIsFallback && !whatsPalavraChave.trim()) {
       setErro('A Palavra-Chave é obrigatória para regras comuns.')
       return
+    }
+    
+    if (!whatsIsFallback) {
+      const duplicadoEmInsta = automacoesList.some(a => a.palavra_chave.trim().toUpperCase() === whatsPalavraChave.trim().toUpperCase())
+      if (duplicadoEmInsta) {
+        if (!confirm(`⚠️ A palavra-chave "${whatsPalavraChave.trim()}" já está cadastrada no Instagram (Insta Auto).\n\nDeseja salvá-la no WhatsApp assim mesmo?`)) {
+          return
+        }
+      }
     }
     
     startTransition(async () => {
@@ -304,6 +395,15 @@ export default function GerenciadorAutomacoes({
     if (!whatsIsFallback && !whatsPalavraChave.trim()) {
       setErro('A Palavra-Chave é obrigatória para regras comuns.')
       return
+    }
+
+    if (!whatsIsFallback) {
+      const duplicadoEmInsta = automacoesList.some(a => a.palavra_chave.trim().toUpperCase() === whatsPalavraChave.trim().toUpperCase())
+      if (duplicadoEmInsta) {
+        if (!confirm(`⚠️ A palavra-chave "${whatsPalavraChave.trim()}" já está cadastrada no Instagram (Insta Auto).\n\nDeseja salvá-la no WhatsApp assim mesmo?`)) {
+          return
+        }
+      }
     }
 
     startTransition(async () => {
@@ -450,7 +550,48 @@ export default function GerenciadorAutomacoes({
           <div className="text-amber-500/70 text-[0.65rem] uppercase tracking-wider font-bold mb-1">Taxa de Sucesso</div>
           <div className="text-2xl font-black text-[#D4AF37]">{taxaSucesso}%</div>
         </div>
-      </div>
+      </div>      {/* Configuração Global do WhatsApp para Redirecionamento */}
+      {abaAtiva === 'insta' && (
+        <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex-1">
+            <h4 className="text-white text-base font-black tracking-tight flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse" />
+              Número de WhatsApp do Suporte (Whats Auto)
+            </h4>
+            <p className="text-white/40 text-xs mt-1">
+              Este número será utilizado para gerar os links "wa.me" automaticamente. Se você alterar este número, todas as regras do Instagram que enviam links do WhatsApp serão atualizadas em cascata.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <input
+              type="text"
+              placeholder="Ex: 5564992994823"
+              value={whatsappNumero}
+              onChange={(e) => setWhatsappNumero(e.target.value.replace(/\D/g, ''))}
+              className="bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm w-full md:w-64"
+            />
+            <button
+              onClick={handleSalvarNumeroWhats}
+              disabled={salvandoNumero}
+              className="px-5 py-2.5 bg-[#D4AF37] hover:bg-[#FFD700] text-black text-xs font-black rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0"
+            >
+              {salvandoNumero ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Salvando...
+                </>
+              ) : numeroSalvoFeedback ? (
+                <>
+                  <Check size={14} />
+                  Salvo!
+                </>
+              ) : (
+                'Salvar'
+              )}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Lista de Automações Instagram */}
       {abaAtiva === 'insta' && (
@@ -662,6 +803,11 @@ export default function GerenciadorAutomacoes({
                   placeholder="Ex: QUERO, ORACAO, EUQUERO"
                   className={inputCls + ' uppercase font-mono'}
                 />
+                {palavraChave.trim() !== '' && whatsappList.some(w => !w.is_fallback && w.palavra_chave.trim().toUpperCase() === palavraChave.trim().toUpperCase()) && (
+                  <div className="mt-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl px-4 py-2 text-[0.7rem] font-bold flex items-center gap-1.5 animate-pulse">
+                    <span>⚠️ Atenção: Esta palavra-chave também está cadastrada no WhatsApp (Whats Auto).</span>
+                  </div>
+                )}
                 <p className="text-white/20 text-[0.65rem] mt-1.5">
                   Evite acentos e caracteres especiais se possível para facilitar o matching do seguidor.
                 </p>
@@ -681,19 +827,62 @@ export default function GerenciadorAutomacoes({
                 </p>
               </div>
 
-              {/* Link de Vendas */}
-              <div>
-                <label className={labelCls}>Link de Vendas / Destino (Opcional)</label>
-                <input
-                  type="url"
-                  value={linkVendas}
-                  onChange={e => setLinkVendas(e.target.value)}
-                  placeholder="Ex: https://bibliotecacatolica.lovable.app"
-                  className={inputCls}
-                />
-                <p className="text-white/20 text-[0.65rem] mt-1.5">
-                  Se preenchido, o robô irá anexar esse link automaticamente no final da resposta sorteada.
-                </p>
+              {/* Link de Vendas ou WhatsApp Redirect */}
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white/80">Destino do Link de Vendas</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsWhatsRedirect(true)}
+                      className={`px-3 py-1 rounded-lg text-[0.65rem] font-black uppercase transition-all ${
+                        isWhatsRedirect
+                          ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30'
+                          : 'bg-white/5 text-white/40'
+                      }`}
+                    >
+                      WhatsApp
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsWhatsRedirect(false)}
+                      className={`px-3 py-1 rounded-lg text-[0.65rem] font-black uppercase transition-all ${
+                        !isWhatsRedirect
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30'
+                          : 'bg-white/5 text-white/40'
+                      }`}
+                    >
+                      Link Externo
+                    </button>
+                  </div>
+                </div>
+
+                {isWhatsRedirect ? (
+                  <div className="space-y-2">
+                    <label className={labelCls}>Mensagem Pré-definida do WhatsApp *</label>
+                    <input
+                      type="text"
+                      value={whatsMsgPredefinida}
+                      onChange={e => setWhatsMsgPredefinida(e.target.value)}
+                      placeholder="Ex: Olá! Quero conhecer a Biblioteca."
+                      className={inputCls}
+                    />
+                    <p className="text-white/30 text-[0.65rem]">
+                      O link gerado será: <code className="text-[#10b981] font-mono break-all">wa.me/{whatsappNumero}?text={encodeURIComponent(whatsMsgPredefinida || '...')}</code>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className={labelCls}>URL do Link Externo / Checkout (Opcional)</label>
+                    <input
+                      type="url"
+                      value={linkVendas}
+                      onChange={e => setLinkVendas(e.target.value)}
+                      placeholder="Ex: https://bibliotecacatolica.lovable.app"
+                      className={inputCls}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Respostas com variações */}
@@ -813,6 +1002,14 @@ export default function GerenciadorAutomacoes({
                   placeholder="Ex: QUERO, ORACAO, EUQUERO"
                   className={inputCls + ' uppercase font-mono'}
                 />
+                {palavraChave.trim() !== '' && whatsappList.some(w => !w.is_fallback && w.palavra_chave.trim().toUpperCase() === palavraChave.trim().toUpperCase() && w.palavra_chave.trim().toUpperCase() !== automacaoEditando?.palavra_chave.trim().toUpperCase()) && (
+                  <div className="mt-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl px-4 py-2 text-[0.7rem] font-bold flex items-center gap-1.5 animate-pulse">
+                    <span>⚠️ Atenção: Esta palavra-chave também está cadastrada no WhatsApp (Whats Auto).</span>
+                  </div>
+                )}
+                <p className="text-white/20 text-[0.65rem] mt-1.5">
+                  Evite acentos e caracteres especiais se possível para facilitar o matching do seguidor.
+                </p>
               </div>
 
               {/* ID do Reels */}
@@ -824,21 +1021,67 @@ export default function GerenciadorAutomacoes({
                   placeholder="Ex: C8xfG_fP1aB (Vazio = vale para qualquer post)"
                   className={inputCls + ' font-mono'}
                 />
+                <p className="text-white/20 text-[0.65rem] mt-1.5">
+                  Se preenchido, a automação só responderá a comentários feitos neste post específico.
+                </p>
               </div>
 
-              {/* Link de Vendas */}
-              <div>
-                <label className={labelCls}>Link de Vendas / Destino (Opcional)</label>
-                <input
-                  type="url"
-                  value={linkVendas}
-                  onChange={e => setLinkVendas(e.target.value)}
-                  placeholder="Ex: https://bibliotecacatolica.lovable.app"
-                  className={inputCls}
-                />
-                <p className="text-white/20 text-[0.65rem] mt-1.5">
-                  Se preenchido, o robô irá anexar esse link automaticamente no final da resposta sorteada.
-                </p>
+              {/* Link de Vendas ou WhatsApp Redirect */}
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white/80">Destino do Link de Vendas</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsWhatsRedirect(true)}
+                      className={`px-3 py-1 rounded-lg text-[0.65rem] font-black uppercase transition-all ${
+                        isWhatsRedirect
+                          ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30'
+                          : 'bg-white/5 text-white/40'
+                      }`}
+                    >
+                      WhatsApp
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsWhatsRedirect(false)}
+                      className={`px-3 py-1 rounded-lg text-[0.65rem] font-black uppercase transition-all ${
+                        !isWhatsRedirect
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30'
+                          : 'bg-white/5 text-white/40'
+                      }`}
+                    >
+                      Link Externo
+                    </button>
+                  </div>
+                </div>
+
+                {isWhatsRedirect ? (
+                  <div className="space-y-2">
+                    <label className={labelCls}>Mensagem Pré-definida do WhatsApp *</label>
+                    <input
+                      type="text"
+                      value={whatsMsgPredefinida}
+                      onChange={e => setWhatsMsgPredefinida(e.target.value)}
+                      placeholder="Ex: Olá! Quero conhecer a Biblioteca."
+                      className={inputCls}
+                    />
+                    <p className="text-white/30 text-[0.65rem]">
+                      O link gerado será: <code className="text-[#10b981] font-mono break-all">wa.me/{whatsappNumero}?text={encodeURIComponent(whatsMsgPredefinida || '...')}</code>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className={labelCls}>URL do Link Externo / Checkout (Opcional)</label>
+                    <input
+                      type="url"
+                      value={linkVendas}
+                      onChange={e => setLinkVendas(e.target.value)}
+                      placeholder="Ex: https://bibliotecacatolica.lovable.app"
+                      className={inputCls}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Respostas com variações (Edição) */}
@@ -981,6 +1224,11 @@ export default function GerenciadorAutomacoes({
                     placeholder="Ex: BIBLIOTECA, CURSO"
                     className={inputCls + ' uppercase font-mono'}
                   />
+                  {whatsPalavraChave.trim() !== '' && automacoesList.some(a => a.palavra_chave.trim().toUpperCase() === whatsPalavraChave.trim().toUpperCase()) && (
+                    <div className="mt-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl px-4 py-2 text-[0.7rem] font-bold flex items-center gap-1.5 animate-pulse">
+                      <span>⚠️ Atenção: Esta palavra-chave também está cadastrada no Instagram (Insta Auto).</span>
+                    </div>
+                  )}
                   <p className="text-white/20 text-[0.65rem] mt-1">
                     Essa palavra deve ser a mesma configurada no Insta Auto para acoplamento automático.
                   </p>
@@ -1006,7 +1254,7 @@ export default function GerenciadorAutomacoes({
                     <span className="text-[0.6rem] uppercase tracking-wider text-white/40 font-bold block">Link WhatsApp Gerado automaticamente:</span>
                     <div className="flex gap-2 items-center justify-between">
                       <span className="text-[0.7rem] text-[#D4AF37] truncate font-mono select-all">
-                        {`https://wa.me/556492994823?text=${encodeURIComponent(whatsMensagemLink)}`}
+                        {`https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMensagemLink)}`}
                       </span>
                     </div>
                   </div>
@@ -1111,6 +1359,11 @@ export default function GerenciadorAutomacoes({
                     placeholder="Ex: BIBLIOTECA, CURSO"
                     className={inputCls + ' uppercase font-mono'}
                   />
+                  {whatsPalavraChave.trim() !== '' && automacoesList.some(a => a.palavra_chave.trim().toUpperCase() === whatsPalavraChave.trim().toUpperCase()) && (
+                    <div className="mt-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl px-4 py-2 text-[0.7rem] font-bold flex items-center gap-1.5 animate-pulse">
+                      <span>⚠️ Atenção: Esta palavra-chave também está cadastrada no Instagram (Insta Auto).</span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1130,7 +1383,7 @@ export default function GerenciadorAutomacoes({
                     <span className="text-[0.6rem] uppercase tracking-wider text-white/40 font-bold block">Link WhatsApp Gerado automaticamente:</span>
                     <div className="flex gap-2 items-center justify-between">
                       <span className="text-[0.7rem] text-[#D4AF37] truncate font-mono select-all">
-                        {`https://wa.me/556492994823?text=${encodeURIComponent(whatsMensagemLink)}`}
+                        {`https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMensagemLink)}`}
                       </span>
                     </div>
                   </div>

@@ -1129,3 +1129,63 @@ export async function toggleAutomacaoWhatsappAtiva(id: string, ativo: boolean) {
   }
 }
 
+export async function obterNumeroWhatsapp() {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { data, error } = await supabase
+      .from('configuracoes_sistema')
+      .select('valor')
+      .eq('chave', 'whatsapp_numero')
+      .single()
+    if (error && error.code !== 'PGRST116') throw error
+    return { success: true, valor: data?.valor || '5564992994823' }
+  } catch (error: any) {
+    console.error('Erro ao obter numero do whatsapp:', error.message)
+    return { success: false, valor: '5564992994823', error: error.message }
+  }
+}
+
+export async function salvarNumeroWhatsapp(numero: string) {
+  const { supabase } = await verificarAdmin()
+  try {
+    const { error } = await supabase
+      .from('configuracoes_sistema')
+      .upsert({
+        chave: 'whatsapp_numero',
+        valor: numero.trim(),
+        atualizado_em: new Date().toISOString()
+      }, { onConflict: 'chave' })
+    if (error) throw error
+
+    // Atualiza em cascata os links das automações do Instagram que possuem wa.me
+    const { data: automacoes, error: fetchErr } = await supabase
+      .from('automacoes_instagram')
+      .select('id, link_vendas')
+
+    if (fetchErr) throw fetchErr
+
+    if (automacoes) {
+      for (const auto of automacoes) {
+        if (auto.link_vendas && auto.link_vendas.includes('wa.me/')) {
+          // Expressão regular para encontrar e substituir o número de telefone no link wa.me
+          const regex = /(wa\.me\/)(\d+)/g
+          const novoLink = auto.link_vendas.replace(regex, `$1${numero.trim()}`)
+          if (novoLink !== auto.link_vendas) {
+            await supabase
+              .from('automacoes_instagram')
+              .update({ link_vendas: novoLink })
+              .eq('id', auto.id)
+          }
+        }
+      }
+    }
+
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao salvar numero do whatsapp:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+
