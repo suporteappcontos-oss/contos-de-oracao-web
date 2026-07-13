@@ -341,10 +341,6 @@ export default function GerenciadorAutomacoes({
   }
 
   const handleAdicionarWhats = async () => {
-    if (!whatsPromptIa.trim()) {
-      setErro('O Prompt da IA é obrigatório.')
-      return
-    }
     if (!whatsIsFallback && !whatsPalavraChave.trim()) {
       setErro('A Palavra-Chave é obrigatória para regras comuns.')
       return
@@ -363,7 +359,7 @@ export default function GerenciadorAutomacoes({
       const payload = {
         palavra_chave: whatsIsFallback ? '' : whatsPalavraChave.trim().toUpperCase(),
         mensagem_link: whatsIsFallback ? 'Suporte Geral' : whatsMensagemLink.trim(),
-        prompt_ia: whatsPromptIa.trim(),
+        prompt_ia: 'manual',
         link_vendas: whatsLinkVendas.trim() || undefined,
         ativo: whatsAtivo,
         is_fallback: whatsIsFallback
@@ -388,10 +384,6 @@ export default function GerenciadorAutomacoes({
 
   const handleEditarWhats = async () => {
     if (!whatsEditando) return
-    if (!whatsPromptIa.trim()) {
-      setErro('O Prompt da IA é obrigatório.')
-      return
-    }
     if (!whatsIsFallback && !whatsPalavraChave.trim()) {
       setErro('A Palavra-Chave é obrigatória para regras comuns.')
       return
@@ -410,7 +402,7 @@ export default function GerenciadorAutomacoes({
       const payload = {
         palavra_chave: whatsIsFallback ? '' : whatsPalavraChave.trim().toUpperCase(),
         mensagem_link: whatsIsFallback ? 'Suporte Geral' : whatsMensagemLink.trim(),
-        prompt_ia: whatsPromptIa.trim(),
+        prompt_ia: 'manual',
         link_vendas: whatsLinkVendas.trim() || undefined,
         ativo: whatsAtivo,
         is_fallback: whatsIsFallback
@@ -703,31 +695,19 @@ export default function GerenciadorAutomacoes({
                   <tr className="border-b border-white/5 bg-white/[0.02]">
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Palavra Mágica / Função</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Mensagem do Link (wa.me)</th>
-                    <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Prompt da IA (Gemini)</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Link de Vendas</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Status</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {whatsappList.map(w => (
+                  {whatsappList.filter(w => !w.is_fallback).map(w => (
                     <tr key={w.id} className="hover:bg-white/[0.01] transition-colors group">
                       <td className="p-5 font-black text-sm text-[#D4AF37] font-mono">
-                        {w.is_fallback ? (
-                          <span className="bg-amber-500/10 text-[#D4AF37] border border-amber-500/20 px-2 py-0.5 rounded-lg text-xs uppercase">Suporte Geral</span>
-                        ) : (
-                          <span className="uppercase">{w.palavra_chave}</span>
-                        )}
+                        <span className="uppercase">{w.palavra_chave}</span>
                       </td>
                       <td className="p-5 text-white/80 text-sm max-w-xs truncate" title={w.mensagem_link}>
-                        {w.is_fallback ? (
-                          <span className="text-white/30 italic">—</span>
-                        ) : (
-                          <span>"{w.mensagem_link}"</span>
-                        )}
-                      </td>
-                      <td className="p-5 text-white/60 text-xs max-w-md truncate" title={w.prompt_ia}>
-                        {w.prompt_ia}
+                        <span>"{w.mensagem_link}"</span>
                       </td>
                       <td className="p-5 text-white/40 text-xs font-mono max-w-[150px] truncate" title={w.link_vendas || ''}>
                         {w.link_vendas ? w.link_vendas : <span className="opacity-40 italic">Nenhum</span>}
@@ -1273,17 +1253,6 @@ export default function GerenciadorAutomacoes({
                 />
               </div>
 
-              {/* Prompt do Gemini */}
-              <div>
-                <label className={labelCls}>Prompt da IA (Instruções e Personalidade) *</label>
-                <textarea
-                  value={whatsPromptIa}
-                  onChange={e => setWhatsPromptIa(e.target.value)}
-                  rows={6}
-                  placeholder="Ex: Você é o Gabriel, assistente de vendas da Contos de Oração. Ajude a vender o acesso..."
-                  className={inputCls}
-                />
-              </div>
 
               {/* Erro */}
               {erro && (
@@ -1402,17 +1371,6 @@ export default function GerenciadorAutomacoes({
                 />
               </div>
 
-              {/* Prompt do Gemini */}
-              <div>
-                <label className={labelCls}>Prompt da IA (Instruções e Personalidade) *</label>
-                <textarea
-                  value={whatsPromptIa}
-                  onChange={e => setWhatsPromptIa(e.target.value)}
-                  rows={6}
-                  placeholder="Ex: Você é o Gabriel, assistente de vendas da Contos de Oração. Ajude a vender o acesso..."
-                  className={inputCls}
-                />
-              </div>
 
               {/* Erro */}
               {erro && (
