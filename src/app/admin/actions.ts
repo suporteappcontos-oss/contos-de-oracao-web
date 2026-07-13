@@ -22,6 +22,23 @@ async function verificarAdmin() {
   return { supabase, user }
 }
 
+async function registrarLogAuditoria(acao: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    
+    const adminSupabase = getAdminClient()
+    await adminSupabase.from('logs_auditoria_admin').insert({
+      user_id: user.id,
+      user_email: user.email,
+      acao
+    })
+  } catch (error) {
+    console.error('Erro ao registrar log de auditoria:', error)
+  }
+}
+
 function gerarSlug(texto: string) {
   if (!texto) return 'video';
   return texto
@@ -180,8 +197,9 @@ export async function adicionarVideo(formData: FormData) {
   })
 
   if (error) {
-    console.error('âŒ Erro ao adicionar vÃ­deo:', error.message)
+    console.error('â Œ Erro ao adicionar vÃ­deo:', error.message)
   } else {
+    await registrarLogAuditoria(`Adicionou o vídeo "${titulo}"`)
     // â”€â”€â”€ Enviar NotificaÃ§Ã£o Push (Apenas se NÃƒO for vÃ­deo em breve) â”€â”€â”€
     if (!emBreve) {
       try {
@@ -219,13 +237,13 @@ export async function adicionarVideo(formData: FormData) {
           admin.messaging().send(message).then(() => {
             console.log('âœ… NotificaÃ§Ã£o Push enviada com sucesso!');
           }).catch((pushError: any) => {
-            console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push:', pushError.message);
+            console.error('â Œ Erro ao enviar notificaÃ§Ã£o Push:', pushError.message);
           });
         } else {
-          console.log('âš ï¸ Firebase Admin nÃ£o inicializado. Push nÃ£o enviado.');
+          console.log('âš ï¸  Firebase Admin nÃ£o inicializado. Push nÃ£o enviado.');
         }
       } catch (pushError: any) {
-        console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push:', pushError.message);
+        console.error('â Œ Erro ao enviar notificaÃ§Ã£o Push:', pushError.message);
       }
     }
   }
@@ -251,7 +269,7 @@ export async function editarVideo(videoId: string, formData: FormData) {
       thumbnailUrl = await uploadToBunny(thumbFile, `capas_videos/${slug}/capa`);
     }
   } catch (error: any) {
-    console.error('âŒ Erro no upload da thumbnail:', error.message)
+    console.error('â Œ Erro no upload da thumbnail:', error.message)
   }
 
   // Busca estado antigo do vÃ­deo para saber se foi lanÃ§ado agora (era em_breve e deixou de ser)
@@ -275,8 +293,9 @@ export async function editarVideo(videoId: string, formData: FormData) {
   }).eq('id', videoId)
 
   if (error) {
-    console.error('âŒ Erro ao editar vÃ­deo:', error.message)
+    console.error('â Œ Erro ao editar vÃ­deo:', error.message)
   } else {
+    await registrarLogAuditoria(`Editou o vídeo "${titulo}"`)
     // Se o vÃ­deo deixou de ser em_breve, dispara notificaÃ§Ã£o push de lanÃ§amento!
     if (videoAntigo && videoAntigo.em_breve && !emBreve) {
       try {
@@ -338,7 +357,9 @@ export async function toggleVideoAtivo(videoId: string, ativoAtual: boolean) {
 // â”€â”€â”€ Deletar vÃ­deo â”€â”€â”€
 export async function deletarVideo(videoId: string) {
   const { supabase } = await verificarAdmin()
+  const { data: video } = await supabase.from('videos').select('titulo').eq('id', videoId).single()
   await supabase.from('videos').delete().eq('id', videoId)
+  await registrarLogAuditoria(`Excluiu o vídeo "${video?.titulo || videoId}"`)
   revalidatePath('/admin')
   revalidatePath('/watch')
   redirect('/admin?tab=videos')
@@ -585,6 +606,7 @@ export async function publicarMaterial(formData: FormData) {
       console.error('âŒ Erro ao enviar notificaÃ§Ã£o Push (Material):', pushError.message);
     }
 
+    await registrarLogAuditoria(`Publicou o material/desenho "${titulo}"`)
     revalidatePath('/materiais');
     revalidatePath('/admin');
     return { success: true };
@@ -599,8 +621,10 @@ export async function deletarMaterial(id: string) {
   await verificarAdmin();
   try {
     const supabase = await createClient();
+    const { data: material } = await supabase.from('materiais').select('titulo').eq('id', id).single();
     const { error } = await supabase.from('materiais').delete().eq('id', id);
     if (error) throw new Error(error.message);
+    await registrarLogAuditoria(`Excluiu o material "${material?.titulo || id}"`)
     revalidatePath('/materiais');
     revalidatePath('/admin');
     return { success: true };
@@ -981,6 +1005,7 @@ export async function adicionarAutomacaoInstagram(formData: FormData) {
 
   if (error) return { success: false, error: error.message }
 
+  await registrarLogAuditoria(`Criou automação Insta Auto para a palavra-chave "${palavraChave}"`)
   revalidatePath('/admin')
   return { success: true }
 }
@@ -1015,22 +1040,27 @@ export async function editarAutomacaoInstagram(formData: FormData) {
 
   if (error) return { success: false, error: error.message }
 
+  await registrarLogAuditoria(`Editou automação Insta Auto para a palavra-chave "${palavraChave}"`)
   revalidatePath('/admin')
   return { success: true }
 }
 
 export async function deletarAutomacaoInstagram(id: string) {
   const { supabase } = await verificarAdmin()
+  const { data } = await supabase.from('automacoes_instagram').select('palavra_chave').eq('id', id).single()
   const { error } = await supabase.from('automacoes_instagram').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
+  await registrarLogAuditoria(`Excluiu automação Insta Auto da palavra-chave "${data?.palavra_chave || id}"`)
   revalidatePath('/admin')
   return { success: true }
 }
 
 export async function toggleAutomacaoInstagramAtiva(id: string, ativo: boolean) {
   const { supabase } = await verificarAdmin()
+  const { data } = await supabase.from('automacoes_instagram').select('palavra_chave').eq('id', id).single()
   const { error } = await supabase.from('automacoes_instagram').update({ ativo }).eq('id', id)
   if (error) return { success: false, error: error.message }
+  await registrarLogAuditoria(`Alterou status do Insta Auto "${data?.palavra_chave || id}" para ${ativo ? 'Ativo' : 'Inativo'}`)
   revalidatePath('/admin')
   return { success: true }
 }
@@ -1044,6 +1074,8 @@ export async function resolverErroAutomacao(id: string) {
       .update({ resolvido: true })
       .eq('id', id)
     if (error) throw new Error(error.message)
+    const { data: logData } = await adminSupabase.from('logs_automacoes_instagram').select('seguidor').eq('id', id).single()
+    await registrarLogAuditoria(`Marcou falha de Insta Auto como resolvida (Seguidor: ${logData?.seguidor || id})`)
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
@@ -1061,6 +1093,8 @@ export async function resolverErroAutomacaoWhatsapp(id: string) {
       .update({ resolvido: true })
       .eq('id', id)
     if (error) throw new Error(error.message)
+    const { data: logData } = await adminSupabase.from('logs_automacoes_whatsapp').select('seguidor').eq('id', id).single()
+    await registrarLogAuditoria(`Marcou falha de Whats Auto como resolvida (Seguidor: ${logData?.seguidor || id})`)
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
@@ -1083,6 +1117,7 @@ export async function adicionarAutomacaoWhatsapp(data: {
       .from('automacoes_whatsapp')
       .insert([data])
     if (error) throw new Error(error.message)
+    await registrarLogAuditoria(`Criou automação Whats Auto para a palavra-chave "${data.palavra_chave || 'Fallback'}"`)
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
@@ -1106,6 +1141,7 @@ export async function editarAutomacaoWhatsapp(id: string, data: {
       .update(data)
       .eq('id', id)
     if (error) throw new Error(error.message)
+    await registrarLogAuditoria(`Editou automação Whats Auto para a palavra-chave "${data.palavra_chave || 'Fallback'}"`)
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
@@ -1117,11 +1153,13 @@ export async function editarAutomacaoWhatsapp(id: string, data: {
 export async function deletarAutomacaoWhatsapp(id: string) {
   const { supabase } = await verificarAdmin()
   try {
+    const { data } = await supabase.from('automacoes_whatsapp').select('palavra_chave, is_fallback').eq('id', id).single()
     const { error } = await supabase
       .from('automacoes_whatsapp')
       .delete()
       .eq('id', id)
     if (error) throw new Error(error.message)
+    await registrarLogAuditoria(`Excluiu automação Whats Auto da palavra-chave "${data?.is_fallback ? 'Fallback' : (data?.palavra_chave || id)}"`)
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
@@ -1130,15 +1168,16 @@ export async function deletarAutomacaoWhatsapp(id: string) {
   }
 }
 
-
 export async function toggleAutomacaoWhatsappAtiva(id: string, ativo: boolean) {
   const { supabase } = await verificarAdmin()
   try {
+    const { data } = await supabase.from('automacoes_whatsapp').select('palavra_chave, is_fallback').eq('id', id).single()
     const { error } = await supabase
       .from('automacoes_whatsapp')
       .update({ ativo })
       .eq('id', id)
     if (error) throw new Error(error.message)
+    await registrarLogAuditoria(`Alterou status do Whats Auto "${data?.is_fallback ? 'Fallback' : (data?.palavra_chave || id)}" para ${ativo ? 'Ativo' : 'Inativo'}`)
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
@@ -1213,10 +1252,71 @@ export async function salvarNumeroWhatsapp(numero: string, senha?: string) {
       }
     }
 
+    await registrarLogAuditoria(`Alterou o número geral de WhatsApp para ${numero.trim()}`)
     revalidatePath('/admin')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao salvar numero do whatsapp:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function promoverEmailParaAdmin(email: string) {
+  const { supabase, user } = await verificarAdmin()
+  const adminClient = getAdminClient()
+  try {
+    const { data: { users }, error: listErr } = await adminClient.auth.admin.listUsers({ perPage: 1000 })
+    if (listErr) throw listErr
+    
+    const targetUser = users.find(u => u.email?.toLowerCase().trim() === email.toLowerCase().trim())
+    if (!targetUser) {
+      return { success: false, error: 'Usuário com este e-mail não foi encontrado no sistema. Peça para ele se cadastrar primeiro.' }
+    }
+
+    const { error: updateErr } = await adminClient
+      .from('perfis')
+      .update({ role: 'admin' })
+      .eq('id', targetUser.id)
+
+    if (updateErr) throw updateErr
+
+    await registrarLogAuditoria(`Promoveu o usuário ${email} para Administrador`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao promover usuário para admin:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function rebaixarAdminParaMembro(userId: string) {
+  const { supabase, user } = await verificarAdmin()
+  const adminClient = getAdminClient()
+  
+  if (userId === user.id) {
+    return { success: false, error: 'Você não pode rebaixar a si mesmo!' }
+  }
+
+  try {
+    const { data: targetAuth, error: authErr } = await adminClient.auth.admin.getUserById(userId)
+    if (authErr) throw authErr
+
+    if (targetAuth?.user?.email === 'suporte.appcontos@gmail.com') {
+      return { success: false, error: 'O administrador geral da plataforma não pode ser rebaixado.' }
+    }
+
+    const { error: updateErr } = await adminClient
+      .from('perfis')
+      .update({ role: 'membro' })
+      .eq('id', userId)
+
+    if (updateErr) throw updateErr
+
+    await registrarLogAuditoria(`Rebaixou o administrador ${targetAuth?.user?.email || userId} para Membro`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao rebaixar administrador:', error.message)
     return { success: false, error: error.message }
   }
 }

@@ -11,7 +11,7 @@ import {
 import {
   Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, Users, Edit3, X, UserCheck, Film,
-  Heart, BarChart3, Trophy, Megaphone, ShoppingBag, Smile, Zap
+  Heart, BarChart3, Trophy, Megaphone, ShoppingBag, Smile, Zap, Shield, FileText
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -30,6 +30,8 @@ import { CatalogoTabsLayout } from './CatalogoTabsLayout'
 import { GerenciadorTestadores } from './GerenciadorTestadores'
 import GerenciadorAvatares from './GerenciadorAvatares'
 import GerenciadorAutomacoes from './GerenciadorAutomacoes'
+import GerenciadorEquipe from './GerenciadorEquipe'
+import VisualizadorLogs from './VisualizadorLogs'
 
 
 type VideoType = {
@@ -97,6 +99,7 @@ export default async function AdminPage({
   let views: any[] = []
   let views7Days: any[] = []
   let favs: any[] = []
+  let logsAuditoria: any[] = []
 
   try {
     const [
@@ -114,7 +117,8 @@ export default async function AdminPage({
       resLogsWhats,
       resViews,
       resViews7Days,
-      resFavs
+      resFavs,
+      resLogsAuditoria
     ] = await Promise.all([
       supabase.from('videos').select('*').order('criado_em', { ascending: false }),
       supabase.from('materiais').select('*').order('criado_em', { ascending: false }),
@@ -130,7 +134,8 @@ export default async function AdminPage({
       supabase.from('logs_automacoes_whatsapp').select('*, automacoes_whatsapp(palavra_chave)').eq('status', 'erro').eq('resolvido', false).order('criado_em', { ascending: false }).limit(20),
       supabase.from('visualizacoes').select('video_id, user_id'),
       supabase.from('visualizacoes').select('criado_em').gte('criado_em', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
-      supabase.from('favoritos').select('video_id')
+      supabase.from('favoritos').select('video_id'),
+      supabase.from('logs_auditoria_admin').select('*').order('criado_em', { ascending: false }).limit(200)
     ])
 
     videos = resVideos.data ?? []
@@ -143,6 +148,7 @@ export default async function AdminPage({
     configWhatsapp = resConfigWhatsapp.data
     automacoes = resAutomacoes.data ?? []
     automacoesWhatsapp = resAutomacoesWhatsapp.data ?? []
+    logsAuditoria = resLogsAuditoria.data ?? []
     
     // Combina os logs de erro de Instagram e WhatsApp
     const logsInsta = (resLogs.data ?? []).map((l: any) => ({ ...l, tipo: 'instagram' }))
@@ -183,6 +189,7 @@ export default async function AdminPage({
 
   // Users via Admin API
   let usuarios: UsuarioType[] = []
+  let adminsList: any[] = []
   try {
     const adminClient = createSupabaseAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -193,6 +200,7 @@ export default async function AdminPage({
     const { data: perfis } = await supabase.from('perfis').select('id, role, acessos_site, acessos_app')
     const adminIds = new Set(perfis?.filter(p => p.role === 'admin').map(p => p.id) || [])
     const perfisMap = new Map((perfis || []).map(p => [p.id, p]))
+    
     usuarios = authUsers
       .filter(u => !adminIds.has(u.id) && u.email !== 'suporte.appcontos@gmail.com')
       .map(u => {
@@ -212,6 +220,19 @@ export default async function AdminPage({
         }
       })
       .sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime())
+
+    adminsList = authUsers
+      .filter(u => adminIds.has(u.id) || u.email === 'suporte.appcontos@gmail.com')
+      .map(u => {
+        const perf = perfisMap.get(u.id)
+        return {
+          id: u.id,
+          email: u.email || '',
+          nome: u.user_metadata?.nome || u.user_metadata?.name || (u.email === 'suporte.appcontos@gmail.com' ? 'Suporte Geral' : '—'),
+          role: perf?.role || (u.email === 'suporte.appcontos@gmail.com' ? 'admin' : 'membro'),
+          criado_em: u.created_at
+        }
+      })
   } catch (e) { console.error('Erro ao buscar usuários:', e) }
 
 
@@ -299,6 +320,8 @@ export default async function AdminPage({
               { id: 'testadores', label: 'Testadores', icon: UserCheck, count: testadores?.length || 0 },
               { id: 'automacao', label: 'Insta Auto', icon: Zap, count: automacoes?.length || 0 },
               { id: 'marketing', label: 'Marketing', icon: Megaphone, count: null },
+              { id: 'equipe', label: 'Equipe Admin', icon: Shield, count: adminsList.length },
+              { id: 'logs', label: 'Logs', icon: FileText, count: null },
             ].map(tab => (
 
               <Link key={tab.id} href={`/admin?tab=${tab.id}`}
@@ -516,6 +539,16 @@ export default async function AdminPage({
             logs={logsAutomacoes}
             stats={statsMap}
           />
+        )}
+
+        {/* ══════════ ABA EQUIPE ══════════ */}
+        {activeTab === 'equipe' && (
+          <GerenciadorEquipe admins={adminsList} currentUserEmail={user.email || ''} />
+        )}
+
+        {/* ══════════ ABA LOGS ══════════ */}
+        {activeTab === 'logs' && (
+          <VisualizadorLogs logs={logsAuditoria} />
         )}
 
 
