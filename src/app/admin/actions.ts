@@ -1163,8 +1163,23 @@ export async function obterNumeroWhatsapp() {
   }
 }
 
-export async function salvarNumeroWhatsapp(numero: string) {
-  const { supabase } = await verificarAdmin()
+export async function salvarNumeroWhatsapp(numero: string, senha?: string) {
+  const { supabase, user } = await verificarAdmin()
+
+  if (!senha || senha.trim() === '') {
+    return { success: false, error: 'A senha do administrador é obrigatória para alterar o número.' }
+  }
+
+  // Verifica a senha tentando autenticar o usuário logado
+  const { error: authError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password: senha
+  })
+
+  if (authError) {
+    return { success: false, error: 'Senha do administrador incorreta.' }
+  }
+
   try {
     const { error } = await supabase
       .from('configuracoes_sistema')

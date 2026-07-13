@@ -95,6 +95,7 @@ export default function GerenciadorAutomacoes({
   const [whatsappNumero, setWhatsappNumero] = useState('5564992994823')
   const [salvandoNumero, setSalvandoNumero] = useState(false)
   const [numeroSalvoFeedback, setNumeroSalvoFeedback] = useState(false)
+  const [adminConfirmSenha, setAdminConfirmSenha] = useState('')
 
   // Instagram automation wa.me helper states
   const [isWhatsRedirect, setIsWhatsRedirect] = useState(true)
@@ -295,11 +296,16 @@ export default function GerenciadorAutomacoes({
       alert('Por favor, insira um número de WhatsApp válido.')
       return
     }
+    if (!adminConfirmSenha.trim()) {
+      alert('Por favor, digite a senha do administrador para confirmar a alteração.')
+      return
+    }
     setSalvandoNumero(true)
-    const res = await salvarNumeroWhatsapp(whatsappNumero.trim())
+    const res = await salvarNumeroWhatsapp(whatsappNumero.trim(), adminConfirmSenha)
     setSalvandoNumero(false)
     if (res.success) {
       setNumeroSalvoFeedback(true)
+      setAdminConfirmSenha('')
       setTimeout(() => setNumeroSalvoFeedback(false), 3000)
       window.location.reload()
     } else {
@@ -464,6 +470,8 @@ export default function GerenciadorAutomacoes({
   const totalEnvios = totalSucesso + totalErro
   const taxaSucesso = totalEnvios > 0 ? Math.round((totalSucesso / totalEnvios) * 100) : 100
 
+  const isInsta = abaAtiva === 'insta'
+
   return (
     <div className="space-y-6">
       {/* Abas de Navegação das Automações */}
@@ -471,7 +479,7 @@ export default function GerenciadorAutomacoes({
         <button
           onClick={() => setAbaAtiva('insta')}
           className={`pb-2 px-1 text-xs font-black uppercase tracking-wider transition-all border-b-2 ${
-            abaAtiva === 'insta' ? 'border-[#D4AF37] text-white' : 'border-transparent text-white/40 hover:text-white/70'
+            abaAtiva === 'insta' ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-white/40 hover:text-white/70'
           }`}
         >
           Instagram (Insta Auto)
@@ -479,7 +487,7 @@ export default function GerenciadorAutomacoes({
         <button
           onClick={() => setAbaAtiva('whats')}
           className={`pb-2 px-1 text-xs font-black uppercase tracking-wider transition-all border-b-2 ${
-            abaAtiva === 'whats' ? 'border-[#D4AF37] text-white' : 'border-transparent text-white/40 hover:text-white/70'
+            abaAtiva === 'whats' ? 'border-[#10b981] text-[#10b981]' : 'border-transparent text-white/40 hover:text-white/70'
           }`}
         >
           WhatsApp (Whats Auto)
@@ -488,7 +496,7 @@ export default function GerenciadorAutomacoes({
 
       {/* Header do Gerenciador */}
       <div className="flex items-center justify-between border-b border-white/5 pb-4">
-        {abaAtiva === 'insta' ? (
+        {isInsta ? (
           <div>
             <h3 className="text-white text-xl font-black tracking-tight flex items-center gap-2">
               <Zap size={20} className="text-[#D4AF37]" />
@@ -501,7 +509,7 @@ export default function GerenciadorAutomacoes({
         ) : (
           <div>
             <h3 className="text-white text-xl font-black tracking-tight flex items-center gap-2">
-              <Zap size={20} className="text-[#D4AF37]" />
+              <Zap size={20} className="text-[#10b981]" />
               Automações de WhatsApp (Whats Auto)
             </h3>
             <p className="text-white/40 text-xs mt-1">
@@ -510,7 +518,7 @@ export default function GerenciadorAutomacoes({
           </div>
         )}
 
-        {abaAtiva === 'insta' ? (
+        {isInsta ? (
           <button
             onClick={() => { resetForm(); setModalAberto(true) }}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-black transition-all hover:scale-105"
@@ -522,8 +530,8 @@ export default function GerenciadorAutomacoes({
         ) : (
           <button
             onClick={() => { resetWhatsForm(); setModalWhatsAberto(true) }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-black transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-white transition-all hover:scale-105"
+            style={{ background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)' }}
           >
             <Plus size={14} />
             Nova Regra Zap
@@ -547,50 +555,58 @@ export default function GerenciadorAutomacoes({
         </div>
         <div className="relative overflow-hidden bg-[#111827] border border-white/5 rounded-2xl p-5 shadow-lg">
           <div className="text-amber-500/70 text-[0.65rem] uppercase tracking-wider font-bold mb-1">Taxa de Sucesso</div>
-          <div className="text-2xl font-black text-[#D4AF37]">{taxaSucesso}%</div>
+          <div className={`text-2xl font-black ${isInsta ? 'text-[#D4AF37]' : 'text-[#10b981]'}`}>{taxaSucesso}%</div>
         </div>
-      </div>      {/* Configuração Global do WhatsApp para Redirecionamento */}
-      {abaAtiva === 'insta' && (
-        <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex-1">
-            <h4 className="text-white text-base font-black tracking-tight flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#10b981] animate-pulse" />
-              Número de WhatsApp do Suporte (Whats Auto)
-            </h4>
-            <p className="text-white/40 text-xs mt-1">
-              Este número será utilizado para gerar os links "wa.me" automaticamente. Se você alterar este número, todas as regras do Instagram que enviam links do WhatsApp serão atualizadas em cascata.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <input
-              type="text"
-              placeholder="Ex: 5564992994823"
-              value={whatsappNumero}
-              onChange={(e) => setWhatsappNumero(e.target.value.replace(/\D/g, ''))}
-              className="bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm w-full md:w-64"
-            />
-            <button
-              onClick={handleSalvarNumeroWhats}
-              disabled={salvandoNumero}
-              className="px-5 py-2.5 bg-[#D4AF37] hover:bg-[#FFD700] text-black text-xs font-black rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0"
-            >
-              {salvandoNumero ? (
-                <>
-                  <Loader2 size={14} className="animate-spin" />
-                  Salvando...
-                </>
-              ) : numeroSalvoFeedback ? (
-                <>
-                  <Check size={14} />
-                  Salvo!
-                </>
-              ) : (
-                'Salvar'
-              )}
-            </button>
-          </div>
+      </div>
+
+      {/* Configuração Global do WhatsApp para Redirecionamento */}
+      <div className={`bg-[#111827] border rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 ${isInsta ? 'border-white/5' : 'border-[#10b981]/20'}`}
+           style={{ boxShadow: isInsta ? 'none' : '0 0 25px -5px rgba(16, 185, 129, 0.05)' }}>
+        <div className="flex-1">
+          <h4 className="text-white text-base font-black tracking-tight flex items-center gap-2">
+            <span className={`w-2.5 h-2.5 rounded-full animate-pulse ${isInsta ? 'bg-[#D4AF37]' : 'bg-[#10b981]'}`} />
+            Número de WhatsApp do Suporte (Whats Auto)
+          </h4>
+          <p className="text-white/40 text-xs mt-1">
+            Este número será utilizado para gerar os links "wa.me" automaticamente. Se você alterar este número, todas as regras do Instagram que enviam links do WhatsApp serão atualizadas em cascata.
+          </p>
         </div>
-      )}
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
+          <input
+            type="text"
+            placeholder="Ex: 5564992994823"
+            value={whatsappNumero}
+            onChange={(e) => setWhatsappNumero(e.target.value.replace(/\D/g, ''))}
+            className={`bg-[#0f171e] border rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm w-full md:w-48 ${isInsta ? 'border-white/10 focus:border-[#D4AF37]' : 'border-white/10 focus:border-[#10b981]'}`}
+          />
+          <input
+            type="password"
+            placeholder="Confirmar Senha Admin"
+            value={adminConfirmSenha}
+            onChange={(e) => setAdminConfirmSenha(e.target.value)}
+            className="bg-[#0f171e] border border-white/10 focus:border-red-500 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm w-full md:w-48 text-center"
+          />
+          <button
+            onClick={handleSalvarNumeroWhats}
+            disabled={salvandoNumero}
+            className={`px-5 py-2.5 text-xs font-black rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0 ${isInsta ? 'bg-[#D4AF37] hover:bg-[#FFD700] text-black' : 'bg-[#10b981] hover:bg-[#34D399] text-white'}`}
+          >
+            {salvandoNumero ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                Salvando...
+              </>
+            ) : numeroSalvoFeedback ? (
+              <>
+                <Check size={14} />
+                Salvo!
+              </>
+            ) : (
+              'Salvar'
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* Lista de Automações Instagram */}
       {abaAtiva === 'insta' && (
@@ -606,7 +622,7 @@ export default function GerenciadorAutomacoes({
             </button>
           </div>
         ) : (
-          <div className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
+          <div className="bg-[#111827] border border-[#D4AF37]/20 rounded-3xl overflow-hidden shadow-xl transition-all duration-300" style={{ boxShadow: '0 0 25px -5px rgba(212, 175, 55, 0.08)' }}>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -680,22 +696,21 @@ export default function GerenciadorAutomacoes({
           </div>
         )
       )}
-
       {/* Lista de Automações WhatsApp */}
       {abaAtiva === 'whats' && (
         whatsappList.length === 0 ? (
-          <div className="bg-[#111827] border border-white/5 rounded-3xl p-12 text-center">
-            <Zap size={36} className="text-white/10 mx-auto mb-4" />
+          <div className="bg-[#111827] border border-[#10b981]/20 rounded-3xl p-12 text-center" style={{ boxShadow: '0 0 25px -5px rgba(16, 185, 129, 0.08)' }}>
+            <Zap size={36} className="text-[#10b981]/30 mx-auto mb-4 animate-pulse" />
             <p className="text-white/30 text-sm">Nenhuma regra de WhatsApp cadastrada ainda.</p>
             <button
               onClick={() => { resetWhatsForm(); setModalWhatsAberto(true) }}
-              className="mt-4 px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/5 transition-all text-xs font-bold rounded-xl"
+              className="mt-4 px-4 py-2 border border-[#10b981]/30 text-[#10b981] hover:bg-[#10b981]/5 transition-all text-xs font-bold rounded-xl"
             >
               Criar primeira regra Zap
             </button>
           </div>
         ) : (
-          <div className="bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
+          <div className="bg-[#111827] border border-[#10b981]/20 rounded-3xl overflow-hidden shadow-xl transition-all duration-300" style={{ boxShadow: '0 0 25px -5px rgba(16, 185, 129, 0.08)' }}>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -703,6 +718,7 @@ export default function GerenciadorAutomacoes({
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Palavra Mágica / Função</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Mensagem do Link (wa.me)</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Link de Vendas</th>
+                    <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Métricas</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Status</th>
                     <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black text-right">Ações</th>
                   </tr>
@@ -710,7 +726,7 @@ export default function GerenciadorAutomacoes({
                 <tbody className="divide-y divide-white/5">
                   {whatsappList.filter(w => !w.is_fallback).map(w => (
                     <tr key={w.id} className="hover:bg-white/[0.01] transition-colors group">
-                      <td className="p-5 font-black text-sm text-[#D4AF37] font-mono">
+                      <td className="p-5 font-black text-sm text-[#10b981] font-mono">
                         <span className="uppercase">{w.palavra_chave}</span>
                       </td>
                       <td className="p-5 text-white/80 text-sm max-w-xs truncate" title={w.mensagem_link}>
@@ -718,6 +734,16 @@ export default function GerenciadorAutomacoes({
                       </td>
                       <td className="p-5 text-white/40 text-xs font-mono max-w-[150px] truncate" title={w.link_vendas || ''}>
                         {w.link_vendas ? w.link_vendas : <span className="opacity-40 italic">Nenhum</span>}
+                      </td>
+                      <td className="p-5 text-xs font-bold font-mono">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[#10b981]">
+                            {w.envios_sucesso || 0} OK
+                          </span>
+                          <span className="text-red-400">
+                            {w.envios_erro || 0} Erro
+                          </span>
+                        </div>
                       </td>
                       <td className="p-5">
                         <button
@@ -759,9 +785,7 @@ export default function GerenciadorAutomacoes({
             </div>
           </div>
         )
-      )}
-
-      {/* MODAL ADICIONAR REGRA */}
+      )}      {/* MODAL ADICIONAR REGRA */}
       {modalAberto && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
@@ -1164,9 +1188,9 @@ export default function GerenciadorAutomacoes({
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-yellow-500/5 to-amber-500/10">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-emerald-500/5 to-green-500/10">
               <div className="flex items-center gap-2">
-                <Zap size={16} className="text-[#D4AF37]" />
+                <Zap size={16} className="text-[#10b981]" />
                 <h4 className="text-white font-extrabold text-sm uppercase tracking-wider">Nova Regra de WhatsApp</h4>
               </div>
               <button
@@ -1194,7 +1218,7 @@ export default function GerenciadorAutomacoes({
                       setWhatsMensagemLink('Quero conhecer a Biblioteca')
                     }
                   }}
-                  className="rounded border-white/10 text-[#D4AF37] focus:ring-0 cursor-pointer"
+                  className="rounded border-white/10 text-[#10b981] focus:ring-0 cursor-pointer"
                 />
                 <label htmlFor="whatsIsFallback" className="text-xs text-white/70 font-bold cursor-pointer select-none">
                   Definir como Regra Padrão de Suporte Geral (Fallback)
@@ -1240,7 +1264,7 @@ export default function GerenciadorAutomacoes({
                   <div className="mt-3 p-3 bg-black/40 border border-white/5 rounded-xl space-y-1">
                     <span className="text-[0.6rem] uppercase tracking-wider text-white/40 font-bold block">Link WhatsApp Gerado automaticamente:</span>
                     <div className="flex gap-2 items-center justify-between">
-                      <span className="text-[0.7rem] text-[#D4AF37] truncate font-mono select-all">
+                      <span className="text-[0.7rem] text-[#10b981] truncate font-mono select-all">
                         {`https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMensagemLink)}`}
                       </span>
                     </div>
@@ -1280,8 +1304,8 @@ export default function GerenciadorAutomacoes({
               <button
                 onClick={handleAdicionarWhats}
                 disabled={isPending}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-black disabled:opacity-60 transition-all hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-white disabled:opacity-60 transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)' }}
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
                 {isPending ? 'Criando...' : 'Salvar Regra'}
@@ -1296,9 +1320,9 @@ export default function GerenciadorAutomacoes({
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-yellow-500/5 to-amber-500/10">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-emerald-500/5 to-green-500/10">
               <div className="flex items-center gap-2">
-                <Zap size={16} className="text-[#D4AF37]" />
+                <Zap size={16} className="text-[#10b981]" />
                 <h4 className="text-white font-extrabold text-sm uppercase tracking-wider">Editar Regra de WhatsApp</h4>
               </div>
               <button
@@ -1318,7 +1342,7 @@ export default function GerenciadorAutomacoes({
                   id="whatsIsFallbackEdit"
                   checked={whatsIsFallback}
                   disabled
-                  className="rounded border-white/10 text-[#D4AF37] focus:ring-0 cursor-not-allowed"
+                  className="rounded border-white/10 text-[#10b981] focus:ring-0 cursor-not-allowed"
                 />
                 <label htmlFor="whatsIsFallbackEdit" className="text-xs text-white/40 font-bold cursor-not-allowed select-none">
                   Regra Padrão de Suporte Geral (Fallback)
@@ -1358,7 +1382,7 @@ export default function GerenciadorAutomacoes({
                   <div className="mt-3 p-3 bg-black/40 border border-white/5 rounded-xl space-y-1">
                     <span className="text-[0.6rem] uppercase tracking-wider text-white/40 font-bold block">Link WhatsApp Gerado automaticamente:</span>
                     <div className="flex gap-2 items-center justify-between">
-                      <span className="text-[0.7rem] text-[#D4AF37] truncate font-mono select-all">
+                      <span className="text-[0.7rem] text-[#10b981] truncate font-mono select-all">
                         {`https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMensagemLink)}`}
                       </span>
                     </div>
@@ -1398,8 +1422,8 @@ export default function GerenciadorAutomacoes({
               <button
                 onClick={handleEditarWhats}
                 disabled={isPending}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-black disabled:opacity-60 transition-all hover:scale-105"
-                style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-white disabled:opacity-60 transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)' }}
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
                 {isPending ? 'Salvando...' : 'Salvar Alterações'}
