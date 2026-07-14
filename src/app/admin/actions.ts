@@ -1333,4 +1333,198 @@ export async function rebaixarAdminParaMembro(userId: string) {
   }
 }
 
+// ─── Atendente IA (Lucas) e WhatsApp ───
+export async function salvarIaConfiguracao(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+
+  const prompt = formData.get('prompt_sistema') as string
+  const modelo = formData.get('modelo_ia') as string
+  const temperaturaStr = formData.get('temperatura') as string
+
+  if (!prompt?.trim()) return { success: false, error: 'O Prompt do sistema é obrigatório.' }
+
+  try {
+    const temperatura = parseFloat(temperaturaStr) || 0.3
+
+    const { error } = await supabase
+      .from('ia_configuracoes')
+      .update({
+        prompt_sistema: prompt.trim(),
+        modelo_ia: modelo || 'gemini-1.5-flash',
+        temperatura: temperatura,
+        atualizado_em: new Date().toISOString()
+      })
+      .eq('chave', 'whatsapp_atendente')
+
+    if (error) throw error
+
+    await registrarLogAuditoria('Atualizou as configurações do Atendente de IA (Lucas)')
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao salvar configuração de IA:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function adicionarFaq(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+
+  const pergunta = formData.get('pergunta') as string
+  const conteudo = formData.get('conteudo') as string
+  const categoria = formData.get('categoria') as string || 'Geral'
+
+  if (!pergunta?.trim()) return { success: false, error: 'A pergunta é obrigatória.' }
+  if (!conteudo?.trim()) return { success: false, error: 'O conteúdo da resposta é obrigatório.' }
+
+  try {
+    const { error } = await supabase
+      .from('ia_base_conhecimento')
+      .insert({
+        pergunta: pergunta.trim(),
+        conteudo: conteudo.trim(),
+        categoria: categoria.trim(),
+        ativo: true
+      })
+
+    if (error) throw error
+
+    await registrarLogAuditoria(`Adicionou novo item ao FAQ da IA: "${pergunta.trim()}"`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao adicionar FAQ:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function editarFaq(formData: FormData) {
+  const { supabase } = await verificarAdmin()
+
+  const id = formData.get('id') as string
+  const pergunta = formData.get('pergunta') as string
+  const conteudo = formData.get('conteudo') as string
+  const categoria = formData.get('categoria') as string || 'Geral'
+
+  if (!id) return { success: false, error: 'ID do item obrigatório.' }
+  if (!pergunta?.trim()) return { success: false, error: 'A pergunta é obrigatória.' }
+  if (!conteudo?.trim()) return { success: false, error: 'O conteúdo é obrigatório.' }
+
+  try {
+    const { error } = await supabase
+      .from('ia_base_conhecimento')
+      .update({
+        pergunta: pergunta.trim(),
+        conteudo: conteudo.trim(),
+        categoria: categoria.trim()
+      })
+      .eq('id', id)
+
+    if (error) throw error
+
+    await registrarLogAuditoria(`Editou o item do FAQ da IA: "${pergunta.trim()}"`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao editar FAQ:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function deletarFaq(id: string) {
+  const { supabase } = await verificarAdmin()
+
+  try {
+    const { error } = await supabase
+      .from('ia_base_conhecimento')
+      .delete()
+      .eq('id', id)
+
+    if (error) throw error
+
+    await registrarLogAuditoria(`Removeu o item do FAQ da IA ID: ${id}`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao deletar FAQ:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function toggleFaq(id: string, ativo: boolean) {
+  const { supabase } = await verificarAdmin()
+
+  try {
+    const { error } = await supabase
+      .from('ia_base_conhecimento')
+      .update({ ativo })
+      .eq('id', id)
+
+    if (error) throw error
+
+    await registrarLogAuditoria(`Alterou status ativo do FAQ ID: ${id} para ${ativo}`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao alternar status do FAQ:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function enviarMensagemWhatsappManual(telefone: string, mensagem: string) {
+  const { supabase } = await verificarAdmin()
+
+  if (!telefone) return { success: false, error: 'Telefone do destinatário é obrigatório.' }
+  if (!mensagem?.trim()) return { success: false, error: 'A mensagem não pode estar vazia.' }
+
+  try {
+    // 1. Chamar a API Oficial da Meta para disparar o WhatsApp
+    const phoneId = "1243526978839086"
+    const token = "EAAS7E50qAtEBRylcPakz9zZAZCfRH6grektFfo3m2qaIN00Y1PYuGdPtGINAQVIo4CO4MkTWGMoo74VftRzQjlGvzQZAM1rwZAeyFJOTwawM1jMynKyDsQwF6fXE2IrathT5ggFcnjeQ6EziWcshEHSYDOrFd3XZBNpXO5O0URNMwinmfvR6tR9iBuFZC0tQZDZD"
+    
+    const url = `https://graph.facebook.com/v25.0/${phoneId}/messages`
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: telefone,
+        type: "text",
+        text: {
+          body: mensagem.trim()
+        }
+      })
+    })
+
+    if (!response.ok) {
+      const errData = await response.json()
+      throw new Error(`Falha no envio do WhatsApp: ${JSON.stringify(errData)}`)
+    }
+
+    // 2. Gravar no histórico de mensagens do Supabase
+    const { error: dbErr } = await supabase
+      .from('whatsapp_chat_history')
+      .insert({
+        sender_phone: telefone,
+        author: 'assistant',
+        message_text: mensagem.trim()
+      })
+
+    if (dbErr) throw dbErr
+
+    await registrarLogAuditoria(`Enviou mensagem manual via WhatsApp para ${telefone}`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao enviar mensagem manual:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+
 

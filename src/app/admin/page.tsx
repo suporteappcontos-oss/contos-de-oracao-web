@@ -11,7 +11,8 @@ import {
 import {
   Video, Eye, EyeOff, Trash2, ExternalLink,
   Plus, Users, Edit3, X, UserCheck, Film,
-  Heart, BarChart3, Trophy, Megaphone, ShoppingBag, Smile, Zap, Shield, FileText
+  Heart, BarChart3, Trophy, Megaphone, ShoppingBag, Smile, Zap, Shield, FileText,
+  MessageSquare
 } from 'lucide-react'
 import { StripeAdmin } from './StripeAdmin'
 import { CopyLeadsButton } from './CopyLeadsButton'
@@ -32,6 +33,8 @@ import GerenciadorAvatares from './GerenciadorAvatares'
 import GerenciadorAutomacoes from './GerenciadorAutomacoes'
 import GerenciadorEquipe from './GerenciadorEquipe'
 import VisualizadorLogs from './VisualizadorLogs'
+import GerenciadorWhatsapp from './GerenciadorWhatsapp'
+
 
 
 type VideoType = {
@@ -100,6 +103,9 @@ export default async function AdminPage({
   let views7Days: any[] = []
   let favs: any[] = []
   let logsAuditoria: any[] = []
+  let iaConfig: any = null
+  let iaFaq: any[] = []
+  let iaChatHistory: any[] = []
 
   try {
     const [
@@ -118,7 +124,10 @@ export default async function AdminPage({
       resViews,
       resViews7Days,
       resFavs,
-      resLogsAuditoria
+      resLogsAuditoria,
+      resIaConfig,
+      resIaFaq,
+      resIaHistory
     ] = await Promise.all([
       supabase.from('videos').select('*').order('criado_em', { ascending: false }),
       supabase.from('materiais').select('*').order('criado_em', { ascending: false }),
@@ -135,7 +144,10 @@ export default async function AdminPage({
       supabase.from('visualizacoes').select('video_id, user_id'),
       supabase.from('visualizacoes').select('criado_em').gte('criado_em', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
       supabase.from('favoritos').select('video_id'),
-      supabase.from('logs_auditoria_admin').select('*').order('criado_em', { ascending: false }).limit(200)
+      supabase.from('logs_auditoria_admin').select('*').order('criado_em', { ascending: false }).limit(200),
+      supabase.from('ia_configuracoes').select('*').eq('chave', 'whatsapp_atendente').maybeSingle(),
+      supabase.from('ia_base_conhecimento').select('*').order('criado_em', { ascending: false }),
+      supabase.from('whatsapp_chat_history').select('*').order('criado_em', { ascending: false })
     ])
 
     videos = resVideos.data ?? []
@@ -149,6 +161,10 @@ export default async function AdminPage({
     automacoes = resAutomacoes.data ?? []
     automacoesWhatsapp = resAutomacoesWhatsapp.data ?? []
     logsAuditoria = resLogsAuditoria.data ?? []
+    iaConfig = resIaConfig.data ?? null
+    iaFaq = resIaFaq.data ?? []
+    iaChatHistory = resIaHistory.data ?? []
+
     
     // Combina os logs de erro de Instagram e WhatsApp
     const logsInsta = (resLogs.data ?? []).map((l: any) => ({ ...l, tipo: 'instagram' }))
@@ -319,6 +335,7 @@ export default async function AdminPage({
               { id: 'avatars', label: 'Avatares', icon: Smile, count: null },
               { id: 'testadores', label: 'Testadores', icon: UserCheck, count: testadores?.length || 0 },
               { id: 'automacao', label: 'Insta Auto', icon: Zap, count: automacoes?.length || 0 },
+              { id: 'whatsapp', label: 'Lucas IA (Whats)', icon: MessageSquare, count: null },
               { id: 'marketing', label: 'Marketing', icon: Megaphone, count: null },
               { id: 'equipe', label: 'Equipe Admin', icon: Shield, count: adminsList.length },
               { id: 'logs', label: 'Logs', icon: FileText, count: null },
@@ -549,6 +566,15 @@ export default async function AdminPage({
         {/* ══════════ ABA LOGS ══════════ */}
         {activeTab === 'logs' && (
           <VisualizadorLogs logs={logsAuditoria} />
+        )}
+
+        {/* ══════════ ABA WHATSAPP / LUCAS IA ══════════ */}
+        {activeTab === 'whatsapp' && (
+          <GerenciadorWhatsapp 
+            config={iaConfig} 
+            faq={iaFaq} 
+            chatHistory={iaChatHistory} 
+          />
         )}
 
 
