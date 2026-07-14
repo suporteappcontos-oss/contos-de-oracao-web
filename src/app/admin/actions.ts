@@ -4,6 +4,8 @@ import { createClient } from '@/utils/supabase/server'
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { stripe } from '@/lib/stripe'
+
 
 function getAdminClient() {
   return createSupabaseAdminClient(
@@ -1525,6 +1527,50 @@ export async function enviarMensagemWhatsappManual(telefone: string, mensagem: s
     return { success: false, error: error.message }
   }
 }
+
+export async function buscarPlanosStripe() {
+  await verificarAdmin()
+  try {
+    const prices = await stripe.prices.list({ active: true, limit: 100, expand: ['data.product'] })
+    const planos = prices.data
+      .filter(price => (price.product as any).active === true)
+      .map(price => {
+        const interval = price.recurring?.interval
+        const intervalCount = price.recurring?.interval_count ?? 1
+        let labelIntervalo = interval === 'month' ? (intervalCount === 6 ? 'Semestral' : 'Mensal') : interval === 'year' ? 'Anual' : interval
+        return {
+          id: price.id,
+          valor: (price.unit_amount || 0) / 100,
+          intervalo: labelIntervalo,
+          produtoNome: (price.product as any).name
+        }
+      })
+    return { success: true, planos }
+  } catch (error: any) {
+    console.error('Erro ao buscar planos do Stripe:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function buscarCuponsStripe() {
+  await verificarAdmin()
+  try {
+    const coupons = await stripe.coupons.list({ limit: 100 })
+    const lista = coupons.data.map(c => ({
+      id: c.id,
+      name: c.name || c.id,
+      percent_off: c.percent_off,
+      amount_off: c.amount_off ? c.amount_off / 100 : null,
+      duration: c.duration,
+      valid: c.valid
+    }))
+    return { success: true, cupons: lista }
+  } catch (error: any) {
+    console.error('Erro ao buscar cupons do Stripe:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
 
 
 

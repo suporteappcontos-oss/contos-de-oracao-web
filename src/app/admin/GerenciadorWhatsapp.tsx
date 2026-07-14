@@ -3,11 +3,12 @@
 import { useState, useTransition, useEffect, useRef } from 'react'
 import { 
   MessageSquare, Cpu, BookOpen, Send, Save, Plus, 
-  Trash2, Edit3, Check, Loader2, AlertCircle, X, Smile
+  Trash2, Edit3, Check, Loader2, AlertCircle, X, Smile, Tag
 } from 'lucide-react'
 import { 
   salvarIaConfiguracao, adicionarFaq, editarFaq, 
-  deletarFaq, toggleFaq, enviarMensagemWhatsappManual 
+  deletarFaq, toggleFaq, enviarMensagemWhatsappManual,
+  buscarPlanosStripe, buscarCuponsStripe
 } from './actions'
 
 type IaConfigType = {
@@ -44,8 +45,13 @@ type GerenciadorWhatsappProps = {
 
 export default function GerenciadorWhatsapp({ config, faq, chatHistory }: GerenciadorWhatsappProps) {
   // Abas internas
-  const [subTab, setSubTab] = useState<'ia' | 'faq' | 'chat'>('chat')
+  const [subTab, setSubTab] = useState<'ia' | 'faq' | 'chat' | 'planos'>('chat')
   const [isPending, startTransition] = useTransition()
+
+  // --- Estado Stripe Planos e Cupons ---
+  const [stripePlanos, setStripePlanos] = useState<any[]>([])
+  const [stripeCupons, setStripeCupons] = useState<any[]>([])
+  const [isLoadingStripe, setIsLoadingStripe] = useState(false)
 
   // --- Estado IA ---
   const [prompt, setPrompt] = useState(config?.prompt_sistema || '')
@@ -83,6 +89,23 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
   useEffect(() => {
     setMessages(chatHistory)
   }, [chatHistory])
+
+  useEffect(() => {
+    if (subTab === 'planos') {
+      setIsLoadingStripe(true)
+      startTransition(async () => {
+        const resPlanos = await buscarPlanosStripe()
+        const resCupons = await buscarCuponsStripe()
+        if (resPlanos.success) {
+          setStripePlanos(resPlanos.planos || [])
+        }
+        if (resCupons.success) {
+          setStripeCupons(resCupons.cupons || [])
+        }
+        setIsLoadingStripe(false)
+      })
+    }
+  }, [subTab])
 
   // Agrupa conversas recentes por telefone e pega o último horário
   const contatos = Object.entries(
@@ -285,11 +308,12 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
         </div>
 
         {/* Guia de sub-abas */}
-        <div className="flex bg-[#0b0f19] border border-white/5 rounded-xl p-1 w-fit">
+        <div className="flex bg-[#0b0f19] border border-white/5 rounded-xl p-1 w-fit flex-wrap">
           {[
             { id: 'chat', label: 'Conversas', icon: MessageSquare },
             { id: 'faq', label: 'FAQ Suporte', icon: BookOpen },
             { id: 'ia', label: 'Diretrizes da IA', icon: Cpu },
+            { id: 'planos', label: 'Planos e Cupons', icon: Tag },
           ].map(tab => (
             <button
               key={tab.id}
@@ -668,6 +692,94 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
         </div>
       )}
 
+      {/* ────────────────── SUB-ABA: PLANOS E CUPONS STRIPE ────────────────── */}
+      {subTab === 'planos' && (
+        <div className="space-y-8 flex-1">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h3 className="text-white font-bold text-lg">Planos e Cupons do Stripe</h3>
+              <p className="text-white/40 text-xs">Valores e códigos promocionais ativos que o Lucas consulta dinamicamente.</p>
+            </div>
+          </div>
+
+          {isLoadingStripe ? (
+            <div className="flex flex-col items-center justify-center py-20 text-white/30">
+              <Loader2 className="animate-spin mb-3 text-[#D4AF37]" size={28} />
+              <p className="text-xs">Buscando informações em tempo real no Stripe...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Tabela de Planos */}
+              <div className="space-y-4">
+                <h4 className="text-white font-extrabold text-sm border-b border-white/5 pb-2">Planos Ativos no Stripe</h4>
+                {stripePlanos.length === 0 ? (
+                  <div className="text-center py-10 text-white/30 text-xs border border-white/5 rounded-2xl bg-white/[0.01]">
+                    Nenhum plano ativo encontrado no Stripe.
+                  </div>
+                ) : (
+                  <div className="border border-white/5 rounded-2xl overflow-hidden divide-y divide-white/5 bg-[#0b0f19]">
+                    {stripePlanos.map((p) => (
+                      <div key={p.id} className="p-4 flex items-center justify-between hover:bg-white/[0.01] transition-all">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="font-bold text-sm text-white">{p.produtoNome}</span>
+                          <span className="text-[0.65rem] text-white/30 font-bold font-mono">{p.id}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-sm font-black text-[#D4AF37]">R$ {p.valor.toFixed(2)}</span>
+                          <span className="text-[0.65rem] text-white/40 block">Cobrança: {p.intervalo}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="p-4 rounded-2xl bg-[#D4AF37]/5 border border-[#D4AF37]/10 text-xs text-white/60 leading-relaxed">
+                  ⚠️ **Planos errados ou inexistentes?** O Lucas lê os planos ativos diretamente da sua conta oficial do Stripe. Para apagar planos antigos ou valores errados, você precisa desativá-los ou arquivá-los diretamente no seu painel do Stripe (stripe.com).
+                </div>
+              </div>
+
+              {/* Tabela de Cupons */}
+              <div className="space-y-4">
+                <h4 className="text-white font-extrabold text-sm border-b border-white/5 pb-2">Cupons de Desconto Criados</h4>
+                {stripeCupons.length === 0 ? (
+                  <div className="text-center py-10 text-white/30 text-xs border border-white/5 rounded-2xl bg-white/[0.01]">
+                    Nenhum cupom ativo encontrado no Stripe.
+                  </div>
+                ) : (
+                  <div className="border border-white/5 rounded-2xl overflow-hidden divide-y divide-white/5 bg-[#0b0f19]">
+                    {stripeCupons.map((c) => (
+                      <div key={c.id} className="p-4 flex items-center justify-between hover:bg-white/[0.01] transition-all">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="font-bold text-sm text-white font-mono">{c.id}</span>
+                          <span className="text-[0.65rem] text-white/40">Duração: {c.duration}</span>
+                        </div>
+                        <div className="text-right">
+                          {c.percent_off ? (
+                            <span className="text-sm font-black text-green-400">{c.percent_off}% OFF</span>
+                          ) : (
+                            <span className="text-sm font-black text-green-400">R$ {c.amount_off?.toFixed(2)} OFF</span>
+                          )}
+                          <span className={`text-[0.6rem] block font-bold uppercase tracking-wider ${c.valid ? 'text-emerald-500' : 'text-red-400'}`}>
+                            {c.valid ? 'Válido' : 'Inválido'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 text-xs text-white/50 leading-relaxed">
+                  💡 **Dica de Vendas**: Se você quiser criar cupons para campanhas específicas ou resgatar clientes, crie-os no seu painel do Stripe com um código simples (ex: `FESTAS10`). O Lucas conseguirá ver o cupom criado e aplicá-lo na hora de responder sobre promoções no WhatsApp!
+                </div>
+              </div>
+
+            </div>
+          )}
+        </div>
+      )}
+
     </div>
   )
 }
+
