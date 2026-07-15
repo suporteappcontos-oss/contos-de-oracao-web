@@ -147,7 +147,7 @@ export default async function AdminPage({
       supabase.from('logs_auditoria_admin').select('*').order('criado_em', { ascending: false }).limit(200),
       supabase.from('ia_configuracoes').select('*').eq('chave', 'whatsapp_atendente').maybeSingle(),
       supabase.from('ia_base_conhecimento').select('*').order('criado_em', { ascending: false }),
-      supabase.from('whatsapp_chat_history').select('*').order('criado_em', { ascending: false })
+      supabase.from('whatsapp_chat_history').select('*').or('resolvida.eq.false,resolvida.is.null').order('criado_em', { ascending: false })
     ])
 
     videos = resVideos.data ?? []

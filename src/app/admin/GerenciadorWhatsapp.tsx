@@ -6,13 +6,15 @@ import {
   Trash2, Edit3, Check, Loader2, AlertCircle, X, Smile, Tag,
   Zap, Play, ToggleLeft, ToggleRight
 } from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
 import { 
   salvarIaConfiguracao, adicionarFaq, editarFaq, 
   deletarFaq, toggleFaq, enviarMensagemWhatsappManual,
   buscarPlanosStripe, buscarCuponsStripe,
   adicionarAutomacaoWhatsapp, editarAutomacaoWhatsapp,
   deletarAutomacaoWhatsapp, toggleAutomacaoWhatsappAtiva,
-  obterNumeroWhatsapp, salvarNumeroWhatsapp, fecharConversaWhatsapp
+  obterNumeroWhatsapp, salvarNumeroWhatsapp, fecharConversaWhatsapp,
+  excluirConversaWhatsapp
 } from './actions'
 
 type IaConfigType = {
@@ -140,6 +142,50 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
   useEffect(() => {
     setMessages(chatHistory)
   }, [chatHistory])
+
+  // --- Supabase Realtime para chat em tempo real ---
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel('whatsapp-chat-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'whatsapp_chat_history' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newMsg = payload.new as ChatMessageType
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === newMsg.id)) return prev
+              return [newMsg, ...prev]
+            })
+          } else if (payload.eventType === 'DELETE') {
+            const oldId = payload.old.id
+            setMessages((prev) => prev.filter((m) => m.id !== oldId))
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedMsg = payload.new as ChatMessageType
+            if (updatedMsg.resolvida) {
+              setMessages((prev) => prev.filter((m) => m.sender_phone !== updatedMsg.sender_phone))
+              // Se a conversa ativa foi resolvida, deseleciona ela
+              setActivePhone((current) => {
+                if (current === updatedMsg.sender_phone) {
+                  return null
+                }
+                return current
+              })
+            } else {
+              setMessages((prev) =>
+                prev.map((m) => (m.id === updatedMsg.id ? updatedMsg : m))
+              )
+            }
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   useEffect(() => {
     if (subTab === 'planos') {
@@ -312,9 +358,9 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
     })
   }
 
-  // --- Fechar Conversa (Arquivar/Limpar) ---
+  // --- Fechar Conversa (Arquivar/Ocultar logicamente) ---
   const handleFecharConversa = (phone: string) => {
-    if (!confirm('Deseja realmente fechar esta conversa? O histórico local de mensagens será limpo do painel.')) return
+    if (!confirm('Deseja realmente fechar esta conversa? O histórico de mensagens será mantido no banco, mas ela sumirá das conversas ativas.')) return
 
     startTransition(async () => {
       const res = await fecharConversaWhatsapp(phone)
@@ -328,6 +374,26 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
         }
       } else {
         alert('Erro ao fechar conversa: ' + res.error)
+      }
+    })
+  }
+
+  // --- Excluir Conversa (Apagar fisicamente) ---
+  const handleExcluirConversa = (phone: string) => {
+    if (!confirm('ATENÇÃO: Deseja realmente EXCLUIR permanentemente esta conversa? Todo o histórico de mensagens deste número será apagado do banco de dados de forma irreversível.')) return
+
+    startTransition(async () => {
+      const res = await excluirConversaWhatsapp(phone)
+      if (res.success) {
+        setMessages(prev => prev.filter(m => m.sender_phone !== phone))
+        const outrosContatos = contatos.filter(c => c.phone !== phone)
+        if (outrosContatos.length > 0) {
+          setActivePhone(outrosContatos[0].phone)
+        } else {
+          setActivePhone(null)
+        }
+      } else {
+        alert('Erro ao excluir conversa: ' + res.error)
       }
     })
   }
@@ -571,14 +637,26 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                     </span>
                   </div>
 
-                  <button
-                    onClick={() => handleFecharConversa(activePhone)}
-                    disabled={isPending}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 disabled:opacity-50 transition-all active:scale-95"
-                  >
-                    <X size={13} />
-                    Fechar Conversa
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleFecharConversa(activePhone)}
+                      disabled={isPending}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-500/20 bg-green-500/10 text-green-400 text-xs font-bold hover:bg-green-500/20 disabled:opacity-50 transition-all active:scale-95"
+                      title="Oculta a conversa sem apagar o histórico de mensagens"
+                    >
+                      <Check size={13} />
+                      Fechar Conversa
+                    </button>
+                    <button
+                      onClick={() => handleExcluirConversa(activePhone)}
+                      disabled={isPending}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 disabled:opacity-50 transition-all active:scale-95"
+                      title="Apaga permanentemente o histórico do banco"
+                    >
+                      <Trash2 size={13} />
+                      Excluir
+                    </button>
+                  </div>
                 </div>
 
                 {/* Mensagens */}

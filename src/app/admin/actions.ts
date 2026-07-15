@@ -1581,7 +1581,7 @@ export async function fecharConversaWhatsapp(telefone: string) {
   try {
     const { error } = await adminSupabase
       .from('whatsapp_chat_history')
-      .delete()
+      .update({ resolvida: true })
       .eq('sender_phone', telefone)
 
     if (error) throw error
@@ -1591,6 +1591,30 @@ export async function fecharConversaWhatsapp(telefone: string) {
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao fechar conversa:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+export async function excluirConversaWhatsapp(telefone: string) {
+  await verificarAdmin()
+
+  if (!telefone) return { success: false, error: 'Telefone é obrigatório.' }
+
+  const adminSupabase = getAdminClient()
+
+  try {
+    const { error } = await adminSupabase
+      .from('whatsapp_chat_history')
+      .delete()
+      .eq('sender_phone', telefone)
+
+    if (error) throw error
+
+    await registrarLogAuditoria(`Excluiu fisicamente o histórico de conversas do WhatsApp do telefone ${telefone}`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao excluir conversa:', error.message)
     return { success: false, error: error.message }
   }
 }
