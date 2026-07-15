@@ -41,6 +41,7 @@ type ChatMessageType = {
   author: 'user' | 'assistant'
   message_text: string
   criado_em: string
+  resolvida?: boolean
 }
 
 type AutomacaoWhatsapp = {
