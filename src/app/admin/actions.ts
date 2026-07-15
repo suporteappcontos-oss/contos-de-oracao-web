@@ -1572,12 +1572,14 @@ export async function buscarCuponsStripe() {
 }
 
 export async function fecharConversaWhatsapp(telefone: string) {
-  const { supabase } = await verificarAdmin()
+  await verificarAdmin()
 
   if (!telefone) return { success: false, error: 'Telefone é obrigatório.' }
 
+  const adminSupabase = getAdminClient()
+
   try {
-    const { error } = await supabase
+    const { error } = await adminSupabase
       .from('whatsapp_chat_history')
       .delete()
       .eq('sender_phone', telefone)
