@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 
         if (subscriptions.data.length > 0) {
           // Pega a assinatura mais recente
-          const assinatura = subscriptions.data[0]
+          const assinatura = subscriptions.data[0] as any
           statusStripe = assinatura.status
 
           // Status ativos: active e trialing
