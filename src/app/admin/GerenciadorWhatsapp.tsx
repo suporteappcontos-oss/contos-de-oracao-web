@@ -3,12 +3,16 @@
 import { useState, useTransition, useEffect, useRef } from 'react'
 import { 
   MessageSquare, Cpu, BookOpen, Send, Save, Plus, 
-  Trash2, Edit3, Check, Loader2, AlertCircle, X, Smile, Tag
+  Trash2, Edit3, Check, Loader2, AlertCircle, X, Smile, Tag,
+  Zap, Play, ToggleLeft, ToggleRight
 } from 'lucide-react'
 import { 
   salvarIaConfiguracao, adicionarFaq, editarFaq, 
   deletarFaq, toggleFaq, enviarMensagemWhatsappManual,
-  buscarPlanosStripe, buscarCuponsStripe
+  buscarPlanosStripe, buscarCuponsStripe,
+  adicionarAutomacaoWhatsapp, editarAutomacaoWhatsapp,
+  deletarAutomacaoWhatsapp, toggleAutomacaoWhatsappAtiva,
+  obterNumeroWhatsapp, salvarNumeroWhatsapp
 } from './actions'
 
 type IaConfigType = {
@@ -37,15 +41,29 @@ type ChatMessageType = {
   criado_em: string
 }
 
+type AutomacaoWhatsapp = {
+  id: string
+  palavra_chave: string
+  mensagem_link: string
+  prompt_ia: string
+  link_vendas?: string
+  ativo: boolean
+  is_fallback: boolean
+  envios_sucesso?: number
+  envios_erro?: number
+  criado_em: string
+}
+
 type GerenciadorWhatsappProps = {
   config: IaConfigType | null
   faq: FaqType[]
   chatHistory: ChatMessageType[]
+  automacoesWhatsapp: AutomacaoWhatsapp[]
 }
 
-export default function GerenciadorWhatsapp({ config, faq, chatHistory }: GerenciadorWhatsappProps) {
+export default function GerenciadorWhatsapp({ config, faq, chatHistory, automacoesWhatsapp = [] }: GerenciadorWhatsappProps) {
   // Abas internas
-  const [subTab, setSubTab] = useState<'ia' | 'faq' | 'chat' | 'planos'>('chat')
+  const [subTab, setSubTab] = useState<'ia' | 'faq' | 'chat' | 'planos' | 'whats_auto'>('chat')
   const [isPending, startTransition] = useTransition()
 
   // --- Estado Stripe Planos e Cupons ---
@@ -72,6 +90,39 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
   const [activePhone, setActivePhone] = useState<string | null>(null)
   const [typedMessage, setTypedMessage] = useState('')
   const chatBottomRef = useRef<HTMLDivElement>(null)
+
+  // --- Estado Whats Auto ---
+  const [whatsappList, setWhatsappList] = useState<AutomacaoWhatsapp[]>(automacoesWhatsapp)
+  const [modalWhatsAberto, setModalWhatsAberto] = useState(false)
+  const [modalWhatsEdicaoAberto, setModalWhatsEdicaoAberto] = useState(false)
+  const [whatsEditando, setWhatsEditando] = useState<AutomacaoWhatsapp | null>(null)
+  const [whatsappNumero, setWhatsappNumero] = useState('5564992994823')
+  const [salvandoNumero, setSalvandoNumero] = useState(false)
+  const [numeroSalvoFeedback, setNumeroSalvoFeedback] = useState(false)
+  const [adminConfirmSenha, setAdminConfirmSenha] = useState('')
+  const [erroWhats, setErroWhats] = useState('')
+
+  // WhatsApp Form State
+  const [whatsPalavraChave, setWhatsPalavraChave] = useState('')
+  const [whatsMensagemLink, setWhatsMensagemLink] = useState('Quero conhecer a Biblioteca')
+  const [whatsPromptIa, setWhatsPromptIa] = useState('')
+  const [whatsLinkVendas, setWhatsLinkVendas] = useState('')
+  const [whatsIsFallback, setWhatsIsFallback] = useState(false)
+  const [whatsAtivo, setWhatsAtivo] = useState(true)
+
+  // Sync whatsapp list from prop
+  useEffect(() => {
+    setWhatsappList(automacoesWhatsapp)
+  }, [automacoesWhatsapp])
+
+  // Get WhatsApp number on mount
+  useEffect(() => {
+    obterNumeroWhatsapp().then(res => {
+      if (res.success && res.valor) {
+        setWhatsappNumero(res.valor)
+      }
+    })
+  }, [])
 
   // Sincroniza props se atualizarem
   useEffect(() => {
@@ -261,6 +312,132 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
     })
   }
 
+  // --- CRUD e Lógicas do Whats Auto ---
+  const resetWhatsForm = () => {
+    setWhatsPalavraChave('')
+    setWhatsMensagemLink('Quero conhecer a Biblioteca')
+    setWhatsPromptIa('')
+    setWhatsLinkVendas('')
+    setWhatsIsFallback(false)
+    setWhatsAtivo(true)
+    setErroWhats('')
+  }
+
+  const handleAdicionarWhats = async () => {
+    if (!whatsIsFallback && !whatsPalavraChave.trim()) {
+      setErroWhats('A Palavra-Chave é obrigatória para regras comuns.')
+      return
+    }
+    
+    startTransition(async () => {
+      const payload = {
+        palavra_chave: whatsIsFallback ? '' : whatsPalavraChave.trim().toUpperCase(),
+        mensagem_link: whatsIsFallback ? 'Suporte Geral' : whatsMensagemLink.trim(),
+        prompt_ia: 'manual',
+        link_vendas: whatsLinkVendas.trim() || undefined,
+        ativo: whatsAtivo,
+        is_fallback: whatsIsFallback
+      }
+      const res = await adicionarAutomacaoWhatsapp(payload)
+      if (res?.success) {
+        setWhatsappList(prev => [
+          {
+            id: Math.random().toString(),
+            ...payload,
+            criado_em: new Date().toISOString()
+          },
+          ...prev
+        ])
+        setModalWhatsAberto(false)
+        resetWhatsForm()
+      } else {
+        setErroWhats(res?.error ?? 'Erro ao criar regra de WhatsApp.')
+      }
+    })
+  }
+
+  const handleEditarWhats = async () => {
+    if (!whatsEditando) return
+    if (!whatsIsFallback && !whatsPalavraChave.trim()) {
+      setErroWhats('A Palavra-Chave é obrigatória para regras comuns.')
+      return
+    }
+
+    startTransition(async () => {
+      const payload = {
+        palavra_chave: whatsIsFallback ? '' : whatsPalavraChave.trim().toUpperCase(),
+        mensagem_link: whatsIsFallback ? 'Suporte Geral' : whatsMensagemLink.trim(),
+        prompt_ia: 'manual',
+        link_vendas: whatsLinkVendas.trim() || undefined,
+        ativo: whatsAtivo,
+        is_fallback: whatsIsFallback
+      }
+      const res = await editarAutomacaoWhatsapp(whatsEditando.id, payload)
+      if (res?.success) {
+        setWhatsappList(prev => prev.map(w => w.id === whatsEditando.id ? {
+          ...w,
+          ...payload
+        } : w))
+        setModalWhatsEdicaoAberto(false)
+        resetWhatsForm()
+      } else {
+        setErroWhats(res?.error ?? 'Erro ao editar regra de WhatsApp.')
+      }
+    })
+  }
+
+  const handleDeletarWhats = async (id: string) => {
+    if (!confirm('Deseja realmente excluir esta regra do WhatsApp?')) return
+    const res = await deletarAutomacaoWhatsapp(id)
+    if (res?.success) {
+      setWhatsappList(prev => prev.filter(w => w.id !== id))
+    } else {
+      alert('Erro ao excluir: ' + (res?.error ?? 'Erro desconhecido'))
+    }
+  }
+
+  const handleToggleWhats = async (w: AutomacaoWhatsapp) => {
+    const novoStatus = !w.ativo
+    setWhatsappList(prev => prev.map(item => item.id === w.id ? { ...item, ativo: novoStatus } : item))
+    const res = await toggleAutomacaoWhatsappAtiva(w.id, novoStatus)
+    if (!res?.success) {
+      setWhatsappList(prev => prev.map(item => item.id === w.id ? { ...item, ativo: !novoStatus } : item))
+      alert('Erro ao alternar status: ' + (res?.error ?? 'Erro desconhecido'))
+    }
+  }
+
+  const abrirEdicaoWhats = (w: AutomacaoWhatsapp) => {
+    setWhatsEditando(w)
+    setWhatsPalavraChave(w.palavra_chave)
+    setWhatsMensagemLink(w.mensagem_link)
+    setWhatsPromptIa(w.prompt_ia)
+    setWhatsLinkVendas(w.link_vendas ?? '')
+    setWhatsIsFallback(w.is_fallback)
+    setWhatsAtivo(w.ativo)
+    setModalWhatsEdicaoAberto(true)
+  }
+
+  const handleSalvarNumeroWhats = async () => {
+    if (!whatsappNumero.trim()) {
+      alert('Por favor, insira um número de WhatsApp válido.')
+      return
+    }
+    if (!adminConfirmSenha.trim()) {
+      alert('Por favor, digite a senha do administrador para confirmar a alteração.')
+      return
+    }
+    setSalvandoNumero(true)
+    const res = await salvarNumeroWhatsapp(whatsappNumero.trim(), adminConfirmSenha)
+    setSalvandoNumero(false)
+    if (res.success) {
+      setNumeroSalvoFeedback(true)
+      setAdminConfirmSenha('')
+      setTimeout(() => setNumeroSalvoFeedback(false), 3000)
+    } else {
+      alert('Erro ao salvar número do WhatsApp: ' + (res.error ?? 'Erro desconhecido'))
+    }
+  }
+
   // Formata o telefone para exibição
   const formatPhone = (phone: string) => {
     if (!phone) return ''
@@ -311,6 +488,7 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
         <div className="flex bg-[#0b0f19] border border-white/5 rounded-xl p-1 w-fit flex-wrap">
           {[
             { id: 'chat', label: 'Conversas', icon: MessageSquare },
+            { id: 'whats_auto', label: 'Whats Auto', icon: Zap },
             { id: 'faq', label: 'FAQ Suporte', icon: BookOpen },
             { id: 'ia', label: 'Diretrizes da IA', icon: Cpu },
             { id: 'planos', label: 'Planos e Cupons', icon: Tag },
@@ -359,7 +537,7 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
           </div>
 
           {/* Coluna Direita: Janela de Chat */}
-          <div className="lg:col-span-8 flex flex-col h-full bg-[#080b13]">
+          <div className="lg:col-span-8 flex flex-col h-full min-h-0 bg-[#080b13] overflow-hidden">
             {activePhone ? (
               <>
                 {/* Header do Chat */}
@@ -374,7 +552,7 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
                 </div>
 
                 {/* Mensagens */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col-reverse justify-start">
+                <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4 flex flex-col-reverse justify-start">
                   <div ref={chatBottomRef} />
                   
                   {activeMessages.map((m, idx) => {
@@ -776,6 +954,411 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory }: Gerenc
 
             </div>
           )}
+        </div>
+      )}
+
+      {/* ────────────────── SUB-ABA: WHATSAPP AUTO (Whats Auto) ────────────────── */}
+      {subTab === 'whats_auto' && (
+        <div className="space-y-6 flex-1">
+          {/* Header do Gerenciador */}
+          <div className="flex items-center justify-between border-b border-white/5 pb-4">
+            <div>
+              <h3 className="text-white text-lg font-black tracking-tight flex items-center gap-2">
+                <Zap size={20} className="text-[#10b981]" />
+                Automações de WhatsApp (Whats Auto)
+              </h3>
+              <p className="text-white/40 text-xs mt-1">
+                Configure palavras-chave associadas a links wa.me, Prompts do Gemini e suporte com IA.
+              </p>
+            </div>
+
+            <button
+              onClick={() => { resetWhatsForm(); setModalWhatsAberto(true) }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-white transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)' }}
+            >
+              <Plus size={14} />
+              Nova Regra Zap
+            </button>
+          </div>
+
+          {/* Configuração Global do WhatsApp para Redirecionamento */}
+          <div className="bg-[#111827] border rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 border-[#10b981]/20"
+               style={{ boxShadow: '0 0 25px -5px rgba(16, 185, 129, 0.05)' }}>
+            <div className="flex-1">
+              <h4 className="text-white text-base font-black tracking-tight flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full animate-pulse bg-[#10b981]" />
+                Número de WhatsApp do Suporte (Whats Auto)
+              </h4>
+              <p className="text-white/40 text-xs mt-1">
+                Este número será utilizado para gerar os links "wa.me" automaticamente. Se você alterar este número, todas as regras do Instagram que enviam links do WhatsApp serão atualizadas em cascata.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
+              <input
+                type="text"
+                placeholder="Ex: 5564992994823"
+                value={whatsappNumero}
+                onChange={(e) => setWhatsappNumero(e.target.value.replace(/\D/g, ''))}
+                className="bg-[#0f171e] border border-white/10 focus:border-[#10b981] rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm w-full md:w-48"
+              />
+              <input
+                type="password"
+                placeholder="Confirmar Senha Admin"
+                value={adminConfirmSenha}
+                onChange={(e) => setAdminConfirmSenha(e.target.value)}
+                className="bg-[#0f171e] border border-white/10 focus:border-red-500 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm w-full md:w-48 text-center"
+              />
+              <button
+                onClick={handleSalvarNumeroWhats}
+                disabled={salvandoNumero}
+                className="px-5 py-2.5 text-xs font-black rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0 bg-[#10b981] hover:bg-[#34D399] text-white"
+              >
+                {salvandoNumero ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    Salvando...
+                  </>
+                ) : numeroSalvoFeedback ? (
+                  <>
+                    <Check size={14} />
+                    Salvo!
+                  </>
+                ) : (
+                  'Salvar'
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Lista de Automações WhatsApp */}
+          {whatsappList.length === 0 ? (
+            <div className="bg-[#111827] border border-[#10b981]/20 rounded-3xl p-12 text-center" style={{ boxShadow: '0 0 25px -5px rgba(16, 185, 129, 0.08)' }}>
+              <Zap size={36} className="text-[#10b981]/30 mx-auto mb-4 animate-pulse" />
+              <p className="text-white/30 text-sm">Nenhuma regra de WhatsApp cadastrada ainda.</p>
+              <button
+                onClick={() => { resetWhatsForm(); setModalWhatsAberto(true) }}
+                className="mt-4 px-4 py-2 border border-[#10b981]/30 text-[#10b981] hover:bg-[#10b981]/5 transition-all text-xs font-bold rounded-xl"
+              >
+                Criar primeira regra Zap
+              </button>
+            </div>
+          ) : (
+            <div className="bg-[#111827] border border-[#10b981]/20 rounded-3xl overflow-hidden shadow-xl transition-all duration-300" style={{ boxShadow: '0 0 25px -5px rgba(16, 185, 129, 0.08)' }}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/5 bg-white/[0.02]">
+                      <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Palavra Mágica / Função</th>
+                      <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Mensagem do Link (wa.me)</th>
+                      <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Link de Vendas</th>
+                      <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Métricas</th>
+                      <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Status</th>
+                      <th className="p-5 text-white/50 text-[0.65rem] uppercase tracking-widest font-black text-right">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {/* Fallback de Suporte Geral */}
+                    {whatsappList.filter(w => w.is_fallback).map(w => (
+                      <tr key={w.id} className="bg-emerald-500/[0.02] border-l-4 border-emerald-500 hover:bg-emerald-500/[0.04] transition-colors">
+                        <td className="p-5 font-black text-sm text-emerald-400 font-mono">
+                          PADRÃO (SUPORTE GERAL)
+                        </td>
+                        <td className="p-5 text-white/40 text-xs italic">
+                          Acionado quando o cliente clica em "Falar com Suporte" ou não envia palavra-chave.
+                        </td>
+                        <td className="p-5 text-white/40 text-xs font-mono max-w-[150px] truncate" title={w.link_vendas || ''}>
+                          {w.link_vendas ? w.link_vendas : <span className="opacity-40 italic">Nenhum</span>}
+                        </td>
+                        <td className="p-5 text-xs font-bold font-mono text-white/60">
+                          —
+                        </td>
+                        <td className="p-5">
+                          <span className="px-2.5 py-0.5 rounded-full text-[0.65rem] font-black uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            Sempre Ativo
+                          </span>
+                        </td>
+                        <td className="p-5 text-right">
+                          <button
+                            onClick={() => abrirEdicaoWhats(w)}
+                            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 hover:text-white transition-colors"
+                            title="Editar"
+                          >
+                            <Edit3 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {/* Regras comuns */}
+                    {whatsappList.filter(w => !w.is_fallback).map(w => (
+                      <tr key={w.id} className="hover:bg-white/[0.01] transition-colors group">
+                        <td className="p-5 font-black text-sm text-[#10b981] font-mono">
+                          <span className="uppercase">{w.palavra_chave}</span>
+                        </td>
+                        <td className="p-5 text-white/80 text-sm max-w-xs truncate" title={w.mensagem_link}>
+                          <span>"{w.mensagem_link}"</span>
+                        </td>
+                        <td className="p-5 text-white/40 text-xs font-mono max-w-[150px] truncate" title={w.link_vendas || ''}>
+                          {w.link_vendas ? w.link_vendas : <span className="opacity-40 italic">Nenhum</span>}
+                        </td>
+                        <td className="p-5 text-xs font-bold font-mono">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[#10b981]">
+                              {w.envios_sucesso || 0} OK
+                            </span>
+                            <span className="text-red-400">
+                              {w.envios_erro || 0} Erro
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-5">
+                          <button
+                            onClick={() => handleToggleWhats(w)}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.65rem] font-black uppercase transition-all ${
+                              w.ativo
+                                ? 'bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/20'
+                                : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                            }`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${w.ativo ? 'bg-[#10b981]' : 'bg-red-400'}`} />
+                            {w.ativo ? 'Ativo' : 'Pausado'}
+                          </button>
+                        </td>
+                        <td className="p-5 text-right">
+                          <div className="flex items-center justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => abrirEdicaoWhats(w)}
+                              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 hover:text-white transition-colors"
+                              title="Editar"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeletarWhats(w.id)}
+                              className="p-2 rounded-lg bg-red-500/5 hover:bg-red-500/10 text-red-400 transition-colors"
+                              title="Excluir"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ────────────────── MODAIS WHATSAPP AUTO ────────────────── */}
+      {modalWhatsAberto && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-emerald-500/5 to-green-500/10">
+              <div className="flex items-center gap-2">
+                <Zap size={16} className="text-[#10b981]" />
+                <h4 className="text-white font-extrabold text-sm uppercase tracking-wider">Nova Regra de WhatsApp</h4>
+              </div>
+              <button
+                onClick={() => { setModalWhatsAberto(false); resetWhatsForm(); }}
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
+              <div className="flex items-center gap-2 p-3 bg-white/[0.02] border border-white/5 rounded-xl">
+                <input
+                  type="checkbox"
+                  id="whatsIsFallback"
+                  checked={whatsIsFallback}
+                  onChange={e => {
+                    setWhatsIsFallback(e.target.checked)
+                    if (e.target.checked) {
+                      setWhatsPalavraChave('')
+                      setWhatsPromptIa('')
+                      setWhatsMensagemLink('Suporte Geral')
+                    } else {
+                      setWhatsMensagemLink('Quero conhecer a Biblioteca')
+                    }
+                  }}
+                  className="rounded border-white/10 text-[#10b981] focus:ring-0 cursor-pointer"
+                />
+                <label htmlFor="whatsIsFallback" className="text-xs text-white/70 font-bold cursor-pointer select-none">
+                  Definir como Regra Padrão de Suporte Geral (Fallback)
+                </label>
+              </div>
+
+              {!whatsIsFallback && (
+                <div>
+                  <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Palavra Mágica do Instagram (Associação) *</label>
+                  <input
+                    value={whatsPalavraChave}
+                    onChange={e => setWhatsPalavraChave(e.target.value)}
+                    placeholder="Ex: BIBLIOTECA, CURSO"
+                    className="w-full bg-[#0f171e] border border-white/10 focus:border-[#10b981] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm uppercase font-mono"
+                  />
+                </div>
+              )}
+
+              {!whatsIsFallback && (
+                <div>
+                  <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Mensagem de Boas-Vindas (Frase do Link) *</label>
+                  <input
+                    value={whatsMensagemLink}
+                    onChange={e => setWhatsMensagemLink(e.target.value)}
+                    placeholder="Ex: Quero conhecer a Biblioteca"
+                    className="w-full bg-[#0f171e] border border-white/10 focus:border-[#10b981] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm"
+                  />
+                  <div className="mt-3 p-3 bg-black/40 border border-white/5 rounded-xl space-y-1">
+                    <span className="text-[0.6rem] uppercase tracking-wider text-white/40 font-bold block">Link WhatsApp Gerado automaticamente:</span>
+                    <span className="text-[0.7rem] text-[#10b981] truncate font-mono select-all block">
+                      {`https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMensagemLink)}`}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Link de Vendas / Checkout (Opcional)</label>
+                <input
+                  type="url"
+                  value={whatsLinkVendas}
+                  onChange={e => setWhatsLinkVendas(e.target.value)}
+                  placeholder="Ex: https://pay.kiwify.com.br/..."
+                  className="w-full bg-[#0f171e] border border-white/10 focus:border-[#10b981] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm"
+                />
+              </div>
+
+              {erroWhats && (
+                <div className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3">
+                  {erroWhats}
+                </div>
+              )}
+            </div>
+
+            <div className="px-6 pb-6 flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => { setModalWhatsAberto(false); resetWhatsForm(); }}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAdicionarWhats}
+                disabled={isPending}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-white disabled:opacity-60 transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)' }}
+              >
+                {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+                {isPending ? 'Criando...' : 'Salvar Regra'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalWhatsEdicaoAberto && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-emerald-500/5 to-green-500/10">
+              <div className="flex items-center gap-2">
+                <Zap size={16} className="text-[#10b981]" />
+                <h4 className="text-white font-extrabold text-sm uppercase tracking-wider">Editar Regra de WhatsApp</h4>
+              </div>
+              <button
+                onClick={() => { setModalWhatsEdicaoAberto(false); resetWhatsForm(); }}
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
+              <div className="flex items-center gap-2 p-3 bg-white/[0.02] border border-white/5 rounded-xl opacity-80">
+                <input
+                  type="checkbox"
+                  id="whatsIsFallbackEdit"
+                  checked={whatsIsFallback}
+                  disabled
+                  className="rounded border-white/10 text-[#10b981] focus:ring-0 cursor-not-allowed"
+                />
+                <label htmlFor="whatsIsFallbackEdit" className="text-xs text-white/40 font-bold cursor-not-allowed select-none">
+                  Regra Padrão de Suporte Geral (Fallback)
+                </label>
+              </div>
+
+              {!whatsIsFallback && (
+                <div>
+                  <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Palavra Mágica do Instagram (Associação) *</label>
+                  <input
+                    value={whatsPalavraChave}
+                    onChange={e => setWhatsPalavraChave(e.target.value)}
+                    placeholder="Ex: BIBLIOTECA, CURSO"
+                    className="w-full bg-[#0f171e] border border-white/10 focus:border-[#10b981] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm uppercase font-mono"
+                  />
+                </div>
+              )}
+
+              {!whatsIsFallback && (
+                <div>
+                  <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Mensagem de Boas-Vindas (Frase do Link) *</label>
+                  <input
+                    value={whatsMensagemLink}
+                    onChange={e => setWhatsMensagemLink(e.target.value)}
+                    placeholder="Ex: Quero conhecer a Biblioteca"
+                    className="w-full bg-[#0f171e] border border-white/10 focus:border-[#10b981] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm"
+                  />
+                  <div className="mt-3 p-3 bg-black/40 border border-white/5 rounded-xl space-y-1">
+                    <span className="text-[0.6rem] uppercase tracking-wider text-white/40 font-bold block">Link WhatsApp Gerado automaticamente:</span>
+                    <span className="text-[0.7rem] text-[#10b981] truncate font-mono select-all block">
+                      {`https://wa.me/${whatsappNumero}?text=${encodeURIComponent(whatsMensagemLink)}`}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Link de Vendas / Checkout (Opcional)</label>
+                <input
+                  type="url"
+                  value={whatsLinkVendas}
+                  onChange={e => setWhatsLinkVendas(e.target.value)}
+                  placeholder="Ex: https://pay.kiwify.com.br/..."
+                  className="w-full bg-[#0f171e] border border-white/10 focus:border-[#10b981] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all shadow-inner text-sm"
+                />
+              </div>
+
+              {erroWhats && (
+                <div className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-xl px-4 py-3">
+                  {erroWhats}
+                </div>
+              )}
+            </div>
+
+            <div className="px-6 pb-6 flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => { setModalWhatsEdicaoAberto(false); resetWhatsForm(); }}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleEditarWhats}
+                disabled={isPending}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-white disabled:opacity-60 transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)' }}
+              >
+                {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+                {isPending ? 'Salvando...' : 'Salvar Alterações'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

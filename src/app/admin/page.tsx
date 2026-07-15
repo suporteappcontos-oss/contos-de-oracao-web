@@ -552,7 +552,6 @@ export default async function AdminPage({
         {activeTab === 'automacao' && (
           <GerenciadorAutomacoes 
             automacoes={automacoes || []} 
-            automacoesWhatsapp={automacoesWhatsapp || []}
             logs={logsAutomacoes}
             stats={statsMap}
           />
@@ -574,6 +573,7 @@ export default async function AdminPage({
             config={iaConfig} 
             faq={iaFaq} 
             chatHistory={iaChatHistory} 
+            automacoesWhatsapp={automacoesWhatsapp}
           />
         )}
 
