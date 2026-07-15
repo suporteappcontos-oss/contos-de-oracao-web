@@ -22,8 +22,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Acesso não autorizado' }, { status: 401 })
     }
     
-    if (!email) {
-      return NextResponse.json({ error: 'Parâmetro email é obrigatório' }, { status: 400 })
+    if (!email || email.trim() === '') {
+      return NextResponse.json({ 
+        encontrado: false, 
+        mensagem: 'E-mail não fornecido.' 
+      })
     }
     
     const cleanEmail = email.trim().toLowerCase()
