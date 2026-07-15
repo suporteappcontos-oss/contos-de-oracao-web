@@ -12,7 +12,7 @@ import {
   buscarPlanosStripe, buscarCuponsStripe,
   adicionarAutomacaoWhatsapp, editarAutomacaoWhatsapp,
   deletarAutomacaoWhatsapp, toggleAutomacaoWhatsappAtiva,
-  obterNumeroWhatsapp, salvarNumeroWhatsapp
+  obterNumeroWhatsapp, salvarNumeroWhatsapp, fecharConversaWhatsapp
 } from './actions'
 
 type IaConfigType = {
@@ -312,6 +312,27 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
     })
   }
 
+  // --- Fechar Conversa (Arquivar/Limpar) ---
+  const handleFecharConversa = (phone: string) => {
+    if (!confirm('Deseja realmente fechar esta conversa? O histórico local de mensagens será limpo do painel.')) return
+
+    startTransition(async () => {
+      const res = await fecharConversaWhatsapp(phone)
+      if (res.success) {
+        setMessages(prev => prev.filter(m => m.sender_phone !== phone))
+        const outrosContatos = contatos.filter(c => c.phone !== phone)
+        if (outrosContatos.length > 0) {
+          setActivePhone(outrosContatos[0].phone)
+        } else {
+          setActivePhone(null)
+        }
+      } else {
+        alert('Erro ao fechar conversa: ' + res.error)
+      }
+    })
+  }
+
+
   // --- CRUD e Lógicas do Whats Auto ---
   const resetWhatsForm = () => {
     setWhatsPalavraChave('')
@@ -507,7 +528,7 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
 
       {/* ────────────────── SUB-ABA: CONVERSAS E CHAT ────────────────── */}
       {subTab === 'chat' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 border border-white/5 rounded-3xl overflow-hidden bg-[#0b0f19] h-[550px] flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-12 border border-white/5 rounded-3xl overflow-hidden bg-[#0b0f19] h-[calc(100vh-380px)] min-h-[450px] max-h-[650px] flex-1">
           
           {/* Coluna Esquerda: Contatos */}
           <div className="lg:col-span-4 border-r border-white/5 flex flex-col h-full bg-[#0d1220]">
@@ -549,12 +570,19 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                       Assistência Ativada
                     </span>
                   </div>
+
+                  <button
+                    onClick={() => handleFecharConversa(activePhone)}
+                    disabled={isPending}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 disabled:opacity-50 transition-all active:scale-95"
+                  >
+                    <X size={13} />
+                    Fechar Conversa
+                  </button>
                 </div>
 
                 {/* Mensagens */}
-                <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4 flex flex-col-reverse justify-start">
-                  <div ref={chatBottomRef} />
-                  
+                <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4 flex flex-col justify-start">
                   {activeMessages.map((m, idx) => {
                     const isUser = m.author === 'user'
                     const showDate = idx === 0 || formatDate(m.criado_em) !== formatDate(activeMessages[idx - 1]?.criado_em)
@@ -581,6 +609,7 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                       </div>
                     )
                   })}
+                  <div ref={chatBottomRef} />
                 </div>
 
                 {/* Input de Mensagem Manual */}

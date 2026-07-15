@@ -1571,6 +1571,29 @@ export async function buscarCuponsStripe() {
   }
 }
 
+export async function fecharConversaWhatsapp(telefone: string) {
+  const { supabase } = await verificarAdmin()
+
+  if (!telefone) return { success: false, error: 'Telefone é obrigatório.' }
+
+  try {
+    const { error } = await supabase
+      .from('whatsapp_chat_history')
+      .delete()
+      .eq('sender_phone', telefone)
+
+    if (error) throw error
+
+    await registrarLogAuditoria(`Fechou a conversa do WhatsApp com o telefone ${telefone}`)
+    revalidatePath('/admin')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Erro ao fechar conversa:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+
 
 
 
