@@ -250,6 +250,63 @@ export default function LandingPage() {
             color: #D4AF37; /* Dourado */
             text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
           }
+
+          /* --- Animações do Mascote Lucas --- */
+          @keyframes float-mascot {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+          }
+          @keyframes wave-mascot {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-2px) rotate(-4deg); }
+            75% { transform: translateY(-2px) rotate(4deg); }
+          }
+          .mascot-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99;
+            cursor: pointer;
+            animation: float-mascot 4s ease-in-out infinite;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          }
+          .mascot-container:hover {
+            animation: wave-mascot 0.8s ease-in-out infinite;
+          }
+          .mascot-bubble {
+            position: absolute;
+            bottom: 110%;
+            right: 10px;
+            background: rgba(9, 11, 16, 0.95);
+            border: 1px solid #D4AF37;
+            border-radius: 16px;
+            padding: 12px 16px;
+            width: 220px;
+            color: white;
+            font-size: 13px;
+            font-family: 'Outfit', sans-serif;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            opacity: 0;
+            transform: scale(0.9) translateY(10px);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(16px);
+          }
+          .mascot-bubble-arrow {
+            position: absolute;
+            bottom: -6px;
+            right: 40px;
+            width: 12px;
+            height: 12px;
+            background: rgba(9, 11, 16, 0.95);
+            border-right: 1px solid #D4AF37;
+            border-bottom: 1px solid #D4AF37;
+            transform: rotate(45deg);
+          }
+          .mascot-container:hover .mascot-bubble {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
         `}</style>
 
         {/* Brilho dourado sutil */}
@@ -727,6 +784,20 @@ export default function LandingPage() {
           </div>
         </div>
       )}
+
+      {/* ════════ MASCOTE LUCAS ANIMADO ════════ */}
+      <div className="mascot-container group">
+        <div className="mascot-bubble">
+          <p className="font-black text-[#D4AF37] mb-1">Olá! Eu sou o Lucas! 👋</p>
+          <p className="text-white/95 text-xs leading-relaxed font-semibold">Vamos aprender sobre as histórias da Bíblia hoje? Clique para começar!</p>
+          <div className="mascot-bubble-arrow" />
+        </div>
+        <img 
+          src="/lucas.png" 
+          alt="Lucas Mascote" 
+          className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] transition-all group-hover:scale-105"
+        />
+      </div>
 
     </div>
   );
