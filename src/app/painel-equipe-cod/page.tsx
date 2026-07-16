@@ -87,6 +87,15 @@ export default async function AdminPage({
   const isAdminRole = perfil?.role === 'admin' || user.user_metadata?.role === 'admin'
   const isAdminEmail = user.email === 'suporte.appcontos@gmail.com'
   if (!isAdminRole && !isAdminEmail) redirect('/')
+
+  // MFA Check: Se cadastrou o 2FA mas não digitou o código nesta sessão, redireciona
+  const { data: mfaData, error: mfaError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+  if (!mfaError && mfaData) {
+    if (mfaData.nextLevel === 'aal2' && mfaData.currentLevel === 'aal1') {
+      redirect('/login/mfa')
+    }
+  }
+
   let videos: any[] = []
   let materiaisData: any[] = []
   let produtosLoja: any[] = []
