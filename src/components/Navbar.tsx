@@ -245,6 +245,83 @@ export default function Navbar() {
             transform: translate(2px, 2px);
           }
 
+          /* --- Botão Perfil Animado --- */
+          .profile-btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition-duration: .3s;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
+            background-color: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            text-decoration: none;
+          }
+
+          .profile-sign {
+            width: 100%;
+            transition-duration: .3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+          }
+
+          .profile-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            transition-duration: .3s;
+          }
+
+          .profile-text {
+            position: absolute;
+            right: 0%;
+            width: 0%;
+            opacity: 0;
+            color: #090b10;
+            font-size: 13px;
+            font-weight: 800;
+            transition-duration: .3s;
+            white-space: nowrap;
+          }
+
+          .profile-btn:hover {
+            width: 95px;
+            border-radius: 40px;
+            transition-duration: .3s;
+            background-color: rgb(212, 175, 55);
+          }
+
+          .profile-btn:hover .profile-sign {
+            width: 35%;
+            transition-duration: .3s;
+            padding-left: 8px;
+          }
+          
+          .profile-btn:hover .profile-avatar {
+            border-color: white;
+          }
+
+          .profile-btn:hover .profile-text {
+            opacity: 1;
+            width: 65%;
+            transition-duration: .3s;
+            padding-right: 12px;
+          }
+
+          .profile-btn:active {
+            transform: translate(2px, 2px);
+          }
+
           /* --- Redes Sociais Animadas Navbar: Estilo Preenchimento --- */
           .social-wrapper-nav {
             display: none;
@@ -458,19 +535,15 @@ export default function Navbar() {
                 </Link>
               )}
 
-              <Link
-                href="/perfil"
-                className="group flex items-center gap-1.5 px-1.5 py-1 rounded-xl transition-all hover:bg-white/5 no-underline"
-                title="Meu perfil"
-              >
-                <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 transition-all group-hover:border-[#D4AF37] shrink-0"
-                  style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
+              <Link href="/perfil" className="profile-btn" title="Perfil">
+                <div className="profile-sign">
                   <img
                     src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
                     alt="Avatar"
-                    className="w-full h-full object-cover"
+                    className="profile-avatar"
                   />
                 </div>
+                <div className="profile-text">Perfil</div>
               </Link>
 
               <button onClick={handleLogout} className="logout-btn" title="Sair">
