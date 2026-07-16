@@ -19,7 +19,7 @@ export default async function MateriaisPage() {
   if (!user) redirect('/login')
 
   const planoAtivo = user.user_metadata?.plano_ativo === true
-  const { data: perfil } = await supabase.from('perfis').select('role, plano').eq('id', user.id).maybeSingle()
+  const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).maybeSingle()
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
   if (!isAdmin && !planoAtivo) redirect('/?acesso=expirado')
 

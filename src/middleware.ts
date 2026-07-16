@@ -31,22 +31,18 @@ const adminRatelimit = new Ratelimit({
   analytics: true,
 })
 
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const isApi = pathname.startsWith('/api/')
-  const isSecretAdmin = pathname.startsWith('/painel-equipe-cod')
-
-  // ── Rate Limiting ──
-  if (isApi || isSecretAdmin) {
+  // ── Rate Limiting nas APIs ──
+  if (pathname.startsWith('/api/')) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
       || '127.0.0.1'
 
     let ratelimit = globalRatelimit
 
-    if (isSecretAdmin || pathname.startsWith('/api/admin')) {
+    if (pathname.startsWith('/api/admin')) {
       ratelimit = adminRatelimit
     } else if (pathname.includes('/webhook') || pathname.includes('/auth') || pathname.includes('/login')) {
       ratelimit = strictRatelimit
@@ -55,19 +51,6 @@ export async function middleware(request: NextRequest) {
     const { success, limit, reset, remaining } = await ratelimit.limit(ip)
 
     if (!success) {
-      if (isSecretAdmin) {
-        return new NextResponse(
-          'Muitas tentativas de acesso detectadas. Acesso bloqueado temporariamente.',
-          { 
-            status: 429, 
-            headers: { 
-              'Content-Type': 'text/plain; charset=utf-8',
-              'Retry-After': reset.toString() 
-            } 
-          }
-        )
-      }
-
       return NextResponse.json(
         { error: 'Muitas requisições detectadas. Por favor, aguarde alguns instantes antes de tentar novamente.' },
         { 

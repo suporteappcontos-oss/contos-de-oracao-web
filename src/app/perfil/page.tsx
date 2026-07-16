@@ -42,7 +42,7 @@ export default async function PerfilPage() {
   if (!user) redirect('/login')
 
   const { data: perfil } = await supabase
-    .from('perfis').select('role, plano').eq('id', user.id).single()
+    .from('perfis').select('role').eq('id', user.id).single()
 
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
   const planoAtivo = user.user_metadata?.plano_ativo === true || isAdmin
@@ -108,7 +108,7 @@ export default async function PerfilPage() {
     : '—'
 
   // Etiqueta dinâmica vinda do metadata da Stripe (salva pelo webhook)
-  const planoLabel = isAdmin ? 'Administrador' : (user.user_metadata?.etiqueta_plano || perfil?.plano || 'Assinante')
+  const planoLabel = isAdmin ? 'Administrador' : (user.user_metadata?.etiqueta_plano || 'Assinante')
   
   const isKiwify = (user.user_metadata && 'kiwify_product_id' in user.user_metadata) || user.user_metadata?.origem === 'kiwify'
 

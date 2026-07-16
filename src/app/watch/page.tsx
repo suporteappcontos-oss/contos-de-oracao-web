@@ -28,7 +28,7 @@ export default async function WatchPage() {
   if (!user) redirect('/')
 
   const { data: perfil } = await supabase
-    .from('perfis').select('role, plano').eq('id', user.id).single()
+    .from('perfis').select('role').eq('id', user.id).single()
 
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
 
@@ -53,7 +53,7 @@ export default async function WatchPage() {
   const favoritosSet = new Set((favoritosData ?? []).map(f => f.video_id))
 
   // Etiqueta do plano para exibição
-  const etiquetaPlanoStr = (user.user_metadata?.etiqueta_plano || perfil?.plano || '').toLowerCase()
+  const etiquetaPlanoStr = (user.user_metadata?.etiqueta_plano || '').toLowerCase()
   const isBasico = !isAdmin && (etiquetaPlanoStr.includes('basico') || etiquetaPlanoStr.includes('básico'))
 
   // 🕒 HISTÓRICO DE VISUALIZAÇÕES (Continue Assistindo)

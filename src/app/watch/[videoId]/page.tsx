@@ -22,7 +22,7 @@ export default async function VideoPlayerPage({ params }: Props) {
 
   const { data: perfil } = await supabase
     .from('perfis')
-    .select('role, plano')
+    .select('role')
     .eq('id', user.id)
     .single()
 
