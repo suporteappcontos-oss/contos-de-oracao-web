@@ -95,7 +95,7 @@ export async function adicionarVideoTematico(formData: FormData) {
 
   if (error) return { success: false, error: error.message }
 
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/videos-tematicos')
   return { success: true }
 }
@@ -105,7 +105,7 @@ export async function deletarVideoTematico(id: string) {
   const { supabase } = await verificarAdmin()
   const { error } = await supabase.from('videos_tematicos').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/videos-tematicos')
   return { success: true }
 }
@@ -115,7 +115,7 @@ export async function toggleVideoTematicoAtivo(id: string, ativo: boolean) {
   const { supabase } = await verificarAdmin()
   const { error } = await supabase.from('videos_tematicos').update({ ativo }).eq('id', id)
   if (error) return { success: false, error: error.message }
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/videos-tematicos')
   return { success: true }
 }
@@ -151,7 +151,7 @@ export async function editarVideoTematico(formData: FormData) {
 
   if (error) return { success: false, error: error.message }
 
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/videos-tematicos')
   return { success: true }
 }
@@ -250,7 +250,7 @@ export async function adicionarVideo(formData: FormData) {
     }
   }
 
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/watch')
 }
 
@@ -342,18 +342,18 @@ export async function editarVideo(videoId: string, formData: FormData) {
     }
   }
   
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/watch')
-  redirect('/admin?tab=videos')
+  redirect('/painel-equipe-cod?tab=videos')
 }
 
 // â”€â”€â”€ Ativar / Desativar vÃ­deo â”€â”€â”€
 export async function toggleVideoAtivo(videoId: string, ativoAtual: boolean) {
   const { supabase } = await verificarAdmin()
   await supabase.from('videos').update({ ativo: !ativoAtual }).eq('id', videoId)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/watch')
-  redirect('/admin?tab=videos')
+  redirect('/painel-equipe-cod?tab=videos')
 }
 
 // â”€â”€â”€ Deletar vÃ­deo â”€â”€â”€
@@ -362,9 +362,9 @@ export async function deletarVideo(videoId: string) {
   const { data: video } = await supabase.from('videos').select('titulo').eq('id', videoId).single()
   await supabase.from('videos').delete().eq('id', videoId)
   await registrarLogAuditoria(`Excluiu o vídeo "${video?.titulo || videoId}"`)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/watch')
-  redirect('/admin?tab=videos')
+  redirect('/painel-equipe-cod?tab=videos')
 }
 
 // â”€â”€â”€ Ativar / Bloquear assinante â”€â”€â”€
@@ -375,7 +375,7 @@ export async function togglePlanoUsuario(userId: string, planoAtual: boolean) {
     user_metadata: { plano_ativo: !planoAtual },
   })
   if (error) console.error('âŒ Erro ao atualizar plano:', error.message)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
 }
 
 // â”€â”€â”€ Alterar o Plano Manualmente (BÃ¡sico, Essencial, Pro) â”€â”€â”€
@@ -402,7 +402,7 @@ export async function alterarPlanoUsuario(userId: string, novoMaxTelas: number, 
     },
   })
   if (error) console.error('âŒ Erro ao alterar plano do usuÃ¡rio:', error.message)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
 }
 
 // â”€â”€â”€ Salvar ConfiguraÃ§Ã£o Global (Fundo do app/site) â”€â”€â”€
@@ -492,7 +492,7 @@ export async function salvarPermissoesPlanos(planosApp: string[], planosHq: stri
     });
 
     if (!resConf.ok) throw new Error(`Erro ao salvar config.json: ${resConf.statusText}`);
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     return { success: true };
   } catch (error: any) {
     console.error('âŒ Erro no salvarPermissoesPlanos:', error.message || error);
@@ -518,7 +518,7 @@ export async function salvarVersaoApk(versao: string, linkDownload: string, mens
     const versaoPath = join(process.cwd(), 'public', 'versao.json');
     writeFileSync(versaoPath, JSON.stringify(dados, null, 2), 'utf-8');
 
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     revalidatePath('/', 'layout');
     return { success: true };
   } catch (error: any) {
@@ -610,7 +610,7 @@ export async function publicarMaterial(formData: FormData) {
 
     await registrarLogAuditoria(`Publicou o material/desenho "${titulo}"`)
     revalidatePath('/materiais');
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     return { success: true };
   } catch (error: any) {
     console.error('âŒ Erro no publicarMaterial:', error.message);
@@ -628,7 +628,7 @@ export async function deletarMaterial(id: string) {
     if (error) throw new Error(error.message);
     await registrarLogAuditoria(`Excluiu o material "${material?.titulo || id}"`)
     revalidatePath('/materiais');
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -673,7 +673,7 @@ export async function publicarRevista(formData: FormData) {
     if (error) throw new Error(error.message)
 
     revalidatePath('/revistas')
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('âŒ Erro no publicarRevista:', error.message)
@@ -689,7 +689,7 @@ export async function deletarRevista(id: string) {
     const { error } = await supabase.from('revistas').delete().eq('id', id)
     if (error) throw new Error(error.message)
     revalidatePath('/revistas')
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     return { success: false, error: error.message }
@@ -740,7 +740,7 @@ export async function criarUsuarioVitalicio(formData: FormData) {
   // Nota: o trigger no Supabase 'on_auth_user_created' jÃ¡ cria automaticamente o perfil do usuÃ¡rio
   // na tabela public.perfis com a role padrÃ£o de 'membro' (cliente comum), garantindo seguranÃ§a total.
 
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   
   return {
     success: true,
@@ -767,7 +767,7 @@ export async function deletarUsuario(userId: string) {
     const { error } = await admin.auth.admin.deleteUser(userId)
     if (error) throw new Error(error.message)
 
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
   } catch (error: any) {
     console.error('âŒ Erro ao deletar usuÃ¡rio:', error.message)
   }
@@ -805,7 +805,7 @@ export async function adicionarProdutoLoja(formData: FormData) {
 
     if (error) throw new Error(error.message);
 
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     revalidatePath('/loja');
     return { success: true };
   } catch (error: any) {
@@ -842,7 +842,7 @@ export async function editarProdutoLoja(id: string, formData: FormData) {
 
     if (error) throw new Error(error.message);
 
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     revalidatePath('/loja');
     return { success: true };
   } catch (error: any) {
@@ -857,7 +857,7 @@ export async function deletarProdutoLoja(id: string) {
     const { error } = await supabase.from('produtos_loja').delete().eq('id', id);
     if (error) throw new Error(error.message);
 
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     revalidatePath('/loja');
     return { success: true };
   } catch (error: any) {
@@ -872,7 +872,7 @@ export async function toggleProdutoLojaAtivo(id: string, ativoAtual: boolean) {
     const { error } = await supabase.from('produtos_loja').update({ ativo: !ativoAtual }).eq('id', id);
     if (error) throw new Error(error.message);
 
-    revalidatePath('/admin');
+    revalidatePath('/painel-equipe-cod');
     revalidatePath('/loja');
     return { success: true };
   } catch (error: any) {
@@ -902,7 +902,7 @@ export async function adicionarSerie(formData: FormData) {
       throw new Error(error.message)
     }
 
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     revalidatePath('/')
     return { success: true }
   } catch (error: any) {
@@ -925,7 +925,7 @@ export async function editarSerie(id: string, formData: FormData) {
     }).eq('id', id)
     if (error) throw new Error(error.message)
 
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     revalidatePath('/')
     return { success: true }
   } catch (error: any) {
@@ -942,7 +942,7 @@ export async function deletarSerie(id: string) {
     throw new Error(error.message)
   }
 
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   revalidatePath('/')
 }
 
@@ -952,7 +952,7 @@ export async function toggleSerieAtiva(id: string, ativoAtual: boolean) {
     const { error } = await supabase.from('series').update({ ativo: !ativoAtual }).eq('id', id)
     if (error) throw new Error(error.message)
 
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     revalidatePath('/')
     return { success: true }
   } catch (error: any) {
@@ -969,7 +969,7 @@ export async function deletarTestador(id: string) {
     const { error } = await admin.from('testadores_playstore').delete().eq('id', id)
     if (error) throw new Error(error.message)
 
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao deletar testador:', error.message)
@@ -1008,7 +1008,7 @@ export async function adicionarAutomacaoInstagram(formData: FormData) {
   if (error) return { success: false, error: error.message }
 
   await registrarLogAuditoria(`Criou automação Insta Auto para a palavra-chave "${palavraChave}"`)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   return { success: true }
 }
 
@@ -1043,7 +1043,7 @@ export async function editarAutomacaoInstagram(formData: FormData) {
   if (error) return { success: false, error: error.message }
 
   await registrarLogAuditoria(`Editou automação Insta Auto para a palavra-chave "${palavraChave}"`)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   return { success: true }
 }
 
@@ -1053,7 +1053,7 @@ export async function deletarAutomacaoInstagram(id: string) {
   const { error } = await supabase.from('automacoes_instagram').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
   await registrarLogAuditoria(`Excluiu automação Insta Auto da palavra-chave "${data?.palavra_chave || id}"`)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   return { success: true }
 }
 
@@ -1063,7 +1063,7 @@ export async function toggleAutomacaoInstagramAtiva(id: string, ativo: boolean) 
   const { error } = await supabase.from('automacoes_instagram').update({ ativo }).eq('id', id)
   if (error) return { success: false, error: error.message }
   await registrarLogAuditoria(`Alterou status do Insta Auto "${data?.palavra_chave || id}" para ${ativo ? 'Ativo' : 'Inativo'}`)
-  revalidatePath('/admin')
+  revalidatePath('/painel-equipe-cod')
   return { success: true }
 }
 
@@ -1078,7 +1078,7 @@ export async function resolverErroAutomacao(id: string) {
     if (error) throw new Error(error.message)
     const { data: logData } = await adminSupabase.from('logs_automacoes_instagram').select('seguidor').eq('id', id).single()
     await registrarLogAuditoria(`Marcou falha de Insta Auto como resolvida (Seguidor: ${logData?.seguidor || id})`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao resolver log de automacao:', error.message)
@@ -1097,7 +1097,7 @@ export async function resolverErroAutomacaoWhatsapp(id: string) {
     if (error) throw new Error(error.message)
     const { data: logData } = await adminSupabase.from('logs_automacoes_whatsapp').select('seguidor').eq('id', id).single()
     await registrarLogAuditoria(`Marcou falha de Whats Auto como resolvida (Seguidor: ${logData?.seguidor || id})`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao resolver log de automacao WhatsApp:', error.message)
@@ -1120,7 +1120,7 @@ export async function adicionarAutomacaoWhatsapp(data: {
       .insert([data])
     if (error) throw new Error(error.message)
     await registrarLogAuditoria(`Criou automação Whats Auto para a palavra-chave "${data.palavra_chave || 'Fallback'}"`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao adicionar automacao WhatsApp:', error.message)
@@ -1144,7 +1144,7 @@ export async function editarAutomacaoWhatsapp(id: string, data: {
       .eq('id', id)
     if (error) throw new Error(error.message)
     await registrarLogAuditoria(`Editou automação Whats Auto para a palavra-chave "${data.palavra_chave || 'Fallback'}"`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao editar automacao WhatsApp:', error.message)
@@ -1162,7 +1162,7 @@ export async function deletarAutomacaoWhatsapp(id: string) {
       .eq('id', id)
     if (error) throw new Error(error.message)
     await registrarLogAuditoria(`Excluiu automação Whats Auto da palavra-chave "${data?.is_fallback ? 'Fallback' : (data?.palavra_chave || id)}"`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao deletar automacao WhatsApp:', error.message)
@@ -1180,7 +1180,7 @@ export async function toggleAutomacaoWhatsappAtiva(id: string, ativo: boolean) {
       .eq('id', id)
     if (error) throw new Error(error.message)
     await registrarLogAuditoria(`Alterou status do Whats Auto "${data?.is_fallback ? 'Fallback' : (data?.palavra_chave || id)}" para ${ativo ? 'Ativo' : 'Inativo'}`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao alterar status da automacao WhatsApp:', error.message)
@@ -1255,7 +1255,7 @@ export async function salvarNumeroWhatsapp(numero: string, senha?: string) {
     }
 
     await registrarLogAuditoria(`Alterou o número geral de WhatsApp para ${numero.trim()}`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao salvar numero do whatsapp:', error.message)
@@ -1289,7 +1289,7 @@ export async function promoverEmailParaAdmin(email: string) {
     if (authMetaErr) console.warn('Aviso ao atualizar metadados:', authMetaErr.message)
 
     await registrarLogAuditoria(`Promoveu o usuário ${email} para Administrador`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao promover usuário para admin:', error.message)
@@ -1327,7 +1327,7 @@ export async function rebaixarAdminParaMembro(userId: string) {
     if (authMetaErr) console.warn('Aviso ao atualizar metadados:', authMetaErr.message)
 
     await registrarLogAuditoria(`Rebaixou o administrador ${targetAuth?.user?.email || userId} para Membro`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao rebaixar administrador:', error.message)
@@ -1361,7 +1361,7 @@ export async function salvarIaConfiguracao(formData: FormData) {
     if (error) throw error
 
     await registrarLogAuditoria('Atualizou as configurações do Atendente de IA (Lucas)')
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao salvar configuração de IA:', error.message)
@@ -1392,7 +1392,7 @@ export async function adicionarFaq(formData: FormData) {
     if (error) throw error
 
     await registrarLogAuditoria(`Adicionou novo item ao FAQ da IA: "${pergunta.trim()}"`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao adicionar FAQ:', error.message)
@@ -1425,7 +1425,7 @@ export async function editarFaq(formData: FormData) {
     if (error) throw error
 
     await registrarLogAuditoria(`Editou o item do FAQ da IA: "${pergunta.trim()}"`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao editar FAQ:', error.message)
@@ -1445,7 +1445,7 @@ export async function deletarFaq(id: string) {
     if (error) throw error
 
     await registrarLogAuditoria(`Removeu o item do FAQ da IA ID: ${id}`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao deletar FAQ:', error.message)
@@ -1465,7 +1465,7 @@ export async function toggleFaq(id: string, ativo: boolean) {
     if (error) throw error
 
     await registrarLogAuditoria(`Alterou status ativo do FAQ ID: ${id} para ${ativo}`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao alternar status do FAQ:', error.message)
@@ -1520,7 +1520,7 @@ export async function enviarMensagemWhatsappManual(telefone: string, mensagem: s
     if (dbErr) throw dbErr
 
     await registrarLogAuditoria(`Enviou mensagem manual via WhatsApp para ${telefone}`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao enviar mensagem manual:', error.message)
@@ -1587,7 +1587,7 @@ export async function fecharConversaWhatsapp(telefone: string) {
     if (error) throw error
 
     await registrarLogAuditoria(`Fechou a conversa do WhatsApp com o telefone ${telefone}`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao fechar conversa:', error.message)
@@ -1611,7 +1611,7 @@ export async function excluirConversaWhatsapp(telefone: string) {
     if (error) throw error
 
     await registrarLogAuditoria(`Excluiu fisicamente o histórico de conversas do WhatsApp do telefone ${telefone}`)
-    revalidatePath('/admin')
+    revalidatePath('/painel-equipe-cod')
     return { success: true }
   } catch (error: any) {
     console.error('Erro ao excluir conversa:', error.message)

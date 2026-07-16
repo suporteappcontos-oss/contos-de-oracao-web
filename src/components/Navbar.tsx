@@ -449,7 +449,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2 sm:gap-3.5">
               {isAdmin && (
                 <Link
-                  href="/admin"
+                  href="/painel-equipe-cod"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
                   style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)', textDecoration: 'none' }}
                 >

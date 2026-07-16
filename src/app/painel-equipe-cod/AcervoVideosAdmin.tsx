@@ -165,7 +165,7 @@ export default function AcervoVideosAdmin({
               <ExternalLink size={16} />
             </Link>
             <Link 
-              href={`/admin?tab=catalogo&edit=${video.id}`} 
+              href={`/painel-equipe-cod?tab=catalogo&edit=${video.id}`} 
               className="col-span-1 flex items-center justify-center bg-white/5 hover:bg-[#D4AF37]/20 text-[#D4AF37] rounded-xl py-2.5 transition-colors" 
               title="Editar"
             >

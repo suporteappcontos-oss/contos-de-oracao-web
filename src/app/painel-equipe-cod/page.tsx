@@ -341,7 +341,7 @@ export default async function AdminPage({
               { id: 'logs', label: 'Logs', icon: FileText, count: null },
             ].map(tab => (
 
-              <Link key={tab.id} href={`/admin?tab=${tab.id}`}
+              <Link key={tab.id} href={`/painel-equipe-cod?tab=${tab.id}`}
                 className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab.id ? 'text-black shadow-md' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
                 style={activeTab === tab.id ? { background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' } : {}}>
                 <tab.icon size={15} />

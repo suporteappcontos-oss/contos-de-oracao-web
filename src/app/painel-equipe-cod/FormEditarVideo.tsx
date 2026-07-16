@@ -62,7 +62,7 @@ export function FormEditarVideo({ video, temporadasExistentes = [] }: Props) {
             <Edit3 size={18} className="text-[#D4AF37]" />
             <span className="text-white font-black">Editar Vídeo</span>
          </div>
-         <Link href="/admin?tab=catalogo" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
+         <Link href="/painel-equipe-cod?tab=catalogo" className="text-white/40 hover:text-white p-1 rounded-md hover:bg-white/10"><X size={16}/></Link>
       </div>
       
       <form action={handleSubmit} encType="multipart/form-data" className="space-y-4">
@@ -203,7 +203,7 @@ export function FormEditarVideo({ video, temporadasExistentes = [] }: Props) {
 
         <div className="flex gap-3 mt-4">
           <Link
-            href="/admin?tab=catalogo"
+            href="/painel-equipe-cod?tab=catalogo"
             className="flex-1 text-center bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl transition-all"
           >
             Cancelar
