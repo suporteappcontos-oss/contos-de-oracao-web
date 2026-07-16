@@ -60,11 +60,7 @@ export default function MfaSetupPage() {
 
       setFactorId(data.id)
       setSecret(data.totp.secret)
-      
-      // O Supabase retorna o QR code como SVG em string
-      // Convertemos para um Data URL seguro para renderizar no <img />
-      const svgBase64 = btoa(unescape(encodeURIComponent(data.totp.qr_code)))
-      setQrCodeSvg(`data:image/svg+xml;base64,${svgBase64}`)
+      setQrCodeSvg(data.totp.qr_code)
     } catch (err: any) {
       console.error('Erro ao iniciar MFA:', err.message)
       setError(err.message || 'Erro ao gerar o QR Code de autenticação.')

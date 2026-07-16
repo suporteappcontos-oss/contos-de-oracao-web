@@ -137,6 +137,25 @@ export default function GerenciadorEquipe({ admins, currentUserEmail }: Gerencia
           </form>
         </div>
 
+        {/* Segurança da Conta (2FA) */}
+        <div className="space-y-6 lg:col-span-1 flex flex-col">
+          <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 shadow-xl h-fit">
+            <h4 className="text-white font-bold text-sm mb-3 flex items-center gap-2">
+              <Shield size={16} className="text-[#D4AF37]" />
+              Segurança da Conta (2FA)
+            </h4>
+            <p className="text-white/40 text-[0.7rem] leading-relaxed mb-4">
+              Proteja sua conta individual configurando a verificação em duas etapas via aplicativo autenticador (Google Authenticator).
+            </p>
+            <a
+              href="/painel-equipe-cod/mfa"
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-black text-center text-[#D4AF37] hover:text-[#fff] bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 border border-[#D4AF37]/20 hover:border-[#D4AF37]/40 transition-all no-underline block"
+            >
+              Configurar 2FA / Autenticador
+            </a>
+          </div>
+        </div>
+
         {/* Lista de Admins Atuais */}
         <div className="lg:col-span-2 bg-[#111827] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
           <div className="px-6 py-4 border-b border-white/5">
