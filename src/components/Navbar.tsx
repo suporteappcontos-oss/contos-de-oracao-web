@@ -51,6 +51,13 @@ const IconSobre = () => (
   </svg>
 );
 
+const IconQuaresma = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M2 2l20 20"/>
+    <path d="M20 9l-7.5 7.5M6 3l11 11"/>
+  </svg>
+);
+
 export default function Navbar() {
   const pathname                      = usePathname();
   const router                        = useRouter();
@@ -778,6 +785,22 @@ export default function Navbar() {
             </span>
             <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300">
               Loja
+            </span>
+          </Link>
+
+          {/* ── Quaresma de São Miguel ── */}
+          <Link
+            href="/quaresma-sao-miguel"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
+          >
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#D4AF37] rounded-r-md transition-all duration-300 group-hover:h-3/5" />
+            <span className="text-white/60 group-hover:text-[#D4AF37] group-hover:drop-shadow-[0_0_8px_rgba(212,175,55,0.6)] transition-all duration-300">
+              <IconQuaresma />
+            </span>
+            <span className="text-white/70 group-hover:text-white text-sm font-semibold transition-all duration-300 flex items-center gap-1.5">
+              Quaresma
+              <span className="text-[9px] text-[#D4AF37] font-black uppercase tracking-wider bg-[#D4AF37]/10 px-1.5 py-0.5 rounded border border-[#D4AF37]/20 animate-pulse">10 AGO</span>
             </span>
           </Link>
 
