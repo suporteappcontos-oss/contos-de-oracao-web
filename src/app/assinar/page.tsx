@@ -556,7 +556,10 @@ export default function AssinarPage() {
               <div>
                 <div className="input-group">
                   <input
-                    type="text"
+                    type="tel"
+                    name="whatsapp"
+                    id="whatsapp"
+                    autoComplete="tel"
                     value={whatsapp}
                     onChange={handleWhatsappChange}
                     placeholder=" "
