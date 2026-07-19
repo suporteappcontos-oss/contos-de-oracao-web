@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "quaresma_sao_miguel_2025";
+const RELATOS_KEY = "quaresma_sao_miguel_relatos_2025";
 
 /* ── 40 dias de oração ──────────────────────────────────────────────────── */
 const DIAS = [
@@ -59,6 +60,14 @@ function saveProgress(days: number[]) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(days)); } catch {}
 }
 
+function loadRelatos(): Record<number, string> {
+  if (typeof window === "undefined") return {};
+  try { return JSON.parse(localStorage.getItem(RELATOS_KEY) || "{}"); } catch { return {}; }
+}
+function saveRelatos(relatos: Record<number, string>) {
+  try { localStorage.setItem(RELATOS_KEY, JSON.stringify(relatos)); } catch {}
+}
+
 /* ── componente de partículas mágicas ───────────────────────────────────── */
 function MagicBurst({ active }: { active: boolean }) {
   if (!active) return null;
@@ -94,15 +103,18 @@ function MagicBurst({ active }: { active: boolean }) {
 /* ── componente principal ────────────────────────────────────────────────── */
 export default function QuaresmaPage() {
   const [completed, setCompleted] = useState<number[]>([]);
+  const [relatos, setRelatos] = useState<Record<number, string>>({});
   const [celebrating, setCelebrating] = useState<number | null>(null);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
   const dayRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
-    const saved = loadProgress();
-    setCompleted(saved);
-    const cur = saved.length + 1;
+    const savedDays = loadProgress();
+    const savedRelatos = loadRelatos();
+    setCompleted(savedDays);
+    setRelatos(savedRelatos);
+    const cur = savedDays.length + 1;
     setExpanded(cur <= 40 ? cur : 40);
     setMounted(true);
   }, []);
@@ -128,6 +140,12 @@ export default function QuaresmaPage() {
         }, 100);
       }
     }, 2200);
+  };
+
+  const handleSaveRelato = (dayNum: number, texto: string) => {
+    const newRelatos = { ...relatos, [dayNum]: texto };
+    setRelatos(newRelatos);
+    saveRelatos(newRelatos);
   };
 
   const progress = (completed.length / 40) * 100;
@@ -198,6 +216,7 @@ export default function QuaresmaPage() {
             )}
           </div>
         )}
+        </div>
       </div>
 
       {/* ── LISTA DOS 40 DIAS ─────────────────────────────────────────────── */}
@@ -326,13 +345,53 @@ export default function QuaresmaPage() {
                   )}
 
                   {done && (
-                    <div style={{
-                      width: "100%", padding: "12px", borderRadius: "12px",
-                      background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)",
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                    }}>
-                      <span style={{ fontSize: "16px" }}>🌟</span>
-                      <span style={{ color: "#D4AF37", fontWeight: 800, fontSize: "13px" }}>Dia concluído! São Miguel te abençoa!</span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }} className="flex-col">
+                      <div style={{
+                        width: "100%", padding: "12px", borderRadius: "12px",
+                        background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                      }}>
+                        <span style={{ fontSize: "16px" }}>🌟</span>
+                        <span style={{ color: "#D4AF37", fontWeight: 800, fontSize: "13px" }}>Dia concluído! São Miguel te abençoa!</span>
+                      </div>
+
+                      {/* Campo de Relato */}
+                      <div style={{
+                        marginTop: "16px",
+                        background: "rgba(0,0,0,0.2)",
+                        borderRadius: "12px",
+                        padding: "16px",
+                        border: "1px solid rgba(255,255,255,0.05)"
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{ fontSize: "14px" }}>✍️</span>
+                          <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em" }}>Seu Relato / Partilha</span>
+                        </div>
+                        <textarea
+                          placeholder="Como foi sua oração hoje? O que tocou seu coração? Escreva seu relato aqui..."
+                          defaultValue={relatos[d.dia] || ""}
+                          onBlur={(e) => handleSaveRelato(d.dia, e.target.value)}
+                          style={{
+                            width: "100%",
+                            minHeight: "80px",
+                            background: "rgba(255,255,255,0.03)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "8px",
+                            padding: "12px",
+                            color: "#fff",
+                            fontSize: "14px",
+                            fontFamily: "Outfit, sans-serif",
+                            resize: "vertical",
+                            outline: "none",
+                            transition: "border 0.3s"
+                          }}
+                          onFocus={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(212,175,55,0.5)")}
+                          onMouseLeave={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(255,255,255,0.1)")}
+                        />
+                        <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", marginTop: "8px", textAlign: "right" }}>
+                          Salvo automaticamente no seu dispositivo.
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
