@@ -873,7 +873,7 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                               groupedRatings.push({
                                 id: r.id,
                                 telefone: r.telefone,
-                                nome_cliente: r.nome_cliente,
+                                nome_cliente: r.nome_cliente || "",
                                 nota: r.nota,
                                 criado_em: r.criado_em,
                                 totalCount: 1
