@@ -794,9 +794,9 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
 
             return (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                  {/* Total */}
-                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+                  {/* Total Respostas (4 colunas no desktop) */}
+                  <div className="md:col-span-4 bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
                     <div>
                       <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">Total Respostas</span>
                       <span className="text-white text-3xl font-black">{total}</span>
@@ -806,45 +806,36 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                     </div>
                   </div>
 
-                  {/* Excelente */}
-                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
-                    <div>
-                      <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">🌟 Excelentes</span>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-green-400 text-3xl font-black">{excelentes}</span>
-                        <span className="text-green-400/60 text-xs font-bold">({excelentesPct}%)</span>
+                  {/* Notas Juntas (8 colunas no desktop) */}
+                  <div className="md:col-span-8 bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex flex-col justify-center shadow-lg">
+                    <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-3">Distribuição das Notas</span>
+                    <div className="grid grid-cols-3 gap-2 text-center md:text-left divide-x divide-white/5">
+                      {/* Excelente */}
+                      <div className="px-2 md:px-4">
+                        <span className="text-xs text-white/50 block mb-1">🌟 Excelentes</span>
+                        <div className="flex items-baseline justify-center md:justify-start gap-2">
+                          <span className="text-green-400 text-2xl font-black">{excelentes}</span>
+                          <span className="text-green-400/60 text-xs font-bold">({excelentesPct}%)</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400">
-                      👍
-                    </div>
-                  </div>
 
-                  {/* Bom */}
-                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
-                    <div>
-                      <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">👍 Bons</span>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[#D4AF37] text-3xl font-black">{bons}</span>
-                        <span className="text-[#D4AF37]/60 text-xs font-bold">({bonsPct}%)</span>
+                      {/* Bom */}
+                      <div className="px-2 md:px-4">
+                        <span className="text-xs text-white/50 block mb-1">👍 Bons</span>
+                        <div className="flex items-baseline justify-center md:justify-start gap-2">
+                          <span className="text-[#D4AF37] text-2xl font-black">{bons}</span>
+                          <span className="text-[#D4AF37]/60 text-xs font-bold">({bonsPct}%)</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37]">
-                      😊
-                    </div>
-                  </div>
 
-                  {/* Regular */}
-                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
-                    <div>
-                      <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">👎 Regulares / Ruins</span>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-red-400 text-3xl font-black">{regulares}</span>
-                        <span className="text-red-400/60 text-xs font-bold">({regularesPct}%)</span>
+                      {/* Regular */}
+                      <div className="px-2 md:px-4">
+                        <span className="text-xs text-white/50 block mb-1">👎 Regulares / Ruins</span>
+                        <div className="flex items-baseline justify-center md:justify-start gap-2">
+                          <span className="text-red-400 text-2xl font-black">{regulares}</span>
+                          <span className="text-red-400/60 text-xs font-bold">({regularesPct}%)</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400">
-                      👎
                     </div>
                   </div>
                 </div>
