@@ -105,17 +105,14 @@ export default function QuaresmaPage() {
   const [completed, setCompleted] = useState<number[]>([]);
   const [relatos, setRelatos] = useState<Record<number, string>>({});
   const [celebrating, setCelebrating] = useState<number | null>(null);
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
-  const dayRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
     const savedDays = loadProgress();
     const savedRelatos = loadRelatos();
     setCompleted(savedDays);
     setRelatos(savedRelatos);
-    const cur = savedDays.length + 1;
-    setExpanded(cur <= 40 ? cur : 40);
     setMounted(true);
   }, []);
 
@@ -132,13 +129,7 @@ export default function QuaresmaPage() {
     setCelebrating(dayNum);
     setTimeout(() => {
       setCelebrating(null);
-      if (dayNum < 40) {
-        setExpanded(dayNum + 1);
-        setTimeout(() => {
-          const el = dayRefs.current[dayNum + 1];
-          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-        }, 100);
-      }
+      // O modal permanece aberto para que o usuário possa digitar o relato após a comemoração
     }, 2200);
   };
 
@@ -219,197 +210,216 @@ export default function QuaresmaPage() {
         </div>
       </div>
 
-      {/* ── LISTA DOS 40 DIAS ─────────────────────────────────────────────── */}
+      {/* ── GRID CALENDÁRIO ─────────────────────────────────────────────── */}
       <div style={{ maxWidth: "720px", margin: "0 auto", padding: "16px 16px 80px" }}>
-        {DIAS.map((d: DayEntry) => {
-          const done = mounted && isCompleted(d.dia);
-          const locked = mounted && isLocked(d.dia);
-          const current = mounted && isCurrent(d.dia);
-          const isExpanded = expanded === d.dia;
-          const isCelebrating = celebrating === d.dia;
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(64px, 1fr))",
+          gap: "12px",
+          justifyContent: "center"
+        }}>
+          {DIAS.map((d: DayEntry) => {
+            const done = mounted && isCompleted(d.dia);
+            const locked = mounted && isLocked(d.dia);
+            const current = mounted && isCurrent(d.dia);
 
-          return (
-            <div
-              key={d.dia}
-              id={`dia-${d.dia}`}
-              ref={(el) => { dayRefs.current[d.dia] = el; }}
-              style={{
-                marginBottom: "8px",
-                borderRadius: "16px",
-                border: isCelebrating
-                  ? "1px solid #D4AF37"
-                  : done
-                  ? "1px solid rgba(212,175,55,0.25)"
-                  : current
-                  ? "1px solid rgba(212,175,55,0.4)"
-                  : locked
-                  ? "1px solid rgba(255,255,255,0.04)"
-                  : "1px solid rgba(255,255,255,0.06)",
-                background: isCelebrating
-                  ? "rgba(212,175,55,0.12)"
-                  : done
-                  ? "rgba(212,175,55,0.05)"
-                  : current
-                  ? "rgba(212,175,55,0.07)"
-                  : locked
-                  ? "rgba(255,255,255,0.015)"
-                  : "rgba(255,255,255,0.03)",
-                opacity: locked ? 0.45 : 1,
-                transition: "all 0.4s ease",
-                position: "relative",
-                overflow: "hidden",
-                boxShadow: isCelebrating ? "0 0 40px rgba(212,175,55,0.4)" : current ? "0 4px 20px rgba(212,175,55,0.1)" : "none",
-                animation: isCelebrating ? "cardPulse 0.4s ease" : "none",
-              }}
-            >
-              {/* Partículas mágicas */}
-              <MagicBurst active={isCelebrating} />
-
-              {/* Cabeçalho do card */}
+            return (
               <button
-                onClick={() => !locked && setExpanded(isExpanded ? null : d.dia)}
+                key={d.dia}
+                onClick={() => !locked && setSelectedDay(d.dia)}
                 disabled={locked}
                 style={{
-                  width: "100%", display: "flex", alignItems: "center", gap: "12px",
-                  padding: "14px 16px", background: "transparent", border: "none",
-                  cursor: locked ? "not-allowed" : "pointer", textAlign: "left",
+                  aspectRatio: "1",
+                  borderRadius: "16px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: done ? "rgba(212,175,55,0.15)" : current ? "rgba(212,175,55,0.08)" : "rgba(255,255,255,0.03)",
+                  border: done ? "1px solid rgba(212,175,55,0.4)" : current ? "1px solid rgba(212,175,55,0.6)" : locked ? "1px solid rgba(255,255,255,0.02)" : "1px solid rgba(255,255,255,0.1)",
+                  color: done ? "#D4AF37" : locked ? "rgba(255,255,255,0.2)" : "#fff",
+                  cursor: locked ? "not-allowed" : "pointer",
+                  opacity: locked ? 0.5 : 1,
+                  transition: "all 0.2s",
+                  boxShadow: current ? "0 0 15px rgba(212,175,55,0.2)" : "none",
                 }}
               >
-                {/* Ícone de status */}
-                <div style={{
-                  width: "36px", height: "36px", borderRadius: "10px", flexShrink: 0,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: done ? "16px" : "13px", fontWeight: 900,
-                  background: done ? "rgba(212,175,55,0.2)" : current ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.05)",
-                  color: done ? "#D4AF37" : current ? "#D4AF37" : "rgba(255,255,255,0.3)",
-                }}>
-                  {done ? "✓" : locked ? "🔒" : d.dia}
-                </div>
-
-                {/* Texto */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{
-                    fontSize: "14px", fontWeight: 800, color: done ? "#D4AF37" : locked ? "rgba(255,255,255,0.3)" : "#fff",
-                    textDecoration: done ? "none" : "none",
-                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                  }}>
-                    {done && <span style={{ marginRight: "6px" }}>✨</span>}{d.tema}
-                  </div>
-                  <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)", marginTop: "2px", fontWeight: 600 }}>
-                    Dia {d.dia} · {d.data}
-                  </div>
-                </div>
-
-                {/* Chevron */}
-                {!locked && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={done ? "#D4AF37" : "rgba(255,255,255,0.3)"} strokeWidth="2.5" style={{ flexShrink: 0, transform: isExpanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.3s" }}>
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                )}
+                <span style={{ fontSize: "18px", fontWeight: 900 }}>{d.dia}</span>
+                <span style={{ fontSize: "12px", marginTop: "4px" }}>
+                  {done ? "✓" : locked ? "🔒" : ""}
+                </span>
               </button>
-
-              {/* Conteúdo expandido */}
-              {isExpanded && !locked && (
-                <div style={{ padding: "0 16px 16px" }}>
-                  {/* Oração */}
-                  <div style={{
-                    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
-                    borderRadius: "12px", padding: "16px", marginBottom: "16px",
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-                      <span style={{ fontSize: "14px" }}>🙏</span>
-                      <span style={{ fontSize: "11px", color: "#D4AF37", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em" }}>Oração do Dia</span>
-                    </div>
-                    <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "14px", lineHeight: 1.75, margin: 0, fontStyle: "italic" }}>
-                      {d.oracao}
-                    </p>
-                  </div>
-
-                  {/* Botão Concluir */}
-                  {!done && (
-                    <button
-                      onClick={() => handleComplete(d.dia)}
-                      disabled={celebrating !== null}
-                      style={{
-                        width: "100%", padding: "14px", borderRadius: "12px", border: "none",
-                        background: celebrating !== null ? "rgba(212,175,55,0.3)" : "linear-gradient(135deg,#D4AF37,#B8962E)",
-                        color: "#090B10", fontWeight: 900, fontSize: "14px", cursor: celebrating !== null ? "not-allowed" : "pointer",
-                        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                        transition: "all 0.3s", fontFamily: "Outfit, sans-serif",
-                        boxShadow: "0 4px 20px rgba(212,175,55,0.3)",
-                      }}
-                    >
-                      <span>✓</span>
-                      <span>Concluir este Dia</span>
-                    </button>
-                  )}
-
-                  {done && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }} className="flex-col">
-                      <div style={{
-                        width: "100%", padding: "12px", borderRadius: "12px",
-                        background: "rgba(212,175,55,0.08)", border: "1px solid rgba(212,175,55,0.2)",
-                        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                      }}>
-                        <span style={{ fontSize: "16px" }}>🌟</span>
-                        <span style={{ color: "#D4AF37", fontWeight: 800, fontSize: "13px" }}>Dia concluído! São Miguel te abençoa!</span>
-                      </div>
-
-                      {/* Campo de Relato */}
-                      <div style={{
-                        marginTop: "16px",
-                        background: "rgba(0,0,0,0.2)",
-                        borderRadius: "12px",
-                        padding: "16px",
-                        border: "1px solid rgba(255,255,255,0.05)"
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <span style={{ fontSize: "14px" }}>✍️</span>
-                          <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em" }}>Seu Relato / Partilha</span>
-                        </div>
-                        <textarea
-                          placeholder="Como foi sua oração hoje? O que tocou seu coração? Escreva seu relato aqui..."
-                          defaultValue={relatos[d.dia] || ""}
-                          onBlur={(e) => handleSaveRelato(d.dia, e.target.value)}
-                          style={{
-                            width: "100%",
-                            minHeight: "80px",
-                            background: "rgba(255,255,255,0.03)",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            borderRadius: "8px",
-                            padding: "12px",
-                            color: "#fff",
-                            fontSize: "14px",
-                            fontFamily: "Outfit, sans-serif",
-                            resize: "vertical",
-                            outline: "none",
-                            transition: "border 0.3s"
-                          }}
-                          onFocus={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(212,175,55,0.5)")}
-                          onMouseLeave={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(255,255,255,0.1)")}
-                        />
-                        <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", marginTop: "8px", textAlign: "right" }}>
-                          Salvo automaticamente no seu dispositivo.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
 
         {/* Link de volta */}
-        <div style={{ textAlign: "center", marginTop: "32px" }}>
+        <div style={{ textAlign: "center", marginTop: "48px" }}>
           <Link href="/" style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px", textDecoration: "none", fontWeight: 600 }}>
             ← Voltar para o início
           </Link>
         </div>
       </div>
 
+      {/* ── MODAL ───────────────────────────────────────────────────────── */}
+      {selectedDay !== null && (() => {
+        const d = DIAS[selectedDay - 1];
+        const done = isCompleted(d.dia);
+        const isCelebrating = celebrating === d.dia;
+        
+        return (
+          <div style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            background: "rgba(0,0,0,0.8)",
+            backdropFilter: "blur(4px)",
+            animation: "fadeIn 0.2s ease"
+          }}>
+            <div style={{
+              background: "#111520",
+              border: "1px solid rgba(212,175,55,0.2)",
+              borderRadius: "20px",
+              width: "100%",
+              maxWidth: "500px",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              position: "relative",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+              animation: "slideUp 0.3s ease",
+            }}>
+              {/* Botão Fechar */}
+              <button 
+                onClick={() => {
+                  if (celebrating === null) setSelectedDay(null);
+                }}
+                style={{
+                  position: "absolute", top: "16px", right: "16px",
+                  background: "rgba(255,255,255,0.1)", border: "none",
+                  width: "32px", height: "32px", borderRadius: "16px",
+                  color: "#fff", cursor: "pointer", display: "flex",
+                  alignItems: "center", justifyContent: "center", zIndex: 10
+                }}
+              >
+                ✕
+              </button>
+
+              <div style={{ padding: "32px 24px", position: "relative", overflow: "hidden" }}>
+                <MagicBurst active={isCelebrating} />
+                
+                {/* Header do Modal */}
+                <div style={{ textAlign: "center", marginBottom: "24px" }}>
+                  <div style={{ fontSize: "13px", color: "#D4AF37", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "8px" }}>
+                    Dia {d.dia} · {d.data}
+                  </div>
+                  <h2 style={{ fontSize: "24px", fontWeight: 900, margin: 0, color: "#fff" }}>
+                    {done && <span style={{ marginRight: "8px" }}>✨</span>}
+                    {d.tema}
+                  </h2>
+                </div>
+
+                {/* Oração */}
+                <div style={{
+                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)",
+                  borderRadius: "16px", padding: "20px", marginBottom: "24px",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px", justifyContent: "center" }}>
+                    <span style={{ fontSize: "16px" }}>🙏</span>
+                    <span style={{ fontSize: "12px", color: "#D4AF37", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em" }}>Oração do Dia</span>
+                  </div>
+                  <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "15px", lineHeight: 1.7, margin: 0, fontStyle: "italic", textAlign: "center" }}>
+                    "{d.oracao}"
+                  </p>
+                </div>
+
+                {/* Botão Concluir */}
+                {!done && (
+                  <button
+                    onClick={() => handleComplete(d.dia)}
+                    disabled={celebrating !== null}
+                    style={{
+                      width: "100%", padding: "16px", borderRadius: "12px", border: "none",
+                      background: celebrating !== null ? "rgba(212,175,55,0.3)" : "linear-gradient(135deg,#D4AF37,#B8962E)",
+                      color: "#090B10", fontWeight: 900, fontSize: "15px", cursor: celebrating !== null ? "not-allowed" : "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                      transition: "all 0.3s", fontFamily: "Outfit, sans-serif",
+                      boxShadow: "0 4px 20px rgba(212,175,55,0.3)",
+                    }}
+                  >
+                    <span>✓</span>
+                    <span>Concluir este Dia</span>
+                  </button>
+                )}
+
+                {done && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <div style={{
+                      width: "100%", padding: "14px", borderRadius: "12px",
+                      background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.3)",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                    }}>
+                      <span style={{ fontSize: "18px" }}>🌟</span>
+                      <span style={{ color: "#D4AF37", fontWeight: 800, fontSize: "14px" }}>Dia concluído! São Miguel te abençoa!</span>
+                    </div>
+
+                    {/* Campo de Relato */}
+                    <div style={{
+                      background: "rgba(0,0,0,0.3)",
+                      borderRadius: "16px",
+                      padding: "20px",
+                      border: "1px solid rgba(255,255,255,0.05)"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+                        <span style={{ fontSize: "16px" }}>✍️</span>
+                        <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.7)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em" }}>Seu Relato / Partilha</span>
+                      </div>
+                      <textarea
+                        placeholder="Como foi sua oração hoje? O que tocou seu coração? Escreva seu relato aqui..."
+                        defaultValue={relatos[d.dia] || ""}
+                        onBlur={(e) => handleSaveRelato(d.dia, e.target.value)}
+                        style={{
+                          width: "100%",
+                          minHeight: "100px",
+                          background: "rgba(255,255,255,0.03)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "12px",
+                          padding: "14px",
+                          color: "#fff",
+                          fontSize: "14px",
+                          fontFamily: "Outfit, sans-serif",
+                          resize: "vertical",
+                          outline: "none",
+                          transition: "border 0.3s"
+                        }}
+                        onFocus={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(212,175,55,0.5)")}
+                        onMouseLeave={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(255,255,255,0.1)")}
+                      />
+                      <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", marginTop: "12px", textAlign: "right" }}>
+                        Salvo automaticamente no seu dispositivo.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ── CSS ANIMATIONS ───────────────────────────────────────────────── */}
       <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes shimmer {
           0%   { background-position: 0% center; }
           100% { background-position: 200% center; }
