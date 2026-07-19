@@ -788,9 +788,9 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* ── Quaresma de São Miguel ── */}
+          {/* ── Quaresma ── */}
           <Link
-            href="/quaresma-sao-miguel"
+            href="/quaresma"
             onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:translate-x-1.5 hover:bg-gradient-to-r hover:from-[#D4AF37]/10 hover:to-transparent group no-underline relative overflow-hidden"
           >
