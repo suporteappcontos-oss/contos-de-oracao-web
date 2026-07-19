@@ -317,10 +317,10 @@ export default function QuaresmaCalendar() {
   };
 
   return (
-    <main style={{ minHeight: "100vh", background: "#090B10", fontFamily: "Outfit, sans-serif", color: "#fff", paddingBottom: "80px" }}>
+    <main style={{ minHeight: "100vh", background: "#090B10", fontFamily: "Outfit, sans-serif", color: "#fff", paddingBottom: "80px", paddingTop: "96px" }}>
       
       {/* ── HEADER MENSAL ──────────────────────────────────────────────────────── */}
-      <div style={{ padding: "32px 16px", textAlign: "center", background: "linear-gradient(180deg, rgba(212,175,55,0.05) 0%, transparent 100%)" }}>
+      <div style={{ padding: "16px 16px 32px", textAlign: "center", background: "linear-gradient(180deg, rgba(212,175,55,0.05) 0%, transparent 100%)" }}>
         <h1 style={{ fontSize: "28px", fontWeight: 900, marginBottom: "8px", background: "linear-gradient(135deg,#fff 0%,#D4AF37 50%,#fff 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
           Calendário Católico
         </h1>
@@ -356,7 +356,7 @@ export default function QuaresmaCalendar() {
       <div style={{ maxWidth: "600px", margin: "0 auto", padding: "0 16px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "8px", marginBottom: "8px" }}>
           {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(day => (
-            <div key={day} style={{ textAlign: "center", fontSize: "11px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>
+            <div key={day} style={{ textAlign: "center", fontSize: "12px", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
               {day}
             </div>
           ))}
