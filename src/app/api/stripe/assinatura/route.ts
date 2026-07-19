@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { plano, nome, email, senha, avatarUrl, pedidoSanto } = body
+    const { plano, nome, email, senha, avatarUrl, pedidoSanto, whatsapp, modeloTv } = body
 
     // Verifica se o usuário está logado
     const supabaseClient = await createClient()
@@ -31,6 +31,18 @@ export async function POST(request: NextRequest) {
          return NextResponse.json({ error: 'Este e-mail já possui uma conta cadastrada. Faça login para continuar.' }, { status: 400 })
       }
       userId = existente.id
+
+      // Atualiza metadados do usuário existente se novos dados forem fornecidos
+      const metadataAtual = existente.user_metadata || {}
+      if (whatsapp || modeloTv) {
+        await supabaseAdmin.auth.admin.updateUserById(userId, {
+          user_metadata: {
+            ...metadataAtual,
+            whatsapp: whatsapp || metadataAtual.whatsapp,
+            modelo_tv: modeloTv || metadataAtual.modelo_tv
+          }
+        })
+      }
     } else {
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
@@ -39,7 +51,9 @@ export async function POST(request: NextRequest) {
         user_metadata: { 
           nome, 
           plano_ativo: false,
-          avatar_url: avatarUrl || null
+          avatar_url: avatarUrl || null,
+          whatsapp: whatsapp || null,
+          modelo_tv: modeloTv || null
         }
       })
       if (createError) {

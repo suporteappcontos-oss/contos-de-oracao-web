@@ -115,6 +115,7 @@ export default async function AdminPage({
   let iaConfig: any = null
   let iaFaq: any[] = []
   let iaChatHistory: any[] = []
+  let iaAvaliacoes: any[] = []
 
   try {
     const [
@@ -173,6 +174,13 @@ export default async function AdminPage({
     iaConfig = resIaConfig.data ?? null
     iaFaq = resIaFaq.data ?? []
     iaChatHistory = resIaHistory.data ?? []
+
+    try {
+      const resIaAvaliacoes = await supabase.from('pesquisa_satisfacao').select('*').order('criado_em', { ascending: false })
+      iaAvaliacoes = resIaAvaliacoes.data ?? []
+    } catch (e) {
+      console.warn('Tabela pesquisa_satisfacao nao encontrada ou RLS inativo. Ignorando erro para evitar crash do painel.', e)
+    }
 
     
     // Combina os logs de erro de Instagram e WhatsApp
@@ -583,6 +591,7 @@ export default async function AdminPage({
             faq={iaFaq} 
             chatHistory={iaChatHistory} 
             automacoesWhatsapp={automacoesWhatsapp}
+            avaliacoes={iaAvaliacoes}
           />
         )}
 

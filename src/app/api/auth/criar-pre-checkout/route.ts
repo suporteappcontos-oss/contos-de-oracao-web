@@ -3,7 +3,7 @@ import { supabaseAdmin, buscarUsuarioPorEmail } from '@/lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
   try {
-    const { nome, email, senha, avatarUrl, pedidoSanto } = await request.json()
+    const { nome, email, senha, avatarUrl, pedidoSanto, whatsapp, modeloTv } = await request.json()
 
     if (!email || !senha) {
       return NextResponse.json({ error: 'E-mail e senha são obrigatórios' }, { status: 400 })
@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
         user_metadata: { 
           nome, 
           plano_ativo: false,
-          avatar_url: avatarUrl || null
+          avatar_url: avatarUrl || null,
+          whatsapp: whatsapp || null,
+          modelo_tv: modeloTv || null
         } // Inicia inativo, o webhook ativará
       })
 

@@ -22,16 +22,35 @@ export default function AssinarPage() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [confirmarSenha, setConfirmarSenha] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
   const [planoSelecionado, setPlanoSelecionado] = useState<string>('')
-  const [erros, setErros] = useState<{ nome?: string; email?: string; senha?: string; confirmarSenha?: string }>({})
+  const [erros, setErros] = useState<{ nome?: string; email?: string; senha?: string; confirmarSenha?: string; whatsapp?: string }>({})
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false)
   
-  // Estados para seleção do avatar de santo
+  // Estados para seleção do avatar de santo e Smart TV
   const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string | null>(null)
   const [pedidoSanto, setPedidoSanto] = useState('')
+  const [temTv, setTemTv] = useState<boolean | null>(null)
+  const [modeloTv, setModeloTv] = useState('')
   const [avatarsDisponiveis, setAvatarsDisponiveis] = useState<any[]>([])
   const [loadingAvatars, setLoadingAvatars] = useState(false)
+
+  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '')
+    if (value.length > 11) value = value.slice(0, 11)
+    
+    if (value.length > 6) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`
+    } else if (value.length > 2) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2)}`
+    } else if (value.length > 0) {
+      value = `(${value}`
+    }
+    
+    setWhatsapp(value)
+    setErros(p => ({ ...p, whatsapp: undefined }))
+  }
 
   // Estados para carregamento dinâmico
   const [planos, setPlanos] = useState<any[]>([])
@@ -88,12 +107,16 @@ export default function AssinarPage() {
   }, [step])
 
   function validarStep1() {
-    const novosErros: { nome?: string; email?: string; senha?: string; confirmarSenha?: string } = {}
+    const novosErros: { nome?: string; email?: string; senha?: string; confirmarSenha?: string; whatsapp?: string } = {}
     if (!nome.trim() || nome.trim().split(' ').length < 2) {
       novosErros.nome = 'Digite seu nome completo (nome e sobrenome)'
     }
     if (!email.trim() || !email.includes('@') || !email.includes('.')) {
       novosErros.email = 'Digite um e-mail válido'
+    }
+    const whatsappLimpo = whatsapp.replace(/\D/g, '')
+    if (!whatsappLimpo || whatsappLimpo.length < 10) {
+      novosErros.whatsapp = 'Digite um WhatsApp válido com DDD'
     }
     if (!senha || senha.length < 6) {
       novosErros.senha = 'A senha deve ter no mínimo 6 caracteres'
@@ -142,7 +165,9 @@ export default function AssinarPage() {
           senha,
           plano: planoSelecionado,
           avatarUrl: selectedAvatarUrl,
-          pedidoSanto: pedidoSanto
+          pedidoSanto: pedidoSanto,
+          whatsapp: whatsapp.replace(/\D/g, ''),
+          modeloTv: modeloTv
         })
       })
       const data = await response.json()
@@ -177,7 +202,9 @@ export default function AssinarPage() {
           email, 
           senha,
           avatarUrl: selectedAvatarUrl,
-          pedidoSanto: pedidoSanto
+          pedidoSanto: pedidoSanto,
+          whatsapp: whatsapp.replace(/\D/g, ''),
+          modeloTv: modeloTv
         })
       })
       // Não precisamos nos preocupar com a resposta aqui. 
@@ -515,6 +542,22 @@ export default function AssinarPage() {
                 {erros.email && <p className="text-red-400 text-xs mt-1 px-1">{erros.email}</p>}
               </div>
 
+              {/* WhatsApp */}
+              <div>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    value={whatsapp}
+                    onChange={handleWhatsappChange}
+                    placeholder=" "
+                    className={`input-custom ${erros.whatsapp ? 'input-error' : ''}`}
+                    onKeyDown={e => e.key === 'Enter' && irParaPagamento()}
+                  />
+                  <label className="user-label">WhatsApp (com DDD)</label>
+                </div>
+                {erros.whatsapp && <p className="text-red-400 text-xs mt-1 px-1">{erros.whatsapp}</p>}
+              </div>
+
               {/* Senha */}
               <div>
                 <div className="input-group">
@@ -663,6 +706,104 @@ export default function AssinarPage() {
                           }}
                           className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
                         />
+                      </div>
+
+                      {/* Pergunta sobre Smart TV */}
+                      <div className="pt-4 border-t border-white/5 space-y-3">
+                        <label className="block text-white/50 text-[10px] font-black uppercase tracking-widest mb-1">
+                          Você possui Smart TV e pretende assistir por ela?
+                        </label>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTemTv(true)
+                              if (modeloTv === 'Não possuo Smart TV') setModeloTv('')
+                            }}
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                              temTv === true
+                                ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]'
+                                : 'border-white/10 bg-black/20 text-white/60 hover:border-white/20'
+                            }`}
+                          >
+                            👍 Sim, possuo
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTemTv(false)
+                              setModeloTv('Não possuo Smart TV')
+                            }}
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                              temTv === false
+                                ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]'
+                                : 'border-white/10 bg-black/20 text-white/60 hover:border-white/20'
+                            }`}
+                          >
+                            👎 Não possuo
+                          </button>
+                        </div>
+
+                        {/* Se tem TV, mostra as marcas/modelos */}
+                        {temTv === true && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="space-y-2 pt-1"
+                          >
+                            <label className="block text-white/40 text-[9px] font-bold uppercase tracking-wider">
+                              Qual o modelo/marca da sua Smart TV?
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                              {['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV'].map((marca) => {
+                                const isSelected = modeloTv === marca;
+                                return (
+                                  <button
+                                    key={marca}
+                                    type="button"
+                                    onClick={() => setModeloTv(marca)}
+                                    className={`py-2 px-3 rounded-lg text-[11px] font-bold transition-all text-left border ${
+                                      isSelected
+                                        ? 'border-[#D4AF37] bg-[#D4AF37]/5 text-white'
+                                        : 'border-white/5 bg-black/30 text-white/50 hover:border-white/15'
+                                    }`}
+                                  >
+                                    {marca}
+                                  </button>
+                                )
+                              })}
+                              {/* Opção Outro */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV'].includes(modeloTv)) {
+                                    // já é outra marca ou vazio
+                                  } else {
+                                    setModeloTv('')
+                                  }
+                                }}
+                                className={`py-2 px-3 rounded-lg text-[11px] font-bold transition-all text-left border ${
+                                  modeloTv !== '' && !['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV'].includes(modeloTv)
+                                    ? 'border-[#D4AF37] bg-[#D4AF37]/5 text-white'
+                                    : 'border-white/5 bg-black/30 text-white/50 hover:border-white/15'
+                                }`}
+                              >
+                                Outro modelo...
+                              </button>
+                            </div>
+
+                            {/* Campo de texto livre se selecionou "Outro" ou se deseja detalhar */}
+                            {(!['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV', 'Não possuo Smart TV'].includes(modeloTv) || modeloTv === '') && (
+                              <input
+                                type="text"
+                                placeholder="Digite a marca/modelo da sua TV (Ex: AOC, Philips...)"
+                                value={modeloTv}
+                                onChange={(e) => setModeloTv(e.target.value)}
+                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs focus:border-[#D4AF37] focus:outline-none transition-colors mt-1"
+                              />
+                            )}
+                          </motion.div>
+                        )}
                       </div>
 
                       <div className="flex gap-3">

@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect, useRef } from 'react'
 import { 
   MessageSquare, Cpu, BookOpen, Send, Save, Plus, 
   Trash2, Edit3, Check, Loader2, AlertCircle, X, Smile, Tag,
-  Zap, Play, ToggleLeft, ToggleRight
+  Zap, Play, ToggleLeft, ToggleRight, Heart, Star
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { 
@@ -57,16 +57,25 @@ type AutomacaoWhatsapp = {
   criado_em: string
 }
 
+type RatingMessageType = {
+  id: string
+  telefone: string
+  nome_cliente: string | null
+  nota: string // 'nota_excelente', 'nota_bom', 'nota_regular'
+  criado_em: string
+}
+
 type GerenciadorWhatsappProps = {
   config: IaConfigType | null
   faq: FaqType[]
   chatHistory: ChatMessageType[]
   automacoesWhatsapp: AutomacaoWhatsapp[]
+  avaliacoes?: RatingMessageType[]
 }
 
-export default function GerenciadorWhatsapp({ config, faq, chatHistory, automacoesWhatsapp = [] }: GerenciadorWhatsappProps) {
+export default function GerenciadorWhatsapp({ config, faq, chatHistory, automacoesWhatsapp = [], avaliacoes = [] }: GerenciadorWhatsappProps) {
   // Abas internas
-  const [subTab, setSubTab] = useState<'ia' | 'faq' | 'chat' | 'planos' | 'whats_auto'>('chat')
+  const [subTab, setSubTab] = useState<'ia' | 'faq' | 'chat' | 'planos' | 'whats_auto' | 'avaliacoes'>('chat')
   const [isPending, startTransition] = useTransition()
 
   // --- Estado Stripe Planos e Cupons ---
@@ -90,6 +99,12 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
 
   // --- Estado Chat ---
   const [messages, setMessages] = useState<ChatMessageType[]>(chatHistory)
+  const [ratings, setRatings] = useState<RatingMessageType[]>(avaliacoes)
+
+  useEffect(() => {
+    setRatings(avaliacoes)
+  }, [avaliacoes])
+
   const [activePhone, setActivePhone] = useState<string | null>(null)
   const [typedMessage, setTypedMessage] = useState('')
   const chatBottomRef = useRef<HTMLDivElement>(null)
@@ -187,6 +202,38 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
       supabase.removeChannel(channel)
     }
   }, [])
+
+  // --- Supabase Realtime para avaliações em tempo real ---
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel('pesquisa-satisfacao-realtime')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'pesquisa_satisfacao' },
+        (payload) => {
+          const newRating = payload.new as RatingMessageType
+          setRatings((prev) => {
+            if (prev.some((r) => r.id === newRating.id)) return prev
+            return [newRating, ...prev]
+          })
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'pesquisa_satisfacao' },
+        (payload) => {
+          const oldId = payload.old.id
+          setRatings((prev) => prev.filter((r) => r.id !== oldId))
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
 
   useEffect(() => {
     if (subTab === 'planos') {
@@ -580,6 +627,7 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
             { id: 'faq', label: 'FAQ Suporte', icon: BookOpen },
             { id: 'ia', label: 'Diretrizes da IA', icon: Cpu },
             { id: 'planos', label: 'Planos e Cupons', icon: Tag },
+            { id: 'avaliacoes', label: 'Satisfação', icon: Heart },
           ].map(tab => (
             <button
               key={tab.id}
@@ -724,6 +772,155 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
 
         </div>
       )}
+
+      {/* ────────────────── SUB-ABA: SATISFAÇÃO / AVALIAÇÕES ────────────────── */}
+      {subTab === 'avaliacoes' && (
+        <div className="space-y-8 flex-1 animate-fadeIn">
+          <div>
+            <h3 className="text-white font-bold text-lg">Pesquisa de Satisfação</h3>
+            <p className="text-white/40 text-xs">Acompanhe o nível de satisfação das famílias que conversam com o Lucas.</p>
+          </div>
+
+          {/* Métricas rápidas */}
+          {(() => {
+            const total = ratings.length
+            const excelentes = ratings.filter(r => r.nota === 'nota_excelente').length
+            const bons = ratings.filter(r => r.nota === 'nota_bom').length
+            const regulares = ratings.filter(r => r.nota === 'nota_regular').length
+
+            const excelentesPct = total > 0 ? Math.round((excelentes / total) * 100) : 0
+            const bonsPct = total > 0 ? Math.round((bons / total) * 100) : 0
+            const regularesPct = total > 0 ? Math.round((regulares / total) * 100) : 0
+
+            return (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                  {/* Total */}
+                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+                    <div>
+                      <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">Total Respostas</span>
+                      <span className="text-white text-3xl font-black">{total}</span>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/50">
+                      <Star size={20} />
+                    </div>
+                  </div>
+
+                  {/* Excelente */}
+                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+                    <div>
+                      <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">🌟 Excelentes</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-green-400 text-3xl font-black">{excelentes}</span>
+                        <span className="text-green-400/60 text-xs font-bold">({excelentesPct}%)</span>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400">
+                      👍
+                    </div>
+                  </div>
+
+                  {/* Bom */}
+                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+                    <div>
+                      <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">👍 Bons</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[#D4AF37] text-3xl font-black">{bons}</span>
+                        <span className="text-[#D4AF37]/60 text-xs font-bold">({bonsPct}%)</span>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37]">
+                      😊
+                    </div>
+                  </div>
+
+                  {/* Regular */}
+                  <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+                    <div>
+                      <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">👎 Regulares / Ruins</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-red-400 text-3xl font-black">{regulares}</span>
+                        <span className="text-red-400/60 text-xs font-bold">({regularesPct}%)</span>
+                      </div>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400">
+                      👎
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabela de Avaliações */}
+                <div className="bg-[#0b0f19] border border-white/5 rounded-3xl p-6 md:p-8 shadow-xl space-y-4">
+                  <h4 className="text-white font-extrabold text-sm border-b border-white/5 pb-2">Feedbacks Recebidos</h4>
+                  
+                  <div className="overflow-x-auto rounded-2xl border border-white/5">
+                    <table className="w-full text-left border-collapse min-w-[600px]">
+                      <thead>
+                        <tr className="bg-[#090B10]/40 border-b border-white/5 text-white/40 text-[0.65rem] uppercase tracking-widest font-black">
+                          <th className="px-6 py-4">Cliente / Voluntário</th>
+                          <th className="px-6 py-4">WhatsApp</th>
+                          <th className="px-6 py-4 text-center">Nota</th>
+                          <th className="px-6 py-4 text-right">Data/Hora</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5 text-sm">
+                        {ratings.length === 0 ? (
+                          <tr>
+                            <td colSpan={4} className="text-center py-12 text-white/30 text-xs">
+                              Nenhuma avaliação registrada ainda no sistema.
+                            </td>
+                          </tr>
+                        ) : (
+                          ratings.map((r) => {
+                            let badgeClass = ""
+                            let label = ""
+                            if (r.nota === 'nota_excelente') {
+                              badgeClass = "bg-green-500/10 text-green-400 border border-green-500/20"
+                              label = "🌟 Excelente"
+                            } else if (r.nota === 'nota_bom') {
+                              badgeClass = "bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20"
+                              label = "👍 Bom"
+                            } else {
+                              badgeClass = "bg-red-500/10 text-red-400 border border-red-500/20"
+                              label = "👎 Regular"
+                            }
+
+                            return (
+                              <tr key={r.id} className="hover:bg-white/[0.01] transition-colors">
+                                <td className="px-6 py-4 font-bold text-white">
+                                  {r.nome_cliente || "Visitante Anônimo"}
+                                </td>
+                                <td className="px-6 py-4 text-white/70 font-mono text-xs">
+                                  {formatPhone(r.telefone)}
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                  <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${badgeClass}`}>
+                                    {label}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 text-right text-white/40 text-xs font-medium">
+                                  {new Date(r.criado_em).toLocaleDateString('pt-BR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </td>
+                              </tr>
+                            )
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            )
+          })()}
+        </div>
+      )}
+
 
       {/* ────────────────── SUB-ABA: BASE DE CONHECIMENTO (FAQ) ────────────────── */}
       {subTab === 'faq' && (
