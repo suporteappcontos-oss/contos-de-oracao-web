@@ -159,7 +159,7 @@ export default function Navbar() {
   const showAuth = isAuthChecked && !isLoggedIn;
 
   // Oculta a Navbar global nas páginas de checkout e autenticação que possuem cabeçalhos próprios
-  const routesWithoutNavbar: string[] = [];
+  const routesWithoutNavbar: string[] = ['/quaresma', '/quaresma-sao-miguel'];
   if (routesWithoutNavbar.includes(pathname || '')) {
     return null;
   }

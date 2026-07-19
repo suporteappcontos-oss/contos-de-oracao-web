@@ -136,42 +136,39 @@ export default function QuaresmaPage() {
     <main style={{ minHeight: "100vh", background: "#090B10", fontFamily: "Outfit, sans-serif", color: "#fff" }}>
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          background: "linear-gradient(180deg, rgba(26,35,126,0.4) 0%, #090B10 100%)",
-          paddingTop: "96px",
-          paddingBottom: "40px",
-          textAlign: "center",
-        }}
-      >
-        {/* Badge */}
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 16px", borderRadius: "999px", background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.3)", marginBottom: "16px" }}>
-          <span>⚔️</span>
-          <span style={{ color: "#D4AF37", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>10 de agosto · São Miguel Arcanjo</span>
-        </div>
-
-        <h1 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: 900, margin: "0 0 8px", background: "linear-gradient(135deg,#fff 0%,#D4AF37 50%,#fff 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 4s linear infinite" }}>
-          Quaresma
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "clamp(0.85rem, 2vw, 1rem)", margin: "0 auto 32px", maxWidth: "420px", lineHeight: 1.6, padding: "0 16px" }}>
-          40 dias de oração e consagração ao Príncipe da Milícia Celestial
-        </p>
-
-        {/* ── Progresso ── */}
-        {mounted && (
-          <div style={{ maxWidth: "320px", margin: "0 auto", padding: "0 16px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", fontWeight: 700 }}>Progresso</span>
-              <span style={{ fontSize: "12px", color: "#D4AF37", fontWeight: 800 }}>{completed.length}/40 dias</span>
-            </div>
-            <div style={{ height: "8px", borderRadius: "999px", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
-              <div style={{ height: "100%", borderRadius: "999px", width: `${progress}%`, background: "linear-gradient(90deg,#B8962E,#D4AF37)", transition: "width 0.8s ease" }} />
-            </div>
-            {completed.length === 40 && (
-              <p style={{ color: "#D4AF37", fontSize: "13px", fontWeight: 800, marginTop: "12px", textAlign: "center" }}>🏆 Quaresma concluída! São Miguel está com você!</p>
-            )}
+      <div className="hero-bg" style={{ textAlign: "center", position: "relative" }}>
+        <div className="hero-overlay" />
+        
+        <div className="hero-content" style={{ paddingTop: "80px", paddingBottom: "40px" }}>
+          {/* Badge */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 16px", borderRadius: "999px", background: "rgba(212,175,55,0.12)", border: "1px solid rgba(212,175,55,0.3)", marginBottom: "16px" }}>
+            <span>⚔️</span>
+            <span style={{ color: "#D4AF37", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em" }}>10 de agosto · São Miguel Arcanjo</span>
           </div>
-        )}
+
+          <h1 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: 900, margin: "0 0 8px", background: "linear-gradient(135deg,#fff 0%,#D4AF37 50%,#fff 100%)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 4s linear infinite" }}>
+            Quaresma
+          </h1>
+          <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "clamp(0.85rem, 2vw, 1rem)", margin: "0 auto 32px", maxWidth: "420px", lineHeight: 1.6, padding: "0 16px" }}>
+            40 dias de oração e consagração ao Príncipe da Milícia Celestial
+          </p>
+
+          {/* ── Progresso ── */}
+          {mounted && (
+            <div style={{ maxWidth: "320px", margin: "0 auto", padding: "0 16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", fontWeight: 700 }}>Progresso</span>
+                <span style={{ fontSize: "12px", color: "#D4AF37", fontWeight: 800 }}>{completed.length}/40 dias</span>
+              </div>
+              <div style={{ height: "8px", borderRadius: "999px", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+                <div style={{ height: "100%", borderRadius: "999px", width: `${progress}%`, background: "linear-gradient(90deg,#B8962E,#D4AF37)", transition: "width 0.8s ease" }} />
+              </div>
+              {completed.length === 40 && (
+                <p style={{ color: "#D4AF37", fontSize: "13px", fontWeight: 800, marginTop: "12px", textAlign: "center" }}>🏆 Quaresma concluída! São Miguel está com você!</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── LISTA DOS 40 DIAS ─────────────────────────────────────────────── */}
@@ -323,8 +320,30 @@ export default function QuaresmaPage() {
         </div>
       </div>
 
-      {/* ── CSS ANIMATIONS ───────────────────────────────────────────────── */}
+      {/* ── CSS ANIMATIONS E RESPONSIVIDADE ─────────────────────────────────── */}
       <style>{`
+        .hero-bg {
+          background-image: url('https://placehold.co/1920x1080/090B10/D4AF37?text=Imagem+PC+(16:9)');
+          background-size: cover;
+          background-position: center;
+          background-attachment: fixed;
+        }
+        .hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(9,11,16,0.3) 0%, rgba(9,11,16,0.8) 60%, #090B10 100%);
+          z-index: 0;
+        }
+        .hero-content {
+          position: relative;
+          z-index: 1;
+        }
+        @media (max-width: 768px) {
+          .hero-bg {
+            background-image: url('https://placehold.co/1080x1920/090B10/D4AF37?text=Imagem+Celular+(9:16)');
+            background-attachment: scroll;
+          }
+        }
         @keyframes shimmer {
           0%   { background-position: 0% center; }
           100% { background-position: 200% center; }
