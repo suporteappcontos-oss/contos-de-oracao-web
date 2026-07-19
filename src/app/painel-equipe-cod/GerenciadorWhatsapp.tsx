@@ -855,14 +855,43 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5 text-sm">
-                        {ratings.length === 0 ? (
-                          <tr>
-                            <td colSpan={4} className="text-center py-12 text-white/30 text-xs">
-                              Nenhuma avaliação registrada ainda no sistema.
-                            </td>
-                          </tr>
-                        ) : (
-                          ratings.map((r) => {
+                        {(() => {
+                          const groupedRatings: {
+                            id: string;
+                            telefone: string;
+                            nome_cliente: string;
+                            nota: string;
+                            criado_em: string;
+                            totalCount: number;
+                          }[] = [];
+
+                          ratings.forEach(r => {
+                            const existing = groupedRatings.find(g => g.telefone === r.telefone);
+                            if (existing) {
+                              existing.totalCount += 1;
+                            } else {
+                              groupedRatings.push({
+                                id: r.id,
+                                telefone: r.telefone,
+                                nome_cliente: r.nome_cliente,
+                                nota: r.nota,
+                                criado_em: r.criado_em,
+                                totalCount: 1
+                              });
+                            }
+                          });
+
+                          if (groupedRatings.length === 0) {
+                            return (
+                              <tr>
+                                <td colSpan={4} className="text-center py-12 text-white/30 text-xs">
+                                  Nenhuma avaliação registrada ainda no sistema.
+                                </td>
+                              </tr>
+                            );
+                          }
+
+                          return groupedRatings.map((r) => {
                             let badgeClass = ""
                             let label = ""
                             if (r.nota === 'nota_excelente') {
@@ -874,6 +903,10 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                             } else {
                               badgeClass = "bg-red-500/10 text-red-400 border border-red-500/20"
                               label = "👎 Regular"
+                            }
+
+                            if (r.totalCount > 1) {
+                              label += ` (${r.totalCount}x)`
                             }
 
                             return (
@@ -900,8 +933,8 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                                 </td>
                               </tr>
                             )
-                          })
-                        )}
+                          });
+                        })()}
                       </tbody>
                     </table>
                   </div>
