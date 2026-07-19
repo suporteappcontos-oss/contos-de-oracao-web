@@ -152,9 +152,18 @@ export default function AssinarPage() {
     }
   }
 
+  const verificarSeEhAndroid = (modelo: string) => {
+    if (!modelo) return false
+    const m = modelo.toLowerCase()
+    if (modelo === 'Android TV / Google TV' || modelo === 'Fire TV (Amazon)') return true
+    if (['samsung', 'tizen', 'lg', 'webos', 'roku', 'não possuo', 'nao possuo'].some(excluir => m.includes(excluir))) return false
+    return ['android', 'google', 'fire', 'xiaomi', 'mi ', 'mibox', 'tcl', 'philco', 'box', 'stick'].some(termo => m.includes(termo))
+  }
+
   async function finalizarPagamento() {
     setLoadingCheckout(true)
     setErroCheckout(null)
+    const modeloTvFiltrado = verificarSeEhAndroid(modeloTv) ? modeloTv : ''
     try {
       const response = await fetch('/api/stripe/assinatura', {
         method: 'POST',
@@ -167,7 +176,7 @@ export default function AssinarPage() {
           avatarUrl: selectedAvatarUrl,
           pedidoSanto: pedidoSanto,
           whatsapp: whatsapp.replace(/\D/g, ''),
-          modeloTv: modeloTv
+          modeloTv: modeloTvFiltrado
         })
       })
       const data = await response.json()
@@ -193,6 +202,7 @@ export default function AssinarPage() {
     
     // Antes de ir para a Kiwify, vamos criar a conta do usuário no nosso banco com a SENHA QUE ELE DIGITOU!
     // Assim, quando o webhook da Kiwify confirmar o pagamento, a conta já existe e ele pode fazer login normalmente.
+    const modeloTvFiltrado = verificarSeEhAndroid(modeloTv) ? modeloTv : ''
     try {
       await fetch('/api/auth/criar-pre-checkout', {
         method: 'POST',
@@ -204,7 +214,7 @@ export default function AssinarPage() {
           avatarUrl: selectedAvatarUrl,
           pedidoSanto: pedidoSanto,
           whatsapp: whatsapp.replace(/\D/g, ''),
-          modeloTv: modeloTv
+          modeloTv: modeloTvFiltrado
         })
       })
       // Não precisamos nos preocupar com a resposta aqui. 
@@ -710,8 +720,10 @@ export default function AssinarPage() {
 
                       {/* Pergunta sobre Smart TV */}
                       <div className="pt-4 border-t border-white/5 space-y-3">
-                        <label className="block text-white/50 text-[10px] font-black uppercase tracking-widest mb-1">
-                          Você possui Smart TV e pretende assistir por ela?
+                        <label className="block text-white/50 text-[10px] font-black uppercase tracking-widest mb-1 flex flex-wrap items-center gap-1.5">
+                          <span>Você possui Smart TV?</span>
+                          <span className="text-white/30 text-[9px] lowercase font-normal italic tracking-normal">(opcional)</span>
+                          <span className="text-[#D4AF37] font-black text-[9px] lowercase bg-[#D4AF37]/10 px-1.5 py-0.5 rounded tracking-normal">em breve: aplicativo para Smart TVs</span>
                         </label>
                         <div className="flex gap-2">
                           <button
