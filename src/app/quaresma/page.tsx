@@ -398,9 +398,6 @@ export default function QuaresmaPage() {
                         onFocus={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(212,175,55,0.5)")}
                         onMouseLeave={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(255,255,255,0.1)")}
                       />
-                      <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.3)", marginTop: "12px", textAlign: "right" }}>
-                        Salvo automaticamente no seu dispositivo.
-                      </p>
                     </div>
                   </div>
                 )}
