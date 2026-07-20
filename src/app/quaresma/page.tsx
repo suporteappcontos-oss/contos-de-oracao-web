@@ -411,11 +411,7 @@ export default function QuaresmaCalendar() {
         </div>
       </div>
 
-      <div style={{ textAlign: "center", marginTop: "48px" }}>
-        <Link href="/" style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px", textDecoration: "none", fontWeight: 600 }}>
-          ← Voltar para o início
-        </Link>
-      </div>
+
 
       {/* ── MODAL DE ORAÇÃO ────────────────────────────────────────────────────── */}
       {selectedDate && activeQuaresma && (() => {
