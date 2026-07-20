@@ -297,6 +297,23 @@ const saveRelato = (date: Date, quaresmaId: string, texto: string) => {
   localStorage.setItem(getStorageKey(date, quaresmaId) + "_relato", texto);
 }
 
+const getLevelName = (lvl: number) => {
+  if (lvl === 1) return "Iniciante na Fé 🕊️";
+  if (lvl === 2) return "Peregrino Fiel 👣";
+  if (lvl === 3) return "Orante Devoto 🙏";
+  if (lvl === 4) return "Guerreiro de Oração ⚔️";
+  if (lvl === 5) return "Sentinela Celestial 🛡️";
+  return "Sacerdócio Espiritual 🕯️";
+};
+
+const BADGES = [
+  { id: "guerreiro-oracao", icon: "⚔️", name: "Guerreiro de Oração", desc: "Complete 5 orações" },
+  { id: "sentinela-luz", icon: "🛡️", name: "Sentinela da Luz", desc: "Complete 15 orações" },
+  { id: "fidelidade-apostolica", icon: "📜", name: "Fidelidade Apostólica", desc: "Complete 30 orações" },
+  { id: "campeao-fe", icon: "👑", name: "Campeão da Fé", desc: "Complete 40 orações" },
+  { id: "fogo-santo", icon: "🔥", name: "Fogo Santo", desc: "Mantenha um streak de 7 dias seguidos" },
+];
+
 /* ── COMPONENTE PRINCIPAL ────────────────────────────────────────────────── */
 
 export default function QuaresmaCalendar() {
@@ -309,6 +326,75 @@ export default function QuaresmaCalendar() {
   const [loadingUser, setLoadingUser] = useState(true);
   const [updateTrigger, setUpdateTrigger] = useState(0); // Para forçar re-render do calendário
   const [particles, setParticles] = useState<{ id: number; style: React.CSSProperties }[]>([]);
+
+  // Gamification state
+  const [xp, setXp] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [streak, setStreak] = useState(0);
+  const [unlockedBadges, setUnlockedBadges] = useState<string[]>([]);
+
+  const recalculateGamification = () => {
+    if (typeof window === "undefined") return;
+    
+    let totalCompleted = 0;
+    const year = currentDate.getFullYear();
+    const quaresmas = getQuaresmasForYear(year);
+    
+    // Contar total completados
+    quaresmas.forEach(q => {
+      let current = new Date(q.start);
+      const end = new Date(q.end);
+      while (current <= end) {
+        if (isDayCompleted(current, q.id)) {
+          totalCompleted++;
+        }
+        current.setDate(current.getDate() + 1);
+      }
+    });
+
+    // Calcular Streak de dias seguidos (no geral)
+    let currentStreak = 0;
+    let checkDate = new Date();
+    checkDate.setHours(0,0,0,0);
+    
+    const isAnyQuaresmaCompletedOn = (d: Date) => {
+      return quaresmas.some(q => isDayCompleted(d, q.id));
+    };
+
+    const completedToday = isAnyQuaresmaCompletedOn(checkDate);
+    const yesterday = new Date(checkDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const completedYesterday = isAnyQuaresmaCompletedOn(yesterday);
+
+    if (completedToday || completedYesterday) {
+      let tempDate = completedToday ? new Date(checkDate) : yesterday;
+      while (isAnyQuaresmaCompletedOn(tempDate)) {
+        currentStreak++;
+        tempDate.setDate(tempDate.getDate() - 1);
+      }
+    }
+
+    const calculatedXp = (totalCompleted * 100) + (currentStreak * 20);
+    const calculatedLevel = Math.floor(calculatedXp / 500) + 1;
+    
+    const badges = [];
+    if (totalCompleted >= 5) badges.push("guerreiro-oracao");
+    if (totalCompleted >= 15) badges.push("sentinela-luz");
+    if (totalCompleted >= 30) badges.push("fidelidade-apostolica");
+    if (totalCompleted >= 40) badges.push("campeao-fe");
+    if (currentStreak >= 7) badges.push("fogo-santo");
+
+    setXp(calculatedXp);
+    setLevel(calculatedLevel);
+    setStreak(currentStreak);
+    setUnlockedBadges(badges);
+  };
+
+  useEffect(() => {
+    if (mounted) {
+      recalculateGamification();
+    }
+  }, [mounted, updateTrigger, currentDate]);
 
   useEffect(() => {
     setMounted(true);
@@ -576,116 +662,245 @@ export default function QuaresmaCalendar() {
         </div>
       </div>
 
-      {/* ── LEGENDA DE QUARESMAS ATIVAS ────────────────────────────────────────── */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", padding: "0 16px 24px" }}>
-        {quaresmas.filter(q => q.start.getMonth() === month || q.end.getMonth() === month || (q.start.getMonth() < month && q.end.getMonth() > month)).map(q => (
-          <div key={q.id} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", background: "rgba(255,255,255,0.03)", padding: "4px 12px", borderRadius: "999px", border: "1px solid rgba(255,255,255,0.05)" }}>
-            <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: q.color }} />
-            {q.name}
-          </div>
-        ))}
-      </div>
-
-      {/* ── GRID DO CALENDÁRIO ────────────────────────────────────────────────── */}
-      <div style={{ maxWidth: "600px", margin: "0 auto", padding: "0 16px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "8px", marginBottom: "8px" }}>
-          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(day => (
-            <div key={day} style={{ textAlign: "center", fontSize: "12px", fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
-              {day}
-            </div>
-          ))}
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "8px" }}>
-          {/* Espaços vazios no início do mês */}
-          {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-            <div key={`empty-${i}`} />
-          ))}
-
-          {/* Dias do mês */}
-          {Array.from({ length: daysInMonth }).map((_, i) => {
-            const dayNum = i + 1;
-            const date = new Date(year, month, dayNum);
-            const quaresma = getQuaresmaForDate(date);
-            const isToday = new Date().toDateString() === date.toDateString();
+      {/* ── CONTEÚDO PRINCIPAL (LAYOUT DUPLO GAMIFICADO) ────────────────────────── */}
+      <div className="main-content-layout">
+        
+        {/* Painel de Gamificação */}
+        <div style={{
+          background: "#111520",
+          border: "1px solid rgba(212, 175, 55, 0.15)",
+          borderRadius: "20px",
+          padding: "24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "24px",
+          height: "fit-content",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)"
+        }}>
+          {/* Perfil & Nível */}
+          <div>
+            <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)" }}>
+              Seu Progresso
+            </span>
+            <h3 style={{ fontSize: "20px", fontWeight: 900, margin: "4px 0 2px", color: "#D4AF37" }}>
+              Nível {level}
+            </h3>
+            <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.8)" }}>
+              {getLevelName(level)}
+            </p>
             
-            const solemnities = showSolemnities ? getSolemnitiesForYear(year) : [];
-            const solemnity = solemnities.find(s => {
-              const d = new Date(s.date);
-              return d.getFullYear() === date.getFullYear() &&
-                     d.getMonth() === date.getMonth() &&
-                     d.getDate() === date.getDate();
-            });
+            {/* XP progress bar */}
+            <div style={{ marginTop: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>
+                <span>XP Total: {xp}</span>
+                <span>{xp % 500} / 500 XP</span>
+              </div>
+              <div style={{ width: "100%", height: "8px", background: "rgba(255,255,255,0.05)", borderRadius: "999px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{
+                  width: `${((xp % 500) / 500) * 100}%`,
+                  height: "100%",
+                  background: "linear-gradient(90deg, #D4AF37 0%, #10B981 100%)",
+                  borderRadius: "999px",
+                  transition: "width 0.5s ease-out"
+                }} />
+              </div>
+            </div>
+          </div>
 
-            // Re-render check based on updateTrigger state
-            const done = mounted && quaresma ? isDayCompleted(date, quaresma.id) : false;
-            const locked = mounted && quaresma ? isDayLocked(date, quaresma) : false;
+          <hr style={{ border: "none", height: "1px", background: "rgba(255,255,255,0.08)", margin: 0 }} />
 
-            const isClickable = quaresma || solemnity;
+          {/* Fogo / Streak */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.15)", padding: "16px", borderRadius: "16px" }}>
+            <div className="streak-flame" style={{ fontSize: "32px", animation: "pulse 2s infinite" }}>
+              🔥
+            </div>
+            <div>
+              <h4 style={{ fontSize: "18px", fontWeight: 900, margin: 0, color: "#10B981" }}>
+                {streak} {streak === 1 ? "Dia Seguido" : "Dias Seguidos"}
+              </h4>
+              <p style={{ fontSize: "12px", margin: "2px 0 0", color: "rgba(255,255,255,0.6)" }}>
+                {streak > 0 ? "Mantenha o fogo da fé aceso!" : "Complete uma oração para iniciar seu streak!"}
+              </p>
+            </div>
+          </div>
 
-            // Cores e estilos do botão baseados nos estados
-            let bg = "rgba(255,255,255,0.02)";
-            let border = "1px solid rgba(255,255,255,0.05)";
-            let color = "rgba(255,255,255,0.3)";
-            let shadow = "none";
-            let opacity = 0.5;
+          <hr style={{ border: "none", height: "1px", background: "rgba(255,255,255,0.08)", margin: 0 }} />
 
-            if (quaresma) {
-              opacity = locked ? 0.35 : 1;
-              bg = locked ? "rgba(255,255,255,0.01)" : `${quaresma.color}15`;
-              border = done ? "2px solid #10B981" : isToday ? "2px solid #fff" : locked ? "1px solid rgba(255,255,255,0.03)" : `1px solid ${quaresma.color}50`;
-              color = done ? "#10B981" : locked ? "rgba(255,255,255,0.2)" : quaresma.color;
-              shadow = done ? "0 0 10px rgba(16, 185, 129, 0.2)" : "none";
-            } else if (solemnity) {
-              opacity = 1;
-              bg = "rgba(212,175,55,0.05)";
-              border = isToday ? "2px solid #fff" : "1px dashed #D4AF37";
-              color = "#D4AF37";
-              shadow = "0 0 8px rgba(212, 175, 55, 0.1)";
-            }
-
-            return (
-              <button
-                key={dayNum}
-                onClick={() => handleDayClick(dayNum, quaresma, solemnity)}
-                disabled={!isClickable}
-                style={{
-                  aspectRatio: "1",
-                  borderRadius: "12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: bg,
-                  border: border,
-                  color: color,
-                  boxShadow: shadow,
-                  cursor: isClickable && (!quaresma || !locked) ? "pointer" : "default",
-                  opacity: opacity,
-                  position: "relative",
-                  transition: "all 0.2s"
-                }}
-              >
-                <span style={{ fontSize: "16px", fontWeight: 700 }}>{dayNum}</span>
-                {done && quaresma && (
-                  <div style={{ position: "absolute", top: "4px", right: "4px", color: "#10B981" }}>
-                    <Check size={12} strokeWidth={4} />
+          {/* Conquistas (Badges) */}
+          <div>
+            <h4 style={{ fontSize: "14px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 12px", color: "rgba(255,255,255,0.5)" }}>
+              Medalhas da Alma
+            </h4>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {BADGES.map((badge: any) => {
+                const isUnlocked = unlockedBadges.includes(badge.id);
+                return (
+                  <div 
+                    key={badge.id} 
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "50%",
+                      background: isUnlocked ? "rgba(212,175,55,0.15)" : "rgba(255,255,255,0.02)",
+                      border: isUnlocked ? "1.5px solid #D4AF37" : "1px solid rgba(255,255,255,0.05)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "20px",
+                      opacity: isUnlocked ? 1 : 0.25,
+                      cursor: "pointer",
+                      position: "relative",
+                      transition: "all 0.3s"
+                    }}
+                    className="badge-item"
+                  >
+                    {badge.icon}
+                    
+                    <div className="badge-tooltip">
+                      <strong>{badge.name}</strong>
+                      <span>{badge.desc}</span>
+                    </div>
                   </div>
-                )}
-                {locked && quaresma && (
-                  <div style={{ position: "absolute", top: "4px", right: "4px", color: "rgba(255,255,255,0.25)" }}>
-                    <Lock size={10} />
-                  </div>
-                )}
-                {!quaresma && solemnity && (
-                  <div style={{ position: "absolute", top: "4px", right: "4px", color: "#D4AF37", fontSize: "10px", fontWeight: "bold" }}>
-                    ✝
-                  </div>
-                )}
-              </button>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
+
+          <hr style={{ border: "none", height: "1px", background: "rgba(255,255,255,0.08)", margin: 0 }} />
+
+          {/* Desafio Diário Devocional */}
+          <div style={{ background: "rgba(212, 175, 55, 0.03)", border: "1px dashed rgba(212, 175, 55, 0.25)", padding: "16px", borderRadius: "16px" }}>
+            <span style={{ fontSize: "10px", fontWeight: 800, color: "#D4AF37", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Desafio Litúrgico do Dia
+            </span>
+            <p style={{ fontSize: "13px", margin: "6px 0 0", color: "rgba(255,255,255,0.85)", lineHeight: 1.5, fontWeight: 500 }}>
+              "Ofereça 10 minutos de silêncio e meditação contemplativa hoje, agradecendo a Deus por todas as graças recebidas."
+            </p>
+          </div>
+
         </div>
+
+        {/* Lado Direito: Calendário */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          {/* Legenda de quaresmas */}
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center" }}>
+            {quaresmas.filter(q => q.start.getMonth() === month || q.end.getMonth() === month || (q.start.getMonth() < month && q.end.getMonth() > month)).map(q => (
+              <div key={q.id} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", background: "rgba(255,255,255,0.03)", padding: "4px 12px", borderRadius: "999px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: q.color }} />
+                {q.name}
+              </div>
+            ))}
+          </div>
+
+          {/* Grid do Calendário */}
+          <div style={{
+            background: "#111520",
+            border: "1px solid rgba(255, 255, 255, 0.05)",
+            borderRadius: "20px",
+            padding: "24px",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)"
+          }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "8px", marginBottom: "16px" }}>
+              {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(day => (
+                <div key={day} style={{ textAlign: "center", fontSize: "12px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "8px" }}>
+              {/* Espaços vazios no início do mês */}
+              {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                <div key={`empty-${i}`} />
+              ))}
+
+              {/* Dias do mês */}
+              {Array.from({ length: daysInMonth }).map((_, i) => {
+                const dayNum = i + 1;
+                const date = new Date(year, month, dayNum);
+                const quaresma = getQuaresmaForDate(date);
+                const isToday = new Date().toDateString() === date.toDateString();
+                
+                const solemnities = showSolemnities ? getSolemnitiesForYear(year) : [];
+                const solemnity = solemnities.find(s => {
+                  const d = new Date(s.date);
+                  return d.getFullYear() === date.getFullYear() &&
+                         d.getMonth() === date.getMonth() &&
+                         d.getDate() === date.getDate();
+                });
+
+                // Re-render check based on updateTrigger state
+                const done = mounted && quaresma ? isDayCompleted(date, quaresma.id) : false;
+                const locked = mounted && quaresma ? isDayLocked(date, quaresma) : false;
+
+                const isClickable = quaresma || solemnity;
+
+                // Cores e estilos do botão baseados nos estados
+                let bg = "rgba(255,255,255,0.02)";
+                let border = "1px solid rgba(255,255,255,0.05)";
+                let color = "rgba(255,255,255,0.3)";
+                let shadow = "none";
+                let opacity = 0.5;
+
+                if (quaresma) {
+                  opacity = locked ? 0.35 : 1;
+                  bg = locked ? "rgba(255,255,255,0.01)" : `${quaresma.color}15`;
+                  border = done ? "2px solid #10B981" : isToday ? "2px solid #fff" : locked ? "1px solid rgba(255,255,255,0.03)" : `1px solid ${quaresma.color}50`;
+                  color = done ? "#10B981" : locked ? "rgba(255,255,255,0.2)" : quaresma.color;
+                  shadow = done ? "0 0 10px rgba(16, 185, 129, 0.2)" : "none";
+                } else if (solemnity) {
+                  opacity = 1;
+                  bg = "rgba(212,175,55,0.05)";
+                  border = isToday ? "2px solid #fff" : "1px dashed #D4AF37";
+                  color = "#D4AF37";
+                  shadow = "0 0 8px rgba(212, 175, 55, 0.1)";
+                }
+
+                return (
+                  <button
+                    key={dayNum}
+                    onClick={() => handleDayClick(dayNum, quaresma, solemnity)}
+                    disabled={!isClickable}
+                    style={{
+                      aspectRatio: "1",
+                      borderRadius: "12px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: bg,
+                      border: border,
+                      color: color,
+                      boxShadow: shadow,
+                      cursor: isClickable && (!quaresma || !locked) ? "pointer" : "default",
+                      opacity: opacity,
+                      position: "relative",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    <span style={{ fontSize: "16px", fontWeight: 700 }}>{dayNum}</span>
+                    {done && quaresma && (
+                      <div style={{ position: "absolute", top: "4px", right: "4px", color: "#10B981" }}>
+                        <Check size={12} strokeWidth={4} />
+                      </div>
+                    )}
+                    {locked && quaresma && (
+                      <div style={{ position: "absolute", top: "4px", right: "4px", color: "rgba(255,255,255,0.25)" }}>
+                        <Lock size={10} />
+                      </div>
+                    )}
+                    {!quaresma && solemnity && (
+                      <div style={{ position: "absolute", top: "4px", right: "4px", color: "#D4AF37", fontSize: "10px", fontWeight: "bold" }}>
+                        ✝
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
       </div>
 
 
@@ -885,6 +1100,58 @@ export default function QuaresmaCalendar() {
             transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(360deg);
             opacity: 0;
           }
+        }
+        .main-content-layout {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 32px;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 16px;
+        }
+        @media (min-width: 1024px) {
+          .main-content-layout {
+            grid-template-columns: 350px 1fr;
+          }
+        }
+        .badge-item {
+          position: relative;
+        }
+        .badge-item:hover .badge-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(-10px);
+        }
+        .badge-tooltip {
+          position: absolute;
+          bottom: 110%;
+          left: 50%;
+          transform: translateX(-50%) translateY(0);
+          background: #181d2a;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          padding: 10px 14px;
+          border-radius: 12px;
+          font-size: 11px;
+          color: #fff;
+          width: 200px;
+          text-align: center;
+          box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .badge-tooltip strong {
+          color: #D4AF37;
+          font-size: 12px;
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(16,185,129,0)); }
+          50% { transform: scale(1.08); filter: drop-shadow(0 0 8px rgba(16,185,129,0.5)); }
         }
       `}</style>
     </main>
