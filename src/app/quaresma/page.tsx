@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, X, Calendar as CalendarIcon, Check } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 /* ── FUNÇÕES DE DATAS ──────────────────────────────────────────────────────── */
 
@@ -263,11 +264,74 @@ export default function QuaresmaCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeQuaresma, setActiveQuaresma] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [updateTrigger, setUpdateTrigger] = useState(0); // Para forçar re-render do calendário
 
   useEffect(() => {
     setMounted(true);
+    
+    // Verifica se o usuário está logado e se possui plano ativo
+    const checkUserAccess = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          window.location.href = "/login?redirect=/quaresma";
+          return;
+        }
+
+        const planoAtivo = user.user_metadata?.plano_ativo === true;
+        const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).maybeSingle();
+        const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com';
+
+        if (!isAdmin && !planoAtivo) {
+          window.location.href = "/planos";
+          return;
+        }
+
+        setLoadingUser(false);
+      } catch (err) {
+        console.error("Erro na verificação de acesso:", err);
+        window.location.href = "/";
+      }
+    };
+
+    checkUserAccess();
   }, []);
+
+  if (!mounted || loadingUser) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        background: "#090B10",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        gap: "16px",
+        fontFamily: "Outfit, sans-serif",
+        color: "#fff"
+      }}>
+        <div style={{
+          width: "40px",
+          height: "40px",
+          border: "4px solid rgba(212,175,55,0.1)",
+          borderTop: "4px solid #D4AF37",
+          borderRadius: "50%",
+          animation: "spin 1s linear infinite"
+        }}></div>
+        <span style={{ fontSize: "14px", color: "rgba(255,255,255,0.5)", fontWeight: 500 }}>
+          Verificando assinatura...
+        </span>
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}} />
+      </div>
+    );
+  }
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
