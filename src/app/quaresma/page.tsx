@@ -60,6 +60,46 @@ function getQuaresmasForYear(year: number) {
   ];
 }
 
+function getSolemnitiesForYear(year: number) {
+  const easter = getEasterDate(year);
+  
+  // Corpus Christi is 60 days after Easter
+  const corpusChristi = new Date(easter);
+  corpusChristi.setDate(easter.getDate() + 60);
+
+  // Sexta-feira Santa is 2 days before Easter
+  const GoodFriday = new Date(easter);
+  GoodFriday.setDate(easter.getDate() - 2);
+
+  // Domingo de Ramos is 7 days before Easter
+  const PalmSunday = new Date(easter);
+  PalmSunday.setDate(easter.getDate() - 7);
+
+  // Pentecostes is 49 days after Easter
+  const pentecost = new Date(easter);
+  pentecost.setDate(easter.getDate() + 49);
+
+  return [
+    { id: "mae-de-deus", date: new Date(year, 0, 1), name: "Mãe de Deus", type: "solemnity", desc: "Solenidade de Santa Maria, Mãe de Deus. Dia de Preceito." },
+    { id: "reis", date: new Date(year, 0, 6), name: "Epifania (Reis)", type: "solemnity", desc: "Solenidade da Epifania do Senhor (Dia de Reis)." },
+    { id: "sao-jose", date: new Date(year, 2, 19), name: "São José", type: "solemnity", desc: "Solenidade de São José, Esposo da Virgem Maria." },
+    { id: "anunciacao", date: new Date(year, 2, 25), name: "Anunciação", type: "solemnity", desc: "Solenidade da Anunciação do Senhor." },
+    { id: "ramos", date: PalmSunday, name: "Domingo de Ramos", type: "solemnity", desc: "Domingo de Ramos. Início da Semana Santa." },
+    { id: "sexta-santa", date: GoodFriday, name: "Sexta-feira Santa", type: "solemnity", desc: "Sexta-feira Santa da Paixão do Senhor (Jejum e Abstinência)." },
+    { id: "pascoa", date: easter, name: "Páscoa da Ressurreição", type: "solemnity", desc: "Solenidade da Páscoa da Ressurreição do Senhor. A maior festa cristã do ano." },
+    { id: "pentecostes", date: pentecost, name: "Pentecostes", type: "solemnity", desc: "Solenidade de Pentecostes. Vinda do Espírito Santo sobre os Apóstolos." },
+    { id: "corpus-christi", date: corpusChristi, name: "Corpus Christi", type: "solemnity", desc: "Solenidade do Santíssimo Corpo e Sangue de Cristo. Dia de Preceito." },
+    { id: "sao-joao", date: new Date(year, 5, 24), name: "São João Batista", type: "solemnity", desc: "Solenidade do Nascimento de São João Batista." },
+    { id: "pedro-paulo", date: new Date(year, 5, 29), name: "São Pedro e São Paulo", type: "solemnity", desc: "Solenidade de São Pedro e São Paulo, Apóstolos." },
+    { id: "assuncao", date: new Date(year, 7, 15), name: "Assunção de Maria", type: "solemnity", desc: "Solenidade da Assunção de Nossa Senhora ao Céu. Dia de Preceito." },
+    { id: "padroeira", date: new Date(year, 9, 12), name: "Nossa Senhora Aparecida", type: "solemnity", desc: "Solenidade de Nossa Senhora da Conceição Aparecida, Padroeira do Brasil. Dia de Preceito." },
+    { id: "todos-santos", date: new Date(year, 10, 1), name: "Todos os Santos", type: "solemnity", desc: "Solenidade de Todos os Santos." },
+    { id: "finados", date: new Date(year, 10, 2), name: "Finados", type: "commemoration", desc: "Comemoração de Todos os Fiéis Defuntos." },
+    { id: "imaculada", date: new Date(year, 11, 8), name: "Imaculada Conceição", type: "solemnity", desc: "Solenidade da Imaculada Conceição de Nossa Senhora. Dia de Preceito." },
+    { id: "natal", date: new Date(year, 11, 25), name: "Natal do Senhor", type: "solemnity", desc: "Solenidade do Natal de Nosso Senhor Jesus Cristo. Dia de Preceito." },
+  ];
+}
+
 /* ── TEXTOS E ORAÇÕES ──────────────────────────────────────────────────────── */
 
 const ORACOES_SAO_MIGUEL = [
@@ -263,6 +303,8 @@ export default function QuaresmaCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeQuaresma, setActiveQuaresma] = useState<any>(null);
+  const [selectedSolemnity, setSelectedSolemnity] = useState<any>(null);
+  const [showSolemnities, setShowSolemnities] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [updateTrigger, setUpdateTrigger] = useState(0); // Para forçar re-render do calendário
@@ -468,17 +510,19 @@ export default function QuaresmaCalendar() {
   const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
   // Função para lidar com a abertura do modal
-  const handleDayClick = (dayNum: number, quaresma: any) => {
-    if (!quaresma) return;
+  const handleDayClick = (dayNum: number, quaresma: any, solemnity: any) => {
+    if (!quaresma && !solemnity) return;
     const clickedDate = new Date(year, month, dayNum);
     
-    if (isDayLocked(clickedDate, quaresma)) {
+    // Bloqueia se for um dia de Quaresma e estiver bloqueado
+    if (quaresma && isDayLocked(clickedDate, quaresma)) {
       playLockedSound();
       return;
     }
     
     setSelectedDate(clickedDate);
-    setActiveQuaresma(quaresma);
+    setActiveQuaresma(quaresma || null);
+    setSelectedSolemnity(solemnity || null);
   };
 
   const handleComplete = () => {
@@ -504,6 +548,19 @@ export default function QuaresmaCalendar() {
         <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", margin: "0 auto 24px", maxWidth: "400px" }}>
           Acompanhe o tempo litúrgico e suas orações diárias.
         </p>
+
+        {/* Chave de Teste / Toggle */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "16px" }}>
+          <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.02)", padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <input 
+              type="checkbox" 
+              checked={showSolemnities} 
+              onChange={(e) => setShowSolemnities(e.target.checked)}
+              style={{ accentColor: "#D4AF37", cursor: "pointer" }}
+            />
+            ✨ Modo Litúrgico Completo (Solenidades e Festas)
+          </label>
+        </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "24px", marginTop: "24px" }}>
           <button onClick={prevMonth} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50%", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", cursor: "pointer" }}>
@@ -552,15 +609,46 @@ export default function QuaresmaCalendar() {
             const quaresma = getQuaresmaForDate(date);
             const isToday = new Date().toDateString() === date.toDateString();
             
+            const solemnities = showSolemnities ? getSolemnitiesForYear(year) : [];
+            const solemnity = solemnities.find(s => {
+              const d = new Date(s.date);
+              return d.getFullYear() === date.getFullYear() &&
+                     d.getMonth() === date.getMonth() &&
+                     d.getDate() === date.getDate();
+            });
+
             // Re-render check based on updateTrigger state
             const done = mounted && quaresma ? isDayCompleted(date, quaresma.id) : false;
             const locked = mounted && quaresma ? isDayLocked(date, quaresma) : false;
 
+            const isClickable = quaresma || solemnity;
+
+            // Cores e estilos do botão baseados nos estados
+            let bg = "rgba(255,255,255,0.02)";
+            let border = "1px solid rgba(255,255,255,0.05)";
+            let color = "rgba(255,255,255,0.3)";
+            let shadow = "none";
+            let opacity = 0.5;
+
+            if (quaresma) {
+              opacity = locked ? 0.35 : 1;
+              bg = locked ? "rgba(255,255,255,0.01)" : `${quaresma.color}15`;
+              border = done ? "2px solid #10B981" : isToday ? "2px solid #fff" : locked ? "1px solid rgba(255,255,255,0.03)" : `1px solid ${quaresma.color}50`;
+              color = done ? "#10B981" : locked ? "rgba(255,255,255,0.2)" : quaresma.color;
+              shadow = done ? "0 0 10px rgba(16, 185, 129, 0.2)" : "none";
+            } else if (solemnity) {
+              opacity = 1;
+              bg = "rgba(212,175,55,0.05)";
+              border = isToday ? "2px solid #fff" : "1px dashed #D4AF37";
+              color = "#D4AF37";
+              shadow = "0 0 8px rgba(212, 175, 55, 0.1)";
+            }
+
             return (
               <button
                 key={dayNum}
-                onClick={() => handleDayClick(dayNum, quaresma)}
-                disabled={!quaresma}
+                onClick={() => handleDayClick(dayNum, quaresma, solemnity)}
+                disabled={!isClickable}
                 style={{
                   aspectRatio: "1",
                   borderRadius: "12px",
@@ -568,12 +656,12 @@ export default function QuaresmaCalendar() {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: quaresma ? (locked ? "rgba(255,255,255,0.01)" : `${quaresma.color}15`) : "rgba(255,255,255,0.02)", // Hex opacity 15
-                  border: done ? "2px solid #10B981" : isToday ? "2px solid #fff" : quaresma ? (locked ? "1px solid rgba(255,255,255,0.03)" : `1px solid ${quaresma.color}50`) : "1px solid rgba(255,255,255,0.05)",
-                  color: done ? "#10B981" : quaresma ? (locked ? "rgba(255,255,255,0.2)" : quaresma.color) : "rgba(255,255,255,0.3)",
-                  boxShadow: done ? "0 0 10px rgba(16, 185, 129, 0.2)" : "none",
-                  cursor: quaresma && !locked ? "pointer" : "default",
-                  opacity: quaresma ? (locked ? 0.35 : 1) : 0.5,
+                  background: bg,
+                  border: border,
+                  color: color,
+                  boxShadow: shadow,
+                  cursor: isClickable && (!quaresma || !locked) ? "pointer" : "default",
+                  opacity: opacity,
                   position: "relative",
                   transition: "all 0.2s"
                 }}
@@ -589,6 +677,11 @@ export default function QuaresmaCalendar() {
                     <Lock size={10} />
                   </div>
                 )}
+                {!quaresma && solemnity && (
+                  <div style={{ position: "absolute", top: "4px", right: "4px", color: "#D4AF37", fontSize: "10px", fontWeight: "bold" }}>
+                    ✝
+                  </div>
+                )}
               </button>
             );
           })}
@@ -597,11 +690,20 @@ export default function QuaresmaCalendar() {
 
 
 
-      {/* ── MODAL DE ORAÇÃO ────────────────────────────────────────────────────── */}
-      {selectedDate && activeQuaresma && (() => {
-        const dayIndex = getDayIndex(selectedDate, activeQuaresma.start);
-        const prayer = getPrayerForDay(activeQuaresma.id, dayIndex);
-        const done = isDayCompleted(selectedDate, activeQuaresma.id);
+      {/* ── MODAL DE ORAÇÃO E SOLENIDADE ────────────────────────────────────────── */}
+      {selectedDate && (activeQuaresma || selectedSolemnity) && (() => {
+        const themeColor = activeQuaresma ? activeQuaresma.color : "#D4AF37";
+        const hasQuaresma = !!activeQuaresma;
+        
+        let dayIndex = 0;
+        let prayer = null;
+        let done = false;
+
+        if (hasQuaresma) {
+          dayIndex = getDayIndex(selectedDate, activeQuaresma.start);
+          prayer = getPrayerForDay(activeQuaresma.id, dayIndex);
+          done = isDayCompleted(selectedDate, activeQuaresma.id);
+        }
 
         return (
           <div style={{
@@ -609,12 +711,16 @@ export default function QuaresmaCalendar() {
             padding: "16px", background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)", animation: "fadeIn 0.2s ease"
           }}>
             <div style={{
-              background: "#111520", border: `1px solid ${activeQuaresma.color}40`, borderRadius: "20px",
+              background: "#111520", border: `1px solid ${themeColor}40`, borderRadius: "20px",
               width: "100%", maxWidth: "500px", maxHeight: "90vh", overflowY: "auto", position: "relative",
               boxShadow: "0 20px 40px rgba(0,0,0,0.5)", animation: "slideUp 0.3s ease",
             }}>
               <button 
-                onClick={() => setSelectedDate(null)}
+                onClick={() => {
+                  setSelectedDate(null);
+                  setActiveQuaresma(null);
+                  setSelectedSolemnity(null);
+                }}
                 style={{
                   position: "absolute", top: "16px", right: "16px", background: "rgba(255,255,255,0.1)", border: "none",
                   width: "32px", height: "32px", borderRadius: "16px", color: "#fff", cursor: "pointer", display: "flex",
@@ -626,47 +732,96 @@ export default function QuaresmaCalendar() {
 
               <div style={{ padding: "32px 24px", position: "relative" }}>
                 
+                {/* Cabeçalho da celebração */}
                 <div style={{ textAlign: "center", marginBottom: "24px" }}>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: `${activeQuaresma.color}15`, padding: "4px 12px", borderRadius: "999px", color: activeQuaresma.color, fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "16px" }}>
-                    {activeQuaresma.name}
-                  </div>
+                  {selectedSolemnity && (
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(212,175,55,0.15)", padding: "4px 12px", borderRadius: "999px", color: "#D4AF37", fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "16px" }}>
+                      ⛪ {selectedSolemnity.name}
+                    </div>
+                  )}
+                  
+                  {/* Se tem Quaresma, mostra a etiqueta dela também */}
+                  {!selectedSolemnity && activeQuaresma && (
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: `${activeQuaresma.color}15`, padding: "4px 12px", borderRadius: "999px", color: activeQuaresma.color, fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "16px" }}>
+                      {activeQuaresma.name}
+                    </div>
+                  )}
+
                   <h2 style={{ fontSize: "22px", fontWeight: 900, margin: 0, color: "#fff" }}>
                     {done && <span style={{ marginRight: "8px" }}>✨</span>}
-                    {prayer.tema}
+                    {prayer ? prayer.tema : selectedSolemnity?.name}
                   </h2>
+                  
                   <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "13px", marginTop: "8px" }}>
-                    Dia {dayIndex + 1} • {selectedDate.toLocaleDateString('pt-BR')}
+                    {hasQuaresma ? `Dia ${dayIndex + 1} • ` : ""} {selectedDate.toLocaleDateString('pt-BR')}
                   </div>
                 </div>
 
-                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px", padding: "20px", marginBottom: "24px" }}>
-                  <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "15px", lineHeight: 1.7, margin: 0, fontStyle: "italic", textAlign: "center" }}>
-                    "{prayer.oracao}"
-                  </p>
-                </div>
+                {/* Card da Solenidade se tiver ambas no mesmo dia */}
+                {selectedSolemnity && hasQuaresma && (
+                  <div style={{
+                    background: "rgba(212, 175, 55, 0.05)",
+                    border: "1px dashed rgba(212, 175, 55, 0.3)",
+                    borderRadius: "16px",
+                    padding: "16px",
+                    marginBottom: "20px",
+                    fontSize: "13px",
+                    color: "rgba(255,255,255,0.8)",
+                    lineHeight: 1.5
+                  }}>
+                    🌟 <strong>Hoje também celebramos:</strong> {selectedSolemnity.desc}
+                  </div>
+                )}
 
-                {!done && (
+                {/* Descrição da Solenidade para dias normais (sem Quaresma) */}
+                {selectedSolemnity && !hasQuaresma && (
+                  <div style={{
+                    background: "rgba(212, 175, 55, 0.05)",
+                    border: "1px solid rgba(212, 175, 55, 0.2)",
+                    borderRadius: "16px",
+                    padding: "20px",
+                    marginBottom: "24px",
+                    textAlign: "center"
+                  }}>
+                    <p style={{ margin: 0, fontSize: "15px", color: "rgba(255,255,255,0.9)", lineHeight: 1.6, fontStyle: "italic" }}>
+                      "{selectedSolemnity.desc}"
+                    </p>
+                  </div>
+                )}
+
+                {/* Texto da Oração (se tiver Quaresma) */}
+                {prayer && (
+                  <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "16px", padding: "20px", marginBottom: "24px" }}>
+                    <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "15px", lineHeight: 1.7, margin: 0, fontStyle: "italic", textAlign: "center" }}>
+                      "{prayer.oracao}"
+                    </p>
+                  </div>
+                )}
+
+                {/* Ações de Concluir (se tiver Quaresma) */}
+                {hasQuaresma && !done && (
                   <button
                     onClick={handleComplete}
                     style={{
                       width: "100%", padding: "16px", borderRadius: "12px", border: "none",
-                      background: activeQuaresma.color, color: "#090B10", fontWeight: 900, fontSize: "15px", cursor: "pointer",
+                      background: themeColor, color: "#090B10", fontWeight: 900, fontSize: "15px", cursor: "pointer",
                       display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "all 0.3s",
-                      boxShadow: `0 4px 20px ${activeQuaresma.color}40`,
+                      boxShadow: `0 4px 20px ${themeColor}40`,
                     }}
                   >
                     <Check size={20} /> Concluir este Dia
                   </button>
                 )}
 
-                {done && (
+                {/* Relato (se tiver Quaresma e estiver concluída) */}
+                {hasQuaresma && done && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px", animation: "slideUp 0.3s ease" }}>
                     <div style={{
-                      width: "100%", padding: "14px", borderRadius: "12px", background: `${activeQuaresma.color}15`,
-                      border: `1px solid ${activeQuaresma.color}40`, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                      width: "100%", padding: "14px", borderRadius: "12px", background: `${themeColor}15`,
+                      border: `1px solid ${themeColor}40`, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                     }}>
                       <span style={{ fontSize: "18px" }}>🌟</span>
-                      <span style={{ color: activeQuaresma.color, fontWeight: 800, fontSize: "14px" }}>Dia concluído com sucesso!</span>
+                      <span style={{ color: themeColor, fontWeight: 800, fontSize: "14px" }}>Dia concluído com sucesso!</span>
                     </div>
 
                     <div style={{ background: "rgba(0,0,0,0.3)", borderRadius: "16px", padding: "20px", border: "1px solid rgba(255,255,255,0.05)" }}>
@@ -683,11 +838,30 @@ export default function QuaresmaCalendar() {
                           borderRadius: "12px", padding: "14px", color: "#fff", fontSize: "14px", fontFamily: "Outfit, sans-serif",
                           resize: "vertical", outline: "none", transition: "border 0.3s"
                         }}
-                        onFocus={(e) => ((e.target as HTMLTextAreaElement).style.border = `1px solid ${activeQuaresma.color}`)}
+                        onFocus={(e) => ((e.target as HTMLTextAreaElement).style.border = `1px solid ${themeColor}`)}
                         onMouseLeave={(e) => ((e.target as HTMLTextAreaElement).style.border = "1px solid rgba(255,255,255,0.1)")}
                       />
                     </div>
                   </div>
+                )}
+
+                {/* Botão de Fechar Simples para dias de Solenidade pura */}
+                {!hasQuaresma && (
+                  <button
+                    onClick={() => {
+                      setSelectedDate(null);
+                      setActiveQuaresma(null);
+                      setSelectedSolemnity(null);
+                    }}
+                    style={{
+                      width: "100%", padding: "16px", borderRadius: "12px",
+                      background: "rgba(255,255,255,0.05)", color: "#fff", fontWeight: 700, fontSize: "15px", cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s",
+                      border: "1px solid rgba(255,255,255,0.1)"
+                    }}
+                  >
+                    Fechar
+                  </button>
                 )}
               </div>
             </div>
