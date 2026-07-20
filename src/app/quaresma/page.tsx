@@ -266,6 +266,7 @@ export default function QuaresmaCalendar() {
   const [mounted, setMounted] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [updateTrigger, setUpdateTrigger] = useState(0); // Para forçar re-render do calendário
+  const [particles, setParticles] = useState<{ id: number; style: React.CSSProperties }[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -298,6 +299,69 @@ export default function QuaresmaCalendar() {
 
     checkUserAccess();
   }, []);
+
+  const playSuccessSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        
+        gain.gain.setValueAtTime(0, now + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.15, now + idx * 0.08 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.45);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.55);
+      });
+    } catch (err) {
+      console.error("Erro ao reproduzir som:", err);
+    }
+  };
+
+  const spawnParticles = () => {
+    const newParticles = Array.from({ length: 45 }).map((_, idx) => {
+      const angle = Math.random() * Math.PI * 2;
+      const velocity = 40 + Math.random() * 140;
+      const tx = Math.cos(angle) * velocity;
+      const ty = Math.sin(angle) * velocity;
+      const size = 3 + Math.random() * 6;
+      const colors = ["#D4AF37", "#10B981", "#34D399", "#A78BFA", "#F59E0B", "#EF4444"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      
+      return {
+        id: Date.now() + idx,
+        style: {
+          position: "fixed" as const,
+          left: "50%",
+          top: "50%",
+          width: `${size}px`,
+          height: `${size}px`,
+          background: color,
+          borderRadius: Math.random() > 0.4 ? "50%" : "2px",
+          transform: "translate(-50%, -50%)",
+          zIndex: 150,
+          pointerEvents: "none" as const,
+          animation: "explode 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards",
+          "--tx": `${tx}px`,
+          "--ty": `${ty}px`,
+        } as React.CSSProperties
+      };
+    });
+    setParticles(newParticles);
+    setTimeout(() => setParticles([]), 1500);
+  };
 
   if (!mounted || loadingUser) {
     return (
@@ -377,6 +441,11 @@ export default function QuaresmaCalendar() {
     if (selectedDate && activeQuaresma) {
       completeDay(selectedDate, activeQuaresma.id);
       setUpdateTrigger(prev => prev + 1); // Força atualização do ícone na grade
+      playSuccessSound();
+      spawnParticles();
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate([70, 40, 70]);
+      }
     }
   };
 
@@ -455,8 +524,9 @@ export default function QuaresmaCalendar() {
                   alignItems: "center",
                   justifyContent: "center",
                   background: quaresma ? `${quaresma.color}15` : "rgba(255,255,255,0.02)", // Hex opacity 15
-                  border: isToday ? "2px solid #fff" : quaresma ? `1px solid ${quaresma.color}50` : "1px solid rgba(255,255,255,0.05)",
-                  color: quaresma ? quaresma.color : "rgba(255,255,255,0.3)",
+                  border: done ? "2px solid #10B981" : isToday ? "2px solid #fff" : quaresma ? `1px solid ${quaresma.color}50` : "1px solid rgba(255,255,255,0.05)",
+                  color: done ? "#10B981" : quaresma ? quaresma.color : "rgba(255,255,255,0.3)",
+                  boxShadow: done ? "0 0 10px rgba(16, 185, 129, 0.2)" : "none",
                   cursor: quaresma ? "pointer" : "default",
                   opacity: quaresma ? 1 : 0.5,
                   position: "relative",
@@ -465,7 +535,7 @@ export default function QuaresmaCalendar() {
               >
                 <span style={{ fontSize: "16px", fontWeight: 700 }}>{dayNum}</span>
                 {done && quaresma && (
-                  <div style={{ position: "absolute", top: "4px", right: "4px", color: quaresma.color }}>
+                  <div style={{ position: "absolute", top: "4px", right: "4px", color: "#10B981" }}>
                     <Check size={12} strokeWidth={4} />
                   </div>
                 )}
@@ -575,9 +645,23 @@ export default function QuaresmaCalendar() {
         );
       })()}
 
+      {particles.map(p => (
+        <div key={p.id} style={p.style} />
+      ))}
+
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes explode {
+          0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(360deg);
+            opacity: 0;
+          }
+        }
       `}</style>
     </main>
   );
