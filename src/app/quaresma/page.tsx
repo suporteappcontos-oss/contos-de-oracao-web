@@ -321,7 +321,7 @@ export default function QuaresmaCalendar() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [activeQuaresma, setActiveQuaresma] = useState<any>(null);
   const [selectedSolemnity, setSelectedSolemnity] = useState<any>(null);
-  const [showSolemnities, setShowSolemnities] = useState(false);
+  const [showSolemnities, setShowSolemnities] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [updateTrigger, setUpdateTrigger] = useState(0); // Para forçar re-render do calendário
@@ -635,18 +635,7 @@ export default function QuaresmaCalendar() {
           Acompanhe o tempo litúrgico e suas orações diárias.
         </p>
 
-        {/* Chave de Teste / Toggle */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", marginBottom: "16px" }}>
-          <label style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", background: "rgba(255,255,255,0.02)", padding: "6px 14px", borderRadius: "999px", border: "1px solid rgba(255,255,255,0.05)" }}>
-            <input 
-              type="checkbox" 
-              checked={showSolemnities} 
-              onChange={(e) => setShowSolemnities(e.target.checked)}
-              style={{ accentColor: "#D4AF37", cursor: "pointer" }}
-            />
-            ✨ Modo Litúrgico Completo (Solenidades e Festas)
-          </label>
-        </div>
+
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "24px", marginTop: "24px" }}>
           <button onClick={prevMonth} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "50%", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", cursor: "pointer" }}>
@@ -1189,7 +1178,7 @@ export default function QuaresmaCalendar() {
           text-transform: uppercase;
         }
         .calendar-day-num {
-          font-size: 16px;
+          font-size: 18px;
         }
 
         /* Melhoria Visual de Letras e Espaçamentos em Celulares (telas até 768px) */
@@ -1234,7 +1223,7 @@ export default function QuaresmaCalendar() {
             font-weight: 800;
           }
           .calendar-day-num {
-            font-size: 19px;
+            font-size: 22px;
             font-weight: 800;
           }
         }
