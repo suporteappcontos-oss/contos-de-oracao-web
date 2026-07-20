@@ -14,7 +14,7 @@ import {
   adicionarAutomacaoWhatsapp, editarAutomacaoWhatsapp,
   deletarAutomacaoWhatsapp, toggleAutomacaoWhatsappAtiva,
   obterNumeroWhatsapp, salvarNumeroWhatsapp, fecharConversaWhatsapp,
-  excluirConversaWhatsapp
+  excluirConversaWhatsapp, obterEstimativaCustosMeta
 } from './actions'
 
 type IaConfigType = {
@@ -77,6 +77,32 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
   // Abas internas
   const [subTab, setSubTab] = useState<'ia' | 'faq' | 'chat' | 'planos' | 'whats_auto' | 'avaliacoes'>('chat')
   const [isPending, startTransition] = useTransition()
+
+  // --- Estado Custos Meta ---
+  const [costStats, setCostStats] = useState<{
+    totalConversas: number
+    conversasGratuitas: number
+    conversasFaturadas: number
+    custoEstimadoBRL: number
+  } | null>(null)
+  const [loadingCosts, setLoadingCosts] = useState(false)
+
+  useEffect(() => {
+    if (subTab === 'whats_auto' || subTab === 'chat') {
+      setLoadingCosts(true)
+      obterEstimativaCustosMeta().then(res => {
+        if (res && res.success) {
+          setCostStats({
+            totalConversas: res.totalConversas || 0,
+            conversasGratuitas: res.conversasGratuitas || 0,
+            conversasFaturadas: res.conversasFaturadas || 0,
+            custoEstimadoBRL: res.custoEstimadoBRL || 0
+          })
+        }
+        setLoadingCosts(false)
+      }).catch(() => setLoadingCosts(false))
+    }
+  }, [subTab])
 
   // --- Estado Stripe Planos e Cupons ---
   const [stripePlanos, setStripePlanos] = useState<any[]>([])
@@ -1309,6 +1335,55 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
               <Plus size={14} />
               Nova Regra Zap
             </button>
+          </div>
+
+          {/* Métricas de Custo da Meta (WhatsApp Business API) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex flex-col gap-1.5 shadow-md">
+              <span className="text-white/40 text-[0.65rem] uppercase tracking-widest font-black">Conversas no Mês</span>
+              <span className="text-white text-2xl font-black tracking-tight">
+                {loadingCosts ? (
+                  <span className="text-sm opacity-50 font-normal">Carregando...</span>
+                ) : (
+                  costStats?.totalConversas ?? 0
+                )}
+              </span>
+              <span className="text-white/30 text-[0.65rem] leading-relaxed">Janelas de conversas de 24h</span>
+            </div>
+            <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex flex-col gap-1.5 shadow-md">
+              <span className="text-white/40 text-[0.65rem] uppercase tracking-widest font-black">Conversas Gratuitas</span>
+              <span className="text-emerald-400 text-2xl font-black tracking-tight">
+                {loadingCosts ? (
+                  <span className="text-sm opacity-50 font-normal">Carregando...</span>
+                ) : (
+                  `${costStats?.conversasGratuitas ?? 0} / 1.000`
+                )}
+              </span>
+              <span className="text-white/30 text-[0.65rem] leading-relaxed">Primeiras 1.000 mensais são grátis</span>
+            </div>
+            <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 flex flex-col gap-1.5 shadow-md">
+              <span className="text-white/40 text-[0.65rem] uppercase tracking-widest font-black">Conversas Faturadas</span>
+              <span className="text-amber-500 text-2xl font-black tracking-tight">
+                {loadingCosts ? (
+                  <span className="text-sm opacity-50 font-normal">Carregando...</span>
+                ) : (
+                  costStats?.conversasFaturadas ?? 0
+                )}
+              </span>
+              <span className="text-white/30 text-[0.65rem] leading-relaxed">Excedente sujeito a cobrança</span>
+            </div>
+            <div className="bg-[#0b0f19] border border-[#D4AF37]/10 rounded-2xl p-5 flex flex-col gap-1.5 shadow-md"
+                 style={{ background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.02) 0%, rgba(212, 175, 55, 0.05) 100%)' }}>
+              <span className="text-white/40 text-[0.65rem] uppercase tracking-widest font-black">Custo Meta Estimado</span>
+              <span className="text-[#D4AF37] text-2xl font-black tracking-tight">
+                {loadingCosts ? (
+                  <span className="text-sm opacity-50 font-normal">Carregando...</span>
+                ) : (
+                  `R$ ${(costStats?.custoEstimadoBRL ?? 0).toFixed(2)}`
+                )}
+              </span>
+              <span className="text-white/30 text-[0.65rem] leading-relaxed">Conversas faturadas × R$ 0,16</span>
+            </div>
           </div>
 
           {/* Configuração Global do WhatsApp para Redirecionamento */}

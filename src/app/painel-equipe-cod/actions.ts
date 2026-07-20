@@ -1619,6 +1619,82 @@ export async function excluirConversaWhatsapp(telefone: string) {
   }
 }
 
+export async function obterEstimativaCustosMeta() {
+  await verificarAdmin()
+
+  const adminSupabase = getAdminClient()
+  
+  // Início do mês atual no fuso UTC
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+
+  try {
+    const { data: messages, error } = await adminSupabase
+      .from('whatsapp_chat_history')
+      .select('sender_phone, criado_em')
+      .gte('criado_em', startOfMonth)
+      .order('criado_em', { ascending: true })
+
+    if (error) throw error
+
+    if (!messages || messages.length === 0) {
+      return {
+        success: true,
+        totalConversas: 0,
+        conversasGratuitas: 0,
+        conversasFaturadas: 0,
+        custoEstimadoBRL: 0
+      }
+    }
+
+    // Algoritmo de Agrupamento em Janelas de 24 Horas
+    const userWindows: Record<string, number[]> = {}
+    
+    messages.forEach((msg: any) => {
+      const phone = msg.sender_phone
+      const timeMs = new Date(msg.criado_em).getTime()
+      
+      if (!userWindows[phone]) {
+        userWindows[phone] = [timeMs]
+      } else {
+        // Encontra se essa mensagem se encaixa em alguma janela de 24 horas ativa para esse telefone
+        const windows = userWindows[phone]
+        const lastWindowStart = windows[windows.length - 1]
+        
+        // Janela de 24 horas em milissegundos
+        const twentyFourHours = 24 * 60 * 60 * 1000
+        
+        if (timeMs - lastWindowStart > twentyFourHours) {
+          // Passou de 24 horas, abre uma nova janela/faturamento
+          windows.push(timeMs)
+        }
+      }
+    });
+
+    // Soma todas as janelas faturáveis de todos os usuários
+    let totalConversas = 0
+    Object.values(userWindows).forEach(windows => {
+      totalConversas += windows.length
+    })
+
+    const conversasGratuitas = Math.min(totalConversas, 1000)
+    const conversasFaturadas = Math.max(0, totalConversas - 1000)
+    const custoEstimadoBRL = conversasFaturadas * 0.16 // R$ 0.16 por conversa receptiva no Brasil
+
+    return {
+      success: true,
+      totalConversas,
+      conversasGratuitas,
+      conversasFaturadas,
+      custoEstimadoBRL
+    }
+  } catch (error: any) {
+    console.error('Erro ao obter estimativa de custos:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
+
 
 
 
