@@ -2,7 +2,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, X, Calendar as CalendarIcon, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Calendar as CalendarIcon, Check, Lock } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 /* ── FUNÇÕES DE DATAS ──────────────────────────────────────────────────────── */
@@ -363,6 +363,46 @@ export default function QuaresmaCalendar() {
     setTimeout(() => setParticles([]), 1500);
   };
 
+  const playLockedSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const now = ctx.currentTime;
+      
+      [150, 150].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+        
+        gain.gain.setValueAtTime(0, now + idx * 0.12);
+        gain.gain.linearRampToValueAtTime(0.08, now + idx * 0.12 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.12 + 0.1);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now + idx * 0.12);
+        osc.stop(now + idx * 0.12 + 0.12);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const isDayLocked = (date: Date, quaresma: any) => {
+    if (!quaresma) return false;
+    const dayIndex = getDayIndex(date, quaresma.start);
+    if (dayIndex === 0) return false; // O primeiro dia sempre é aberto
+    
+    const prevDate = new Date(date);
+    prevDate.setDate(date.getDate() - 1);
+    
+    return !isDayCompleted(prevDate, quaresma.id);
+  };
+
   if (!mounted || loadingUser) {
     return (
       <div style={{
@@ -432,7 +472,11 @@ export default function QuaresmaCalendar() {
     if (!quaresma) return;
     const clickedDate = new Date(year, month, dayNum);
     
-    // Bloquear dias futuros se a quaresma for no passado? Não, deixa livre para ver.
+    if (isDayLocked(clickedDate, quaresma)) {
+      playLockedSound();
+      return;
+    }
+    
     setSelectedDate(clickedDate);
     setActiveQuaresma(quaresma);
   };
@@ -510,6 +554,7 @@ export default function QuaresmaCalendar() {
             
             // Re-render check based on updateTrigger state
             const done = mounted && quaresma ? isDayCompleted(date, quaresma.id) : false;
+            const locked = mounted && quaresma ? isDayLocked(date, quaresma) : false;
 
             return (
               <button
@@ -523,12 +568,12 @@ export default function QuaresmaCalendar() {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: quaresma ? `${quaresma.color}15` : "rgba(255,255,255,0.02)", // Hex opacity 15
-                  border: done ? "2px solid #10B981" : isToday ? "2px solid #fff" : quaresma ? `1px solid ${quaresma.color}50` : "1px solid rgba(255,255,255,0.05)",
-                  color: done ? "#10B981" : quaresma ? quaresma.color : "rgba(255,255,255,0.3)",
+                  background: quaresma ? (locked ? "rgba(255,255,255,0.01)" : `${quaresma.color}15`) : "rgba(255,255,255,0.02)", // Hex opacity 15
+                  border: done ? "2px solid #10B981" : isToday ? "2px solid #fff" : quaresma ? (locked ? "1px solid rgba(255,255,255,0.03)" : `1px solid ${quaresma.color}50`) : "1px solid rgba(255,255,255,0.05)",
+                  color: done ? "#10B981" : quaresma ? (locked ? "rgba(255,255,255,0.2)" : quaresma.color) : "rgba(255,255,255,0.3)",
                   boxShadow: done ? "0 0 10px rgba(16, 185, 129, 0.2)" : "none",
-                  cursor: quaresma ? "pointer" : "default",
-                  opacity: quaresma ? 1 : 0.5,
+                  cursor: quaresma && !locked ? "pointer" : "default",
+                  opacity: quaresma ? (locked ? 0.35 : 1) : 0.5,
                   position: "relative",
                   transition: "all 0.2s"
                 }}
@@ -537,6 +582,11 @@ export default function QuaresmaCalendar() {
                 {done && quaresma && (
                   <div style={{ position: "absolute", top: "4px", right: "4px", color: "#10B981" }}>
                     <Check size={12} strokeWidth={4} />
+                  </div>
+                )}
+                {locked && quaresma && (
+                  <div style={{ position: "absolute", top: "4px", right: "4px", color: "rgba(255,255,255,0.25)" }}>
+                    <Lock size={10} />
                   </div>
                 )}
               </button>
