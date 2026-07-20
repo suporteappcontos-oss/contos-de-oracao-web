@@ -679,19 +679,19 @@ export default function QuaresmaCalendar() {
         }}>
           {/* Perfil & Nível */}
           <div>
-            <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)" }}>
+            <span className="progress-title" style={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)" }}>
               Seu Progresso
             </span>
-            <h3 style={{ fontSize: "20px", fontWeight: 900, margin: "4px 0 2px", color: "#D4AF37" }}>
+            <h3 className="level-title" style={{ fontWeight: 900, margin: "4px 0 2px", color: "#D4AF37" }}>
               Nível {level}
             </h3>
-            <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.8)" }}>
+            <p className="level-subtitle" style={{ fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.8)" }}>
               {getLevelName(level)}
             </p>
             
             {/* XP progress bar */}
             <div style={{ marginTop: "12px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>
+              <div className="xp-text" style={{ display: "flex", justifyContent: "space-between", color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}>
                 <span>XP Total: {xp}</span>
                 <span>{xp % 500} / 500 XP</span>
               </div>
@@ -715,10 +715,10 @@ export default function QuaresmaCalendar() {
               🔥
             </div>
             <div>
-              <h4 style={{ fontSize: "18px", fontWeight: 900, margin: 0, color: "#10B981" }}>
+              <h4 className="streak-title" style={{ fontWeight: 900, margin: 0, color: "#10B981" }}>
                 {streak} {streak === 1 ? "Dia Seguido" : "Dias Seguidos"}
               </h4>
-              <p style={{ fontSize: "12px", margin: "2px 0 0", color: "rgba(255,255,255,0.6)" }}>
+              <p className="streak-desc" style={{ margin: "2px 0 0", color: "rgba(255,255,255,0.6)" }}>
                 {streak > 0 ? "Mantenha o fogo da fé aceso!" : "Complete uma oração para iniciar seu streak!"}
               </p>
             </div>
@@ -728,7 +728,7 @@ export default function QuaresmaCalendar() {
 
           {/* Conquistas (Badges) */}
           <div>
-            <h4 style={{ fontSize: "14px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 12px", color: "rgba(255,255,255,0.5)" }}>
+            <h4 className="section-title" style={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 12px", color: "rgba(255,255,255,0.5)" }}>
               Medalhas da Alma
             </h4>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -770,10 +770,10 @@ export default function QuaresmaCalendar() {
 
           {/* Desafio Diário Devocional */}
           <div style={{ background: "rgba(212, 175, 55, 0.03)", border: "1px dashed rgba(212, 175, 55, 0.25)", padding: "16px", borderRadius: "16px" }}>
-            <span style={{ fontSize: "10px", fontWeight: 800, color: "#D4AF37", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            <span className="challenge-title" style={{ fontWeight: 800, color: "#D4AF37", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Desafio Litúrgico do Dia
             </span>
-            <p style={{ fontSize: "13px", margin: "6px 0 0", color: "rgba(255,255,255,0.85)", lineHeight: 1.5, fontWeight: 500 }}>
+            <p className="challenge-desc" style={{ margin: "6px 0 0", color: "rgba(255,255,255,0.85)", lineHeight: 1.5, fontWeight: 500 }}>
               "Ofereça 10 minutos de silêncio e meditação contemplativa hoje, agradecendo a Deus por todas as graças recebidas."
             </p>
           </div>
@@ -802,7 +802,7 @@ export default function QuaresmaCalendar() {
           }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "8px", marginBottom: "16px" }}>
               {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(day => (
-                <div key={day} style={{ textAlign: "center", fontSize: "12px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>
+                <div key={day} className="calendar-header-day" style={{ fontWeight: 700 }}>
                   {day}
                 </div>
               ))}
@@ -878,7 +878,7 @@ export default function QuaresmaCalendar() {
                       transition: "all 0.2s"
                     }}
                   >
-                    <span style={{ fontSize: "16px", fontWeight: 700 }}>{dayNum}</span>
+                    <span className="calendar-day-num" style={{ fontWeight: 700 }}>{dayNum}</span>
                     {done && quaresma && (
                       <div style={{ position: "absolute", top: "4px", right: "4px", color: "#10B981" }}>
                         <Check size={12} strokeWidth={4} />
@@ -1152,6 +1152,91 @@ export default function QuaresmaCalendar() {
         @keyframes pulse {
           0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(16,185,129,0)); }
           50% { transform: scale(1.08); filter: drop-shadow(0 0 8px rgba(16,185,129,0.5)); }
+        }
+
+        /* Classes de Tipografia Responsiva */
+        .progress-title {
+          font-size: 11px;
+        }
+        .level-title {
+          font-size: 20px;
+        }
+        .level-subtitle {
+          font-size: 14px;
+        }
+        .xp-text {
+          font-size: 11px;
+        }
+        .streak-title {
+          font-size: 18px;
+        }
+        .streak-desc {
+          font-size: 12px;
+        }
+        .section-title {
+          font-size: 14px;
+        }
+        .challenge-title {
+          font-size: 10px;
+        }
+        .challenge-desc {
+          font-size: 13px;
+        }
+        .calendar-header-day {
+          text-align: center;
+          font-size: 12px;
+          color: rgba(255,255,255,0.4);
+          text-transform: uppercase;
+        }
+        .calendar-day-num {
+          font-size: 16px;
+        }
+
+        /* Melhoria Visual de Letras e Espaçamentos em Celulares (telas até 768px) */
+        @media (max-width: 768px) {
+          .progress-title {
+            font-size: 13px;
+            letter-spacing: 0.12em;
+          }
+          .level-title {
+            font-size: 24px;
+            margin: 6px 0 4px;
+          }
+          .level-subtitle {
+            font-size: 16px;
+            font-weight: 700;
+          }
+          .xp-text {
+            font-size: 13px;
+            font-weight: 600;
+          }
+          .streak-title {
+            font-size: 22px;
+          }
+          .streak-desc {
+            font-size: 14px;
+            line-height: 1.4;
+          }
+          .section-title {
+            font-size: 15px;
+            letter-spacing: 0.1em;
+          }
+          .challenge-title {
+            font-size: 12px;
+            letter-spacing: 0.12em;
+          }
+          .challenge-desc {
+            font-size: 15px;
+            line-height: 1.6;
+          }
+          .calendar-header-day {
+            font-size: 14px;
+            font-weight: 800;
+          }
+          .calendar-day-num {
+            font-size: 19px;
+            font-weight: 800;
+          }
         }
       `}</style>
     </main>
