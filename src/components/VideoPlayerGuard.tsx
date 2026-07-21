@@ -65,6 +65,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   const statusRef = useRef<string>('verificando')
 
   const hasResumedRef = useRef(false)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
   // Checa progresso salvo no localStorage ao carregar o vídeo
   useEffect(() => {
