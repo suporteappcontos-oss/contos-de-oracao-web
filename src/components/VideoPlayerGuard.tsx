@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import { RotateCcw, Play, X } from 'lucide-react'
 
 // Gera ou recupera um token único para esta aba
 function getDeviceToken(): string {
@@ -13,6 +14,16 @@ function getDeviceToken(): string {
     sessionStorage.setItem('cdo_device_token', token)
   }
   return token
+}
+
+function formatarSegundos(sec: number): string {
+  const h = Math.floor(sec / 3600)
+  const m = Math.floor((sec % 3600) / 60)
+  const s = Math.floor(sec % 60)
+  if (h > 0) {
+    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+  }
+  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
 type Props = {
@@ -35,6 +46,11 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   const [status, setStatus] = useState<'verificando' | 'liberado' | 'bloqueado' | 'derrubado'>('verificando')
   const [showNextOverlay, setShowNextOverlay] = useState(false)
   const [secondsRemaining, setSecondsRemaining] = useState(10)
+
+  // Estado para o card "Continuar de onde parou"
+  const [showResumeCard, setShowResumeCard] = useState(false)
+  const [resumeTime, setResumeTime] = useState<number>(0)
+
   const overlayDismissedRef = useRef(false)
   const navigatingRef = useRef(false)
   const proximoVideoRef = useRef(proximoVideo)
@@ -48,13 +64,32 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   const deviceToken = useRef<string>('')
   const statusRef = useRef<string>('verificando')
 
-  // Reseta estados do próximo vídeo quando muda de vídeo
+  // Checa progresso salvo no localStorage ao carregar o vídeo
   useEffect(() => {
-    setShowNextOverlay(false);
-    setSecondsRemaining(10);
-    overlayDismissedRef.current = false;
-    navigatingRef.current = false;
-  }, [videoId]);
+    setShowNextOverlay(false)
+    setSecondsRemaining(10)
+    overlayDismissedRef.current = false
+    navigatingRef.current = false
+
+    try {
+      const raw = localStorage.getItem(`cdo_progress_${videoId}`)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed && typeof parsed.seconds === 'number' && parsed.seconds > 10) {
+          setResumeTime(Math.floor(parsed.seconds))
+          setShowResumeCard(true)
+
+          // Auto-oculta o card de resumir após 12 segundos se não for clicado
+          const t = setTimeout(() => {
+            setShowResumeCard(false)
+          }, 12000)
+          return () => clearTimeout(t)
+        }
+      }
+    } catch {}
+    setShowResumeCard(false)
+    setResumeTime(0)
+  }, [videoId])
 
   // Atualiza status e o ref junto
   const updateStatus = useCallback((s: typeof status) => {
@@ -88,8 +123,6 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
       updateStatus('liberado')
 
       // ── REALTIME: escuta mudanças na tabela sessoes_ativas ─────────────
-      // Quando uma nova sessão for criada para o mesmo user (outro device),
-      // e o device_token não for o nosso → fomos chutados!
       const supabase = createClient()
       realtimeRef.current = supabase
 
@@ -101,7 +134,6 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
           async () => {
             if (statusRef.current === 'derrubado') return
 
-            // Checa se ainda existe nossa sessão
             const hbRes = await fetch('/api/sessoes', {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
@@ -115,9 +147,8 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
           }
         )
         .subscribe()
-      // ──────────────────────────────────────────────────────────────────
 
-      // Heartbeat de segurança a cada 10s (fallback caso o Realtime falhe)
+      // Heartbeat de segurança a cada 10s
       heartbeatRef.current = setInterval(async () => {
         if (statusRef.current === 'derrubado') {
           clearInterval(heartbeatRef.current!)
@@ -150,6 +181,32 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
 
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
+  const handleContinuarDeOndeParou = () => {
+    if (iframeRef.current && resumeTime > 0) {
+      try {
+        iframeRef.current.contentWindow?.postMessage(
+          JSON.stringify({
+            context: 'player.js',
+            method: 'setCurrentTime',
+            value: resumeTime
+          }),
+          '*'
+        )
+        iframeRef.current.contentWindow?.postMessage(
+          JSON.stringify({
+            context: 'player.js',
+            method: 'play',
+            value: ''
+          }),
+          '*'
+        )
+      } catch (err) {
+        console.error('Erro ao buscar tempo salvo:', err)
+      }
+    }
+    setShowResumeCard(false)
+  }
+
   useEffect(() => {
     iniciarSessao()
 
@@ -164,6 +221,15 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
             const seconds = value.seconds
             const duration = value.duration
             const remaining = Math.max(0, Math.ceil(duration - seconds))
+
+            // Salva progresso no localStorage se tiver avançado mais de 5s
+            if (seconds > 5) {
+              if (remaining <= 10) {
+                localStorage.removeItem(`cdo_progress_${videoId}`)
+              } else {
+                localStorage.setItem(`cdo_progress_${videoId}`, JSON.stringify({ seconds, timestamp: Date.now() }))
+              }
+            }
             
             if (remaining <= 10 && remaining > 0 && !overlayDismissedRef.current && proximoVideoRef.current) {
               setShowNextOverlay(true)
@@ -232,7 +298,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
       window.removeEventListener('message', handleMessage)
       window.removeEventListener('beforeunload', encerrarSessao)
     }
-  }, [iniciarSessao, encerrarSessao, router])
+  }, [iniciarSessao, encerrarSessao, router, videoId])
 
   // ── ESTADO: Em Breve ──
   if (emBreve) {
@@ -339,6 +405,52 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowFullScreen
         />
+
+        {/* CARD DE CONTINUAR DE ONDE PAROU */}
+        {showResumeCard && resumeTime > 0 && (
+          <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-40 bg-[#0B0F19]/95 backdrop-blur-md border border-[#D4AF37]/40 rounded-2xl p-4 w-[280px] sm:w-[320px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col gap-2.5 animate-in slide-in-from-bottom duration-300">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+                  <RotateCcw size={16} />
+                </div>
+                <div>
+                  <span className="text-white text-xs font-extrabold block">Continuar de onde parou?</span>
+                  <span className="text-white/60 text-[11px] font-medium block">
+                    Você parou em <strong className="text-[#D4AF37]">{formatarSegundos(resumeTime)}</strong>
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowResumeCard(false)}
+                className="text-white/40 hover:text-white p-1 rounded-md transition-colors cursor-pointer"
+                title="Ignorar"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <button
+                type="button"
+                onClick={() => setShowResumeCard(false)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer text-center"
+              >
+                Do Início
+              </button>
+
+              <button
+                type="button"
+                onClick={handleContinuarDeOndeParou}
+                className="px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider text-[#090B10] hover:brightness-110 transition-all cursor-pointer text-center shadow-md flex items-center justify-center gap-1"
+                style={{ background: '#D4AF37' }}
+              >
+                <Play size={12} fill="#090B10" /> Continuar
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* OVERLAY DE PRÓXIMO VÍDEO (ESTILO YOUTUBE) */}
         {showNextOverlay && proximoVideo && (
