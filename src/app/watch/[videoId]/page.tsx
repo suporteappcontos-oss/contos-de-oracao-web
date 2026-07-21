@@ -13,6 +13,23 @@ type Props = {
   params: Promise<{ videoId: string }>
 }
 
+function sanitizarTitulo(titulo: string): string {
+  if (!titulo) return ''
+  return titulo
+    .replace(/\s*\([^)]*card da temporada[^)]*\)/gi, '')
+    .replace(/\s*\([^)]*capa da temporada[^)]*\)/gi, '')
+    .replace(/\s*card da temporada/gi, '')
+    .replace(/\s*capa da temporada/gi, '')
+    .trim()
+}
+
+function isPlaceholder(v: { titulo?: string | null; categoria?: string | null; episodio_numero?: number | null }) {
+  if (v.categoria === 'Temporada' && v.episodio_numero === null) return true
+  if (!v.titulo) return false
+  const t = v.titulo.toLowerCase()
+  return t.includes('card da temporada') || t.includes('capa da temporada')
+}
+
 export default async function VideoPlayerPage({ params }: Props) {
   const { videoId } = await params
 
@@ -108,19 +125,85 @@ export default async function VideoPlayerPage({ params }: Props) {
     .single()
   const isFav = !!favCheck
 
-  // Busca mais vídeos (exceto o atual)
-  const { data: relacionados } = await supabase
-    .from('videos')
-    .select('id, titulo, thumbnail_url, duracao')
-    .eq('ativo', true)
-    .neq('id', videoId)
-    .limit(5)
+  // ── BUSCA VÍDEOS RELACIONADOS ──
+  // Filtra rigorosamente capas de temporada e prioriza episódios da mesma série
+  let relacionados: Array<{
+    id: string
+    titulo: string
+    thumbnail_url: string | null
+    duracao: string | null
+    categoria: string
+    episodio_numero: number | null
+    temporada_nome: string | null
+  }> = []
+
+  if (video.categoria === 'Temporada' && video.temporada_nome) {
+    // Busca episódios reais da mesma temporada primeiro
+    const { data: daMesmaTemp } = await supabase
+      .from('videos')
+      .select('id, titulo, thumbnail_url, duracao, categoria, episodio_numero, temporada_nome')
+      .eq('ativo', true)
+      .eq('categoria', 'Temporada')
+      .eq('temporada_nome', video.temporada_nome)
+      .neq('id', videoId)
+      .not('episodio_numero', 'is', null)
+      .order('episodio_numero', { ascending: true })
+
+    if (daMesmaTemp) {
+      relacionados = daMesmaTemp
+    }
+
+    // Se a mesma temporada tiver menos de 6 vídeos, busca episódios das outras temporadas da mesma Série
+    const nomeSerie = video.temporada_nome.split('|')[0].trim()
+    if (relacionados.length < 6) {
+      const { data: daMesmaSerie } = await supabase
+        .from('videos')
+        .select('id, titulo, thumbnail_url, duracao, categoria, episodio_numero, temporada_nome')
+        .eq('ativo', true)
+        .eq('categoria', 'Temporada')
+        .ilike('temporada_nome', `${nomeSerie}%`)
+        .neq('id', videoId)
+        .not('episodio_numero', 'is', null)
+        .limit(8)
+
+      if (daMesmaSerie) {
+        const idsExistentes = new Set(relacionados.map(r => r.id))
+        for (const item of daMesmaSerie) {
+          if (!idsExistentes.has(item.id)) {
+            relacionados.push(item)
+          }
+        }
+      }
+    }
+  }
+
+  // Completa a lista com outros vídeos gerais se necessário (garantindo 0 placeholders)
+  if (relacionados.length < 6) {
+    const { data: outrosGerais } = await supabase
+      .from('videos')
+      .select('id, titulo, thumbnail_url, duracao, categoria, episodio_numero, temporada_nome')
+      .eq('ativo', true)
+      .neq('id', videoId)
+      .limit(12)
+
+    if (outrosGerais) {
+      const idsExistentes = new Set(relacionados.map(r => r.id))
+      for (const item of outrosGerais) {
+        if (!idsExistentes.has(item.id) && !isPlaceholder(item)) {
+          relacionados.push(item)
+        }
+      }
+    }
+  }
+
+  // Filtro final estrito para eliminar qualquer card de capa da temporada
+  relacionados = relacionados.filter(v => !isPlaceholder(v)).slice(0, 6)
 
   const nome = user.user_metadata?.nome || user.email?.split('@')[0] || 'Assinante'
   
   let embedUrl = `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br`
   
-  // Implementação da Dica de Ouro: Autenticação por Token (Protege e faz rodar no APK)
+  // Autenticação por Token (Protege e faz rodar no APK)
   const securityKey = process.env.BUNNY_STREAM_TOKEN_KEY
   if (securityKey) {
     // eslint-disable-next-line react-hooks/purity
@@ -140,6 +223,8 @@ export default async function VideoPlayerPage({ params }: Props) {
     const code = (id.charCodeAt(0) || 0) + (id.charCodeAt(id.length - 1) || 0)
     return FALLBACK[code % FALLBACK.length]
   }
+
+  const tituloVideoLimpo = sanitizarTitulo(video.titulo)
 
   return (
     <div className="min-h-screen text-white" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
@@ -177,7 +262,7 @@ export default async function VideoPlayerPage({ params }: Props) {
 
             {/* Título */}
             <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-black mb-5 leading-tight">
-              {video.titulo}
+              {tituloVideoLimpo}
             </h1>
 
             {/* Ações */}
@@ -218,24 +303,34 @@ export default async function VideoPlayerPage({ params }: Props) {
           {relacionados && relacionados.length > 0 && (
             <div className="px-4 md:px-6 lg:px-0 lg:pr-8 lg:w-[280px] xl:w-[320px] shrink-0">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-white font-bold text-base">Mais Vídeos</h2>
+                <h2 className="text-white font-bold text-base">
+                  {video.categoria === 'Temporada' ? 'Episódios & Relacionados' : 'Mais Vídeos'}
+                </h2>
               </div>
               <div className="flex flex-col gap-3">
-                {relacionados.map(v => (
-                  <Link key={v.id} href={`/watch/${v.id}`}
-                    className="flex gap-3 group rounded-xl p-2 transition-all hover:bg-white/5">
-                    <div className="w-24 sm:w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-[#15243E]"
-                      style={{ backgroundImage: `url(${v.thumbnail_url || getFallback(v.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <p className="text-white text-xs font-bold line-clamp-2 mb-1 group-hover:text-[#D4AF37] transition-colors whitespace-normal">
-                        {v.titulo}
-                      </p>
-                      {v.duracao && <p className="text-[#64748B] text-[0.65rem] mt-0.5">⏱ {v.duracao}</p>}
-                    </div>
-                    <ChevronRight size={14} className="text-white/20 group-hover:text-white/60 transition-colors self-center shrink-0" />
-                  </Link>
-                ))}
+                {relacionados.map(v => {
+                  const tituloRelacionado = sanitizarTitulo(v.titulo)
+                  return (
+                    <Link key={v.id} href={`/watch/${v.id}`}
+                      className="flex gap-3 group rounded-xl p-2 transition-all hover:bg-white/5">
+                      <div className="w-24 sm:w-28 aspect-video rounded-lg shrink-0 overflow-hidden bg-[#15243E] relative"
+                        style={{ backgroundImage: `url(${v.thumbnail_url || getFallback(v.id)})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                        {v.categoria === 'Temporada' && v.episodio_numero !== null && (
+                          <div className="absolute top-1 left-1 bg-[#D4AF37] text-black font-black text-[0.55rem] px-1.5 py-0.5 rounded shadow uppercase">
+                            EP {v.episodio_numero}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
+                        <p className="text-white text-xs font-bold line-clamp-2 mb-1 group-hover:text-[#D4AF37] transition-colors whitespace-normal">
+                          {tituloRelacionado}
+                        </p>
+                        {v.duracao && <p className="text-[#64748B] text-[0.65rem] mt-0.5">⏱ {v.duracao}</p>}
+                      </div>
+                      <ChevronRight size={14} className="text-white/20 group-hover:text-white/60 transition-colors self-center shrink-0" />
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           )}
