@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Film, BookOpen, BookMarked, Video, X, ChevronLeft, Plus, Music } from 'lucide-react'
+import { Film, BookOpen, BookMarked, Video, X, ChevronLeft, Plus, Music, Tv } from 'lucide-react'
 
 // --- FUNÇÕES MATEMÁTICAS PARA O MENU RADIAL EM SVG ---
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
@@ -36,7 +36,7 @@ function describeArc(x: number, y: number, innerRadius: number, outerRadius: num
 
 type Props = {
   onClose: () => void
-  onSelect: (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'add_episodio' | 'clipe') => void
+  onSelect: (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'nova_temporada' | 'add_episodio' | 'clipe') => void
 }
 
 export function GtaRadialMenu({ onClose, onSelect }: Props) {
@@ -50,13 +50,14 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
     { id: 'revista', label: 'Revista', icon: BookMarked, startAngle: 180, endAngle: 300, iconAngle: 240, color: '#10b981' },
   ]
 
-  // Opções Nível 2 (Submenu de Vídeos - 5 Fatias)
+  // Opções Nível 2 (Submenu de Vídeos - 6 Fatias)
   const level2 = [
-    { id: 'nova_serie', label: 'Nova Série', icon: Video, startAngle: -162, endAngle: -90, iconAngle: -126, color: '#D4AF37' },
-    { id: 'add_episodio', label: '+ Episódio', icon: Plus, startAngle: -90, endAngle: -18, iconAngle: -54, color: '#10b981' },
-    { id: 'clipe', label: 'Vídeo Clipe', icon: Music, startAngle: -18, endAngle: 54, iconAngle: 18, color: '#3b82f6' },
-    { id: 'insta', label: 'V. Insta', icon: IgIcon, startAngle: 54, endAngle: 126, iconAngle: 90, color: '#E1306C' },
-    { id: 'back', label: 'Voltar', icon: ChevronLeft, startAngle: 126, endAngle: 198, iconAngle: 162, color: '#ffffff' },
+    { id: 'nova_serie', label: 'Nova Série', icon: Video, startAngle: -180, endAngle: -120, iconAngle: -150, color: '#D4AF37' },
+    { id: 'nova_temporada', label: '+ Temporada', icon: Tv, startAngle: -120, endAngle: -60, iconAngle: -90, color: '#FFD700' },
+    { id: 'add_episodio', label: '+ Episódio', icon: Plus, startAngle: -60, endAngle: 0, iconAngle: -30, color: '#10b981' },
+    { id: 'clipe', label: 'Vídeo Clipe', icon: Music, startAngle: 0, endAngle: 60, iconAngle: 30, color: '#3b82f6' },
+    { id: 'insta', label: 'V. Insta', icon: IgIcon, startAngle: 60, endAngle: 120, iconAngle: 90, color: '#E1306C' },
+    { id: 'back', label: 'Voltar', icon: ChevronLeft, startAngle: 120, endAngle: 180, iconAngle: 150, color: '#ffffff' },
   ]
 
   const currentOptions = level === 1 ? level1 : level2
@@ -71,6 +72,7 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
       setHoveredId(null)
     }
     else if (id === 'nova_serie') onSelect('nova_serie')
+    else if (id === 'nova_temporada') onSelect('nova_temporada')
     else if (id === 'add_episodio') onSelect('add_episodio')
     else if (id === 'clipe') onSelect('clipe')
     else if (id === 'insta') onSelect('instagram')

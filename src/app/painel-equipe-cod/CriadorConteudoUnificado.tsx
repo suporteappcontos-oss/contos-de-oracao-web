@@ -13,7 +13,7 @@ const ANIM_STYLE = `
 import { 
   Plus, Tv2, BookOpen, Gamepad2, Pencil, 
   Library, ImageIcon, FileText, Loader2, 
-  CheckCircle2, Video, X, Tag, BookMarked, Music
+  CheckCircle2, Video, X, Tag, BookMarked, Music, Tv
 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
 import { adicionarVideo, publicarMaterial, adicionarVideoTematico, publicarRevista } from './actions'
@@ -77,27 +77,37 @@ function gerarSlug(titulo: string) {
 }
 
 const TIPO_CONFIG: any = {
-  video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Série / Episódio' },
-  material:  { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
-  instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram (Reels)' },
-  revista:   { border: '#10b981',  glow: 'rgba(16,185,129,0.15)', label: 'Revista' },
-  add_episodio: { border: '#10b981', glow: 'rgba(16,185,129,0.15)', label: 'Adicionar Episódio' },
-  clipe:      { border: '#3b82f6',  glow: 'rgba(59,130,246,0.15)',  label: 'Vídeo Clipe' },
+  video:          { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Série / Episódio' },
+  material:       { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
+  instagram:      { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram (Reels)' },
+  revista:        { border: '#10b981',  glow: 'rgba(16,185,129,0.15)', label: 'Revista' },
+  add_episodio:   { border: '#10b981',  glow: 'rgba(16,185,129,0.15)', label: 'Adicionar Episódio' },
+  nova_temporada: { border: '#FFD700',  glow: 'rgba(255,215,0,0.15)',  label: 'Criar Nova Temporada' },
+  clipe:           { border: '#3b82f6',  glow: 'rgba(59,130,246,0.15)',  label: 'Vídeo Clipe' },
 }
 
 export default function CriadorConteudoUnificado({ temporadasExistentes = [], seriesExistentes = [] }: Props) {
   const seriesParaExibir = Array.from(
     new Set([
       ...(seriesExistentes?.map(s => s.titulo) || []),
-      ...temporadasExistentes
+      ...temporadasExistentes?.map(t => t.split(' | ')[0] || t)
     ])
   ).filter(Boolean) as string[]
 
   const [isExpanded, setIsExpanded] = useState(false)
-  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | 'add_episodio' | 'clipe' | null>(null)
+  const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | 'add_episodio' | 'nova_temporada' | 'clipe' | null>(null)
   const [isModalSerieOpen, setIsModalSerieOpen] = useState(false)
 
-  const handleRadialMenuSelect = (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'add_episodio' | 'clipe') => {
+  // Estado para fluxo de Nova Temporada
+  const [serieTemporadaSelecionada, setSerieTemporadaSelecionada] = useState('')
+  const [nomeNovaTemporadaForm, setNomeNovaTemporadaForm] = useState('')
+  const [capaTemporadaUrl, setCapaTemporadaUrl] = useState('')
+  const [capaTemporadaPreview, setCapaTemporadaPreview] = useState<string | null>(null)
+  const [isUploadingTempCapa, setIsUploadingTempCapa] = useState(false)
+  const [progressoTempCapa, setProgressoTempCapa] = useState<number | null>(null)
+  const capaTempInputRef = useRef<HTMLInputElement>(null)
+
+  const handleRadialMenuSelect = (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'nova_temporada' | 'add_episodio' | 'clipe') => {
     if (tipo === 'nova_serie') {
       setIsModalSerieOpen(true)
       setIsExpanded(false)
@@ -106,12 +116,39 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
       setTipoCriacao('video')
       setVideoCategoria('Vídeo Clipe')
       setIsExpanded(false)
+    } else if (tipo === 'nova_temporada') {
+      setTipoCriacao('nova_temporada')
+      setSerieTemporadaSelecionada('')
+      setNomeNovaTemporadaForm('')
+      setCapaTemporadaUrl('')
+      setCapaTemporadaPreview(null)
+      setIsExpanded(false)
     } else {
       setTipoCriacao(tipo as any)
       if (tipo === 'video') {
          setVideoCategoria('Geral')
       }
       setIsExpanded(false)
+    }
+  }
+
+  const handleCapaTemporadaFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setIsUploadingTempCapa(true)
+    setProgressoTempCapa(0)
+    try {
+      const webpFile = await convertToWebP(file, 0.85)
+      setCapaTemporadaPreview(URL.createObjectURL(webpFile))
+      const slug = gerarSlug(file.name.replace(/\.[^/.]+$/, ''))
+      const path = `temporadas/capas/${slug}-${Date.now()}.webp`
+      const url = await uploadParaBunny(webpFile, path, (pct) => setProgressoTempCapa(pct))
+      setCapaTemporadaUrl(url)
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setIsUploadingTempCapa(false)
+      setProgressoTempCapa(null)
     }
   }
 
@@ -422,6 +459,139 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
       {/* Injeção dos keyframes (só no cliente) */}
       <style dangerouslySetInnerHTML={{ __html: ANIM_STYLE }} />
 
+      {/* ================= FLUXO DE CRIAR NOVA TEMPORADA ================= */}
+      {tipoCriacao === 'nova_temporada' && (
+        <div key="form-nova-temporada" className="admin-form-anim">
+          {!serieTemporadaSelecionada ? (
+            <div>
+              <h2 className="text-xl font-bold text-white mb-2">Em qual série você quer criar a nova temporada?</h2>
+              <p className="text-white/50 text-xs mb-6">Selecione uma das séries abaixo para adicionar a temporada com sua capa personalizada.</p>
+              
+              {seriesParaExibir.length === 0 ? (
+                <div className="bg-[#1a2234] border border-white/10 rounded-2xl p-8 text-center">
+                  <p className="text-white/50 mb-4">Nenhuma série cadastrada ainda.</p>
+                  <button 
+                    onClick={() => handleRadialMenuSelect('nova_serie')}
+                    className="bg-[#D4AF37] text-black px-6 py-2 rounded-full font-bold hover:brightness-110 transition-all"
+                  >
+                    Criar Primeira Série
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {seriesParaExibir.map(serieNome => (
+                    <button
+                      key={serieNome}
+                      onClick={() => setSerieTemporadaSelecionada(serieNome)}
+                      className="bg-[#0f171e] hover:bg-[#1a2234] border border-white/5 hover:border-[#FFD700]/50 transition-all rounded-xl p-6 flex flex-col items-center gap-4 group cursor-pointer"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-[#FFD700]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Tv size={28} className="text-[#FFD700]" />
+                      </div>
+                      <span className="text-white font-bold text-center text-sm">{serieNome}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <form action={async (formData) => { await adicionarVideo(formData) }} encType="multipart/form-data">
+              <div className="bg-[#0f171e] border border-[#FFD700]/30 rounded-2xl p-6 space-y-6">
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div>
+                    <span className="text-[#FFD700] text-xs font-extrabold uppercase tracking-wider">Série Selecionada</span>
+                    <h3 className="text-white font-black text-xl">{serieTemporadaSelecionada}</h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSerieTemporadaSelecionada('')}
+                    className="text-xs text-white/50 hover:text-white underline cursor-pointer"
+                  >
+                    Trocar Série
+                  </button>
+                </div>
+
+                {/* Campos Ocultos para Registrar no Supabase */}
+                <input type="hidden" name="titulo" value={`${nomeNovaTemporadaForm || 'Nova Temporada'} (Card da Temporada)`} />
+                <input type="hidden" name="categoria" value="Temporada" />
+                <input type="hidden" name="temporada_nome" value={`${serieTemporadaSelecionada} | ${nomeNovaTemporadaForm}`} />
+                <input type="hidden" name="em_breve" value="true" />
+                <input type="hidden" name="planos_permitidos" value={JSON.stringify(['Básico', 'Essencial', 'Pro'])} />
+
+                <div>
+                  <label className={labelCls}>Nome da Temporada *</label>
+                  <input 
+                    required
+                    value={nomeNovaTemporadaForm}
+                    onChange={(e) => setNomeNovaTemporadaForm(e.target.value)}
+                    placeholder="Ex: Temporada 1, Temporada 2, Histórias de Moisés..." 
+                    className={inputCls} 
+                  />
+                </div>
+
+                {/* CAPA DA TEMPORADA */}
+                <div>
+                  <label className={labelCls}>Imagem do Card da Temporada (WebP Otimizada ou URL) *</label>
+                  <input 
+                    type="file" 
+                    ref={capaTempInputRef} 
+                    accept="image/*" 
+                    onChange={handleCapaTemporadaFile}
+                    disabled={isUploadingTempCapa} 
+                    className="hidden" 
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                    <div className="md:col-span-6 flex gap-4 items-center">
+                      <button 
+                        type="button" 
+                        onClick={() => capaTempInputRef.current?.click()}
+                        disabled={isUploadingTempCapa}
+                        className="flex-1 bg-[#111827] hover:bg-[#1a2234] border border-white/10 hover:border-[#FFD700]/50 transition-all rounded-xl p-3.5 flex items-center justify-center gap-3 cursor-pointer"
+                      >
+                        {isUploadingTempCapa ? (
+                          <Loader2 className="animate-spin text-[#FFD700]" size={20} />
+                        ) : capaTemporadaUrl ? (
+                          <CheckCircle2 className="text-emerald-400" size={20} />
+                        ) : (
+                          <ImageIcon size={20} className="text-[#FFD700]" />
+                        )}
+                        <span className="text-sm font-bold text-white">
+                          {isUploadingTempCapa ? `Enviando... ${progressoTempCapa}%` : capaTemporadaUrl ? 'Capa Carregada!' : 'Selecionar Capa do Card'}
+                        </span>
+                      </button>
+
+                      {(capaTemporadaPreview || capaTemporadaUrl) && (
+                        <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                          <img src={capaTemporadaPreview || capaTemporadaUrl} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="md:col-span-6">
+                      <input 
+                        name="thumbnail_url" 
+                        required
+                        value={capaTemporadaUrl} 
+                        onChange={(e) => {
+                          setCapaTemporadaUrl(e.target.value)
+                          setCapaTemporadaPreview(e.target.value)
+                        }}
+                        placeholder="Ou cole a URL da capa aqui..." 
+                        className={inputCls} 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-4 pt-4 border-t border-white/5">
+                  <SubmitButton textLoading="Criando Temporada...">Criar Temporada</SubmitButton>
+                </div>
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+
       {/* ================= SELEÇÃO DE SÉRIE PARA NOVO EPISÓDIO ================= */}
       {tipoCriacao === 'add_episodio' && (
         <div key="form-add-episodio" className="admin-form-anim">
@@ -447,7 +617,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                     setTemporadaSelecionada(temp)
                     setTipoCriacao('video')
                   }}
-                  className="bg-[#0f171e] hover:bg-[#1a2234] border border-white/5 hover:border-[#D4AF37]/50 transition-all rounded-xl p-6 flex flex-col items-center gap-4 group"
+                  className="bg-[#0f171e] hover:bg-[#1a2234] border border-white/5 hover:border-[#D4AF37]/50 transition-all rounded-xl p-6 flex flex-col items-center gap-4 group cursor-pointer"
                 >
                   <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Tv2 size={28} className="text-[#D4AF37]" />
