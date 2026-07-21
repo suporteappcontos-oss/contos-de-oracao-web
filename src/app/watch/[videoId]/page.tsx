@@ -201,7 +201,7 @@ export default async function VideoPlayerPage({ params }: Props) {
 
   const nome = user.user_metadata?.nome || user.email?.split('@')[0] || 'Assinante'
   
-  let embedUrl = `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br`
+  let embedUrl = `https://iframe.mediadelivery.net/embed/${video.bunny_library_id}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br&t=0`
   
   // Autenticação por Token (Protege e faz rodar no APK)
   const securityKey = process.env.BUNNY_STREAM_TOKEN_KEY
