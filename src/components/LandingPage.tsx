@@ -183,7 +183,13 @@ export default function LandingPage() {
           .eq('ativo', true)
           .order('criado_em', { ascending: false });
         if (error) throw error;
-        setVideos(data || []);
+
+        const validos = (data || []).filter(v => {
+          if (v.categoria === 'Temporada' && v.episodio_numero === null) return false
+          const t = (v.titulo || '').toLowerCase()
+          return !t.includes('card da temporada') && !t.includes('capa da temporada')
+        })
+        setVideos(validos);
       } catch (err) {
         console.error("Erro ao carregar vídeos do catálogo:", err);
       } finally {
@@ -385,7 +391,12 @@ export default function LandingPage() {
                     {/* Título do vídeo (sem a duração) */}
                     <h3 className="text-white text-sm font-extrabold line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors px-1"
                       style={{ fontFamily: FONT }}>
-                      {video.titulo}
+                      {video.titulo
+                        .replace(/\s*\([^)]*card da temporada[^)]*\)/gi, '')
+                        .replace(/\s*\([^)]*capa da temporada[^)]*\)/gi, '')
+                        .replace(/\s*card da temporada/gi, '')
+                        .replace(/\s*capa da temporada/gi, '')
+                        .trim()}
                     </h3>
                   </Link>
                 );
