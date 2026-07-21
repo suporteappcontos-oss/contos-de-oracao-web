@@ -537,10 +537,14 @@ export default function AssinarPage() {
               </div>
 
               {/* Email */}
+              {/* E-mail */}
               <div>
                 <div className="input-group">
                   <input
                     type="email"
+                    name="email"
+                    id="email"
+                    autoComplete="email"
                     value={email}
                     onChange={e => { setEmail(e.target.value); setErros(p => ({ ...p, email: undefined })) }}
                     placeholder=" "
@@ -557,9 +561,11 @@ export default function AssinarPage() {
                 <div className="input-group">
                   <input
                     type="tel"
-                    name="whatsapp"
-                    id="whatsapp"
-                    autoComplete="tel"
+                    name="user_whatsapp_number"
+                    id="user_whatsapp_number"
+                    autoComplete="off"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={whatsapp}
                     onChange={handleWhatsappChange}
                     placeholder=" "

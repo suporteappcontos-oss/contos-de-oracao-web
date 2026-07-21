@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Pencil, X, Check, Loader2, Smile, Trash2 } from 'lucide-react'
-import { salvarNome, salvarAvatar } from './actions'
+import { salvarNome, salvarAvatar, salvarTelefone, alterarSenha } from './actions'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 
@@ -15,10 +15,12 @@ type AvatarType = {
 
 export default function ClientProfileEditor({
   initialName,
+  initialPhone = '',
   initialAvatarUrl,
   fallbackAvatarUrl
 }: {
   initialName: string
+  initialPhone?: string
   initialAvatarUrl: string | null
   fallbackAvatarUrl: string
 }) {
@@ -31,9 +33,26 @@ export default function ClientProfileEditor({
 
   // Estados temporários do modal
   const [tempName, setTempName] = useState(initialName)
+  const [tempPhone, setTempPhone] = useState(initialPhone)
+  const [tempSenha, setTempSenha] = useState('')
+  const [tempConfirmarSenha, setTempConfirmarSenha] = useState('')
   const [tempAvatarUrl, setTempAvatarUrl] = useState<string | null>(initialAvatarUrl)
   const [tempPedidoSanto, setTempPedidoSanto] = useState('')
   const [showAvatarSelector, setShowAvatarSelector] = useState(false)
+
+  const handlePhoneChange = (val: string) => {
+    let value = val.replace(/\D/g, '')
+    if (value.length > 11) value = value.slice(0, 11)
+    
+    if (value.length > 6) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`
+    } else if (value.length > 2) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2)}`
+    } else if (value.length > 0) {
+      value = `(${value}`
+    }
+    setTempPhone(value)
+  }
 
   // Garante que o portal só é renderizado no cliente (evita erros SSR)
   useEffect(() => {
@@ -180,18 +199,56 @@ export default function ClientProfileEditor({
           )}
         </div>
 
-        {/* Formulário Nome */}
-        <div className="space-y-2">
-          <label className="block text-white/70 text-xs font-bold uppercase tracking-wider px-1">Nome Completo</label>
-          <input
-            type="text"
-            value={tempName}
-            onChange={(e) => setTempName(e.target.value)}
-            placeholder="Seu nome completo"
-            maxLength={40}
-            className="w-full border border-white/10 rounded-xl px-4 py-3.5 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
-            style={{ background: 'rgba(0,0,0,0.35)' }}
-          />
+        {/* Formulário Nome, WhatsApp e Senha */}
+        <div className="space-y-4">
+          <div>
+            <label className="block text-white/70 text-xs font-bold uppercase tracking-wider px-1 mb-1.5">Nome Completo</label>
+            <input
+              type="text"
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              placeholder="Seu nome completo"
+              maxLength={40}
+              className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+              style={{ background: 'rgba(0,0,0,0.35)' }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-white/70 text-xs font-bold uppercase tracking-wider px-1 mb-1.5">WhatsApp / Celular (com DDD)</label>
+            <input
+              type="tel"
+              value={tempPhone}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              placeholder="(11) 99999-9999"
+              maxLength={15}
+              className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+              style={{ background: 'rgba(0,0,0,0.35)' }}
+            />
+          </div>
+
+          {/* Alterar Senha */}
+          <div className="pt-2 border-t border-white/5 space-y-3">
+            <label className="block text-[#D4AF37] text-xs font-bold uppercase tracking-wider px-1">Alterar Senha (Opcional)</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input
+                type="password"
+                value={tempSenha}
+                onChange={(e) => setTempSenha(e.target.value)}
+                placeholder="Nova Senha (mín. 6 chars)"
+                className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+                style={{ background: 'rgba(0,0,0,0.35)' }}
+              />
+              <input
+                type="password"
+                value={tempConfirmarSenha}
+                onChange={(e) => setTempConfirmarSenha(e.target.value)}
+                placeholder="Confirme a Nova Senha"
+                className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+                style={{ background: 'rgba(0,0,0,0.35)' }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Ações de Imagem (Trocar e Excluir) */}

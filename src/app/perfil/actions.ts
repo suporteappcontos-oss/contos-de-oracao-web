@@ -90,3 +90,47 @@ export async function salvarAvatar(avatarUrl: string | null, pedidoSanto?: strin
   revalidatePath('/watch')
   return { success: true }
 }
+
+// Salva o telefone/WhatsApp do usuário
+export async function salvarTelefone(whatsapp: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Não autenticado' }
+
+  const clean = whatsapp.trim()
+
+  const { error } = await supabase.auth.updateUser({
+    data: { whatsapp: clean, telefone: clean }
+  })
+
+  if (error) return { success: false, error: error.message }
+
+  try {
+    const { supabaseAdmin } = await import('@/lib/supabase-admin')
+    await supabaseAdmin.from('perfis').update({ telefone: clean }).eq('id', user.id)
+  } catch (e) {
+    console.error('Erro ao sincronizar telefone na tabela perfis:', e)
+  }
+
+  revalidatePath('/perfil')
+  return { success: true }
+}
+
+// Alterar senha do próprio usuário
+export async function alterarSenha(novaSenha: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Não autenticado' }
+
+  if (!novaSenha || novaSenha.length < 6) {
+    return { success: false, error: 'A senha deve ter no mínimo 6 caracteres.' }
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: novaSenha
+  })
+
+  if (error) return { success: false, error: error.message }
+
+  return { success: true }
+}

@@ -112,6 +112,8 @@ export default async function PerfilPage() {
   
   const isKiwify = (user.user_metadata && 'kiwify_product_id' in user.user_metadata) || user.user_metadata?.origem === 'kiwify'
 
+  const whatsapp = user.user_metadata?.whatsapp || user.user_metadata?.telefone || (perfil as any)?.telefone || ''
+
   return (
     <div className="min-h-screen text-white pb-20" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
 
@@ -150,6 +152,7 @@ export default async function PerfilPage() {
                 </div>
                 <ClientProfileEditor
                   initialName={nome}
+                  initialPhone={whatsapp}
                   initialAvatarUrl={avatarUrl}
                   fallbackAvatarUrl={fallbackAvatarUrl}
                 />
