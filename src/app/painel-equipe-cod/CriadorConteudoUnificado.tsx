@@ -739,7 +739,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
-              <SubmitButton texto="Salvar Vídeo" textoCarregando="Salvando..." />
+              <SubmitButton textLoading="Salvando...">Salvar Vídeo</SubmitButton>
             </div>
           </div>
         </form>
@@ -864,7 +864,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
-              <SubmitButton texto="Publicar Material" textoCarregando="Publicando..." />
+              <SubmitButton textLoading="Publicando...">Publicar Material</SubmitButton>
             </div>
           </div>
         </form>
@@ -915,7 +915,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
-              <SubmitButton texto="Publicar Vídeo Instagram" textoCarregando="Publicando..." />
+              <SubmitButton textLoading="Publicando...">Publicar Vídeo Instagram</SubmitButton>
             </div>
           </div>
         </form>
@@ -1002,7 +1002,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
-              <SubmitButton texto="Publicar Revista" textoCarregando="Publicando..." />
+              <SubmitButton textLoading="Publicando...">Publicar Revista</SubmitButton>
             </div>
           </div>
         </form>
