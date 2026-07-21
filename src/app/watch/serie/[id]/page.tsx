@@ -82,14 +82,34 @@ export default async function SerieDetailPage({ params }: SeriePageProps) {
     temporadasMap[nomeTemp].push(v)
   })
 
+  function extrairNumeroTemporada(nome: string): number {
+    const match = nome.match(/(?:temporada|temp|t)\s*(\d+)/i)
+    if (match && match[1]) return parseInt(match[1], 10)
+    const anyNum = nome.match(/\d+/)
+    if (anyNum) return parseInt(anyNum[0], 10)
+    return 999
+  }
+
   const temporadas = Object.entries(temporadasMap).map(([nomeTemp, listaEps]) => {
-    listaEps.sort((a, b) => (a.episodio_numero ?? 0) - (b.episodio_numero ?? 0))
+    const epsReais = listaEps.filter(v => 
+      v.titulo && 
+      !v.titulo.includes('(Card da Temporada)') && 
+      !v.titulo.includes('Card da Temporada') &&
+      !v.titulo.includes('(Capa da Temporada)')
+    )
+
+    epsReais.sort((a, b) => (a.episodio_numero ?? 0) - (b.episodio_numero ?? 0))
+    const capaUrl = listaEps[0]?.thumbnail_url || capaUrlSerie
+
     return {
       nome: nomeTemp,
-      capaUrl: listaEps[0]?.thumbnail_url || capaUrlSerie,
-      episodios: listaEps
+      capaUrl: capaUrl,
+      episodios: epsReais
     }
   })
+
+  // Ordena temporadas de forma CRESCENTE (1, 2, 3...)
+  temporadas.sort((a, b) => extrairNumeroTemporada(a.nome) - extrairNumeroTemporada(b.nome))
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden flex flex-col justify-between" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>

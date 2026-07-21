@@ -46,6 +46,7 @@ export default function SerieViewClient({ tituloSerie, temporadas }: SerieViewCl
             nomeTemporada={temp.nome}
             capaUrl={temp.capaUrl}
             episodiosCount={temp.episodios.length}
+            isEmBreve={temp.episodios.length === 0 || temp.episodios.every(e => e.em_breve)}
             onClick={() => abrirModalTemporada(`${tituloSerie} - ${temp.nome}`, temp.episodios)}
           />
         ))}

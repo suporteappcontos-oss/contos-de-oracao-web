@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Tv, Play } from 'lucide-react'
+import { Tv } from 'lucide-react'
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=80'
 
@@ -9,6 +9,7 @@ interface TemporadaCardProps {
   nomeTemporada: string
   capaUrl?: string | null
   episodiosCount: number
+  isEmBreve?: boolean
   onClick: () => void
 }
 
@@ -16,6 +17,7 @@ export default function TemporadaCard({
   nomeTemporada,
   capaUrl,
   episodiosCount,
+  isEmBreve = false,
   onClick
 }: TemporadaCardProps) {
   const [imgError, setImgError] = useState(false)
@@ -28,7 +30,7 @@ export default function TemporadaCard({
     <button
       type="button"
       onClick={onClick}
-      className="group relative flex-shrink-0 text-left outline-none cursor-pointer transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1"
+      className="group relative flex-shrink-0 text-left outline-none cursor-pointer transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1"
       style={{ width: 'clamp(200px, 26vw, 320px)' }}
     >
       <div
@@ -60,12 +62,12 @@ export default function TemporadaCard({
           Temporada
         </div>
 
-        {/* Ícone de Play / Ver Episódios no Hover */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-          <div className="w-11 h-11 rounded-full bg-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
-            <Play fill="#090B10" className="w-4 h-4 text-[#090B10] ml-0.5" />
+        {/* Badge EM BREVE no topo direito (se aplicável) */}
+        {(isEmBreve || episodiosCount === 0) && (
+          <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded border text-[0.6rem] font-black uppercase tracking-wider bg-black/80 text-[#FFD700] border-[#FFD700]/50 backdrop-blur-sm z-10 shadow-md">
+            Em Breve
           </div>
-        </div>
+        )}
 
         {/* Nome da Temporada e quantidade de episódios */}
         <div className="absolute bottom-3 left-3 right-3 z-10">

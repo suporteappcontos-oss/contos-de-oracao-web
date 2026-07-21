@@ -113,6 +113,15 @@ export default async function WatchPage() {
     nomeSerieDestaque = listaNomesSeries[0]
   }
 
+  // Helper para extrair número da temporada para ordenação crescente
+  function extrairNumeroTemporada(nome: string): number {
+    const match = nome.match(/(?:temporada|temp|t)\s*(\d+)/i)
+    if (match && match[1]) return parseInt(match[1], 10)
+    const anyNum = nome.match(/\d+/)
+    if (anyNum) return parseInt(anyNum[0], 10)
+    return 999
+  }
+
   // Construir o objeto `serieDestaque` (com as temporadas expostas)
   let serieDestaque: SerieDestaqueType | null = null
 
@@ -121,14 +130,26 @@ export default async function WatchPage() {
     const serieMeta = todasSeries.find(s => s.titulo === nomeSerieDestaque)
 
     const temporadas: TemporadaGroup[] = Object.entries(temporadasMap).map(([nomeTemp, listaEps]) => {
-      // Ordena episódios da temporada pelo episodio_numero
-      listaEps.sort((a, b) => (a.episodio_numero ?? 0) - (b.episodio_numero ?? 0))
+      // Filtra apenas episódios reais (remove placeholders de capas de temporada)
+      const epsReais = listaEps.filter(v => 
+        v.titulo && 
+        !v.titulo.includes('(Card da Temporada)') && 
+        !v.titulo.includes('Card da Temporada') &&
+        !v.titulo.includes('(Capa da Temporada)')
+      )
+
+      epsReais.sort((a, b) => (a.episodio_numero ?? 0) - (b.episodio_numero ?? 0))
+      const capaUrl = listaEps[0]?.thumbnail_url || serieMeta?.capa_url || null
+
       return {
         nome: nomeTemp,
-        capaUrl: listaEps[0]?.thumbnail_url || serieMeta?.capa_url || null,
-        episodios: listaEps
+        capaUrl: capaUrl,
+        episodios: epsReais
       }
     })
+
+    // Ordena temporadas de forma CRESCENTE (1, 2, 3...)
+    temporadas.sort((a, b) => extrairNumeroTemporada(a.nome) - extrairNumeroTemporada(b.nome))
 
     if (temporadas.length > 0) {
       serieDestaque = {

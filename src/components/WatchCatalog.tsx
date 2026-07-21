@@ -108,6 +108,7 @@ export default function WatchCatalog({
                   nomeTemporada={temp.nome}
                   capaUrl={temp.capaUrl}
                   episodiosCount={temp.episodios.length}
+                  isEmBreve={temp.episodios.length === 0 || temp.episodios.every(e => e.em_breve)}
                   onClick={() => abrirModalTemporada(`${serieDestaque.titulo} - ${temp.nome}`, temp.episodios)}
                 />
               ))}

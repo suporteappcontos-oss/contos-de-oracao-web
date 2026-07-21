@@ -87,8 +87,16 @@ export default function TemporadaModal({
         {/* Lista de Episódios em Grid Responsivo */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
           {episodiosOrdenados.length === 0 ? (
-            <div className="text-center py-12 text-white/50 text-sm">
-              Nenhum episódio cadastrado nesta temporada ainda.
+            <div className="text-center py-12 px-4 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/30 text-[#FFD700] text-xs font-black uppercase tracking-wider">
+                Em Breve
+              </div>
+              <p className="text-white/80 font-bold text-base">
+                Novos episódios desta temporada estão sendo produzidos!
+              </p>
+              <p className="text-white/50 text-xs max-w-md mx-auto">
+                Assim que forem lançados, os vídeos aparecerão aqui nesta temporada.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
