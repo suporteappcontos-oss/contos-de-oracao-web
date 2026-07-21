@@ -67,6 +67,94 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
   const hasResumedRef = useRef(false)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
+  // Atualiza status e o ref junto
+  const updateStatus = useCallback((s: typeof status) => {
+    statusRef.current = s
+    setStatus(s)
+  }, [])
+
+  // Registra sessão e inicia escuta em tempo real
+  const iniciarSessao = useCallback(async () => {
+    const token = getDeviceToken()
+    deviceToken.current = token
+
+    try {
+      const res = await fetch('/api/sessoes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device_token: token, video_id: videoId }),
+      })
+
+      if (res.status === 429) {
+        updateStatus('bloqueado')
+        return
+      }
+
+      if (!res.ok) {
+        console.warn('Erro ao registrar sessão, liberando player.')
+        updateStatus('liberado')
+        return
+      }
+
+      updateStatus('liberado')
+
+      // ── REALTIME: escuta mudanças na tabela sessoes_ativas ─────────────
+      const supabase = createClient()
+      realtimeRef.current = supabase
+
+      supabase
+        .channel('sessao-radar')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'sessoes_ativas' },
+          async () => {
+            if (statusRef.current === 'derrubado') return
+
+            const hbRes = await fetch('/api/sessoes', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ device_token: token }),
+            })
+
+            if (hbRes.status === 403) {
+              updateStatus('derrubado')
+              if (heartbeatRef.current) clearInterval(heartbeatRef.current)
+            }
+          }
+        )
+        .subscribe()
+
+      // Heartbeat de segurança a cada 10s
+      heartbeatRef.current = setInterval(async () => {
+        if (statusRef.current === 'derrubado') {
+          clearInterval(heartbeatRef.current!)
+          return
+        }
+        const hbRes = await fetch('/api/sessoes', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_token: token }),
+        })
+        if (hbRes.status === 403) {
+          updateStatus('derrubado')
+          if (heartbeatRef.current) clearInterval(heartbeatRef.current)
+        }
+      }, 10_000)
+
+    } catch {
+      updateStatus('liberado')
+    }
+  }, [videoId, updateStatus])
+
+  // Remove a sessão ao sair da página
+  const encerrarSessao = useCallback(() => {
+    if (!deviceToken.current) return
+    navigator.sendBeacon(
+      '/api/sessoes',
+      JSON.stringify({ device_token: deviceToken.current })
+    )
+  }, [])
+
   // Checa progresso salvo no localStorage ao carregar o vídeo
   useEffect(() => {
     setShowNextOverlay(false)
