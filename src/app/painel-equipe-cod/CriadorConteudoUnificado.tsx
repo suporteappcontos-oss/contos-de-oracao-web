@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 // Keyframes para animação ao trocar de tipo
 const ANIM_STYLE = `
@@ -21,16 +21,6 @@ import { convertToWebP } from '@/utils/imageUtils'
 import { GtaRadialMenu } from './GtaRadialMenu'
 import { ModalSerie } from './ModalSerie'
 
-// SVG do Instagram (lucide-react desta versão não tem o ícone)
-function IgIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-    </svg>
-  )
-}
-
-const PLANOS_DISPONIVEIS = ['Básico', 'Essencial', 'Pro']
 const CATEGORIAS_MATERIAIS = [
   { value: 'hq',      label: 'HQ (História em Quadrinhos)', icon: BookOpen, color: '#D4AF37' },
   { value: 'jogo',    label: 'Jogo Educativo',              icon: Gamepad2, color: '#10b981' },
@@ -87,9 +77,9 @@ function gerarSlug(titulo: string) {
 }
 
 const TIPO_CONFIG: any = {
-  video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Série' },
+  video:     { border: '#D4AF37',  glow: 'rgba(212,175,55,0.15)',  label: 'Série / Episódio' },
   material:  { border: '#10b981',  glow: 'rgba(16,185,129,0.15)',  label: 'Material Didático' },
-  instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram' },
+  instagram: { border: '#E1306C',  glow: 'rgba(225,48,108,0.15)',  label: 'Instagram (Reels)' },
   revista:   { border: '#10b981',  glow: 'rgba(16,185,129,0.15)', label: 'Revista' },
   add_episodio: { border: '#10b981', glow: 'rgba(16,185,129,0.15)', label: 'Adicionar Episódio' },
   clipe:      { border: '#3b82f6',  glow: 'rgba(59,130,246,0.15)',  label: 'Vídeo Clipe' },
@@ -125,7 +115,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
     }
   }
 
-  // --- Estados do Formulário de Vídeo ---
+  // --- Estados do Formulário de Vídeo / Clipe / Episódio ---
   const [emBreve, setEmBreve] = useState(false)
   const [videoCategoria, setVideoCategoria] = useState('Geral')
   const [modoTemporada, setModoTemporada] = useState<'existente' | 'nova'>(
@@ -172,8 +162,6 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
   const [isUploadingCapa, setIsUploadingCapa] = useState(false)
   const [erroUploadCapa, setErroUploadCapa] = useState('')
   const capaInputRef = useRef<HTMLInputElement>(null)
-
-  const [planosPermitidosVideo, setPlanosPermitidosVideo] = useState<string[]>(['Básico', 'Essencial', 'Pro'])
 
   const handleVideoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -233,12 +221,6 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
     }
   }
 
-  const togglePlanoVideo = (p: string) => {
-    setPlanosPermitidosVideo(prev =>
-      prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]
-    )
-  }
-
   // --- Estados do Formulário de Material ---
   const [materialCategoria, setMaterialCategoria] = useState('hq')
   const [materialCapaUrl, setMaterialCapaUrl] = useState('')
@@ -249,8 +231,6 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
   const [progressoMatCapa, setProgressoMatCapa] = useState<number | null>(null)
   const [isUploadingMatPdf, setIsUploadingMatPdf] = useState(false)
   const [progressoMatPdf, setProgressoMatPdf] = useState<number | null>(null)
-
-  const [planosPermitidosMat, setPlanosPermitidosMat] = useState<string[]>(['Básico', 'Essencial', 'Pro'])
 
   const handleMaterialCapa = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -291,10 +271,17 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
     }
   }
 
-  // --- Estados do Formulário de Instagram ---
-  const [igVideoUrl, setIgVideoUrl] = useState('')
+  // --- Estados do Formulário de Instagram (Reels) ---
+  const [igBunnyVideoId, setIgBunnyVideoId] = useState('')
   const [isUploadingIg, setIsUploadingIg] = useState(false)
   const [progressoIg, setProgressoIg] = useState<number | null>(null)
+  const igVideoInputRef = useRef<HTMLInputElement>(null)
+
+  const [igCapaUrl, setIgCapaUrl] = useState('')
+  const [igCapaPreview, setIgCapaPreview] = useState<string | null>(null)
+  const [isUploadingIgCapa, setIsUploadingIgCapa] = useState(false)
+  const [progressoIgCapa, setProgressoIgCapa] = useState<number | null>(null)
+  const igCapaInputRef = useRef<HTMLInputElement>(null)
 
   const handleIgVideoFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -305,13 +292,34 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
       const slug = gerarSlug(file.name.replace(/\.[^/.]+$/, ''))
       const ext = file.name.split('.').pop() || 'mp4'
       const path = `instagram/${slug}-${Date.now()}.${ext}`
-      const url = await uploadParaBunny(file, path, (pct) => setProgressoIg(pct))
-      setIgVideoUrl(url)
+      const cdnUrl = await uploadParaBunny(file, path, (pct) => setProgressoIg(pct))
+      const vidIdExt = cdnUrl.split('/').pop() || ''
+      setIgBunnyVideoId(vidIdExt)
     } catch (err: any) {
       console.error(err)
     } finally {
       setIsUploadingIg(false)
       setProgressoIg(null)
+    }
+  }
+
+  const handleIgCapaFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setIsUploadingIgCapa(true)
+    setProgressoIgCapa(0)
+    try {
+      const webpFile = await convertToWebP(file, 0.85)
+      setIgCapaPreview(URL.createObjectURL(webpFile))
+      const slug = gerarSlug(file.name.replace(/\.[^/.]+$/, ''))
+      const path = `instagram/capas/${slug}-${Date.now()}.webp`
+      const url = await uploadParaBunny(webpFile, path, (pct) => setProgressoIgCapa(pct))
+      setIgCapaUrl(url)
+    } catch (err: any) {
+      console.error(err)
+    } finally {
+      setIsUploadingIgCapa(false)
+      setProgressoIgCapa(null)
     }
   }
 
@@ -452,7 +460,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
         </div>
       )}
 
-      {/* ================= FORMULÁRIO DE VÍDEO ================= */}
+      {/* ================= FORMULÁRIO DE VÍDEO (SÉRIE / EPISÓDIO / CLIPE) ================= */}
       {tipoCriacao === 'video' && (
         <div key="form-video" className="admin-form-anim">
           {videoCategoria === 'Vídeo Clipe' && (
@@ -632,6 +640,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
               </div>
             )}
 
+            {/* SEÇÃO DE VÍDEO (UPLOAD OU DIGITAÇÃO DE ID BUNNY) */}
             <div className="md:col-span-6">
               <label className={labelCls}>Enviar Arquivo de Vídeo (Bunny.net)</label>
               <input 
@@ -663,9 +672,10 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
 
             <div className="md:col-span-6">
-              <label className={labelCls}>Ou insira o ID do Vídeo no Bunny.net</label>
+              <label className={labelCls}>Ou insira o ID do Vídeo no Bunny.net *</label>
               <input 
                 name="bunny_video_id" 
+                required
                 value={bunnyVideoId} 
                 onChange={(e) => setBunnyVideoId(e.target.value)}
                 placeholder="Ex: 8a9b0c1d-..." 
@@ -673,9 +683,9 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
               />
             </div>
 
+            {/* SEÇÃO DE CAPA (UPLOAD OU COLAR URL) */}
             <div className="md:col-span-12">
-              <label className={labelCls}>Imagem de Capa (WebP Otimizada)</label>
-              <input type="hidden" name="thumbnail_url" value={capaUrl} />
+              <label className={labelCls}>Imagem de Capa (WebP Otimizada ou URL Externa)</label>
               <input 
                 type="file" 
                 ref={capaInputRef} 
@@ -684,59 +694,51 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                 disabled={isUploadingCapa} 
                 className="hidden" 
               />
-              <div className="flex gap-4 items-center">
-                <button 
-                  type="button" 
-                  onClick={() => capaInputRef.current?.click()}
-                  disabled={isUploadingCapa}
-                  className="flex-1 bg-[#0f171e] hover:bg-[#1a2234] border border-white/10 hover:border-[#D4AF37]/50 transition-all rounded-xl p-4 flex items-center justify-center gap-3 cursor-pointer"
-                >
-                  {isUploadingCapa ? (
-                    <Loader2 className="animate-spin text-[#D4AF37]" size={20} />
-                  ) : capaUrl ? (
-                    <CheckCircle2 className="text-emerald-400" size={20} />
-                  ) : (
-                    <ImageIcon size={20} className="text-[#D4AF37]" />
-                  )}
-                  <span className="text-sm font-bold text-white">
-                    {isUploadingCapa ? `Otimizando... ${uploadCapaProgresso}%` : capaUrl ? 'Capa Carregada!' : 'Selecionar Imagem de Capa'}
-                  </span>
-                </button>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <div className="md:col-span-6 flex gap-4 items-center">
+                  <button 
+                    type="button" 
+                    onClick={() => capaInputRef.current?.click()}
+                    disabled={isUploadingCapa}
+                    className="flex-1 bg-[#0f171e] hover:bg-[#1a2234] border border-white/10 hover:border-[#D4AF37]/50 transition-all rounded-xl p-3.5 flex items-center justify-center gap-3 cursor-pointer"
+                  >
+                    {isUploadingCapa ? (
+                      <Loader2 className="animate-spin text-[#D4AF37]" size={20} />
+                    ) : capaUrl ? (
+                      <CheckCircle2 className="text-emerald-400" size={20} />
+                    ) : (
+                      <ImageIcon size={20} className="text-[#D4AF37]" />
+                    )}
+                    <span className="text-sm font-bold text-white">
+                      {isUploadingCapa ? `Otimizando... ${uploadCapaProgresso}%` : capaUrl ? 'Capa Carregada!' : 'Selecionar Capa'}
+                    </span>
+                  </button>
 
-                {capaPreview && (
-                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0">
-                    <img src={capaPreview} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
+                  {(capaPreview || capaUrl) && (
+                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                      <img src={capaPreview || capaUrl} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="md:col-span-6">
+                  <input 
+                    name="thumbnail_url" 
+                    value={capaUrl} 
+                    onChange={(e) => {
+                      setCapaUrl(e.target.value)
+                      setCapaPreview(e.target.value)
+                    }}
+                    placeholder="Ou cole a URL da capa aqui..." 
+                    className={inputCls} 
+                  />
+                </div>
               </div>
               {erroUploadCapa && <p className="text-red-400 text-xs mt-1">{erroUploadCapa}</p>}
             </div>
 
             <input type="hidden" name="duracao" value={duracao} />
-
-            <div className="md:col-span-12">
-              <label className={labelCls}>Planos de Acesso Permitidos</label>
-              <div className="flex flex-wrap gap-3">
-                {PLANOS_DISPONIVEIS.map(p => {
-                  const active = planosPermitidosVideo.includes(p)
-                  return (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => togglePlanoVideo(p)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
-                        active 
-                          ? 'bg-[#D4AF37] text-black border-[#D4AF37]' 
-                          : 'bg-[#0f171e] text-white/50 border-white/10 hover:border-white/30'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
-                })}
-              </div>
-              <input type="hidden" name="planos_permitidos" value={JSON.stringify(planosPermitidosVideo)} />
-            </div>
+            <input type="hidden" name="planos_permitidos" value={JSON.stringify(['Básico', 'Essencial', 'Pro'])} />
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
               <SubmitButton textLoading="Salvando...">Salvar Vídeo</SubmitButton>
@@ -776,8 +778,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
 
             <div className="md:col-span-6">
-              <label className={labelCls}>Capa do Material (WebP)</label>
-              <input type="hidden" name="capa_url" value={materialCapaUrl} />
+              <label className={labelCls}>Capa do Material (WebP ou URL)</label>
               <div className="flex gap-4 items-center">
                 <input 
                   type="file" 
@@ -803,17 +804,26 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                   </span>
                 </label>
 
-                {materialCapaPreview && (
-                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0">
-                    <img src={materialCapaPreview} alt="Preview" className="w-full h-full object-cover" />
+                {(materialCapaPreview || materialCapaUrl) && (
+                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                    <img src={materialCapaPreview || materialCapaUrl} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
+              <input 
+                name="capa_url" 
+                value={materialCapaUrl} 
+                onChange={(e) => {
+                  setMaterialCapaUrl(e.target.value)
+                  setMaterialCapaPreview(e.target.value)
+                }}
+                placeholder="Ou cole a URL da capa..." 
+                className={`${inputCls} mt-2`} 
+              />
             </div>
 
             <div className="md:col-span-6">
               <label className={labelCls}>Arquivo PDF *</label>
-              <input type="hidden" name="link_pdf" value={materialPdfUrl} />
               <input 
                 type="file" 
                 id="mat_pdf_file" 
@@ -834,34 +844,20 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                   <FileText size={20} className="text-emerald-400" />
                 )}
                 <span className="text-sm font-bold text-white">
-                  {isUploadingMatPdf ? `Enviando PDF... ${progressoMatPdf}%` : materialPdfUrl ? 'PDF Carregado com Sucesso!' : 'Selecionar PDF'}
+                  {isUploadingMatPdf ? `Enviando PDF... ${progressoMatPdf}%` : materialPdfUrl ? 'PDF Carregado!' : 'Selecionar PDF'}
                 </span>
               </label>
+              <input 
+                name="link_pdf" 
+                required
+                value={materialPdfUrl} 
+                onChange={(e) => setMaterialPdfUrl(e.target.value)}
+                placeholder="Ou cole a URL do PDF..." 
+                className={`${inputCls} mt-2`} 
+              />
             </div>
 
-            <div className="md:col-span-12">
-              <label className={labelCls}>Planos de Acesso Permitidos</label>
-              <div className="flex flex-wrap gap-3">
-                {PLANOS_DISPONIVEIS.map(p => {
-                  const active = planosPermitidosMat.includes(p)
-                  return (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setPlanosPermitidosMat(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p])}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
-                        active 
-                          ? 'bg-emerald-500 text-black border-emerald-500' 
-                          : 'bg-[#0f171e] text-white/50 border-white/10 hover:border-white/30'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
-                })}
-              </div>
-              <input type="hidden" name="planos_permitidos" value={JSON.stringify(planosPermitidosMat)} />
-            </div>
+            <input type="hidden" name="planos_permitidos" value={JSON.stringify(['Básico', 'Essencial', 'Pro'])} />
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
               <SubmitButton textLoading="Publicando...">Publicar Material</SubmitButton>
@@ -886,32 +882,99 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
               <textarea name="descricao" rows={2} placeholder="Legenda do post..." className={inputCls} />
             </div>
 
-            <div className="md:col-span-12">
-              <label className={labelCls}>Arquivo de Vídeo Vertical (Bunny.net)</label>
-              <input type="hidden" name="video_url" value={igVideoUrl} />
+            {/* SEÇÃO DE VÍDEO INSTAGRAM (UPLOAD OU ID BUNNY) */}
+            <div className="md:col-span-6">
+              <label className={labelCls}>Enviar Arquivo de Vídeo (Bunny.net)</label>
               <input 
                 type="file" 
-                id="ig_video_file" 
+                ref={igVideoInputRef} 
                 accept="video/*" 
                 onChange={handleIgVideoFile}
-                disabled={isUploadingIg}
+                disabled={isUploadingIg} 
                 className="hidden" 
               />
-              <label 
-                htmlFor="ig_video_file"
-                className="w-full bg-[#0f171e] hover:bg-[#1a2234] border border-white/10 hover:border-pink-500/50 transition-all rounded-xl p-4 flex items-center justify-center gap-3 cursor-pointer"
+              <button 
+                type="button" 
+                onClick={() => igVideoInputRef.current?.click()}
+                disabled={isUploadingIg}
+                className="w-full bg-[#0f171e] hover:bg-[#1a2234] border border-white/10 hover:border-pink-500/50 transition-all rounded-xl p-4 flex items-center justify-center gap-3 cursor-pointer group"
               >
                 {isUploadingIg ? (
                   <Loader2 className="animate-spin text-pink-500" size={20} />
-                ) : igVideoUrl ? (
+                ) : igBunnyVideoId ? (
                   <CheckCircle2 className="text-emerald-400" size={20} />
                 ) : (
                   <Video size={20} className="text-pink-500" />
                 )}
                 <span className="text-sm font-bold text-white">
-                  {isUploadingIg ? `Enviando Vídeo... ${progressoIg}%` : igVideoUrl ? 'Vídeo Enviado com Sucesso!' : 'Selecionar Arquivo MP4 / MOV'}
+                  {isUploadingIg ? `Enviando... ${progressoIg}%` : igBunnyVideoId ? 'Vídeo Enviado com Sucesso!' : 'Selecionar Arquivo de Vídeo'}
                 </span>
-              </label>
+              </button>
+            </div>
+
+            <div className="md:col-span-6">
+              <label className={labelCls}>Ou insira o ID do Vídeo no Bunny.net *</label>
+              <input 
+                name="bunny_video_id" 
+                required
+                value={igBunnyVideoId} 
+                onChange={(e) => setIgBunnyVideoId(e.target.value)}
+                placeholder="Ex: 8a9b0c1d-..." 
+                className={inputCls} 
+              />
+            </div>
+
+            {/* SEÇÃO DE CAPA INSTAGRAM (UPLOAD OU COLAR URL) */}
+            <div className="md:col-span-12">
+              <label className={labelCls}>Imagem de Capa (WebP Otimizada ou URL Externa)</label>
+              <input 
+                type="file" 
+                ref={igCapaInputRef} 
+                accept="image/*" 
+                onChange={handleIgCapaFile}
+                disabled={isUploadingIgCapa} 
+                className="hidden" 
+              />
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <div className="md:col-span-6 flex gap-4 items-center">
+                  <button 
+                    type="button" 
+                    onClick={() => igCapaInputRef.current?.click()}
+                    disabled={isUploadingIgCapa}
+                    className="flex-1 bg-[#0f171e] hover:bg-[#1a2234] border border-white/10 hover:border-pink-500/50 transition-all rounded-xl p-3.5 flex items-center justify-center gap-3 cursor-pointer"
+                  >
+                    {isUploadingIgCapa ? (
+                      <Loader2 className="animate-spin text-pink-500" size={20} />
+                    ) : igCapaUrl ? (
+                      <CheckCircle2 className="text-emerald-400" size={20} />
+                    ) : (
+                      <ImageIcon size={20} className="text-pink-500" />
+                    )}
+                    <span className="text-sm font-bold text-white">
+                      {isUploadingIgCapa ? `Otimizando... ${progressoIgCapa}%` : igCapaUrl ? 'Capa Carregada!' : 'Selecionar Capa'}
+                    </span>
+                  </button>
+
+                  {(igCapaPreview || igCapaUrl) && (
+                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                      <img src={igCapaPreview || igCapaUrl} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="md:col-span-6">
+                  <input 
+                    name="capa_url" 
+                    value={igCapaUrl} 
+                    onChange={(e) => {
+                      setIgCapaUrl(e.target.value)
+                      setIgCapaPreview(e.target.value)
+                    }}
+                    placeholder="Ou cole a URL da capa aqui..." 
+                    className={inputCls} 
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
@@ -938,8 +1001,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
 
             <div className="md:col-span-6">
-              <label className={labelCls}>Capa da Revista (WebP)</label>
-              <input type="hidden" name="capa_url" value={revistaCapaUrl} />
+              <label className={labelCls}>Capa da Revista (WebP ou URL)</label>
               <div className="flex gap-4 items-center">
                 <input 
                   type="file" 
@@ -965,17 +1027,26 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                   </span>
                 </label>
 
-                {revistaCapaPreview && (
-                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0">
-                    <img src={revistaCapaPreview} alt="Preview" className="w-full h-full object-cover" />
+                {(revistaCapaPreview || revistaCapaUrl) && (
+                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                    <img src={revistaCapaPreview || revistaCapaUrl} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
+              <input 
+                name="capa_url" 
+                value={revistaCapaUrl} 
+                onChange={(e) => {
+                  setRevistaCapaUrl(e.target.value)
+                  setRevistaCapaPreview(e.target.value)
+                }}
+                placeholder="Ou cole a URL da capa..." 
+                className={`${inputCls} mt-2`} 
+              />
             </div>
 
             <div className="md:col-span-6">
               <label className={labelCls}>Arquivo PDF da Revista *</label>
-              <input type="hidden" name="link_pdf" value={revistaPdfUrl} />
               <input 
                 type="file" 
                 id="rev_pdf_file" 
@@ -996,9 +1067,17 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                   <FileText size={20} className="text-emerald-400" />
                 )}
                 <span className="text-sm font-bold text-white">
-                  {isUploadingRevPdf ? `Enviando PDF... ${progressoRevPdf}%` : revistaPdfUrl ? 'PDF Carregado com Sucesso!' : 'Selecionar PDF'}
+                  {isUploadingRevPdf ? `Enviando PDF... ${progressoRevPdf}%` : revistaPdfUrl ? 'PDF Carregado!' : 'Selecionar PDF'}
                 </span>
               </label>
+              <input 
+                name="link_pdf" 
+                required
+                value={revistaPdfUrl} 
+                onChange={(e) => setRevistaPdfUrl(e.target.value)}
+                placeholder="Ou cole a URL do PDF..." 
+                className={`${inputCls} mt-2`} 
+              />
             </div>
 
             <div className="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-white/5">
