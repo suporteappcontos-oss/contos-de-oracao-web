@@ -36,6 +36,13 @@ export default function VideoCard({ video, minimal = false }: { video: VideoData
     ? video.thumbnail_url
     : getFallback(video.id)
 
+  const tituloLimpo = (video.titulo || '')
+    .replace(/\s*\([^)]*card da temporada[^)]*\)/gi, '')
+    .replace(/\s*\([^)]*capa da temporada[^)]*\)/gi, '')
+    .replace(/\s*card da temporada/gi, '')
+    .replace(/\s*capa da temporada/gi, '')
+    .trim()
+
   if (video.em_breve) {
     return (
       <div
@@ -54,7 +61,7 @@ export default function VideoCard({ video, minimal = false }: { video: VideoData
           {/* Imagem de capa */}
           <img
             src={imageUrl}
-            alt={video.titulo}
+            alt={tituloLimpo}
             onError={() => setImgError(true)}
             className="w-full h-full object-cover"
             loading="lazy"
@@ -86,7 +93,7 @@ export default function VideoCard({ video, minimal = false }: { video: VideoData
               {/* Título do Vídeo no canto inferior */}
               <div className="absolute bottom-3 left-3 right-3 z-10">
                 <p className="text-white text-[0.75rem] md:text-sm font-extrabold leading-tight drop-shadow-md line-clamp-2 transition-colors">
-                  {video.titulo}
+                  {tituloLimpo}
                 </p>
               </div>
             </>
@@ -114,7 +121,7 @@ export default function VideoCard({ video, minimal = false }: { video: VideoData
         {/* Imagem de capa (thumbnail do Bunny via admin) */}
         <img
           src={imageUrl}
-          alt={video.titulo}
+          alt={tituloLimpo}
           onError={() => setImgError(true)}
           className="w-full h-full object-cover"
           loading="lazy"
@@ -138,7 +145,7 @@ export default function VideoCard({ video, minimal = false }: { video: VideoData
             {/* Título do Vídeo no canto inferior */}
             <div className="absolute bottom-3 left-3 right-3 z-10">
               <p className="text-white text-[0.75rem] md:text-sm font-extrabold leading-tight drop-shadow-md line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
-                {video.titulo}
+                {tituloLimpo}
               </p>
             </div>
           </>

@@ -548,7 +548,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                 </div>
 
                 {/* Campos Ocultos para Registrar no Supabase */}
-                <input type="hidden" name="titulo" value={`${nomeNovaTemporadaForm || 'Nova Temporada'} (Card da Temporada)`} />
+                <input type="hidden" name="titulo" value={nomeNovaTemporadaForm || 'Nova Temporada'} />
                 <input type="hidden" name="categoria" value="Temporada" />
                 <input type="hidden" name="temporada_nome" value={`${serieTemporadaSelecionada} | ${nomeNovaTemporadaForm}`} />
                 <input type="hidden" name="em_breve" value="true" />
@@ -706,6 +706,18 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
           )}
 
+          {videoCategoria === 'Temporada' && (
+            <div className="mb-6 pb-4 border-b border-white/10 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
+                <Tv2 size={20} />
+              </div>
+              <div>
+                <h2 className="text-white font-extrabold text-lg">Adicionar Novo Episódio de Série</h2>
+                <p className="text-white/50 text-xs">Cadastre um episódio vinculado a uma série e temporada existente.</p>
+              </div>
+            </div>
+          )}
+
           <form action={async (formData) => { await adicionarVideo(formData) }} encType="multipart/form-data">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-8">
@@ -741,7 +753,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                 className={inputCls}
               >
                 <option value="Geral">Geral (Vídeo Avulso)</option>
-                <option value="Temporada">Temporada (Faz parte de uma Série)</option>
+                <option value="Temporada">Episódio / Temporada (Faz parte de uma Série)</option>
                 <option value="Vídeo Clipe">Vídeo Clipe (Musical / Pedagógico)</option>
                 <option value="Infantil">Infantil</option>
                 <option value="Adulto">Adulto</option>

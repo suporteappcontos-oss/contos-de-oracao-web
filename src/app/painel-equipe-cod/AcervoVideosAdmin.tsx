@@ -110,6 +110,22 @@ export default function AcervoVideosAdmin({
     })
   })
 
+  function isPlaceholder(v: VideoType) {
+    if (!v.titulo) return false
+    const t = v.titulo.toLowerCase()
+    return t.includes('card da temporada') || t.includes('capa da temporada')
+  }
+
+  function sanitizarTitulo(titulo: string): string {
+    if (!titulo) return ''
+    return titulo
+      .replace(/\s*\([^)]*card da temporada[^)]*\)/gi, '')
+      .replace(/\s*\([^)]*capa da temporada[^)]*\)/gi, '')
+      .replace(/\s*card da temporada/gi, '')
+      .replace(/\s*capa da temporada/gi, '')
+      .trim()
+  }
+
   const renderCardVideo = (video: VideoType) => {
     if (editId === video.id && editingVideo) {
       return (
@@ -120,6 +136,9 @@ export default function AcervoVideosAdmin({
         />
       )
     }
+
+    const tituloLimpo = sanitizarTitulo(video.titulo) || 'Capa da Temporada'
+    const ehCapa = isPlaceholder(video) || (video.categoria === 'Temporada' && video.episodio_numero === null)
 
     return (
       <div 
@@ -134,11 +153,17 @@ export default function AcervoVideosAdmin({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent" />
           
-          {/* Episode Badge if exists */}
-          {video.categoria === 'Temporada' && video.episodio_numero !== null && (
-            <div className="absolute top-3 left-3 bg-[#D4AF37] text-black font-black text-[0.65rem] px-2 py-0.5 rounded-lg uppercase tracking-wider">
-              Episódio {video.episodio_numero}
-            </div>
+          {/* Badge Episódio vs Capa da Temporada */}
+          {video.categoria === 'Temporada' && (
+            !ehCapa && video.episodio_numero !== null ? (
+              <div className="absolute top-3 left-3 bg-[#D4AF37] text-black font-black text-[0.65rem] px-2 py-0.5 rounded-lg uppercase tracking-wider">
+                Episódio {video.episodio_numero}
+              </div>
+            ) : (
+              <div className="absolute top-3 left-3 bg-[#FFD700]/90 text-black font-black text-[0.65rem] px-2 py-0.5 rounded-lg uppercase tracking-wider shadow-md backdrop-blur-sm">
+                Capa da Temporada
+              </div>
+            )
           )}
 
           {!video.ativo && (
@@ -152,7 +177,7 @@ export default function AcervoVideosAdmin({
 
         {/* Card Body */}
         <div className="p-5 flex flex-col flex-grow">
-          <h3 className="text-white font-extrabold text-lg leading-tight mb-2 line-clamp-2">{video.titulo}</h3>
+          <h3 className="text-white font-extrabold text-lg leading-tight mb-2 line-clamp-2">{tituloLimpo}</h3>
           <div className="text-white/40 text-xs font-medium mb-5">Adicionado em {new Date(video.criado_em).toLocaleDateString('pt-BR')}</div>
           
           {/* Botões Bottom */}
@@ -184,7 +209,7 @@ export default function AcervoVideosAdmin({
               action={deletarVideo.bind(null, video.id)} 
               className="col-span-1"
               onSubmit={(e) => {
-                if (!confirm('Tem certeza que deseja excluir este episódio? Essa ação não pode ser desfeita.')) {
+                if (!confirm('Tem certeza que deseja excluir este item? Essa ação não pode ser desfeita.')) {
                   e.preventDefault();
                 }
               }}
@@ -192,7 +217,7 @@ export default function AcervoVideosAdmin({
               <button 
                 type="submit" 
                 className="w-full flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl py-2.5 transition-colors" 
-                title="Deletar Episódio"
+                title="Deletar Item"
               >
                 <Trash2 size={16} />
               </button>
@@ -234,7 +259,11 @@ export default function AcervoVideosAdmin({
               const temporadasDaSerie = seriesAgrupadas[nomeSerie] || {}
               const estaAberta = !!temporadasAbertas[nomeSerie]
               const seriesMeta = seriesExistentes.find(s => s.titulo === nomeSerie)
-              const totalEpisodios = Object.values(temporadasDaSerie).reduce((acc, e) => acc + e.length, 0)
+              const totalTemporadasCount = Object.keys(temporadasDaSerie).length
+              const totalEpisodiosReais = Object.values(temporadasDaSerie)
+                .flat()
+                .filter(v => v.episodio_numero !== null && !isPlaceholder(v)).length
+
               const nomesSubTemps = Object.keys(temporadasDaSerie).sort()
 
               return (
@@ -260,11 +289,11 @@ export default function AcervoVideosAdmin({
                         </div>
                       )}
                       <div>
-                        <h4 className="text-white font-extrabold text-base tracking-wide flex items-center gap-2">
+                        <h4 className="text-[#FFD700] font-black text-base tracking-wide flex items-center gap-2">
                           {nomeSerie}
                         </h4>
                         <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mt-0.5">
-                          {totalEpisodios} {totalEpisodios === 1 ? 'episódio' : 'episódios'}
+                          {totalTemporadasCount} {totalTemporadasCount === 1 ? 'temporada' : 'temporadas'} • {totalEpisodiosReais} {totalEpisodiosReais === 1 ? 'episódio' : 'episódios'}
                           {seriesMeta && seriesMeta.descricao && <span className="ml-2 normal-case truncate max-w-[200px] md:max-w-[400px] inline-block align-bottom text-[10px] text-white/30 font-normal border-l border-white/10 pl-2"> {seriesMeta.descricao} </span>}
                         </p>
                       </div>
@@ -320,12 +349,16 @@ export default function AcervoVideosAdmin({
                       ) : (
                         nomesSubTemps.map(nomeSubTemp => {
                           const eps = temporadasDaSerie[nomeSubTemp]
+                          const epsReais = eps.filter(v => v.episodio_numero !== null && !isPlaceholder(v))
+
                           return (
                             <div key={nomeSubTemp} className="space-y-4">
                               <div className="flex items-center gap-3 border-b border-white/5 pb-2">
                                 <div className="w-1.5 h-4 rounded bg-[#D4AF37]" />
                                 <span className="text-white font-extrabold text-sm uppercase tracking-wider">{nomeSubTemp}</span>
-                                <span className="text-white/30 text-xs font-semibold">({eps.length} {eps.length === 1 ? 'episódio' : 'episódios'})</span>
+                                <span className="text-white/40 text-xs font-semibold">
+                                  ({epsReais.length} {epsReais.length === 1 ? 'episódio' : 'episódios'}{epsReais.length === 0 ? ' • Em Breve' : ''})
+                                </span>
                               </div>
                               
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

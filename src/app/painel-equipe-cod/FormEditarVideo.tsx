@@ -93,7 +93,9 @@ export function FormEditarVideo({ video, temporadasExistentes = [] }: Props) {
             className={inputCls}
           >
             {['Geral', 'Infantil', 'Adulto', 'Documentário', 'Louvor', 'Sermão', 'Testemunho', 'Temporada', 'Vídeo Clipe'].map(c => (
-              <option key={c} value={c}>{c}</option>
+              <option key={c} value={c}>
+                {c === 'Temporada' ? 'Episódio / Temporada (Faz parte de uma Série)' : c}
+              </option>
             ))}
           </select>
         </div>
