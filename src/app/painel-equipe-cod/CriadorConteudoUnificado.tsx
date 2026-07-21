@@ -16,9 +16,13 @@ import {
   CheckCircle2, Video, X, Tag, BookMarked, Music, Tv
 } from 'lucide-react'
 
-function sanitizeUrl(url: string | null | undefined): string {
-  if (!url) return '';
-  const trimmed = url.trim();
+function cleanUrlInput(val: string): string {
+  return val.trim().replace(/[<>"'\s]/g, '')
+}
+
+function sanitizeUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  const trimmed = url.trim().replace(/[<>"'\s]/g, '')
   if (
     trimmed.startsWith('https://') ||
     trimmed.startsWith('http://') ||
@@ -26,9 +30,13 @@ function sanitizeUrl(url: string | null | undefined): string {
     trimmed.startsWith('data:image/') ||
     trimmed.startsWith('/')
   ) {
-    return trimmed;
+    try {
+      return encodeURI(trimmed)
+    } catch {
+      return trimmed
+    }
   }
-  return '';
+  return null
 }
 
 import SubmitButton from '@/components/SubmitButton'
@@ -237,7 +245,10 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
     try {
       const vid = document.createElement('video')
       vid.preload = 'metadata'
-      vid.setAttribute('src', URL.createObjectURL(file))
+      const safeVidSrc = sanitizeUrl(URL.createObjectURL(file))
+      if (safeVidSrc) {
+        vid.setAttribute('src', safeVidSrc)
+      }
       vid.onloadedmetadata = () => {
         URL.revokeObjectURL(vid.src)
         const sec = Math.round(vid.duration)
@@ -612,11 +623,14 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                         </span>
                       </button>
 
-                      {(capaTemporadaPreview || capaTemporadaUrl) && (
-                        <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                          <img src={sanitizeUrl(capaTemporadaPreview || capaTemporadaUrl)} alt="Preview" className="w-full h-full object-cover" />
-                        </div>
-                      )}
+                      {(() => {
+                        const safeCapa = sanitizeUrl(capaTemporadaPreview || capaTemporadaUrl)
+                        return safeCapa ? (
+                          <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                            <img src={safeCapa} alt="Preview" className="w-full h-full object-cover" />
+                          </div>
+                        ) : null
+                      })()}
                     </div>
 
                     <div className="md:col-span-6">
@@ -625,8 +639,9 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                         required
                         value={capaTemporadaUrl} 
                         onChange={(e) => {
-                          setCapaTemporadaUrl(e.target.value)
-                          setCapaTemporadaPreview(e.target.value)
+                          const val = cleanUrlInput(e.target.value)
+                          setCapaTemporadaUrl(val)
+                          setCapaTemporadaPreview(val)
                         }}
                         placeholder="Ou cole a URL da capa aqui..." 
                         className={inputCls} 
@@ -973,11 +988,14 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                     </span>
                   </button>
 
-                  {(capaPreview || capaUrl) && (
-                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                      <img src={sanitizeUrl(capaPreview || capaUrl)} alt="Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
+                  {(() => {
+                    const safeCapa = sanitizeUrl(capaPreview || capaUrl)
+                    return safeCapa ? (
+                      <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                        <img src={safeCapa} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    ) : null
+                  })()}
                 </div>
 
                 <div className="md:col-span-6">
@@ -985,8 +1003,9 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                     name="thumbnail_url" 
                     value={capaUrl} 
                     onChange={(e) => {
-                      setCapaUrl(e.target.value)
-                      setCapaPreview(e.target.value)
+                      const val = cleanUrlInput(e.target.value)
+                      setCapaUrl(val)
+                      setCapaPreview(val)
                     }}
                     placeholder="Ou cole a URL da capa aqui..." 
                     className={inputCls} 
@@ -1063,18 +1082,22 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                   </span>
                 </label>
 
-                {(materialCapaPreview || materialCapaUrl) && (
-                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                    <img src={sanitizeUrl(materialCapaPreview || materialCapaUrl)} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
+                {(() => {
+                  const safeCapa = sanitizeUrl(materialCapaPreview || materialCapaUrl)
+                  return safeCapa ? (
+                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                      <img src={safeCapa} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  ) : null
+                })()}
               </div>
               <input 
                 name="capa_url" 
                 value={materialCapaUrl} 
                 onChange={(e) => {
-                  setMaterialCapaUrl(e.target.value)
-                  setMaterialCapaPreview(e.target.value)
+                  const val = cleanUrlInput(e.target.value)
+                  setMaterialCapaUrl(val)
+                  setMaterialCapaPreview(val)
                 }}
                 placeholder="Ou cole a URL da capa..." 
                 className={`${inputCls} mt-2`} 
@@ -1214,11 +1237,14 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                     </span>
                   </button>
 
-                  {(igCapaPreview || igCapaUrl) && (
-                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                      <img src={sanitizeUrl(igCapaPreview || igCapaUrl)} alt="Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
+                  {(() => {
+                    const safeCapa = sanitizeUrl(igCapaPreview || igCapaUrl)
+                    return safeCapa ? (
+                      <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                        <img src={safeCapa} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    ) : null
+                  })()}
                 </div>
 
                 <div className="md:col-span-6">
@@ -1226,8 +1252,9 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                     name="capa_url" 
                     value={igCapaUrl} 
                     onChange={(e) => {
-                      setIgCapaUrl(e.target.value)
-                      setIgCapaPreview(e.target.value)
+                      const val = cleanUrlInput(e.target.value)
+                      setIgCapaUrl(val)
+                      setIgCapaPreview(val)
                     }}
                     placeholder="Ou cole a URL da capa aqui..." 
                     className={inputCls} 
@@ -1286,18 +1313,22 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
                   </span>
                 </label>
 
-                {(revistaCapaPreview || revistaCapaUrl) && (
-                  <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                    <img src={sanitizeUrl(revistaCapaPreview || revistaCapaUrl)} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
+                {(() => {
+                  const safeCapa = sanitizeUrl(revistaCapaPreview || revistaCapaUrl)
+                  return safeCapa ? (
+                    <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
+                      <img src={safeCapa} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  ) : null
+                })()}
               </div>
               <input 
                 name="capa_url" 
                 value={revistaCapaUrl} 
                 onChange={(e) => {
-                  setRevistaCapaUrl(e.target.value)
-                  setRevistaCapaPreview(e.target.value)
+                  const val = cleanUrlInput(e.target.value)
+                  setRevistaCapaUrl(val)
+                  setRevistaCapaPreview(val)
                 }}
                 placeholder="Ou cole a URL da capa..." 
                 className={`${inputCls} mt-2`} 
