@@ -87,12 +87,23 @@ const TIPO_CONFIG: any = {
 }
 
 export default function CriadorConteudoUnificado({ temporadasExistentes = [], seriesExistentes = [] }: Props) {
-  const seriesParaExibir = Array.from(
-    new Set([
-      ...(seriesExistentes?.map(s => s.titulo) || []),
-      ...temporadasExistentes?.map(t => t.split(' | ')[0] || t)
-    ])
-  ).filter(Boolean) as string[]
+  const seriesMap = new Map<string, { titulo: string; capa_url?: string | null }>()
+
+  seriesExistentes.forEach(s => {
+    if (s.titulo) {
+      seriesMap.set(s.titulo, { titulo: s.titulo, capa_url: s.capa_url })
+    }
+  })
+
+  temporadasExistentes.forEach(t => {
+    const nomeSerie = t ? (t.split(' | ')[0] || t) : ''
+    if (nomeSerie && !seriesMap.has(nomeSerie)) {
+      seriesMap.set(nomeSerie, { titulo: nomeSerie, capa_url: null })
+    }
+  })
+
+  const listaSeries = Array.from(seriesMap.values())
+  const seriesParaExibir = listaSeries.map(s => s.titulo)
 
   const [isExpanded, setIsExpanded] = useState(false)
   const [tipoCriacao, setTipoCriacao] = useState<'video' | 'material' | 'instagram' | 'revista' | 'add_episodio' | 'nova_temporada' | 'clipe' | null>(null)
@@ -467,30 +478,55 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
               <h2 className="text-xl font-bold text-white mb-2">Em qual série você quer criar a nova temporada?</h2>
               <p className="text-white/50 text-xs mb-6">Selecione uma das séries abaixo para adicionar a temporada com sua capa personalizada.</p>
               
-              {seriesParaExibir.length === 0 ? (
+              {listaSeries.length === 0 ? (
                 <div className="bg-[#1a2234] border border-white/10 rounded-2xl p-8 text-center">
                   <p className="text-white/50 mb-4">Nenhuma série cadastrada ainda.</p>
                   <button 
                     onClick={() => handleRadialMenuSelect('nova_serie')}
-                    className="bg-[#D4AF37] text-black px-6 py-2 rounded-full font-bold hover:brightness-110 transition-all"
+                    className="bg-[#D4AF37] text-black px-6 py-2 rounded-full font-bold hover:brightness-110 transition-all cursor-pointer"
                   >
                     Criar Primeira Série
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {seriesParaExibir.map(serieNome => (
-                    <button
-                      key={serieNome}
-                      onClick={() => setSerieTemporadaSelecionada(serieNome)}
-                      className="bg-[#0f171e] hover:bg-[#1a2234] border border-white/5 hover:border-[#FFD700]/50 transition-all rounded-xl p-6 flex flex-col items-center gap-4 group cursor-pointer"
-                    >
-                      <div className="w-16 h-16 rounded-full bg-[#FFD700]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Tv size={28} className="text-[#FFD700]" />
-                      </div>
-                      <span className="text-white font-bold text-center text-sm">{serieNome}</span>
-                    </button>
-                  ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+                  {listaSeries.map(s => {
+                    const fallbackImage = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80'
+                    const capaUrl = s.capa_url || fallbackImage
+
+                    return (
+                      <button
+                        key={s.titulo}
+                        type="button"
+                        onClick={() => setSerieTemporadaSelecionada(s.titulo)}
+                        className="group relative flex flex-col rounded-2xl overflow-hidden bg-[#0f171e] border border-white/10 hover:border-[#FFD700] transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 shadow-xl cursor-pointer text-left"
+                      >
+                        {/* Imagem de Capa do Card da Série */}
+                        <div className="relative aspect-video w-full overflow-hidden bg-black">
+                          <img
+                            src={capaUrl}
+                            alt={s.titulo}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0f171e] via-transparent to-black/30" />
+                          <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-md border border-[#FFD700]/40 text-[#FFD700] text-[0.65rem] font-black uppercase tracking-wider px-2 py-0.5 rounded-md flex items-center gap-1 shadow-md">
+                            <Tv size={11} />
+                            Série
+                          </div>
+                        </div>
+
+                        {/* Nome da Série */}
+                        <div className="p-3.5 flex flex-col justify-between flex-grow bg-[#0f171e]">
+                          <h3 className="text-white font-extrabold text-sm line-clamp-1 group-hover:text-[#FFD700] transition-colors">
+                            {s.titulo}
+                          </h3>
+                          <span className="text-[#FFD700]/70 text-[0.7rem] font-bold mt-1 flex items-center gap-1">
+                            Selecionar Série &rarr;
+                          </span>
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -596,35 +632,60 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
       {tipoCriacao === 'add_episodio' && (
         <div key="form-add-episodio" className="admin-form-anim">
           <h2 className="text-xl font-bold text-white mb-6">Em qual série você quer adicionar este episódio?</h2>
-          {seriesParaExibir.length === 0 ? (
+          {listaSeries.length === 0 ? (
             <div className="bg-[#1a2234] border border-white/10 rounded-2xl p-8 text-center">
               <p className="text-white/50 mb-4">Nenhuma série existente encontrada.</p>
               <button 
                 onClick={() => handleRadialMenuSelect('nova_serie')}
-                className="bg-[#D4AF37] text-black px-6 py-2 rounded-full font-bold hover:brightness-110 transition-all"
+                className="bg-[#D4AF37] text-black px-6 py-2 rounded-full font-bold hover:brightness-110 transition-all cursor-pointer"
               >
                 Criar Nova Série
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {seriesParaExibir.map(temp => (
-                <button
-                  key={temp}
-                  onClick={() => {
-                    setVideoCategoria('Temporada')
-                    setModoTemporada('existente')
-                    setTemporadaSelecionada(temp)
-                    setTipoCriacao('video')
-                  }}
-                  className="bg-[#0f171e] hover:bg-[#1a2234] border border-white/5 hover:border-[#D4AF37]/50 transition-all rounded-xl p-6 flex flex-col items-center gap-4 group cursor-pointer"
-                >
-                  <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Tv2 size={28} className="text-[#D4AF37]" />
-                  </div>
-                  <span className="text-white font-bold text-center text-sm">{temp}</span>
-                </button>
-              ))}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {listaSeries.map(s => {
+                const fallbackImage = 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&q=80'
+                const capaUrl = s.capa_url || fallbackImage
+
+                return (
+                  <button
+                    key={s.titulo}
+                    type="button"
+                    onClick={() => {
+                      setVideoCategoria('Temporada')
+                      setModoTemporada('existente')
+                      setTemporadaSelecionada(s.titulo)
+                      setTipoCriacao('video')
+                    }}
+                    className="group relative flex flex-col rounded-2xl overflow-hidden bg-[#0f171e] border border-white/10 hover:border-[#D4AF37] transition-all duration-300 hover:scale-[1.03] hover:-translate-y-1 shadow-xl cursor-pointer text-left"
+                  >
+                    {/* Imagem de Capa do Card da Série */}
+                    <div className="relative aspect-video w-full overflow-hidden bg-black">
+                      <img
+                        src={capaUrl}
+                        alt={s.titulo}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0f171e] via-transparent to-black/30" />
+                      <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-[0.65rem] font-black uppercase tracking-wider px-2 py-0.5 rounded-md flex items-center gap-1 shadow-md">
+                        <Tv2 size={11} />
+                        Série
+                      </div>
+                    </div>
+
+                    {/* Nome da Série */}
+                    <div className="p-3.5 flex flex-col justify-between flex-grow bg-[#0f171e]">
+                      <h3 className="text-white font-extrabold text-sm line-clamp-1 group-hover:text-[#D4AF37] transition-colors">
+                        {s.titulo}
+                      </h3>
+                      <span className="text-[#D4AF37]/70 text-[0.7rem] font-bold mt-1 flex items-center gap-1">
+                        Adicionar Episódio &rarr;
+                      </span>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
