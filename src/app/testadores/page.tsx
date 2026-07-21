@@ -213,7 +213,7 @@ export default function TestadoresPage() {
               style={{ background: 'rgba(212,175,55,0.08)', border: '1.5px solid rgba(212,175,55,0.2)', color: '#FFD54F' }}>
               <ShieldAlert size={24} className="shrink-0" style={{ color: '#D4AF37' }} />
               <div>
-                Certifique-se de que o e-mail informado acima é o mesmo Gmail que você utiliza logado na Google Play Store no seu aparelho Android ou TV.
+                Certifique-se de que o e-mail informado acima é o mesmo Gmail que você utiliza logado na Google Play Store no seu aparelho Android.
               </div>
             </div>
 
