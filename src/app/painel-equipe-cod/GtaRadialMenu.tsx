@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Film, BookOpen, BookMarked, Video, X, ChevronLeft, Plus } from 'lucide-react'
+import { Film, BookOpen, BookMarked, Video, X, ChevronLeft, Plus, Music } from 'lucide-react'
 
 // --- FUNÇÕES MATEMÁTICAS PARA O MENU RADIAL EM SVG ---
 function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
@@ -36,7 +36,7 @@ function describeArc(x: number, y: number, innerRadius: number, outerRadius: num
 
 type Props = {
   onClose: () => void
-  onSelect: (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'add_episodio') => void
+  onSelect: (tipo: 'video' | 'material' | 'revista' | 'instagram' | 'nova_serie' | 'add_episodio' | 'clipe') => void
 }
 
 export function GtaRadialMenu({ onClose, onSelect }: Props) {
@@ -50,12 +50,13 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
     { id: 'revista', label: 'Revista', icon: BookMarked, startAngle: 180, endAngle: 300, iconAngle: 240, color: '#10b981' },
   ]
 
-  // Opções Nível 2 (Submenu de Vídeos - 4 Fatias)
+  // Opções Nível 2 (Submenu de Vídeos - 5 Fatias)
   const level2 = [
-    { id: 'nova_serie', label: 'Nova Série', icon: Video, startAngle: -135, endAngle: -45, iconAngle: -90, color: '#D4AF37' },
-    { id: 'add_episodio', label: '+ Episódio', icon: Plus, startAngle: -45, endAngle: 45, iconAngle: 0, color: '#10b981' },
-    { id: 'insta', label: 'V. Insta', icon: IgIcon, startAngle: 45, endAngle: 135, iconAngle: 90, color: '#E1306C' },
-    { id: 'back', label: 'Voltar', icon: ChevronLeft, startAngle: 135, endAngle: 225, iconAngle: 180, color: '#ffffff' },
+    { id: 'nova_serie', label: 'Nova Série', icon: Video, startAngle: -162, endAngle: -90, iconAngle: -126, color: '#D4AF37' },
+    { id: 'add_episodio', label: '+ Episódio', icon: Plus, startAngle: -90, endAngle: -18, iconAngle: -54, color: '#10b981' },
+    { id: 'clipe', label: 'Vídeo Clipe', icon: Music, startAngle: -18, endAngle: 54, iconAngle: 18, color: '#3b82f6' },
+    { id: 'insta', label: 'V. Insta', icon: IgIcon, startAngle: 54, endAngle: 126, iconAngle: 90, color: '#E1306C' },
+    { id: 'back', label: 'Voltar', icon: ChevronLeft, startAngle: 126, endAngle: 198, iconAngle: 162, color: '#ffffff' },
   ]
 
   const currentOptions = level === 1 ? level1 : level2
@@ -71,6 +72,7 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
     }
     else if (id === 'nova_serie') onSelect('nova_serie')
     else if (id === 'add_episodio') onSelect('add_episodio')
+    else if (id === 'clipe') onSelect('clipe')
     else if (id === 'insta') onSelect('instagram')
     else if (id === 'material') onSelect('material')
     else if (id === 'revista') onSelect('revista')
@@ -141,7 +143,6 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
 
           {/* Ícones e Textos sobrepostos perfeitamente no centro de cada fatia */}
           {currentOptions.map(opt => {
-             // O centro do ícone fica na metade do caminho entre o raio interno e externo
              const iconRadius = innerRadius + ((outerRadius - innerRadius) / 2)
              const pos = polarToCartesian(center, center, iconRadius, opt.iconAngle)
              const isHovered = hoveredId === opt.id
@@ -157,12 +158,12 @@ export function GtaRadialMenu({ onClose, onSelect }: Props) {
                  }}
                >
                  <opt.icon 
-                    size={28} 
+                    size={26} 
                     color={isHovered ? '#ffffff' : opt.color} 
                     className="drop-shadow-lg transition-colors duration-300" 
                  />
                  <span 
-                    className={`font-extrabold text-[11px] tracking-[0.15em] uppercase mt-2 drop-shadow-md transition-colors duration-300 ${
+                    className={`font-extrabold text-[10px] tracking-[0.12em] uppercase mt-1.5 drop-shadow-md transition-colors duration-300 ${
                       isHovered ? 'text-white' : 'text-white/60'
                     }`}
                  >

@@ -1,26 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
-import HeroBanner from '@/components/HeroBanner'
-import VideoCard from '@/components/VideoCard'
-import CategoryCarousel from '@/components/CategoryCarousel'
-import NotificationBell from '@/components/NotificationBell'
-import Footer from '@/components/Footer'
-
-type Video = {
-  id: string
-  titulo: string
-  descricao: string | null
-  categoria: string
-  thumbnail_url: string | null
-  bunny_video_id: string | null
-  bunny_library_id: string
-  duracao: string | null
-  criado_em: string
-  ativo: boolean
-  em_breve?: boolean
-}
+import WatchCatalog, { VideoData, SerieDestaqueType, TemporadaGroup } from '@/components/WatchCatalog'
+import { SerieType } from '@/components/SerieCard'
 
 export default async function WatchPage() {
   const supabase = await createClient()
@@ -33,223 +15,197 @@ export default async function WatchPage() {
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
 
   // 🔒 PROTEÇÃO DE PLANO: verifica se o assinante tem acesso ativo
-  // plano_ativo vem do user_metadata (definido pelo webhook da Stripe)
-  // Admin sempre tem acesso. Demais usuários precisam de plano_ativo = true
   const planoAtivo = user.user_metadata?.plano_ativo === true
   if (!isAdmin && !planoAtivo) {
     redirect('/?acesso=expirado')
   }
 
-
+  // 1. Busca todos os vídeos ativos
   const { data: videos } = await supabase
     .from('videos').select('*').eq('ativo', true)
     .order('criado_em', { ascending: false })
 
-  const videoDestaque = (videos ?? []).find(v => !v.em_breve) || (videos ?? [])[0]
+  // 2. Busca todas as séries cadastradas na tabela 'series'
+  const { data: seriesTable } = await supabase
+    .from('series').select('*').order('criado_em', { ascending: false })
 
-  // Busca IDs dos favoritos do usuário para destacar nos cards
-  const { data: favoritosData } = await supabase
-    .from('favoritos').select('video_id').eq('user_id', user!.id)
-  const favoritosSet = new Set((favoritosData ?? []).map(f => f.video_id))
+  const todosVideos = (videos ?? []) as VideoData[]
+  const todasSeries = (seriesTable ?? []) as any[]
+
+  const videoDestaque = todosVideos.find(v => !v.em_breve) || todosVideos[0] || null
 
   // Etiqueta do plano para exibição
   const etiquetaPlanoStr = (user.user_metadata?.etiqueta_plano || '').toLowerCase()
   const isBasico = !isAdmin && (etiquetaPlanoStr.includes('basico') || etiquetaPlanoStr.includes('básico'))
 
-  // 🕒 HISTÓRICO DE VISUALIZAÇÕES (Continue Assistindo)
+  // 3. HISTÓRICO DE VISUALIZAÇÕES (Continue Assistindo)
   const { data: historico } = await supabase
     .from('visualizacoes')
     .select('video_id, criado_em, videos!inner(*)')
     .eq('user_id', user.id)
     .order('criado_em', { ascending: false })
 
-  const recentes: Video[] = []
+  const recentes: VideoData[] = []
   const idsVistos = new Set<string>()
   for (const item of (historico ?? [])) {
-    const videoData = Array.isArray(item.videos) ? item.videos[0] : item.videos;
+    const videoData = Array.isArray(item.videos) ? item.videos[0] : item.videos
     if (videoData && !idsVistos.has(item.video_id) && videoData.ativo) {
       idsVistos.add(item.video_id)
-      recentes.push(videoData as Video)
+      recentes.push(videoData as VideoData)
     }
   }
 
-  // 🎬 ORGANIZAÇÃO DE CATEGORIAS EXCLUSIVAS (Última Temporada e Clipes)
-  const videosTemporadaTodos = (videos ?? []).filter(v => v.categoria === 'Temporada' && v.temporada_nome);
-  let ultimaTemporadaNome: string | null = null;
-  let exibirTituloCarrossel: string = 'Temporada';
-  let videosUltimaTemporada: Video[] = [];
+  // 4. AGRUPAMENTO DINÂMICO DE SÉRIES, TEMPORADAS E EPISÓDIOS
 
-  if (videosTemporadaTodos.length > 0) {
-    // Ordenamos por data de criação desc para achar o mais recente e descobrir o nome da última temporada
-    const ordenadosPorCriadoEm = [...videosTemporadaTodos].sort((a, b) => {
-      return new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime();
-    });
-    ultimaTemporadaNome = ordenadosPorCriadoEm[0].temporada_nome;
-    
-    if (ultimaTemporadaNome) {
-      exibirTituloCarrossel = ultimaTemporadaNome.includes(' | ')
-        ? ultimaTemporadaNome.replace(' | ', ' - ')
-        : ultimaTemporadaNome;
-      // Filtramos todos os episódios dessa temporada específica e ordenamos por número de episódio em ordem crescente (1, 2, 3...)
-      videosUltimaTemporada = (videos ?? [])
-        .filter(v => v.categoria === 'Temporada' && v.temporada_nome === ultimaTemporadaNome)
-        .sort((a, b) => {
-          const epA = a.episodio_numero ?? 0;
-          const epB = b.episodio_numero ?? 0;
-          return epA - epB;
-        });
+  // Mapeamento: seriesAgrupadas[nomeSerie][nomeTemporada] = list<VideoData>
+  const seriesAgrupadas: Record<string, Record<string, VideoData[]>> = {}
+  
+  // Garantir que séries da tabela 'series' iniciem no dicionário
+  todasSeries.forEach(s => {
+    if (s.titulo) {
+      seriesAgrupadas[s.titulo] = {}
+    }
+  })
+
+  // Agrupar vídeos da categoria 'Temporada'
+  todosVideos.forEach(v => {
+    if (v.categoria === 'Temporada' && v.temporada_nome) {
+      let nomeSerie = v.temporada_nome
+      let nomeTemporada = 'Temporada 1'
+
+      if (v.temporada_nome.includes(' | ')) {
+        const partes = v.temporada_nome.split(' | ')
+        nomeSerie = partes[0]
+        nomeTemporada = partes[1] || 'Temporada 1'
+      } else if (v.temporada_nome.includes(' - ')) {
+        const partes = v.temporada_nome.split(' - ')
+        nomeSerie = partes[0]
+        nomeTemporada = partes[1] || 'Temporada 1'
+      }
+
+      if (!seriesAgrupadas[nomeSerie]) {
+        seriesAgrupadas[nomeSerie] = {}
+      }
+      if (!seriesAgrupadas[nomeSerie][nomeTemporada]) {
+        seriesAgrupadas[nomeSerie][nomeTemporada] = []
+      }
+      seriesAgrupadas[nomeSerie][nomeTemporada].push(v)
+    }
+  })
+
+  // Descobrir a Série Destaque (pertencente ao último episódio de série lançado)
+  let nomeSerieDestaque: string | null = null
+  const ultimoVideoSerie = todosVideos.find(v => v.categoria === 'Temporada' && v.temporada_nome)
+
+  if (ultimoVideoSerie && ultimoVideoSerie.temporada_nome) {
+    if (ultimoVideoSerie.temporada_nome.includes(' | ')) {
+      nomeSerieDestaque = ultimoVideoSerie.temporada_nome.split(' | ')[0]
+    } else if (ultimoVideoSerie.temporada_nome.includes(' - ')) {
+      nomeSerieDestaque = ultimoVideoSerie.temporada_nome.split(' - ')[0]
+    } else {
+      nomeSerieDestaque = ultimoVideoSerie.temporada_nome
     }
   }
 
-  // Filtramos os clipes musicais (tolerando "Video Clip", "Vídeo Clipe", etc.) ordenados por criado_em decrescente
-  const videosClipes = (videos ?? []).filter(v => 
+  // Se não encontrou nenhuma série destaque via temporada_nome, pega a primeira série agrupada
+  const listaNomesSeries = Object.keys(seriesAgrupadas)
+  if (!nomeSerieDestaque && listaNomesSeries.length > 0) {
+    nomeSerieDestaque = listaNomesSeries[0]
+  }
+
+  // Construir o objeto `serieDestaque` (com as temporadas expostas)
+  let serieDestaque: SerieDestaqueType | null = null
+
+  if (nomeSerieDestaque && seriesAgrupadas[nomeSerieDestaque]) {
+    const temporadasMap = seriesAgrupadas[nomeSerieDestaque]
+    const serieMeta = todasSeries.find(s => s.titulo === nomeSerieDestaque)
+
+    const temporadas: TemporadaGroup[] = Object.entries(temporadasMap).map(([nomeTemp, listaEps]) => {
+      // Ordena episódios da temporada pelo episodio_numero
+      listaEps.sort((a, b) => (a.episodio_numero ?? 0) - (b.episodio_numero ?? 0))
+      return {
+        nome: nomeTemp,
+        capaUrl: listaEps[0]?.thumbnail_url || serieMeta?.capa_url || null,
+        episodios: listaEps
+      }
+    })
+
+    if (temporadas.length > 0) {
+      serieDestaque = {
+        titulo: nomeSerieDestaque,
+        temporadas
+      }
+    }
+  }
+
+  // Construir a lista `outrasSeries` (apenas para as séries que NÃO são a destaque atual)
+  const outrasSeries: SerieType[] = []
+
+  listaNomesSeries.forEach(nomeSerie => {
+    if (nomeSerie !== nomeSerieDestaque) {
+      const temporadasMap = seriesAgrupadas[nomeSerie] || {}
+      const temporadasNomes = Object.keys(temporadasMap)
+      
+      let episodiosTotal = 0
+      let capaUrl: string | null = null
+
+      temporadasNomes.forEach(nomeTemp => {
+        const eps = temporadasMap[nomeTemp] || []
+        episodiosTotal += eps.length
+        if (!capaUrl && eps[0]?.thumbnail_url) {
+          capaUrl = eps[0].thumbnail_url
+        }
+      })
+
+      const serieMeta = todasSeries.find(s => s.titulo === nomeSerie)
+      if (serieMeta && serieMeta.capa_url) {
+        capaUrl = serieMeta.capa_url
+      }
+
+      // Adiciona o Card de Série se houver temporadas ou se estiver cadastrada na tabela series
+      if (temporadasNomes.length > 0 || serieMeta) {
+        outrasSeries.push({
+          id: serieMeta?.id || encodeURIComponent(nomeSerie),
+          titulo: serieMeta?.titulo || nomeSerie,
+          descricao: serieMeta?.descricao || null,
+          capa_url: capaUrl,
+          temporadasCount: temporadasNomes.length,
+          episodiosCount: episodiosTotal
+        })
+      }
+    }
+  })
+
+  // 5. Filtro para vídeos clipes
+  const videosClipes = todosVideos.filter(v => 
     v.categoria && (
       v.categoria.toLowerCase().includes('clip') || 
       v.categoria.toLowerCase().includes('clipe')
     )
-  );
-
+  )
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
-
-      {/* ── CONTEÚDO ── */}
       <main className="pt-[72px]">
 
         {/* Estado vazio */}
-        {(!videos || videos.length === 0) && (
+        {(!todosVideos || todosVideos.length === 0) ? (
           <div className="flex flex-col items-center justify-center pt-32 px-4 text-center gap-4">
             <Image src="/logo.png" alt="Logo" width={80} height={80} className="opacity-40 object-contain" />
             <h2 className="text-xl text-white font-bold">Nenhum conteúdo disponível ainda.</h2>
             <p className="text-[#94A3B8]">Em breve o catálogo será atualizado.</p>
           </div>
+        ) : (
+          <WatchCatalog
+            videoDestaque={videoDestaque}
+            recentes={recentes}
+            serieDestaque={serieDestaque}
+            outrasSeries={outrasSeries}
+            videosClipes={videosClipes}
+            isBasico={isBasico}
+          />
         )}
 
-        {videos && videos.length > 0 && (
-          <>
-            {/* HeroBanner */}
-            {videoDestaque && <HeroBanner video={videoDestaque as any} />}
-
-            {/* Separador com estilo ouro */}
-            <div className="flex items-center gap-6 px-5 md:px-10 lg:px-16 mt-12 mb-8">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent" />
-              <span className="text-[#D4AF37] text-xs md:text-sm font-black tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]">
-                Catálogo
-              </span>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent" />
-            </div>
-
-            <div className="space-y-4">
-              {recentes.length > 0 && (
-                <div className="mb-6">
-                  <CategoryCarousel title="Continue Assistindo" count={1}>
-                    {recentes.slice(0, 1).map((video: Video) => (
-                      <VideoCard key={`hist-${video.id}`} video={video} />
-                    ))}
-                  </CategoryCarousel>
-                </div>
-              )}
-
-              {videosUltimaTemporada.length > 0 && (
-                <CategoryCarousel title={exibirTituloCarrossel} count={videosUltimaTemporada.length}>
-                  {videosUltimaTemporada.map((video: Video) => (
-                    <VideoCard key={video.id} video={video} />
-                  ))}
-                </CategoryCarousel>
-              )}
-
-              {videosClipes.length > 0 && (
-                <CategoryCarousel title="Vídeos Clipes" count={videosClipes.length}>
-                  {videosClipes.map((video: Video) => (
-                    <VideoCard key={video.id} video={video} />
-                  ))}
-                </CategoryCarousel>
-              )}
-
-              {!isBasico && (
-                <div className="pt-8 pb-4">
-                  <div className="px-5 md:px-10 lg:px-16 mb-4">
-                    <h2 className="text-[#D4AF37] font-black text-lg md:text-xl tracking-tight uppercase">Conteúdo Exclusivo</h2>
-                  </div>
-                  <div className="px-5 md:px-10 lg:px-16">
-                    <div className="flex flex-row gap-6 overflow-x-auto pb-2">
-
-                      {/* Card — Material Didático */}
-                      <div
-                        className="flex flex-col gap-3 shrink-0 group"
-                        style={{ width: 'clamp(240px, 28vw, 340px)' }}
-                      >
-                        <Link
-                          href="/materiais"
-                          className="relative block outline-none cursor-pointer rounded-xl shadow-2xl"
-                          style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.06)' }}
-                        >
-                          <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                            <img
-                              src="/catequese.png"
-                              alt="Material Didático"
-                              className="w-full h-full object-cover"
-                            />
-                            <div
-                              className="absolute inset-0"
-                              style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.3) 0%, transparent 100%)' }}
-                            />
-                          </div>
-                        </Link>
-                        <Link href="/materiais" className="block hover:no-underline">
-                          <span className="text-[#D4AF37] text-[0.6rem] font-extrabold uppercase tracking-widest block mb-1">CONTEÚDO PEDAGÓGICO</span>
-                          <h3 className="text-white text-base font-extrabold leading-tight group-hover:text-[#D4AF37] transition-colors">
-                            Livros, HQs e Desenhos
-                          </h3>
-                          <p className="text-white/70 text-xs mt-1.5 leading-snug">
-                            Acesse e faça download de livros pedagógicos, desenhos e histórias de santos.
-                          </p>
-                        </Link>
-                      </div>
-
-                      {/* Card — Vídeos Temáticos */}
-                      <div className="flex flex-col gap-3 shrink-0 group" style={{ width: 'clamp(240px, 28vw, 340px)' }}>
-                        <Link
-                          href="/videos-tematicos"
-                          className="relative block outline-none cursor-pointer rounded-xl shadow-2xl"
-                          style={{ background: '#111827', border: '1px solid rgba(225,48,108,0.25)' }}
-                        >
-                          <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-                            <img
-                              src="/insta.png"
-                              alt="Vídeos Instagram"
-                              className="w-full h-full object-cover"
-                            />
-                            <div
-                              className="absolute inset-0"
-                              style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.4) 0%, transparent 70%)' }}
-                            />
-                          </div>
-                        </Link>
-                        <Link href="/videos-tematicos" className="block hover:no-underline">
-                          <span className="text-[0.6rem] font-extrabold uppercase tracking-widest block mb-1" style={{ color: '#E1306C' }}>VÍDEOS EXCLUSIVOS</span>
-                          <h3 className="text-white text-base font-extrabold leading-tight transition-all"
-                            style={{ backgroundImage: 'linear-gradient(135deg,#c084fc,#E1306C)', WebkitBackgroundClip: 'text' }}>
-                            Vídeos Instagram
-                          </h3>
-                          <p className="text-white/70 text-xs mt-1.5 leading-snug">
-                            Conteúdo exclusivo em vídeo. Assista e faça download direto pelo site.
-                          </p>
-                        </Link>
-                      </div>
-
-
-                    </div>
-                  </div>
-                </div>
-              )}
-
-            </div>
-
-            {/* Rodapé */}
-            <Footer />
-          </>
-        )}
       </main>
     </div>
   )

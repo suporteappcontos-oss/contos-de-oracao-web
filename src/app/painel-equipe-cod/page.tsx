@@ -21,6 +21,7 @@ import { GerenciadorLoja } from './GerenciadorLoja'
 import { FormAcessoVitalicio } from './FormAcessoVitalicio'
 import CriadorConteudoUnificado from './CriadorConteudoUnificado'
 import AcervoVideosAdmin from './AcervoVideosAdmin'
+import AcervoClipesAdmin from './AcervoClipesAdmin'
 import { FormEditarVideo } from './FormEditarVideo'
 import { BotoesControleUsuario } from './BotoesControleUsuario'
 import { AssinantesComFiltros } from './AssinantesComFiltros'
@@ -514,6 +515,13 @@ export default async function AdminPage({
                 videos={(videos || []) as any} 
                 temporadasExistentes={temporadasExistentes}
                 seriesExistentes={(series ?? []) as any}
+                editId={editId} 
+                editingVideo={editingVideo as any} 
+              />
+            }
+            clipes={
+              <AcervoClipesAdmin 
+                videos={(videos || []) as any} 
                 editId={editId} 
                 editingVideo={editingVideo as any} 
               />

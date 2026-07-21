@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Film, BookOpen, BookMarked, Video } from 'lucide-react'
+import { Film, BookOpen, BookMarked, Music } from 'lucide-react'
 
 function IgIcon({ size = 18 }: { size?: number }) {
   return (
@@ -14,16 +14,18 @@ function IgIcon({ size = 18 }: { size?: number }) {
 type CatalogoTabsLayoutProps = {
   criador: React.ReactNode
   series: React.ReactNode
+  clipes?: React.ReactNode
   materiais: React.ReactNode
   instagram: React.ReactNode
   revistas: React.ReactNode
 }
 
-type TabType = 'series' | 'materiais' | 'revistas' | 'instagram'
+type TabType = 'series' | 'clipes' | 'materiais' | 'revistas' | 'instagram'
 
 export function CatalogoTabsLayout({
   criador,
   series,
+  clipes,
   materiais,
   instagram,
   revistas
@@ -59,6 +61,18 @@ export function CatalogoTabsLayout({
               </button>
 
               <button
+                onClick={() => setActiveSubTab('clipes')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
+                  activeSubTab === 'clipes'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-400 text-white shadow-md'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Music size={18} />
+                Vídeos Clipes
+              </button>
+
+              <button
                 onClick={() => setActiveSubTab('materiais')}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                   activeSubTab === 'materiais'
@@ -91,7 +105,7 @@ export function CatalogoTabsLayout({
                 }`}
               >
                 <IgIcon size={18} />
-                Instagram (Clipes)
+                Instagram (Reels)
               </button>
             </nav>
           </div>
@@ -103,6 +117,10 @@ export function CatalogoTabsLayout({
             {/* O conteúdo exibido depende da aba lateral selecionada */}
             <div className={activeSubTab === 'series' ? 'block' : 'hidden'}>
               {series}
+            </div>
+
+            <div className={activeSubTab === 'clipes' ? 'block' : 'hidden'}>
+              {clipes}
             </div>
 
             <div className={activeSubTab === 'materiais' ? 'block' : 'hidden'}>
