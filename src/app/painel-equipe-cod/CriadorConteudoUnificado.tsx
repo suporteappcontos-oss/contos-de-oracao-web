@@ -467,7 +467,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
             </div>
           )}
 
-          <form action={adicionarVideo} encType="multipart/form-data">
+          <form action={async (formData) => { await adicionarVideo(formData) }} encType="multipart/form-data">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-8">
               <label className={labelCls}>Título *</label>
@@ -749,7 +749,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
       {/* ================= FORMULÁRIO DE MATERIAL DIDÁTICO ================= */}
       {tipoCriacao === 'material' && (
         <div key="form-material" className="admin-form-anim">
-        <form action={publicarMaterial} encType="multipart/form-data">
+        <form action={async (formData) => { await publicarMaterial(formData) }} encType="multipart/form-data">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-8">
               <label className={labelCls}>Título do Material *</label>
@@ -874,7 +874,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
       {/* ================= FORMULÁRIO DE INSTAGRAM (REELS) ================= */}
       {tipoCriacao === 'instagram' && (
         <div key="form-instagram" className="admin-form-anim">
-        <form action={adicionarVideoTematico} encType="multipart/form-data">
+        <form action={async (formData) => { await adicionarVideoTematico(formData) }} encType="multipart/form-data">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-12">
               <label className={labelCls}>Título do Vídeo Instagram *</label>
@@ -925,7 +925,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
       {/* ================= FORMULÁRIO DE REVISTA ================= */}
       {tipoCriacao === 'revista' && (
         <div key="form-revista" className="admin-form-anim">
-        <form action={publicarRevista} encType="multipart/form-data">
+        <form action={async (formData) => { await publicarRevista(formData) }} encType="multipart/form-data">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-12">
               <label className={labelCls}>Título da Revista *</label>
