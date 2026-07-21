@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { 
-  Search, Copy, Check, MessageSquare, 
-  Smartphone, Tv, RefreshCw, CheckCircle2, AlertCircle, Trash2
+  Search, Copy, Check, MessageSquare, RefreshCw, AlertCircle, Trash2
 } from 'lucide-react'
 import { deletarTestador } from './actions'
 
@@ -13,8 +12,6 @@ type Testador = {
   nome: string
   email: string
   whatsapp: string
-  sistema_celular: string
-  sistema_tv: string
   aceitou_termos: boolean
   criado_em: string
 }
@@ -134,7 +131,7 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
     const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone
     
     const mensagem = `Olá! Sua vaga de testador para o aplicativo Contos de Oração foi selecionada.\n\n` +
-      `Para iniciar os testes na Google Play Store e TV, por favor entre no nosso grupo de suporte fechado no WhatsApp clicando no link abaixo:\n` +
+      `Para iniciar os testes na Google Play Store, por favor entre no nosso grupo de suporte fechado no WhatsApp clicando no link abaixo:\n` +
       `${linkWhatsapp || '[Link do Grupo pendente de cadastro]'}\n\n` +
       `Qualquer dúvida, estamos à disposição por lá!`
 
@@ -150,9 +147,6 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
 
   // Estatísticas
   const totalCadastros = testadores.length
-  const totalCelularesAndroid = testadores.filter(t => t.sistema_celular === 'android').length
-  const totalTvsAndroid = testadores.filter(t => t.sistema_tv === 'android_tv').length
-  const totalElegiveis = testadores.filter(t => t.sistema_celular === 'android' && t.sistema_tv === 'android_tv').length
 
   return (
     <div className="space-y-8 animate-fadeIn" style={{ fontFamily: 'Outfit, sans-serif' }}>
@@ -211,46 +205,12 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
         <div className="bg-[#111827] border border-white/5 rounded-2xl p-5 flex items-center justify-between">
           <div>
             <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">Total Voluntários</span>
-            <span className="text-white text-3xl font-black">{totalCadastros}</span>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/60">
-            {totalCadastros}
-          </div>
-        </div>
-
-        {/* Total Elegíveis */}
-        <div className="bg-[#111827] border border-white/5 rounded-2xl p-5 flex items-center justify-between">
-          <div>
-            <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">Elegíveis (Ambos Android)</span>
-            <span className="text-[#10B981] text-3xl font-black">{totalElegiveis}</span>
+            <span className="text-[#10B981] text-3xl font-black">{totalCadastros}</span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-[#10B981]/10 flex items-center justify-center text-[#10B981]">
-            <CheckCircle2 size={20} />
+            <Check size={20} />
           </div>
         </div>
-
-        {/* Celular Android */}
-        <div className="bg-[#111827] border border-white/5 rounded-2xl p-5 flex items-center justify-between">
-          <div>
-            <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">Celular Android</span>
-            <span className="text-white text-3xl font-black">{totalCelularesAndroid}</span>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/50">
-            <Smartphone size={20} />
-          </div>
-        </div>
-
-        {/* TV Android */}
-        <div className="bg-[#111827] border border-white/5 rounded-2xl p-5 flex items-center justify-between">
-          <div>
-            <span className="text-white/40 text-[0.65rem] uppercase tracking-wider font-bold block mb-1">Android TV / Fire Stick</span>
-            <span className="text-white text-3xl font-black">{totalTvsAndroid}</span>
-          </div>
-          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/50">
-            <Tv size={20} />
-          </div>
-        </div>
-
       </div>
 
       {/* 📋 LISTAGEM E CONTROLES */}
@@ -300,7 +260,6 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                 <th className="px-6 py-4">Voluntário</th>
                 <th className="px-6 py-4">E-mail da Play Store</th>
                 <th className="px-6 py-4">WhatsApp</th>
-                <th className="px-6 py-4 text-center">Aparelhos</th>
                 <th className="px-6 py-4 text-right">Data Cadastro</th>
                 <th className="px-6 py-4 text-right">Ação</th>
               </tr>
@@ -308,29 +267,20 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
             <tbody className="divide-y divide-white/5 text-sm">
               {testadoresFiltrados.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-white/30 text-xs">
+                  <td colSpan={5} className="text-center py-12 text-white/30 text-xs">
                     Nenhum testador voluntário encontrado.
                   </td>
                 </tr>
               ) : (
                 testadoresFiltrados.map(t => {
-                  const isCelularOk = t.sistema_celular === 'android'
-                  const isTvOk = t.sistema_tv === 'android_tv'
-                  const elegivel = isCelularOk && isTvOk
-
                   return (
-                    <tr key={t.id} className={`hover:bg-white/[0.01] transition-colors ${!elegivel ? 'opacity-50' : ''}`}>
+                    <tr key={t.id} className="hover:bg-white/[0.01] transition-colors">
                       
-                      {/* Nome e Elegibilidade */}
+                      {/* Nome */}
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="font-bold text-white leading-tight flex items-center gap-1.5">
                             {t.nome}
-                            {!elegivel && (
-                              <span className="text-[0.6rem] bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded uppercase font-black tracking-wider">
-                                Incompatível
-                              </span>
-                            )}
                           </span>
                         </div>
                       </td>
@@ -371,29 +321,6 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                         </div>
                       </td>
 
-                      {/* Aparelhos (Celular / TV) */}
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          {/* Badge Celular */}
-                          <span 
-                            className={`flex items-center gap-1 text-[0.65rem] px-2.5 py-1 rounded-full font-black uppercase tracking-wider ${isCelularOk ? 'bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}
-                            title={`Celular: ${t.sistema_celular}`}
-                          >
-                            <Smartphone size={10} />
-                            {isCelularOk ? 'Android' : 'iOS/Outro'}
-                          </span>
-                          
-                          {/* Badge TV */}
-                          <span 
-                            className={`flex items-center gap-1 text-[0.65rem] px-2.5 py-1 rounded-full font-black uppercase tracking-wider ${isTvOk ? 'bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}
-                            title={`Aparelho TV: ${t.sistema_tv}`}
-                          >
-                            <Tv size={10} />
-                            {isTvOk ? 'Android TV' : 'Outro'}
-                          </span>
-                        </div>
-                      </td>
-
                       {/* Data de Criação */}
                       <td className="px-6 py-4 text-right text-white/40 text-xs font-medium">
                         {new Date(t.criado_em).toLocaleDateString('pt-BR', {
@@ -412,7 +339,7 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                             href={obterLinkWhatsapp(t.whatsapp)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 ${elegivel ? 'bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20' : 'bg-white/5 text-white/30 border-white/5 pointer-events-none'}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20"
                             title="Enviar convite com link de testes no WhatsApp"
                           >
                             <MessageSquare size={13} />
@@ -442,7 +369,7 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
         <div className="flex gap-3 rounded-2xl p-4 text-xs bg-white/[0.02] border border-white/5 text-white/50">
           <span className="text-[#D4AF37] text-base shrink-0">💡</span>
           <div className="leading-relaxed">
-            <strong className="text-white block mb-0.5">Como recrutar os 16 testadores na Play Store:</strong>
+            <strong className="text-white block mb-0.5">Como recrutar os 14 testadores na Play Store:</strong>
             1. Copie a lista de e-mails em lote clicando no botão acima.
             2. Vá no Painel da Google Play Console, acesse <strong>Testes Fechados</strong>, crie uma lista de testadores e cole os e-mails lá.
             3. Clique em <strong>Mandar Convite</strong> para cada voluntário qualificado na tabela acima para abrir uma conversa no WhatsApp contendo o link do grupo de testes.
