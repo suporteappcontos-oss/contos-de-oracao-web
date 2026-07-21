@@ -97,11 +97,11 @@ export default function TestadoresPage() {
         <div className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '1.5' }}>
           {enviado ? (
             <p>
-              Cadastro efetuado com sucesso! Estamos recrutando os últimos voluntários para compor o grupo fechado de **14 testadores** para homologar o aplicativo na Google Play Store.
+              Cadastro efetuado com sucesso! Estamos recrutando os últimos voluntários para compor o **grupo fechado de testadores do app Contos de Oração** para homologar o aplicativo na Google Play Store.
             </p>
           ) : (
             <p>
-              Estamos selecionando voluntários para o **grupo fechado de 14 testadores** e homologar nosso aplicativo na Google Play Store. Ajude-nos participando do teste por 14 dias!
+              Estamos selecionando voluntários para o **grupo fechado de testadores do app Contos de Oração** e homologar nosso aplicativo na Google Play Store. Ajude-nos participando do teste por 20 dias!
             </p>
           )}
         </div>
@@ -230,7 +230,7 @@ export default function TestadoresPage() {
               />
               <label htmlFor="compromisso" className="text-xs select-none cursor-pointer"
                 style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.4' }}>
-                Comprometo-me a manter o app instalado por 14 dias seguidos e abri-lo diariamente para validar os testes exigidos pela Google.
+                Comprometo-me a manter o app instalado por 20 dias seguidos e abri-lo diariamente para validar os testes exigidos pela Google.
               </label>
             </div>
 
