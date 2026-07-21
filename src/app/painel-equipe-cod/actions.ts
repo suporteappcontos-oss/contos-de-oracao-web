@@ -70,6 +70,20 @@ async function uploadToBunny(file: File, prefix: string): Promise<string> {
   return `https://contos-midia-app.b-cdn.net/${fileName}`;
 }
 
+async function registrarNotificacaoSistema(titulo: string, mensagem: string, tipo: 'video' | 'instagram' | 'material') {
+  try {
+    const adminSupabase = getAdminClient()
+    await adminSupabase.from('notificacoes').insert({
+      titulo,
+      mensagem,
+      tipo,
+      criado_em: new Date().toISOString(),
+    })
+  } catch (e) {
+    console.error('Erro ao registrar notificação no banco:', e)
+  }
+}
+
 // â”€â”€â”€ Adicionar VÃ­deo TemÃ¡tico (Instagram) â”€â”€â”€
 export async function adicionarVideoTematico(formData: FormData) {
   const { supabase } = await verificarAdmin()
@@ -95,6 +109,12 @@ export async function adicionarVideoTematico(formData: FormData) {
   })
 
   if (error) return { success: false, error: error.message }
+
+  await registrarNotificacaoSistema(
+    '📲 Novo Conteúdo do Instagram!',
+    `Assista ao novo vídeo exclusivo: "${titulo.trim()}"!`,
+    'instagram'
+  )
 
   revalidatePath('/painel-equipe-cod')
   revalidatePath('/videos-tematicos')

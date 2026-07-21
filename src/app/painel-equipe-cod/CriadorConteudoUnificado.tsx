@@ -15,6 +15,22 @@ import {
   Library, ImageIcon, FileText, Loader2, 
   CheckCircle2, Video, X, Tag, BookMarked, Music, Tv
 } from 'lucide-react'
+
+function sanitizeUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('blob:') ||
+    trimmed.startsWith('data:image/') ||
+    trimmed.startsWith('/')
+  ) {
+    return trimmed;
+  }
+  return '';
+}
+
 import SubmitButton from '@/components/SubmitButton'
 import { adicionarVideo, publicarMaterial, adicionarVideoTematico, publicarRevista } from './actions'
 import { convertToWebP } from '@/utils/imageUtils'
@@ -221,7 +237,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
     try {
       const vid = document.createElement('video')
       vid.preload = 'metadata'
-      vid.src = URL.createObjectURL(file)
+      vid.setAttribute('src', URL.createObjectURL(file))
       vid.onloadedmetadata = () => {
         URL.revokeObjectURL(vid.src)
         const sec = Math.round(vid.duration)
@@ -598,7 +614,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
 
                       {(capaTemporadaPreview || capaTemporadaUrl) && (
                         <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                          <img src={capaTemporadaPreview || capaTemporadaUrl} alt="Preview" className="w-full h-full object-cover" />
+                          <img src={sanitizeUrl(capaTemporadaPreview || capaTemporadaUrl)} alt="Preview" className="w-full h-full object-cover" />
                         </div>
                       )}
                     </div>
@@ -959,7 +975,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
 
                   {(capaPreview || capaUrl) && (
                     <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                      <img src={capaPreview || capaUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <img src={sanitizeUrl(capaPreview || capaUrl)} alt="Preview" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
@@ -1049,7 +1065,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
 
                 {(materialCapaPreview || materialCapaUrl) && (
                   <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                    <img src={materialCapaPreview || materialCapaUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={sanitizeUrl(materialCapaPreview || materialCapaUrl)} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
@@ -1200,7 +1216,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
 
                   {(igCapaPreview || igCapaUrl) && (
                     <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                      <img src={igCapaPreview || igCapaUrl} alt="Preview" className="w-full h-full object-cover" />
+                      <img src={sanitizeUrl(igCapaPreview || igCapaUrl)} alt="Preview" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
@@ -1272,7 +1288,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
 
                 {(revistaCapaPreview || revistaCapaUrl) && (
                   <div className="w-16 h-12 rounded-lg overflow-hidden border border-white/20 shrink-0 bg-black">
-                    <img src={revistaCapaPreview || revistaCapaUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={sanitizeUrl(revistaCapaPreview || revistaCapaUrl)} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
