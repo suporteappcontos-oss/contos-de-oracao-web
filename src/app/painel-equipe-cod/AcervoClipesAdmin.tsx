@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { 
-  Music, ExternalLink, Edit3, EyeOff, Eye, Trash2 
+  Music, Edit3, EyeOff, Eye, Trash2 
 } from 'lucide-react'
 import { toggleVideoAtivo, deletarVideo } from './actions'
 import { FormEditarVideo } from './FormEditarVideo'
@@ -77,7 +77,6 @@ export default function AcervoClipesAdmin({
                 <div key={video.id} className="col-span-full bg-[#0f171e] p-6 rounded-2xl border border-blue-500/40">
                   <FormEditarVideo
                     video={editingVideo || video}
-                    onCancel={() => setEditingIdState(null)}
                   />
                 </div>
               )
