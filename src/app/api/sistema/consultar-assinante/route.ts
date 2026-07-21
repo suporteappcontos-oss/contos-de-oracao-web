@@ -117,6 +117,26 @@ export async function GET(request: NextRequest) {
       statusStripe = planoAtivo ? 'ativo (fallback)' : 'inativo (fallback)'
     }
 
+    // ── Lógica de Acesso de Testador ──────────────────────────────────────
+    if (metadata.testador && metadata.teste_valido_ate) {
+      const dataValidade = new Date(metadata.teste_valido_ate)
+      if (new Date() < dataValidade) {
+        planoAtivo = true
+        etiquetaPlano = metadata.etiqueta_plano || 'Testador 🧪'
+        statusStripe = 'ativo (testador)'
+        const dia = String(dataValidade.getDate()).padStart(2, '0')
+        const mes = String(dataValidade.getMonth() + 1).padStart(2, '0')
+        const ano = dataValidade.getFullYear()
+        venceEm = `${dia}/${mes}/${ano}`
+        proximaCobranca = venceEm
+      } else if (!planoAtivo) {
+        // Testador expirado e sem plano pago ativo
+        planoAtivo = false
+        etiquetaPlano = 'Expirado'
+        statusStripe = 'expirado (testador)'
+      }
+    }
+
     return NextResponse.json({
       encontrado: true,
       nome,

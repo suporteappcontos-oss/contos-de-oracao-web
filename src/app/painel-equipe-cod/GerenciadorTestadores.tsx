@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { 
   Search, Copy, Check, MessageSquare, RefreshCw, AlertCircle, Trash2
 } from 'lucide-react'
-import { deletarTestador } from './actions'
+import { deletarTestador, concederAcessoTestador } from './actions'
 
 type Testador = {
   id: string
@@ -55,6 +55,36 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
       alert('Erro ao processar exclusão. Tente novamente.')
     } finally {
       setExcluindoId(null)
+    }
+  }
+
+  // Função para conceder acesso vitalício de testador (1 ano)
+  const [concedendoId, setConcedendoId] = useState<string | null>(null)
+  
+  async function handleConcederAcesso(testador: Testador) {
+    if (!window.confirm(`Deseja conceder acesso gratuito de 1 ano para ${testador.nome}?`)) return
+    
+    setConcedendoId(testador.id)
+    try {
+      const formData = new FormData()
+      formData.append('email', testador.email)
+      formData.append('nome', testador.nome)
+      
+      const res = await concederAcessoTestador(formData)
+      if (res.success) {
+        if (res.senhaGerada) {
+          alert(`${res.message}\nSenha temporária: ${res.senhaGerada}\n(Uma senha foi gerada pois o usuário não possuía conta.)`)
+        } else {
+          alert(res.message)
+        }
+      } else {
+        alert('Erro ao conceder acesso: ' + res.error)
+      }
+    } catch (err) {
+      console.error('Erro ao conceder acesso:', err)
+      alert('Erro ao processar a solicitação.')
+    } finally {
+      setConcedendoId(null)
     }
   }
 
@@ -332,9 +362,23 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                         })}
                       </td>
 
-                      {/* Ação de Enviar Convite / Excluir */}
+                      {/* Ação de Enviar Convite / Excluir / Dar Acesso */}
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleConcederAcesso(t)}
+                            disabled={concedendoId === t.id}
+                            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#D4AF37] border-[#D4AF37]/20 disabled:opacity-40"
+                            title="Conceder acesso grátis por 1 ano ao App"
+                          >
+                            {concedendoId === t.id ? (
+                              <RefreshCw size={13} className="animate-spin" />
+                            ) : (
+                              <Check size={13} />
+                            )}
+                            Dar Acesso (1 Ano)
+                          </button>
+
                           <a
                             href={obterLinkWhatsapp(t.whatsapp)}
                             target="_blank"

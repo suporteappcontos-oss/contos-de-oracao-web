@@ -5,6 +5,7 @@ import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { stripe } from '@/lib/stripe'
+import { buscarUsuarioPorEmail } from '@/lib/supabase-admin'
 
 
 function getAdminClient() {
@@ -751,7 +752,83 @@ export async function criarUsuarioVitalicio(formData: FormData) {
   }
 }
 
-// â”€â”€â”€ Deletar Assinante / UsuÃ¡rio (Auth e Tabelas vinculadas) â”€â”€â”€
+// ── Conceder Acesso Testador (1 Ano) ──
+export async function concederAcessoTestador(formData: FormData) {
+  await verificarAdmin()
+  const admin = getAdminClient()
+
+  const email = (formData.get('email') as string)?.trim()
+  const nome = (formData.get('nome') as string)?.trim()
+
+  if (!email || !nome) {
+    return { success: false, error: 'Email e Nome são obrigatórios' }
+  }
+
+  const validUntil = new Date()
+  validUntil.setFullYear(validUntil.getFullYear() + 1)
+  const validUntilStr = validUntil.toISOString()
+
+  let senhaGerada = ''
+  let message = ''
+
+  const usuarioExistente = await buscarUsuarioPorEmail(email)
+
+  if (usuarioExistente) {
+    // Atualiza usuário existente
+    const currentMetadata = usuarioExistente.user_metadata || {}
+    const { error } = await admin.auth.admin.updateUserById(usuarioExistente.id, {
+      user_metadata: {
+        ...currentMetadata,
+        testador: true,
+        teste_valido_ate: validUntilStr,
+        etiqueta_plano: 'Testador 🧪',
+        plano_ativo: true,
+        max_telas: 5
+      }
+    })
+
+    if (error) {
+      console.error('❌ Erro ao atualizar testador:', error.message)
+      return { success: false, error: error.message }
+    }
+    
+    message = 'Usuário atualizado com sucesso para Testador (1 Ano).'
+  } else {
+    // Cria novo usuário
+    senhaGerada = require('crypto').randomBytes(6).toString('hex')
+    const { data: authData, error: authError } = await admin.auth.admin.createUser({
+      email,
+      password: senhaGerada,
+      email_confirm: true,
+      user_metadata: {
+        nome,
+        plano_ativo: true,
+        etiqueta_plano: 'Testador 🧪',
+        max_telas: 5,
+        testador: true,
+        teste_valido_ate: validUntilStr
+      }
+    })
+
+    if (authError) {
+      console.error('❌ Erro ao criar testador no auth:', authError.message)
+      return { success: false, error: authError.message }
+    }
+    message = 'Nova conta de Testador criada com sucesso (1 Ano).'
+  }
+
+  revalidatePath('/painel-equipe-cod')
+  
+  return {
+    success: true,
+    message,
+    nome,
+    email,
+    senhaGerada
+  }
+}
+
+// ── Deletar Assinante / Usuário (Auth e Tabelas vinculadas) ──
 export async function deletarUsuario(userId: string) {
   await verificarAdmin()
   const admin = getAdminClient()
