@@ -18,10 +18,35 @@ export default function TestadoresPage() {
   const [whatsapp, setWhatsapp] = useState('')
   const [compromisso, setCompromisso] = useState(false)
 
+  // Formatação automática do número de WhatsApp
+  function handleWhatsappChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let value = e.target.value.replace(/\D/g, '')
+    if (value.length > 11) value = value.slice(0, 11)
+    
+    if (value.length > 10) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`
+    } else if (value.length > 6) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`
+    } else if (value.length > 2) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2)}`
+    } else if (value.length > 0) {
+      value = `(${value}`
+    }
+    setWhatsapp(value)
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!nome.trim() || !email.trim() || !whatsapp.trim() || !compromisso) {
       setErro('Por favor, preencha todas as informações e aceite o compromisso de teste.')
+      return
+    }
+
+    const cleanEmail = email.trim().toLowerCase()
+    const isGmail = cleanEmail.endsWith('@gmail.com') || cleanEmail.endsWith('@googlemail.com')
+    
+    if (!isGmail) {
+      setErro('A Google Play Store exige obrigatoriamente um e-mail do Gmail (@gmail.com). Por favor, informe a sua conta do Gmail utilizada no seu celular Android.')
       return
     }
 
@@ -35,7 +60,7 @@ export default function TestadoresPage() {
         .insert([
           {
             nome: nome.trim(),
-            email: email.trim().toLowerCase(),
+            email: cleanEmail,
             whatsapp: whatsapp.trim(),
             sistema_celular: 'N/A', // Não coletamos mais
             sistema_tv: 'N/A',      // Não coletamos mais
@@ -45,7 +70,7 @@ export default function TestadoresPage() {
 
       if (error) {
         if (error.code === '23505') {
-          setErro('Este e-mail já está cadastrado como testador!')
+          setErro('Este e-mail do Gmail já está cadastrado como testador!')
         } else {
           setErro('Erro ao salvar cadastro. Tente novamente mais tarde.')
           console.error(error)
@@ -191,7 +216,7 @@ export default function TestadoresPage() {
               <input
                 type="tel"
                 value={whatsapp}
-                onChange={e => setWhatsapp(e.target.value)}
+                onChange={handleWhatsappChange}
                 required
                 placeholder="Ex: (11) 99999-9999"
                 disabled={loading}
