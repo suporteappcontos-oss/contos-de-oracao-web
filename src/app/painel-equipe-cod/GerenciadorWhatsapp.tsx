@@ -302,14 +302,53 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
   .map(([_, v]) => v)
   .sort((a, b) => new Date(b.lastTime).getTime() - new Date(a.lastTime).getTime())
 
-  // Se não tiver telefone ativo selecionado, seleciona o primeiro da lista automaticamente
-  useEffect(() => {
-    if (!activePhone && contatos.length > 0) {
-      setActivePhone(contatos[0].phone)
-    }
-  }, [contatos, activePhone])
+  // Estado para Modal de Nova Conversa (WhatsApp Web style)
+  const [modalNovaConversaAberta, setModalNovaConversaAberta] = useState(false)
+  const [novoTelefoneInput, setNovoTelefoneInput] = useState('')
+  const [novaMensagemInput, setNovaMensagemInput] = useState('')
+  const [enviandoNovaConversa, setEnviandoNovaConversa] = useState(false)
 
-  // Scroll automático no chat
+  // Iniciar conversa manual enviando via API Oficial da Meta
+  const handleIniciarNovaConversa = async () => {
+    let clean = novoTelefoneInput.replace(/\D/g, '')
+    if (!clean) {
+      alert('Por favor, informe um número de telefone válido.')
+      return
+    }
+    if (clean.length <= 11) {
+      clean = `55${clean}`
+    }
+    if (!novaMensagemInput.trim()) {
+      alert('Por favor, digite a primeira mensagem para iniciar a conversa.')
+      return
+    }
+
+    setEnviandoNovaConversa(true)
+    const tempId = `temp-${Date.now()}`
+    const optMsg: ChatMessageType = {
+      id: tempId,
+      sender_phone: clean,
+      author: 'assistant',
+      message_text: novaMensagemInput.trim(),
+      criado_em: new Date().toISOString()
+    }
+
+    setMessages(prev => [optMsg, ...prev])
+    setActivePhone(clean)
+    setModalNovaConversaAberta(false)
+
+    const res = await enviarMensagemWhatsappManual(clean, novaMensagemInput.trim())
+    setEnviandoNovaConversa(false)
+    setNovoTelefoneInput('')
+    setNovaMensagemInput('')
+
+    if (!res.success) {
+      setMessages(prev => prev.filter(m => m.id !== tempId))
+      alert('Erro ao iniciar nova conversa: ' + res.error)
+    }
+  }
+
+  // Scroll automático no chat quando selecionado
   useEffect(() => {
     if (chatBottomRef.current) {
       chatBottomRef.current.scrollIntoView({ behavior: 'smooth' })
@@ -637,6 +676,16 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
   const renderFormattedMessage = (text: string) => {
     if (!text) return null
 
+    // Tratar mensagens indisponíveis do WhatsApp/Chatwoot
+    if (text.trim() === 'This message is unavailable.' || text.trim() === 'This message is unavailable' || text.trim() === '{}') {
+      return (
+        <span className="italic text-white/50 text-xs flex items-center gap-1.5 py-1">
+          <span>⚠️</span>
+          <span>Mensagem de mídia indisponível ou pendente de sincronização.</span>
+        </span>
+      )
+    }
+
     // 1. Detectar mídias/anexos (Imagens, Áudios, Vídeos, PDFs)
     const imageUrlMatch = text.match(/(https?:\/\/[^\s]+(?:\.png|\.jpg|\.jpeg|\.gif|\.webp|attachments)[^\s]*)/i)
     const audioUrlMatch = text.match(/(https?:\/\/[^\s]+(?:\.mp3|\.ogg|\.wav|\.m4a)[^\s]*)/i)
@@ -782,8 +831,16 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
               <div className="flex items-center justify-between">
                 <span className="text-white/60 text-[0.65rem] uppercase tracking-widest font-black flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse"></span>
-                  Conversas Ativas ({contatosFiltrados.length})
+                  Conversas ({contatosFiltrados.length})
                 </span>
+                <button
+                  onClick={() => setModalNovaConversaAberta(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-bold transition-all active:scale-95 shadow-sm"
+                  title="Iniciar nova conversa com qualquer número do WhatsApp"
+                >
+                  <Plus size={13} />
+                  <span>Nova Conversa</span>
+                </button>
               </div>
 
               {/* Campo de Busca por Telefone / Texto */}
@@ -1952,6 +2009,69 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
               >
                 {isPending ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
                 {isPending ? 'Salvando...' : 'Salvar Alterações'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Nova Conversa (Estilo WhatsApp Web) */}
+      {modalNovaConversaAberta && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[#0A0C12] border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-gradient-to-r from-amber-500/10 to-yellow-500/5">
+              <div className="flex items-center gap-2">
+                <Plus size={16} className="text-[#D4AF37]" />
+                <h4 className="text-white font-extrabold text-sm uppercase tracking-wider">Nova Conversa no WhatsApp</h4>
+              </div>
+              <button
+                onClick={() => setModalNovaConversaAberta(false)}
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Número de Telefone (com DDD) *</label>
+                <input
+                  type="text"
+                  value={novoTelefoneInput}
+                  onChange={e => setNovoTelefoneInput(e.target.value)}
+                  placeholder="Ex: (64) 99299-4823"
+                  className="w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all text-sm font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-white/50 text-[0.65rem] uppercase tracking-widest mb-1.5 font-bold">Primeira Mensagem *</label>
+                <textarea
+                  rows={3}
+                  value={novaMensagemInput}
+                  onChange={e => setNovaMensagemInput(e.target.value)}
+                  placeholder="Digite a mensagem para enviar via WhatsApp..."
+                  className="w-full bg-[#0f171e] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none transition-all text-sm resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="px-6 pb-6 flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setModalNovaConversaAberta(false)}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleIniciarNovaConversa}
+                disabled={enviandoNovaConversa || !novoTelefoneInput.trim() || !novaMensagemInput.trim()}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black text-black disabled:opacity-50 transition-all hover:scale-105 shadow-lg active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #FFD700 0%, #D4AF37 100%)' }}
+              >
+                {enviandoNovaConversa ? <Loader2 size={14} className="animate-spin text-black" /> : <Send size={14} className="text-black" />}
+                {enviandoNovaConversa ? 'Enviando...' : 'Iniciar Conversa'}
               </button>
             </div>
           </div>
