@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { 
   Search, Copy, Check, MessageSquare, RefreshCw, AlertCircle, Trash2
@@ -60,6 +60,33 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
 
   // Estado para armazenar senhas geradas temporariamente
   const [senhasGeradas, setSenhasGeradas] = useState<Record<string, string>>({})
+
+  // Estado para controle de convites enviados (com suporte a localStorage)
+  const [convitesEnviados, setConvitesEnviados] = useState<Record<string, boolean>>({})
+
+  // Carrega status de convites do localStorage ao iniciar
+  useEffect(() => {
+    try {
+      const salvo = localStorage.getItem('convites_enviados_map')
+      if (salvo) {
+        setConvitesEnviados(JSON.parse(salvo))
+      }
+    } catch (e) {
+      console.error('Erro ao ler convites_enviados_map:', e)
+    }
+  }, [])
+
+  // Função para marcar / desmarcar convite enviado
+  function toggleStatusConvite(id: string, e?: React.MouseEvent) {
+    if (e) e.stopPropagation()
+    setConvitesEnviados(prev => {
+      const novo = { ...prev, [id]: !prev[id] }
+      try {
+        localStorage.setItem('convites_enviados_map', JSON.stringify(novo))
+      } catch (err) {}
+      return novo
+    })
+  }
 
   // Função para conceder acesso de testador (1 ano)
   const [concedendoId, setConcedendoId] = useState<string | null>(null)
@@ -379,6 +406,24 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                       {/* Ação de Enviar Convite / Excluir / Dar Acesso */}
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          
+                          {/* Badge de Marcação Manual de Convite Enviado */}
+                          <button
+                            onClick={(e) => toggleStatusConvite(t.id, e)}
+                            className={`inline-flex items-center gap-1 text-[0.65rem] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                              convitesEnviados[t.id]
+                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30'
+                                : 'bg-white/5 text-white/40 border-white/10 hover:text-white/70 hover:bg-white/10'
+                            }`}
+                            title="Clique para alternar se o convite já foi enviado ou não"
+                          >
+                            {convitesEnviados[t.id] ? (
+                              <><Check size={12} className="text-emerald-400" /> Convite Enviado</>
+                            ) : (
+                              '⏳ Pendente'
+                            )}
+                          </button>
+
                           <button
                             onClick={() => handleConcederAcesso(t)}
                             disabled={concedendoId === t.id}
@@ -397,11 +442,23 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                             href={obterLinkWhatsapp(t)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20"
+                            onClick={() => {
+                              // Marca como convite enviado automaticamente ao clicar no link do WhatsApp
+                              setConvitesEnviados(prev => {
+                                const novo = { ...prev, [t.id]: true }
+                                try { localStorage.setItem('convites_enviados_map', JSON.stringify(novo)) } catch (e) {}
+                                return novo
+                              })
+                            }}
+                            className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 ${
+                              convitesEnviados[t.id]
+                                ? 'bg-[#25D366]/20 text-[#25D366] border-[#25D366]/40'
+                                : 'bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20'
+                            }`}
                             title="Enviar convite com link de testes no WhatsApp"
                           >
                             <MessageSquare size={13} />
-                            Mandar Convite
+                            {convitesEnviados[t.id] ? 'Reenviar Convite' : 'Mandar Convite'}
                           </a>
 
                           <button

@@ -3,6 +3,7 @@ import "./globals.css";
 import GlobalLoader from "@/components/GlobalLoader";
 import AuthHashHandler from "@/components/AuthHashHandler";
 import Navbar from "@/components/Navbar";
+import RibbonCursor from "@/components/RibbonCursor";
 
 export const metadata: Metadata = {
   title: {
@@ -91,6 +92,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
+        <RibbonCursor />
         <GlobalLoader />
         <AuthHashHandler />
         <Navbar />
