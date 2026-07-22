@@ -611,6 +611,15 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
     return `+${phone}`
   }
 
+  const formatDate = (isoString: string) => {
+    try {
+      const date = new Date(isoString)
+      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    } catch {
+      return ''
+    }
+  }
+
   // Formata data e hora legível
   const formatTime = (isoString: string) => {
     try {
@@ -621,14 +630,110 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
     }
   }
 
-  const formatDate = (isoString: string) => {
-    try {
-      const date = new Date(isoString)
-      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    } catch {
-      return ''
+  // Estado para busca na lista de contatos
+  const [searchPhone, setSearchPhone] = useState('')
+
+  // Helper para renderizar formatação do WhatsApp (*negrito*, _itálico_, links e mídias/anexos)
+  const renderFormattedMessage = (text: string) => {
+    if (!text) return null
+
+    // 1. Detectar mídias/anexos (Imagens, Áudios, Vídeos, PDFs)
+    const imageUrlMatch = text.match(/(https?:\/\/[^\s]+(?:\.png|\.jpg|\.jpeg|\.gif|\.webp|attachments)[^\s]*)/i)
+    const audioUrlMatch = text.match(/(https?:\/\/[^\s]+(?:\.mp3|\.ogg|\.wav|\.m4a)[^\s]*)/i)
+    const videoUrlMatch = text.match(/(https?:\/\/[^\s]+(?:\.mp4|\.mov|\.webm)[^\s]*)/i)
+    const pdfUrlMatch = text.match(/(https?:\/\/[^\s]+\.pdf[^\s]*)/i)
+
+    // 2. Parser de formatação de texto do WhatsApp (*bold*, _italic_, ~strike~, links)
+    const formatTextPieces = (rawText: string) => {
+      const parts = rawText.split(/(\*[\s\S]+?\*|_[\s\S]+?_|~[\s\S]+?~|`[\s\S]+?`|https?:\/\/[^\s]+)/g)
+      return parts.map((part, index) => {
+        if (!part) return null
+        if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+          return <strong key={index} className="font-bold text-amber-200">{part.slice(1, -1)}</strong>
+        }
+        if (part.startsWith('_') && part.endsWith('_') && part.length > 2) {
+          return <em key={index} className="italic opacity-90">{part.slice(1, -1)}</em>
+        }
+        if (part.startsWith('~') && part.endsWith('~') && part.length > 2) {
+          return <del key={index} className="line-through opacity-70">{part.slice(1, -1)}</del>
+        }
+        if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+          return <code key={index} className="bg-white/10 px-1.5 py-0.5 rounded text-amber-300 font-mono text-xs">{part.slice(1, -1)}</code>
+        }
+        if (part.startsWith('http://') || part.startsWith('https://')) {
+          return (
+            <a 
+              key={index} 
+              href={part} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-[#4FC3F7] underline hover:text-[#81D4FA] font-semibold break-all inline-flex items-center gap-1 transition-colors"
+            >
+              {part}
+            </a>
+          )
+        }
+        return part
+      })
     }
+
+    return (
+      <div className="flex flex-col gap-2">
+        {/* Renderização de Imagem / Sticker */}
+        {imageUrlMatch && (
+          <div className="relative group my-1 overflow-hidden rounded-xl border border-white/10 bg-black/30 w-fit max-w-[280px]">
+            <img 
+              src={imageUrlMatch[0]} 
+              alt="Mídia Anexa" 
+              className="max-w-[280px] max-h-[300px] object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+              onClick={() => window.open(imageUrlMatch[0], '_blank')}
+            />
+            <span className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-md text-[0.6rem] text-white/80 px-2 py-0.5 rounded-full font-bold">
+              📷 Imagem
+            </span>
+          </div>
+        )}
+
+        {/* Renderização de Áudio */}
+        {audioUrlMatch && (
+          <div className="my-1 bg-white/5 p-2 rounded-xl border border-white/10">
+            <audio controls src={audioUrlMatch[0]} className="max-w-[260px] h-8" />
+          </div>
+        )}
+
+        {/* Renderização de Vídeo */}
+        {videoUrlMatch && (
+          <div className="my-1 rounded-xl overflow-hidden border border-white/10 max-w-[280px]">
+            <video controls src={videoUrlMatch[0]} className="max-w-[280px] max-h-[250px]" />
+          </div>
+        )}
+
+        {/* Renderização de Documento / PDF */}
+        {pdfUrlMatch && (
+          <a 
+            href={pdfUrlMatch[0]} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-bold text-[#D4AF37] transition-all my-1 w-fit"
+          >
+            <span>📄</span>
+            <span>Baixar Documento PDF</span>
+          </a>
+        )}
+
+        {/* Conteúdo de Texto Formatado */}
+        <span className="leading-relaxed whitespace-pre-wrap text-sm">
+          {formatTextPieces(text)}
+        </span>
+      </div>
+    )
   }
+
+  // Filtragem de contatos pela busca
+  const contatosFiltrados = contatos.filter(c => 
+    c.phone.includes(searchPhone) || 
+    c.lastMessage.toLowerCase().includes(searchPhone.toLowerCase())
+  )
 
   return (
     <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl space-y-8 min-h-[600px] flex flex-col">
@@ -640,8 +745,8 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
             <Smile size={24} className="text-black" />
           </div>
           <div>
-            <h2 className="text-white text-xl font-black tracking-tight">Atendente Lucas (Whats)</h2>
-            <p className="text-white/40 text-xs">Monitore conversas e gerencie o cérebro da inteligência artificial.</p>
+            <h2 className="text-white text-xl font-black tracking-tight">Atendente Lucas (Whats CRM)</h2>
+            <p className="text-white/40 text-xs">Central de atendimento, inteligência artificial e histórico em tempo real.</p>
           </div>
         </div>
 
@@ -667,65 +772,104 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
         </div>
       </div>
 
-      {/* ────────────────── SUB-ABA: CONVERSAS E CHAT ────────────────── */}
+      {/* ────────────────── SUB-ABA: CONVERSAS E CHAT CRM ────────────────── */}
       {subTab === 'chat' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 border border-white/5 rounded-3xl overflow-hidden bg-[#0b0f19] h-[calc(100vh-380px)] min-h-[450px] max-h-[650px] flex-1">
+        <div className="grid grid-cols-1 lg:grid-cols-12 border border-white/5 rounded-3xl overflow-hidden bg-[#0b0f19] h-[calc(100vh-380px)] min-h-[480px] max-h-[700px] flex-1 shadow-2xl">
           
-          {/* Coluna Esquerda: Contatos */}
+          {/* Coluna Esquerda: Lista de Contatos com Busca */}
           <div className="lg:col-span-4 border-r border-white/5 flex flex-col h-full bg-[#0d1220]">
-            <div className="p-4 border-b border-white/5 bg-[#0b0f19]">
-              <span className="text-white/50 text-[0.65rem] uppercase tracking-widest font-black">Conversas Ativas ({contatos.length})</span>
+            <div className="p-4 border-b border-white/5 bg-[#0b0f19] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-white/60 text-[0.65rem] uppercase tracking-widest font-black flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse"></span>
+                  Conversas Ativas ({contatosFiltrados.length})
+                </span>
+              </div>
+
+              {/* Campo de Busca por Telefone / Texto */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Pesquisar por número..."
+                  value={searchPhone}
+                  onChange={(e) => setSearchPhone(e.target.value)}
+                  className="w-full bg-[#05070c] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#D4AF37]/50 transition-all"
+                />
+                {searchPhone && (
+                  <button 
+                    onClick={() => setSearchPhone('')}
+                    className="absolute right-2.5 top-2.5 text-white/40 hover:text-white text-xs"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto divide-y divide-white/5">
-              {contatos.length === 0 ? (
-                <div className="text-center py-10 text-white/30 text-sm">Nenhuma conversa registrada.</div>
+            <div className="flex-1 overflow-y-auto divide-y divide-white/5 custom-scrollbar">
+              {contatosFiltrados.length === 0 ? (
+                <div className="text-center py-10 text-white/30 text-xs">
+                  {searchPhone ? 'Nenhum contato encontrado para essa busca.' : 'Nenhuma conversa registrada.'}
+                </div>
               ) : (
-                contatos.map(c => (
+                contatosFiltrados.map(c => (
                   <button
                     key={c.phone}
                     onClick={() => setActivePhone(c.phone)}
-                    className={`w-full text-left p-4 flex flex-col gap-1 transition-all hover:bg-white/[0.02] ${activePhone === c.phone ? 'bg-white/5 border-l-4 border-[#D4AF37]' : 'border-l-4 border-transparent'}`}
+                    className={`w-full text-left p-4 flex flex-col gap-1.5 transition-all hover:bg-white/[0.03] ${activePhone === c.phone ? 'bg-[#1e293b]/50 border-l-4 border-[#D4AF37] shadow-inner' : 'border-l-4 border-transparent'}`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-white">{formatPhone(c.phone)}</span>
-                      <span className="text-[0.65rem] text-white/30">{formatTime(c.lastTime)}</span>
+                      <span className="font-bold text-sm text-white flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-full bg-gradient-to-br from-[#D4AF37]/20 to-[#FFD700]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[0.65rem] font-bold text-[#D4AF37]">
+                          📱
+                        </span>
+                        {formatPhone(c.phone)}
+                      </span>
+                      <span className="text-[0.65rem] text-white/30 font-medium">{formatTime(c.lastTime)}</span>
                     </div>
-                    <p className="text-xs text-white/50 truncate pr-4">{c.lastMessage}</p>
+                    <p className="text-xs text-white/50 truncate pl-9">{c.lastMessage}</p>
                   </button>
                 ))
               )}
             </div>
           </div>
 
-          {/* Coluna Direita: Janela de Chat */}
-          <div className="lg:col-span-8 flex flex-col h-full min-h-0 bg-[#080b13] overflow-hidden">
+          {/* Coluna Direita: Janela de Chat CRM */}
+          <div className="lg:col-span-8 flex flex-col h-full min-h-0 bg-[#080b13] overflow-hidden relative">
             {activePhone ? (
               <>
-                {/* Header do Chat */}
-                <div className="p-4 border-b border-white/5 bg-[#0b0f19] flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="font-black text-sm text-white">{formatPhone(activePhone)}</span>
-                    <span className="text-[0.65rem] text-green-400 font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                      Assistência Ativada
-                    </span>
+                {/* Header do Chat CRM */}
+                <div className="p-4 border-b border-white/5 bg-[#0b0f19] flex items-center justify-between backdrop-blur-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#FF8C00] flex items-center justify-center text-black font-black text-sm shadow-md">
+                      🙏
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-black text-sm text-white">{formatPhone(activePhone)}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[0.65rem] text-green-400 font-bold flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                          IA Lucas Ativa
+                        </span>
+                        <span className="text-[0.65rem] text-white/30">• {activeMessages.length} mensagens</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleFecharConversa(activePhone)}
                       disabled={isPending}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-green-500/20 bg-green-500/10 text-green-400 text-xs font-bold hover:bg-green-500/20 disabled:opacity-50 transition-all active:scale-95"
-                      title="Oculta a conversa sem apagar o histórico de mensagens"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-green-500/20 bg-green-500/10 text-green-400 text-xs font-bold hover:bg-green-500/20 disabled:opacity-50 transition-all active:scale-95 shadow-sm"
+                      title="Oculta a conversa da lista sem excluir dados"
                     >
                       <Check size={13} />
-                      Fechar Conversa
+                      Concluir
                     </button>
                     <button
                       onClick={() => handleExcluirConversa(activePhone)}
                       disabled={isPending}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 disabled:opacity-50 transition-all active:scale-95"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 disabled:opacity-50 transition-all active:scale-95 shadow-sm"
                       title="Apaga permanentemente o histórico do banco"
                     >
                       <Trash2 size={13} />
@@ -734,8 +878,8 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                   </div>
                 </div>
 
-                {/* Mensagens */}
-                <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4 flex flex-col justify-start">
+                {/* Mensagens do Chat com Visual do WhatsApp */}
+                <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4 flex flex-col justify-start custom-scrollbar bg-gradient-to-b from-[#080b13] to-[#0b0f19]">
                   {activeMessages.map((m, idx) => {
                     const isUser = m.author === 'user'
                     const showDate = idx === 0 || formatDate(m.criado_em) !== formatDate(activeMessages[idx - 1]?.criado_em)
@@ -744,18 +888,30 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                       <div key={m.id} className="flex flex-col">
                         {showDate && (
                           <div className="text-center my-3">
-                            <span className="bg-white/5 border border-white/5 text-white/30 text-[0.65rem] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span className="bg-white/5 border border-white/5 text-white/40 text-[0.65rem] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                               {formatDate(m.criado_em)}
                             </span>
                           </div>
                         )}
                         <div className={`flex w-full ${isUser ? 'justify-start' : 'justify-end'}`}>
                           <div 
-                            className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-md flex flex-col gap-1 transition-all ${isUser ? 'bg-white/5 text-white rounded-tl-none' : 'bg-gradient-to-br from-[#FFD700]/10 to-[#D4AF37]/10 text-white border border-[#D4AF37]/20 rounded-tr-none'}`}
+                            className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 shadow-lg flex flex-col gap-1 transition-all ${
+                              isUser 
+                                ? 'bg-[#1E293B] text-white rounded-tl-none border border-white/10' 
+                                : 'bg-gradient-to-br from-[#D4AF37]/15 to-[#FFD700]/5 text-white border border-[#D4AF37]/30 rounded-tr-none shadow-[#D4AF37]/5'
+                            }`}
                           >
-                            <span className="leading-relaxed whitespace-pre-wrap">{m.message_text}</span>
-                            <span className="text-[0.6rem] text-white/30 self-end font-bold mt-1">
+                            {/* Nome do Remetente */}
+                            <span className={`text-[0.65rem] font-bold uppercase tracking-wider mb-0.5 ${isUser ? 'text-blue-400' : 'text-[#D4AF37]'}`}>
+                              {isUser ? '👤 Cliente' : '🤖 Lucas (Atendente Virtual)'}
+                            </span>
+
+                            {/* Renderização de Texto + Mídias */}
+                            {renderFormattedMessage(m.message_text)}
+
+                            <span className="text-[0.6rem] text-white/30 self-end font-bold mt-1 flex items-center gap-1">
                               {formatTime(m.criado_em)}
+                              {!isUser && <span className="text-green-400">✓✓</span>}
                             </span>
                           </div>
                         </div>
@@ -765,33 +921,69 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
                   <div ref={chatBottomRef} />
                 </div>
 
-                {/* Input de Mensagem Manual */}
-                <div className="p-4 border-t border-white/5 bg-[#0b0f19] flex items-center gap-3">
-                  <input
-                    type="text"
-                    placeholder="Digite uma resposta manual para enviar via WhatsApp..."
-                    value={typedMessage}
-                    onChange={(e) => setTypedMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                    className="flex-1 bg-[#05070c] border border-white/5 focus:border-[#D4AF37]/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder-white/20"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!typedMessage.trim() || isPending}
-                    className="h-11 w-11 rounded-xl bg-gradient-to-br from-[#FFD700] to-[#D4AF37] text-black flex items-center justify-center hover:brightness-110 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-lg active:scale-95"
-                  >
-                    {isPending ? (
-                      <Loader2 size={16} className="animate-spin text-black" />
-                    ) : (
-                      <Send size={16} className="text-black" />
-                    )}
-                  </button>
+                {/* Rodapé com Respostas Rápidas (Chips) e Input */}
+                <div className="p-4 border-t border-white/5 bg-[#0b0f19] space-y-3">
+                  
+                  {/* Chips de Respostas Rápidas */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar text-xs">
+                    <span className="text-[0.65rem] text-white/30 font-bold uppercase tracking-wider shrink-0">Respostas Rápidas:</span>
+                    <button
+                      onClick={() => setTypedMessage('📱 Baixe nosso app oficial na Play Store: https://play.google.com/store/apps/details?id=br.com.contosdeoracao.contos_mobile')}
+                      className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 border border-white/10 text-white/70 hover:text-[#D4AF37] shrink-0 transition-all font-medium"
+                    >
+                      📱 Link Play Store
+                    </button>
+                    <button
+                      onClick={() => setTypedMessage('🔑 Para acessar sua conta no app e web, faça login em https://contosdeoracao.com.br/login com o seu e-mail cadastrado!')}
+                      className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 border border-white/10 text-white/70 hover:text-[#D4AF37] shrink-0 transition-all font-medium"
+                    >
+                      🔑 Dados de Login
+                    </button>
+                    <button
+                      onClick={() => setTypedMessage('💳 Conheça nossos planos e garanta seu acesso em: https://contosdeoracao.com.br/planos')}
+                      className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 border border-white/10 text-white/70 hover:text-[#D4AF37] shrink-0 transition-all font-medium"
+                    >
+                      💳 Link dos Planos
+                    </button>
+                    <button
+                      onClick={() => setTypedMessage('📲 Entre no nosso grupo fechado de voluntários do WhatsApp!')}
+                      className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-[#D4AF37]/20 border border-white/10 text-white/70 hover:text-[#D4AF37] shrink-0 transition-all font-medium"
+                    >
+                      📲 Grupo Voluntários
+                    </button>
+                  </div>
+
+                  {/* Campo de Envio de Mensagem */}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      placeholder="Digite uma resposta manual para enviar via WhatsApp..."
+                      value={typedMessage}
+                      onChange={(e) => setTypedMessage(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                      className="flex-1 bg-[#05070c] border border-white/10 focus:border-[#D4AF37]/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder-white/20"
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={!typedMessage.trim() || isPending}
+                      className="h-11 px-5 rounded-xl bg-gradient-to-br from-[#FFD700] to-[#D4AF37] text-black font-bold text-xs flex items-center gap-2 hover:brightness-110 disabled:opacity-30 disabled:pointer-events-none transition-all shadow-lg active:scale-95 shrink-0"
+                    >
+                      {isPending ? (
+                        <Loader2 size={16} className="animate-spin text-black" />
+                      ) : (
+                        <>
+                          <Send size={15} className="text-black" />
+                          <span>Enviar</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-6 text-white/30">
                 <MessageSquare size={48} className="mb-4 opacity-20" />
-                <p className="text-sm">Selecione um contato na barra lateral para ver o histórico e enviar mensagens.</p>
+                <p className="text-sm">Selecione uma conversa na barra lateral para ver o histórico e enviar mensagens.</p>
               </div>
             )}
           </div>
