@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { 
-  Search, Copy, Check, MessageSquare, RefreshCw, AlertCircle, Trash2, Send, ExternalLink
+  Search, Copy, Check, MessageSquare, RefreshCw, AlertCircle, Trash2
 } from 'lucide-react'
-import { deletarTestador, concederAcessoTestador, enviarMensagemWhatsappManual } from './actions'
+import { deletarTestador, concederAcessoTestador } from './actions'
 
 type Testador = {
   id: string
@@ -186,16 +186,16 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
     }, 3000)
   }
 
-  // Estado para controle de envio direto via WhatsApp API
-  const [enviandoWhatsappId, setEnviandoWhatsappId] = useState<string | null>(null)
-
-  // Formata o texto bruto da mensagem de convite
-  function obterTextoMensagem(testador: Testador) {
+  // Formata o link direto para o WhatsApp Web com mensagem completa contendo Login, Senha, Play Store, Aceite no Gmail e Dica de Ativação
+  function obterLinkWhatsapp(testador: Testador) {
+    const cleanPhone = testador.whatsapp.replace(/\D/g, '')
+    const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone
+    
     const senhaInfo = senhasGeradas[testador.id] 
       ? `🔑 *Senha Temporária:* ${senhasGeradas[testador.id]}`
       : `🔑 *Senha:* (Utilize a senha definida no seu cadastro no app)`
 
-    return `Salve Maria, *${testador.nome}*! 🙏✨\n\n` +
+    const mensagem = `Salve Maria, *${testador.nome}*! 🙏✨\n\n` +
       `Sua vaga como *Testador Voluntário Oficial* do aplicativo *Contos de Oração* foi aprovada!\n\n` +
       `🎁 *Seu presente especial:* Você ganhou *1 ANO DE ACESSO GRATUITO E COMPLETO* à nossa plataforma no Celular e Web!\n\n` +
       `📌 *PASSO A PASSO PARA ATIVAR SEU ACESSO:*\n\n` +
@@ -212,43 +212,8 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
       `📲 *ENTRAR NO GRUPO DE TESTADORES (WHATSAPP):*\n` +
       `${linkWhatsapp || '[Link do Grupo pendente de cadastro no Painel]'}\n\n` +
       `💡 *DICA IMPORTANTE:* Se os links acima não estiverem azuis/clicáveis no seu celular, basta responder esta mensagem enviando *"Ok"* ou *"Amém"* para o WhatsApp liberar todos os links automaticamente!`
-  }
 
-  // Formata o link direto para o WhatsApp Web
-  function obterLinkWhatsapp(testador: Testador) {
-    const cleanPhone = testador.whatsapp.replace(/\D/g, '')
-    const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone
-    const mensagem = obterTextoMensagem(testador)
     return `https://api.whatsapp.com/send?phone=${finalPhone}&text=${encodeURIComponent(mensagem)}`
-  }
-
-  // Dispara o convite diretamente pelo WhatsApp (API Oficial Meta)
-  async function handleEnviarWhatsappDireto(testador: Testador) {
-    const cleanPhone = testador.whatsapp.replace(/\D/g, '')
-    const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone
-    const mensagem = obterTextoMensagem(testador)
-
-    setEnviandoWhatsappId(testador.id)
-    setStatusMsg({ tipo: '', texto: '' })
-
-    try {
-      const res = await enviarMensagemWhatsappManual(finalPhone, mensagem)
-      if (res.success) {
-        setConvitesEnviados(prev => {
-          const novo = { ...prev, [testador.id]: true }
-          try { localStorage.setItem('convites_enviados_map', JSON.stringify(novo)) } catch (e) {}
-          return novo
-        })
-        setStatusMsg({ tipo: 'sucesso', texto: `✅ Convite enviado via WhatsApp Oficial com sucesso para ${testador.nome} (${testador.whatsapp})!` })
-      } else {
-        setStatusMsg({ tipo: 'erro', texto: `❌ Falha ao enviar via API: ${res.error || 'Erro desconhecido'}` })
-      }
-    } catch (error: any) {
-      console.error('Erro ao enviar via WhatsApp API:', error)
-      setStatusMsg({ tipo: 'erro', texto: `❌ Erro no envio: ${error.message}` })
-    } finally {
-      setEnviandoWhatsappId(null)
-    }
   }
 
   // Filtragem local
@@ -480,45 +445,27 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                             Dar Acesso (1 Ano)
                           </button>
 
-                          {/* Botão Principal: Disparar Convite via API Oficial do WhatsApp */}
-                          <button
-                            onClick={() => handleEnviarWhatsappDireto(t)}
-                            disabled={enviandoWhatsappId === t.id}
-                            className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 disabled:opacity-50 ${
-                              convitesEnviados[t.id]
-                                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-sm shadow-emerald-500/10'
-                                : 'bg-gradient-to-r from-[#25D366] to-[#128C7E] text-black font-black border-[#25D366]/40 shadow-md shadow-[#25D366]/20'
-                            }`}
-                            title="Disparar mensagem oficial pelo WhatsApp com o link de aceitação da Play Store e dados de login"
-                          >
-                            {enviandoWhatsappId === t.id ? (
-                              <RefreshCw size={13} className="animate-spin" />
-                            ) : (
-                              <Send size={13} />
-                            )}
-                            {enviandoWhatsappId === t.id
-                              ? 'Enviando...'
-                              : convitesEnviados[t.id]
-                              ? 'Reenviar via API'
-                              : 'Mandar Convite (WhatsApp)'}
-                          </button>
-
-                          {/* Botão Secundário: Abrir no WhatsApp Web (Fallback) */}
                           <a
                             href={obterLinkWhatsapp(t)}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={() => {
+                              // Marca como convite enviado automaticamente ao clicar no link do WhatsApp
                               setConvitesEnviados(prev => {
                                 const novo = { ...prev, [t.id]: true }
                                 try { localStorage.setItem('convites_enviados_map', JSON.stringify(novo)) } catch (e) {}
                                 return novo
                               })
                             }}
-                            className="p-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all cursor-pointer flex items-center justify-center shrink-0"
-                            title="Abrir mensagem pronta no WhatsApp Web manualmente"
+                            className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 ${
+                              convitesEnviados[t.id]
+                                ? 'bg-[#25D366]/20 text-[#25D366] border-[#25D366]/40'
+                                : 'bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20'
+                            }`}
+                            title="Enviar convite com link de testes no WhatsApp"
                           >
-                            <ExternalLink size={14} />
+                            <MessageSquare size={13} />
+                            {convitesEnviados[t.id] ? 'Reenviar Convite' : 'Mandar Convite'}
                           </a>
 
                           <button
