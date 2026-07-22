@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { buscarUsuarioPorEmail } from '@/lib/supabase-admin'
+import { buscarUsuarioPorEmail, buscarUsuarioPorTelefone } from '@/lib/supabase-admin'
 
 export const dynamic = 'force-dynamic'
 
@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const email = searchParams.get('email')
+    const telefone = searchParams.get('telefone')
     
     // Autenticação de segurança
     const authHeader = request.headers.get('Authorization') || request.headers.get('apikey')
@@ -22,22 +23,27 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Acesso não autorizado' }, { status: 401 })
     }
     
-    if (!email || email.trim() === '') {
+    let usuario = null
+    if (email && email.trim() !== '') {
+      usuario = await buscarUsuarioPorEmail(email.trim().toLowerCase())
+    } else if (telefone && telefone.trim() !== '') {
+      usuario = await buscarUsuarioPorTelefone(telefone.trim())
+    } else {
       return NextResponse.json({ 
         encontrado: false, 
-        mensagem: 'E-mail não fornecido.' 
+        mensagem: 'E-mail ou Telefone não fornecido.' 
       })
     }
-    
-    const cleanEmail = email.trim().toLowerCase()
-    const usuario = await buscarUsuarioPorEmail(cleanEmail)
     
     if (!usuario) {
       return NextResponse.json({ 
         encontrado: false, 
-        mensagem: 'Nenhuma conta cadastrada com esse e-mail.' 
+        mensagem: 'Nenhuma conta cadastrada localizada com os dados informados.' 
       })
     }
+    
+    const cleanEmail = usuario.email ? usuario.email.toLowerCase() : ''
+
     
     const metadata = usuario.user_metadata || {}
     const nome = metadata.nome || 'Cliente'
