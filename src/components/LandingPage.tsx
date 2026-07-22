@@ -9,7 +9,6 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { CATEGORIAS_CONFIG } from '@/app/materiais/constants';
-import CometTrailEffect from './CometTrailEffect';
 import TouchMarquee from './TouchMarquee';
 const QRLogin = dynamic(() => import('@/components/QRLogin'), { ssr: false });
 
@@ -233,7 +232,6 @@ export default function LandingPage() {
 
   return (
     <div style={{ position: 'relative', fontFamily: FONT, background: 'transparent', color: '#fff', overflowX: 'hidden' }}>
-      <CometTrailEffect />
 
       {/* ══════════════════════════════════════════════════════════════════════
           HERO
