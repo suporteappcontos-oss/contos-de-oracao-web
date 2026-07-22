@@ -1603,7 +1603,19 @@ export async function enviarMensagemWhatsappManual(telefone: string, mensagem: s
 
     if (!response.ok) {
       const errData = await response.json()
-      throw new Error(`Falha no envio do WhatsApp: ${JSON.stringify(errData)}`)
+      const errorMsg = errData.error?.message || JSON.stringify(errData)
+      console.warn('Erro da Meta API ao enviar WhatsApp:', errorMsg)
+
+      // Se a janela de 24h estiver fechada ou número não conversou antes
+      const isWindowClosed = errorMsg.includes('24 hour') || errorMsg.includes('131047') || errorMsg.includes('re-engagement') || errorMsg.includes('recipient')
+
+      return {
+        success: false,
+        error: isWindowClosed 
+          ? 'A janela de 24 horas da Meta está fechada para este número. Use o fallback do WhatsApp Web.'
+          : `Erro da Meta API: ${errorMsg}`,
+        isWindowClosed
+      }
     }
 
     // 2. Gravar no histórico de mensagens do Supabase
@@ -1616,6 +1628,43 @@ export async function enviarMensagemWhatsappManual(telefone: string, mensagem: s
       })
 
     if (dbErr) throw dbErr
+
+    // 3. Sincronizar com o Chatwoot e aplicar a etiqueta 'atendimento-humano' para pausar a IA do Lucas
+    try {
+      const chatwootToken = "Ctvou8YJ71uPrKQqkAat2XHC"
+      const searchRes = await fetch(`https://chat.contosdeoracao.com.br/api/v1/accounts/1/conversations/search?q=${telefone}`, {
+        headers: { 'api_access_token': chatwootToken }
+      })
+      if (searchRes.ok) {
+        const searchData = await searchRes.json()
+        const conversa = searchData.payload?.[0]
+        if (conversa?.id) {
+          // Registrar a mensagem enviada no Chatwoot
+          await fetch(`https://chat.contosdeoracao.com.br/api/v1/accounts/1/conversations/${conversa.id}/messages`, {
+            method: 'POST',
+            headers: {
+              'api_access_token': chatwootToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              content: mensagem.trim(),
+              message_type: 'outgoing'
+            })
+          })
+          // Atribuir etiqueta 'atendimento-humano' no Chatwoot para pausar as respostas da IA
+          await fetch(`https://chat.contosdeoracao.com.br/api/v1/accounts/1/conversations/${conversa.id}/labels`, {
+            method: 'POST',
+            headers: {
+              'api_access_token': chatwootToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ labels: ['atendimento-humano'] })
+          })
+        }
+      }
+    } catch (e) {
+      console.warn('Aviso: Falha ao sincronizar com Chatwoot (mensagem enviada via Meta API):', e)
+    }
 
     await registrarLogAuditoria(`Enviou mensagem manual via WhatsApp para ${telefone}`)
     revalidatePath('/painel-equipe-cod')

@@ -337,14 +337,17 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
     setActivePhone(clean)
     setModalNovaConversaAberta(false)
 
-    const res = await enviarMensagemWhatsappManual(clean, novaMensagemInput.trim())
+    const msgText = novaMensagemInput.trim()
     setEnviandoNovaConversa(false)
     setNovoTelefoneInput('')
     setNovaMensagemInput('')
 
+    const res = await enviarMensagemWhatsappManual(clean, msgText)
+
     if (!res.success) {
-      setMessages(prev => prev.filter(m => m.id !== tempId))
-      alert('Erro ao iniciar nova conversa: ' + res.error)
+      // Se a Meta API barrar (janela de 24h fechada ou contato novo), abre via WhatsApp Web como fallback inteligente
+      const waUrl = `https://api.whatsapp.com/send?phone=${clean}&text=${encodeURIComponent(msgText)}`
+      window.open(waUrl, '_blank')
     }
   }
 
@@ -465,8 +468,9 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
     startTransition(async () => {
       const res = await enviarMensagemWhatsappManual(activePhone, messageText)
       if (!res.success) {
-        setMessages(prev => prev.filter(m => m.id !== tempId))
-        alert('Erro ao enviar mensagem: ' + res.error)
+        // Se a janela de 24h da Meta estiver fechada, abre o WhatsApp Web com o texto preenchido
+        const waUrl = `https://api.whatsapp.com/send?phone=${activePhone}&text=${encodeURIComponent(messageText)}`
+        window.open(waUrl, '_blank')
       }
     })
   }
