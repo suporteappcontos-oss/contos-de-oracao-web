@@ -2,6 +2,7 @@ import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 import LandingPage from "@/components/LandingPage";
 import ExpiredAccessBanner from "@/components/ExpiredAccessBanner";
+import RibbonCursor from "@/components/RibbonCursor";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -11,14 +12,14 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <main>
+    <main className="relative">
+      <RibbonCursor />
       <DynamicBackground />
 
       {/* Banner de acesso expirado (Client component) */}
       <Suspense fallback={null}>
         <ExpiredAccessBanner />
       </Suspense>
-
 
       {/* Nova landing page inspirada na imagem de referência */}
       <LandingPage />
