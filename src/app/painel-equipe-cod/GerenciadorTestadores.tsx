@@ -186,7 +186,7 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
     }, 3000)
   }
 
-  // Formata o link direto para o WhatsApp Web com mensagem completa contendo Login, Senha e Links
+  // Formata o link direto para o WhatsApp Web com mensagem completa contendo Login, Senha, Play Store, Aceite no Gmail e Dica de Ativação
   function obterLinkWhatsapp(testador: Testador) {
     const cleanPhone = testador.whatsapp.replace(/\D/g, '')
     const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone
@@ -197,14 +197,21 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
 
     const mensagem = `Salve Maria, *${testador.nome}*! 🙏✨\n\n` +
       `Sua vaga como *Testador Voluntário Oficial* do aplicativo *Contos de Oração* foi aprovada!\n\n` +
-      `🎁 *Seu presente especial:* Você ganhou *1 ANO DE ACESSO GRATUITO E COMPLETO* à nossa plataforma no Celular, Web e TV!\n\n` +
-      `📌 *SEUS DADOS DE ACESSO:*\n` +
+      `🎁 *Seu presente especial:* Você ganhou *1 ANO DE ACESSO GRATUITO E COMPLETO* à nossa plataforma no Celular e Web!\n\n` +
+      `📌 *PASSO A PASSO PARA ATIVAR SEU ACESSO:*\n\n` +
+      `1️⃣ *PASSO 1 - ACEITAR O CONVITE NO GMAIL / PLAY STORE:*\n` +
+      `Abra o seu e-mail do Gmail (*${testador.email}*) ou clique no link abaixo para aceitar o convite de testador beta no Google Play:\n` +
+      `https://play.google.com/apps/testing/br.com.contosdeoracao.contos_mobile\n\n` +
+      `2️⃣ *PASSO 2 - BAIXAR O APP NA GOOGLE PLAY STORE:*\n` +
+      `Após aceitar o convite, clique aqui para baixar o app:\n` +
+      `https://play.google.com/store/apps/details?id=br.com.contosdeoracao.contos_mobile\n\n` +
+      `3️⃣ *PASSO 3 - ACESSAR A SUA CONTA PREMIAÇÃO:*\n` +
       `📧 *Login (E-mail):* ${testador.email}\n` +
-      `${senhaInfo}\n\n` +
-      `💻 *Acesse pelo Site:* https://contosdeoracao.com.br/login\n\n` +
-      `📲 *Grupo Fechado de Testadores na Play Store (WhatsApp):*\n` +
+      `${senhaInfo}\n` +
+      `💻 *Acesso Web:* https://contosdeoracao.com.br/login\n\n` +
+      `📲 *ENTRAR NO GRUPO DE TESTADORES (WHATSAPP):*\n` +
       `${linkWhatsapp || '[Link do Grupo pendente de cadastro no Painel]'}\n\n` +
-      `Qualquer dúvida, estamos à disposição no grupo!`
+      `💡 *DICA IMPORTANTE:* Se os links acima não estiverem azuis/clicáveis no seu celular, basta responder esta mensagem enviando *"Ok"* ou *"Amém"* para o WhatsApp liberar todos os links automaticamente!`
 
     return `https://api.whatsapp.com/send?phone=${finalPhone}&text=${encodeURIComponent(mensagem)}`
   }
