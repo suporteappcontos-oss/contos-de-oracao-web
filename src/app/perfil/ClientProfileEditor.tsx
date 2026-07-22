@@ -34,6 +34,7 @@ export default function ClientProfileEditor({
   // Estados temporários do modal
   const [tempName, setTempName] = useState(initialName)
   const [tempPhone, setTempPhone] = useState(initialPhone)
+  const [tempSenhaAtual, setTempSenhaAtual] = useState('')
   const [tempSenha, setTempSenha] = useState('')
   const [tempConfirmarSenha, setTempConfirmarSenha] = useState('')
   const [tempAvatarUrl, setTempAvatarUrl] = useState<string | null>(initialAvatarUrl)
@@ -44,8 +45,10 @@ export default function ClientProfileEditor({
     let value = val.replace(/\D/g, '')
     if (value.length > 11) value = value.slice(0, 11)
     
-    if (value.length > 6) {
-      value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`
+    if (value.length > 7) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2, 5)}-${value.slice(5, 8)}-${value.slice(8)}`
+    } else if (value.length > 4) {
+      value = `(${value.slice(0, 2)}) ${value.slice(2, 5)}-${value.slice(5)}`
     } else if (value.length > 2) {
       value = `(${value.slice(0, 2)}) ${value.slice(2)}`
     } else if (value.length > 0) {
@@ -58,6 +61,20 @@ export default function ClientProfileEditor({
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  const abrirModal = () => {
+    setTempName(initialName)
+    setTempPhone(initialPhone)
+    setTempSenhaAtual('')
+    setTempSenha('')
+    setTempConfirmarSenha('')
+    setTempAvatarUrl(initialAvatarUrl)
+    setTempPedidoSanto('')
+    setShowAvatarSelector(false)
+    setIsOpen(true)
+  }
+
+  const senhasDiferentes = tempConfirmarSenha.length > 0 && tempSenha !== tempConfirmarSenha
 
   // Escuta o evento global para abrir o modal (ex: clique no avatar)
   useEffect(() => {
@@ -76,14 +93,6 @@ export default function ClientProfileEditor({
     }
     return () => { document.body.style.overflow = '' }
   }, [isOpen])
-
-  const abrirModal = () => {
-    setTempName(initialName)
-    setTempAvatarUrl(initialAvatarUrl)
-    setTempPedidoSanto('')
-    setShowAvatarSelector(false)
-    setIsOpen(true)
-  }
 
   const fecharModal = () => {
     setIsOpen(false)
@@ -215,13 +224,13 @@ export default function ClientProfileEditor({
           </div>
 
           <div>
-            <label className="block text-white/70 text-xs font-bold uppercase tracking-wider px-1 mb-1.5">WhatsApp / Celular (com DDD)</label>
+            <label className="block text-white/70 text-xs font-bold uppercase tracking-wider px-1 mb-1.5">Contato</label>
             <input
               type="tel"
               value={tempPhone}
               onChange={(e) => handlePhoneChange(e.target.value)}
-              placeholder="(11) 99999-9999"
-              maxLength={15}
+              placeholder="(00) 000-000-000"
+              maxLength={17}
               className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
               style={{ background: 'rgba(0,0,0,0.35)' }}
             />
@@ -229,25 +238,46 @@ export default function ClientProfileEditor({
 
           {/* Alterar Senha */}
           <div className="pt-2 border-t border-white/5 space-y-3">
-            <label className="block text-[#D4AF37] text-xs font-bold uppercase tracking-wider px-1">Alterar Senha (Opcional)</label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label className="block text-[#D4AF37] text-xs font-bold uppercase tracking-wider px-1">Alterar Senha</label>
+            
+            <div className="space-y-3">
               <input
                 type="password"
-                value={tempSenha}
-                onChange={(e) => setTempSenha(e.target.value)}
-                placeholder="Nova Senha (mín. 6 chars)"
+                value={tempSenhaAtual}
+                onChange={(e) => setTempSenhaAtual(e.target.value)}
+                placeholder="Senha Atual"
                 className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
                 style={{ background: 'rgba(0,0,0,0.35)' }}
               />
-              <input
-                type="password"
-                value={tempConfirmarSenha}
-                onChange={(e) => setTempConfirmarSenha(e.target.value)}
-                placeholder="Confirme a Nova Senha"
-                className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
-                style={{ background: 'rgba(0,0,0,0.35)' }}
-              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input
+                  type="password"
+                  value={tempSenha}
+                  onChange={(e) => setTempSenha(e.target.value)}
+                  placeholder="Nova Senha (mín. 6 chars)"
+                  className="w-full border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+                  style={{ background: 'rgba(0,0,0,0.35)' }}
+                />
+                <input
+                  type="password"
+                  value={tempConfirmarSenha}
+                  onChange={(e) => setTempConfirmarSenha(e.target.value)}
+                  placeholder="Confirme a Nova Senha"
+                  className={`w-full border rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors ${
+                    senhasDiferentes ? 'border-red-500 bg-red-500/10' : 'border-white/10 focus:border-[#D4AF37]'
+                  }`}
+                  style={{ background: senhasDiferentes ? undefined : 'rgba(0,0,0,0.35)' }}
+                />
+              </div>
             </div>
+
+            {/* Aviso em Tempo Real quando a senha de confirmação estiver diferente */}
+            {senhasDiferentes && (
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold animate-pulse">
+                <span>⚠️ As senhas devem ser idênticas! A confirmação está diferente da nova senha.</span>
+              </div>
+            )}
           </div>
         </div>
 

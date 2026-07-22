@@ -58,7 +58,10 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
     }
   }
 
-  // Função para conceder acesso vitalício de testador (1 ano)
+  // Estado para armazenar senhas geradas temporariamente
+  const [senhasGeradas, setSenhasGeradas] = useState<Record<string, string>>({})
+
+  // Função para conceder acesso de testador (1 ano)
   const [concedendoId, setConcedendoId] = useState<string | null>(null)
   
   async function handleConcederAcesso(testador: Testador) {
@@ -73,9 +76,10 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
       const res = await concederAcessoTestador(formData)
       if (res.success) {
         if (res.senhaGerada) {
-          alert(`${res.message}\nSenha temporária: ${res.senhaGerada}\n(Uma senha foi gerada pois o usuário não possuía conta.)`)
+          setSenhasGeradas(prev => ({ ...prev, [testador.id]: res.senhaGerada! }))
+          alert(`✅ Acesso concedido com sucesso!\n\n• Usuário: ${testador.email}\n• Senha Temporária: ${res.senhaGerada}\n\nAgora você pode clicar no botão verde "MANDAR CONVITE" para enviar as credenciais prontas pelo WhatsApp.`)
         } else {
-          alert(res.message)
+          alert(`✅ ${res.message}\nO usuário já possuía conta e teve seu acesso renovado para 1 ano grátis!`)
         }
       } else {
         alert('Erro ao conceder acesso: ' + res.error)
@@ -155,15 +159,25 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
     }, 3000)
   }
 
-  // Formata o link direto para o WhatsApp Web com mensagem pronta
-  function obterLinkWhatsapp(whatsappNum: string) {
-    const cleanPhone = whatsappNum.replace(/\D/g, '')
+  // Formata o link direto para o WhatsApp Web com mensagem completa contendo Login, Senha e Links
+  function obterLinkWhatsapp(testador: Testador) {
+    const cleanPhone = testador.whatsapp.replace(/\D/g, '')
     const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone
     
-    const mensagem = `Olá! Sua vaga de testador para o aplicativo Contos de Oração foi selecionada.\n\n` +
-      `Para iniciar os testes na Google Play Store, por favor entre no nosso grupo de suporte fechado no WhatsApp clicando no link abaixo:\n` +
-      `${linkWhatsapp || '[Link do Grupo pendente de cadastro]'}\n\n` +
-      `Qualquer dúvida, estamos à disposição por lá!`
+    const senhaInfo = senhasGeradas[testador.id] 
+      ? `🔑 *Senha Temporária:* ${senhasGeradas[testador.id]}`
+      : `🔑 *Senha:* (Utilize a senha definida no seu cadastro no app)`
+
+    const mensagem = `Salve Maria, *${testador.nome}*! 🙏✨\n\n` +
+      `Sua vaga como *Testador Voluntário Oficial* do aplicativo *Contos de Oração* foi aprovada!\n\n` +
+      `🎁 *Seu presente especial:* Você ganhou *1 ANO DE ACESSO GRATUITO E COMPLETO* à nossa plataforma no Celular, Web e TV!\n\n` +
+      `📌 *SEUS DADOS DE ACESSO:*\n` +
+      `📧 *Login (E-mail):* ${testador.email}\n` +
+      `${senhaInfo}\n\n` +
+      `💻 *Acesse pelo Site:* https://contosdeoracao.com.br/login\n\n` +
+      `📲 *Grupo Fechado de Testadores na Play Store (WhatsApp):*\n` +
+      `${linkWhatsapp || '[Link do Grupo pendente de cadastro no Painel]'}\n\n` +
+      `Qualquer dúvida, estamos à disposição no grupo!`
 
     return `https://api.whatsapp.com/send?phone=${finalPhone}&text=${encodeURIComponent(mensagem)}`
   }
@@ -380,7 +394,7 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                           </button>
 
                           <a
-                            href={obterLinkWhatsapp(t.whatsapp)}
+                            href={obterLinkWhatsapp(t)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20"
