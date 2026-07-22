@@ -788,15 +788,16 @@ export async function concederAcessoTestador(formData: FormData) {
   validUntil.setFullYear(validUntil.getFullYear() + 1)
   const validUntilStr = validUntil.toISOString()
 
-  let senhaGerada = ''
+  let senhaGerada = require('crypto').randomBytes(4).toString('hex')
   let message = ''
 
   const usuarioExistente = await buscarUsuarioPorEmail(email)
 
   if (usuarioExistente) {
-    // Atualiza usuário existente
+    // Atualiza usuário existente com 1 ano de acesso grátis e redefine a senha temporária
     const currentMetadata = usuarioExistente.user_metadata || {}
     const { error } = await admin.auth.admin.updateUserById(usuarioExistente.id, {
+      password: senhaGerada,
       user_metadata: {
         ...currentMetadata,
         testador: true,
@@ -812,7 +813,7 @@ export async function concederAcessoTestador(formData: FormData) {
       return { success: false, error: error.message }
     }
     
-    message = 'Usuário atualizado com sucesso para Testador (1 Ano).'
+    message = 'Acesso de 1 Ano concedido e senha temporária gerada com sucesso.'
   } else {
     // Cria novo usuário
     senhaGerada = require('crypto').randomBytes(6).toString('hex')

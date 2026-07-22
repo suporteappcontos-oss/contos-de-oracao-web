@@ -186,14 +186,49 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
     }, 3000)
   }
 
-  // Formata o link direto para o WhatsApp Web com mensagem completa contendo Login, Senha, Play Store, Aceite no Gmail e Dica de Ativação
-  function obterLinkWhatsapp(testador: Testador) {
+  // Função 2-em-1: Concede acesso de 1 ano no Supabase, gera/atualiza senha temporária e abre o WhatsApp com a mensagem pronta
+  async function handleMandarConviteComAcesso(testador: Testador) {
+    setConcedendoId(testador.id)
+    let senhaUsar = senhasGeradas[testador.id] || ''
+
+    try {
+      // 1. Sempre ativa o acesso de 1 ano no Supabase Auth e redefine a senha temporária
+      const formData = new FormData()
+      formData.append('email', testador.email)
+      formData.append('nome', testador.nome)
+      
+      const res = await concederAcessoTestador(formData)
+      if (res.success && res.senhaGerada) {
+        senhaUsar = res.senhaGerada
+        setSenhasGeradas(prev => ({ ...prev, [testador.id]: res.senhaGerada! }))
+      }
+
+      // 2. Marca o convite como enviado no estado e localStorage
+      setConvitesEnviados(prev => {
+        const novo = { ...prev, [testador.id]: true }
+        try { localStorage.setItem('convites_enviados_map', JSON.stringify(novo)) } catch (e) {}
+        return novo
+      })
+
+      // 3. Monta o link do WhatsApp com a senha temporária e abre imediatamente
+      const whatsappUrl = obterLinkWhatsapp(testador, senhaUsar)
+      window.open(whatsappUrl, '_blank')
+    } catch (err) {
+      console.error('Erro ao conceder acesso e abrir WhatsApp:', err)
+      const whatsappUrl = obterLinkWhatsapp(testador, senhaUsar)
+      window.open(whatsappUrl, '_blank')
+    } finally {
+      setConcedendoId(null)
+    }
+  }
+
+  // Formata o link direto para o WhatsApp Web com mensagem completa contendo Login, Senha Temporária, Play Store, Aceite no Gmail e Dica de Ativação
+  function obterLinkWhatsapp(testador: Testador, senhaOverride?: string) {
     const cleanPhone = testador.whatsapp.replace(/\D/g, '')
     const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone
     
-    const senhaInfo = senhasGeradas[testador.id] 
-      ? `🔑 *Senha Temporária:* ${senhasGeradas[testador.id]}`
-      : `🔑 *Senha:* (Utilize a senha definida no seu cadastro no app)`
+    const senhaUsar = senhaOverride || senhasGeradas[testador.id] || 'a8b9c2d1'
+    const senhaInfo = `🔑 *Senha Temporária:* ${senhaUsar}`
 
     const mensagem = `Salve Maria, *${testador.nome}*! 🙏✨\n\n` +
       `Sua vaga como *Testador Voluntário Oficial* do aplicativo *Contos de Oração* foi aprovada!\n\n` +
@@ -432,41 +467,22 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
                           </button>
 
                           <button
-                            onClick={() => handleConcederAcesso(t)}
+                            onClick={() => handleMandarConviteComAcesso(t)}
                             disabled={concedendoId === t.id}
-                            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#D4AF37] border-[#D4AF37]/20 disabled:opacity-40"
-                            title="Conceder acesso grátis por 1 ano ao App"
+                            className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-4 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 shadow-md disabled:opacity-50 ${
+                              convitesEnviados[t.id]
+                                ? 'bg-[#25D366]/20 text-[#25D366] border-[#25D366]/40 hover:bg-[#25D366]/30'
+                                : 'bg-[#25D366] text-black border-[#25D366] hover:bg-[#22bf5b]'
+                            }`}
+                            title="Dar 1 ano de acesso grátis, gerar senha e enviar convite no WhatsApp"
                           >
                             {concedendoId === t.id ? (
                               <RefreshCw size={13} className="animate-spin" />
                             ) : (
-                              <Check size={13} />
+                              <MessageSquare size={13} />
                             )}
-                            Dar Acesso (1 Ano)
+                            {concedendoId === t.id ? 'Concedendo...' : convitesEnviados[t.id] ? 'Reenviar Convite' : 'Mandar Convite + 1 Ano Grátis'}
                           </button>
-
-                          <a
-                            href={obterLinkWhatsapp(t)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => {
-                              // Marca como convite enviado automaticamente ao clicar no link do WhatsApp
-                              setConvitesEnviados(prev => {
-                                const novo = { ...prev, [t.id]: true }
-                                try { localStorage.setItem('convites_enviados_map', JSON.stringify(novo)) } catch (e) {}
-                                return novo
-                              })
-                            }}
-                            className={`inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-3.5 py-2 rounded-xl transition-all select-none border cursor-pointer hover:brightness-110 active:scale-95 ${
-                              convitesEnviados[t.id]
-                                ? 'bg-[#25D366]/20 text-[#25D366] border-[#25D366]/40'
-                                : 'bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border-[#25D366]/20'
-                            }`}
-                            title="Enviar convite com link de testes no WhatsApp"
-                          >
-                            <MessageSquare size={13} />
-                            {convitesEnviados[t.id] ? 'Reenviar Convite' : 'Mandar Convite'}
-                          </a>
 
                           <button
                             onClick={() => handleExcluir(t.id)}
