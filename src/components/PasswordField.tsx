@@ -7,9 +7,11 @@ type Props = {
   name: string
   placeholder: string
   label: string
+  value?: string
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export default function PasswordField({ name, placeholder, label }: Props) {
+export default function PasswordField({ name, placeholder, label, value, onChange }: Props) {
   const [show, setShow] = useState(false)
 
   return (
@@ -28,6 +30,8 @@ export default function PasswordField({ name, placeholder, label }: Props) {
           required
           minLength={6}
           placeholder={placeholder}
+          value={value}
+          onChange={onChange}
           style={{
             width: '100%', padding: '14px 48px 14px 16px', boxSizing: 'border-box',
             background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',

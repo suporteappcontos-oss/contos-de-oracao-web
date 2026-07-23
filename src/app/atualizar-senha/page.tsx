@@ -1,28 +1,77 @@
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
-import { atualizarSenha } from './actions'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 import PasswordField from '@/components/PasswordField'
 import DynamicBackground from '@/components/DynamicBackground'
+import { Infinity as InfinityIcon } from 'lucide-react'
 
-type Props = {
-  searchParams: Promise<{ erro?: string }>
-}
+export default function AtualizarSenhaPage() {
+  const router = useRouter()
+  const [senha, setSenha] = useState('')
+  const [confirmar, setConfirmar] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [sucesso, setSucesso] = useState(false)
+  const [erro, setErro] = useState('')
 
-const MSGS_ERRO: Record<string, string> = {
-  senha_curta: '❌ A senha deve ter pelo menos 6 caracteres.',
-  senhas_diferentes: '❌ As senhas não coincidem. Tente novamente.',
-  erro_generico: '❌ Ocorreu um erro. O link pode ter expirado — solicite um novo.',
-  link_expirado: '❌ Link expirado ou inválido. Solicite a recuperação de senha novamente.',
-}
+  useEffect(() => {
+    // Verifica se há sessão ativa ou erro na HASH da URL
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (error || !data.user) {
+        if (typeof window !== 'undefined' && window.location.hash) {
+          const hashParams = new URLSearchParams(window.location.hash.substring(1))
+          const hashError = hashParams.get('error_description') || hashParams.get('error_code')
+          if (hashError) {
+            router.replace(`/esqueci-senha?erro=${encodeURIComponent('O link de recuperação expirou ou é inválido. Solicite um novo abaixo.')}`)
+          }
+        }
+      }
+    })
+  }, [router])
 
-export default async function AtualizarSenhaPage({ searchParams }: Props) {
-  const { erro } = await searchParams
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setErro('')
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+    if (!senha || senha.length < 6) {
+      setErro('A senha deve ter pelo menos 6 caracteres.')
+      return
+    }
 
-  if (!user) {
-    redirect('/esqueci-senha?erro=link_expirado')
+    if (senha !== confirmar) {
+      setErro('As senhas não coincidem. Tente novamente.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.updateUser({ password: senha })
+
+      if (error) {
+        console.error('Erro updateUser:', error)
+        let msg = 'Erro ao atualizar senha. O link pode ter expirado.'
+        if (error.message.includes('same password') || error.message.includes('different')) {
+          msg = 'A nova senha deve ser diferente da senha anterior.'
+        } else if (error.message.includes('6 characters')) {
+          msg = 'A senha deve ter pelo menos 6 caracteres.'
+        }
+        setErro(msg)
+        setLoading(false)
+        return
+      }
+
+      setSucesso(true)
+      setTimeout(() => {
+        window.location.href = '/watch'
+      }, 1500)
+    } catch (err: any) {
+      setErro(err?.message || 'Erro de conexão. Tente novamente.')
+      setLoading(false)
+    }
   }
 
   return (
@@ -52,48 +101,71 @@ export default async function AtualizarSenhaPage({ searchParams }: Props) {
         </div>
 
         <h1 style={{ color: '#fff', fontSize: '1.7rem', fontWeight: 900, margin: '0 0 0.5rem' }}>
-          Bem-vindo! Crie sua senha 🙏
+          Redefinir sua senha 🙏
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-          Sua compra foi aprovada! Defina uma senha para acessar todo o conteúdo.
+          Crie uma nova senha para acessar sua conta na plataforma.
         </p>
 
-        <form action={atualizarSenha} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-
-          {/* Campo com olhinho (Client Component) */}
-          <PasswordField
-            name="senha"
-            label="Nova Senha"
-            placeholder="Mínimo 6 caracteres"
-          />
-
-          <PasswordField
-            name="confirmar"
-            label="Confirmar Senha"
-            placeholder="Repita a senha"
-          />
-
-          {/* Erro */}
-          {erro && (
-            <div style={{
-              background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.25)',
-              borderRadius: '12px', padding: '12px 16px', color: '#ff8080',
-              fontSize: '0.875rem', textAlign: 'center'
-            }}>
-              {MSGS_ERRO[erro] ?? '❌ Ocorreu um erro. Tente novamente.'}
-            </div>
-          )}
-
-          <button type="submit" style={{
-            marginTop: '0.5rem',
-            background: '#D4AF37', color: '#090B10', border: 'none',
-            padding: '14px', borderRadius: '12px', fontWeight: 800,
-            fontSize: '1rem', cursor: 'pointer', fontFamily: 'Outfit, sans-serif',
-            transition: 'all 0.2s'
+        {sucesso ? (
+          <div style={{
+            background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)',
+            borderRadius: '16px', padding: '1.5rem', textAlign: 'center'
           }}>
-            Salvar nova senha e entrar →
-          </button>
-        </form>
+            <div style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>✅</div>
+            <p style={{ color: '#10B981', fontWeight: 800, margin: '0 0 0.25rem', fontSize: '1.1rem' }}>
+              Senha atualizada com sucesso!
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', margin: 0 }}>
+              Redirecionando para a plataforma...
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+            <PasswordField
+              name="senha"
+              label="Nova Senha"
+              placeholder="Mínimo 6 caracteres"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+            />
+
+            <PasswordField
+              name="confirmar"
+              label="Confirmar Senha"
+              placeholder="Repita a senha"
+              value={confirmar}
+              onChange={e => setConfirmar(e.target.value)}
+            />
+
+            {/* Erro */}
+            {erro && (
+              <div style={{
+                background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.25)',
+                borderRadius: '12px', padding: '12px 16px', color: '#ff8080',
+                fontSize: '0.875rem', textAlign: 'center'
+              }}>
+                ❌ {erro}
+              </div>
+            )}
+
+            <button type="submit" disabled={loading} style={{
+              marginTop: '0.5rem',
+              background: '#D4AF37', color: '#090B10', border: 'none',
+              padding: '14px', borderRadius: '12px', fontWeight: 800,
+              fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Outfit, sans-serif',
+              transition: 'all 0.2s', opacity: loading ? 0.7 : 1,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+            }}>
+              {loading ? (
+                <><InfinityIcon className="premium-trace" size={20} /> Salvando nova senha...</>
+              ) : (
+                'Salvar nova senha e entrar →'
+              )}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )
