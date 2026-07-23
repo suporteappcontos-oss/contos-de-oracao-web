@@ -56,7 +56,7 @@ function HeroContent() {
               textShadow: '0 4px 40px rgba(0,0,0,0.9)',
             }}
           >
-            Biblioteca Católica:
+            Transforme Tempo de Tela em Tempo de Fé:
             <br />
             <span
               className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] block leading-snug mt-2"

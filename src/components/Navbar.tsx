@@ -475,13 +475,13 @@ export default function Navbar() {
             <Image src="/logo.png" alt="Contos de Oração" width={52} height={52} className="object-cover w-full h-full" />
           </div>
           <div className="text-left hidden sm:block">
-            <div className="text-white font-black text-sm sm:text-lg md:text-xl leading-tight tracking-wide"
+            <div className="text-white font-black text-base sm:text-xl md:text-2xl leading-tight tracking-wide"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração
             </div>
             <div className="text-[#D4AF37] text-[0.55rem] sm:text-[0.65rem] md:text-[0.7rem] font-black uppercase tracking-widest leading-none mt-1"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-              Biblioteca Católica
+              Transforme Tempo de Tela em Tempo de Fé
             </div>
           </div>
         </div>
@@ -620,8 +620,8 @@ export default function Navbar() {
         <div className="flex items-center gap-3 px-5 pt-6 pb-4 pr-12">
           <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain drop-shadow-lg" />
           <div>
-            <div className="text-white font-black text-sm leading-tight">Contos de Oração</div>
-            <div className="text-[#D4AF37] text-[0.55rem] font-bold uppercase tracking-widest mt-0.5">Biblioteca Católica</div>
+            <div className="text-white font-black text-base leading-tight">Contos de Oração</div>
+            <div className="text-[#D4AF37] text-[0.55rem] font-bold uppercase tracking-widest mt-0.5">Transforme Tempo de Tela em Tempo de Fé</div>
           </div>
         </div>
 
