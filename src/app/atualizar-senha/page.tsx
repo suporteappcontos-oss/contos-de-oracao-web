@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
 import PasswordField from '@/components/PasswordField'
 import DynamicBackground from '@/components/DynamicBackground'
 import { Infinity as InfinityIcon } from 'lucide-react'
@@ -16,19 +15,14 @@ export default function AtualizarSenhaPage() {
   const [erro, setErro] = useState('')
 
   useEffect(() => {
-    // Verifica se há sessão ativa ou erro na HASH da URL
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data, error }) => {
-      if (error || !data.user) {
-        if (typeof window !== 'undefined' && window.location.hash) {
-          const hashParams = new URLSearchParams(window.location.hash.substring(1))
-          const hashError = hashParams.get('error_description') || hashParams.get('error_code')
-          if (hashError) {
-            router.replace(`/esqueci-senha?erro=${encodeURIComponent('O link de recuperação expirou ou é inválido. Solicite um novo abaixo.')}`)
-          }
-        }
+    // Verifica se a URL contém erro na hash
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const hashError = hashParams.get('error_description') || hashParams.get('error_code')
+      if (hashError) {
+        router.replace(`/esqueci-senha?erro=${encodeURIComponent('O link de recuperação expirou ou é inválido. Solicite um novo abaixo.')}`)
       }
-    })
+    }
   }, [router])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -48,18 +42,16 @@ export default function AtualizarSenhaPage() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.updateUser({ password: senha })
+      const res = await fetch('/api/auth/atualizar-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senha, confirmar }),
+      })
 
-      if (error) {
-        console.error('Erro updateUser:', error)
-        let msg = 'Erro ao atualizar senha. O link pode ter expirado.'
-        if (error.message.includes('same password') || error.message.includes('different')) {
-          msg = 'A nova senha deve ser diferente da senha anterior.'
-        } else if (error.message.includes('6 characters')) {
-          msg = 'A senha deve ter pelo menos 6 caracteres.'
-        }
-        setErro(msg)
+      const data = await res.json()
+
+      if (!res.ok || !data.ok) {
+        setErro(data.error || 'Erro ao atualizar senha. O link pode ter expirado.')
         setLoading(false)
         return
       }

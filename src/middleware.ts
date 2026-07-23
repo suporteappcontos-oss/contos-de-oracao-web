@@ -17,25 +17,25 @@ const globalRatelimit = new Ratelimit({
   analytics: true,
 })
 
-// Rigoroso: 60 requisições por minuto por IP (webhooks, logins, pagamentos)
+// Rigoroso: 200 requisições por minuto por IP (webhooks, logins, pagamentos)
 const strictRatelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(60, '1 m'),
+  limiter: Ratelimit.slidingWindow(200, '1 m'),
   analytics: true,
 })
 
-// Administrativo: 10 requisições por minuto por IP (painel secreto e APIs admin)
+// Administrativo: 60 requisições por minuto por IP (painel secreto e APIs admin)
 const adminRatelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(10, '1 m'),
+  limiter: Ratelimit.slidingWindow(60, '1 m'),
   analytics: true,
 })
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // ── Rate Limiting nas APIs ──
-  if (pathname.startsWith('/api/')) {
+  // ── Rate Limiting nas APIs (Isenta /api/auth para nunca bloquear recuperação de senha) ──
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
       || '127.0.0.1'
@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
 
     if (pathname.startsWith('/api/admin')) {
       ratelimit = adminRatelimit
-    } else if (pathname.includes('/webhook') || pathname.includes('/auth') || pathname.includes('/login')) {
+    } else if (pathname.includes('/webhook') || pathname.includes('/login')) {
       ratelimit = strictRatelimit
     }
 
