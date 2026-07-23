@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       : 'https://contos-de-oracao-web.vercel.app'
 
   const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-    redirectTo: `${siteUrl}/api/auth/callback?next=/atualizar-senha`,
+    redirectTo: `${siteUrl}/atualizar-senha`,
   })
 
   if (error) {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 import PasswordField from '@/components/PasswordField'
 import DynamicBackground from '@/components/DynamicBackground'
 import { Infinity as InfinityIcon } from 'lucide-react'
@@ -13,17 +14,60 @@ export default function AtualizarSenhaPage() {
   const [loading, setLoading] = useState(false)
   const [sucesso, setSucesso] = useState(false)
   const [erro, setErro] = useState('')
+  const [sessionReady, setSessionReady] = useState(false)
 
   useEffect(() => {
-    // Verifica se a URL contém erro na hash
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      const hashError = hashParams.get('error_description') || hashParams.get('error_code')
-      if (hashError) {
-        router.replace(`/esqueci-senha?erro=${encodeURIComponent('O link de recuperação expirou ou é inválido. Solicite um novo abaixo.')}`)
+    const supabase = createClient()
+
+    // 1. Ouve mudanças de estado de autenticação (captura a hash #access_token automaticamente)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Evento Auth na página de senha:', event, session?.user?.email)
+      if (session?.user) {
+        setSessionReady(true)
+        setErro('')
+      }
+    })
+
+    // 2. Se houver parâmetro ?code= na URL (fluxo PKCE), troca o código pela sessão no cliente
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const code = params.get('code')
+      if (code) {
+        supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+          if (!error && data.session) {
+            setSessionReady(true)
+            setErro('')
+          } else if (error) {
+            console.error('🔴 Erro ao trocar code PKCE:', error)
+          }
+        })
+      }
+
+      // 3. Checa se veio mensagem de erro na Hash da URL
+      if (window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const hashError = hashParams.get('error_description') || hashParams.get('error_code')
+        if (hashError) {
+          if (hashError.includes('expired') || hashError === 'otp_expired') {
+            setErro('O link de recuperação expirou ou já foi utilizado. Por favor, solicite um novo link abaixo.')
+          } else {
+            setErro('Link de recuperação inválido. Solicite um novo link abaixo.')
+          }
+        }
       }
     }
-  }, [router])
+
+    // 4. Checa se o usuário já possui sessão ativa
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        setSessionReady(true)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -42,6 +86,22 @@ export default function AtualizarSenhaPage() {
     setLoading(true)
 
     try {
+      const supabase = createClient()
+
+      // Tenta atualizar a senha diretamente pelo cliente de navegador
+      const { error: clientError } = await supabase.auth.updateUser({ password: senha })
+
+      if (!clientError) {
+        setSucesso(true)
+        setTimeout(() => {
+          window.location.href = '/watch'
+        }, 1500)
+        return
+      }
+
+      console.warn('⚠️ Falha no cliente, tentando via API servidor...', clientError.message)
+
+      // Fallback: Tenta via API de servidor (para cookies httpOnly)
       const res = await fetch('/api/auth/atualizar-senha', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,7 +111,7 @@ export default function AtualizarSenhaPage() {
       const data = await res.json()
 
       if (!res.ok || !data.ok) {
-        setErro(data.error || 'Erro ao atualizar senha. O link pode ter expirado.')
+        setErro(data.error || 'Erro ao atualizar senha. Solicite um novo link de recuperação.')
         setLoading(false)
         return
       }
