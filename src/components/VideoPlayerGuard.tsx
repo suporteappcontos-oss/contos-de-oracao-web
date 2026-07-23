@@ -283,6 +283,31 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
       if (document.visibilityState === 'hidden') encerrarSessao()
     })
 
+    // ── FIX PARA BUG DE TOQUE CONGELADO AO SAIR DA TELA CHEIA EM CELULARES (ANDROID/CAPACITOR) ──
+    const handleFullscreenChange = () => {
+      const isFullscreen = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      )
+
+      if (!isFullscreen) {
+        // Ao sair da tela cheia no Android, garante restauração imediata do toque e do foco da janela
+        document.body.style.pointerEvents = 'auto'
+        document.body.style.overflow = 'auto'
+        if (iframeRef.current) {
+          iframeRef.current.blur()
+        }
+        window.focus()
+      }
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange)
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange)
+
     // Fallback: tentar inscrever logo de cara
     setTimeout(() => {
        iframeRef.current?.contentWindow?.postMessage(JSON.stringify({
@@ -308,6 +333,10 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
       encerrarSessao()
       window.removeEventListener('message', handleMessage)
       window.removeEventListener('beforeunload', encerrarSessao)
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange)
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange)
     }
   }, [iniciarSessao, encerrarSessao, router, videoId])
 

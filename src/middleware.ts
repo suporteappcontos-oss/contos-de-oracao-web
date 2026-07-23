@@ -48,20 +48,24 @@ export async function middleware(request: NextRequest) {
       ratelimit = strictRatelimit
     }
 
-    const { success, limit, reset, remaining } = await ratelimit.limit(ip)
+    try {
+      const { success, limit, reset, remaining } = await ratelimit.limit(ip)
 
-    if (!success) {
-      return NextResponse.json(
-        { error: 'Muitas requisições detectadas. Por favor, aguarde alguns instantes antes de tentar novamente.' },
-        { 
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': limit.toString(),
-            'X-RateLimit-Remaining': remaining.toString(),
-            'X-RateLimit-Reset': reset.toString()
+      if (!success) {
+        return NextResponse.json(
+          { error: 'Muitas requisições detectadas. Por favor, aguarde alguns instantes antes de tentar novamente.' },
+          { 
+            status: 429,
+            headers: {
+              'X-RateLimit-Limit': limit.toString(),
+              'X-RateLimit-Remaining': remaining.toString(),
+              'X-RateLimit-Reset': reset.toString()
+            }
           }
-        }
-      )
+        )
+      }
+    } catch (err) {
+      console.error('⚠️ Upstash RateLimit Error (fail-open):', err)
     }
   }
 

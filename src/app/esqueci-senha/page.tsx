@@ -12,12 +12,24 @@ export default function EsqueciSenhaPage() {
   const [erro, setErro] = useState('')
   const [email, setEmail] = useState('')
 
-  // Lê query params na montagem (URL: ?enviado=1 ou ?erro=...)
+  // Lê query e hash params na montagem (URL: ?enviado=1 ou #error=...)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('enviado')) setEnviado(true)
-    const erroParam = params.get('erro')
+    const erroParam = params.get('erro') || params.get('error_description') || params.get('error')
     if (erroParam) setErro(decodeURIComponent(erroParam))
+
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const hashError = hashParams.get('error_description') || hashParams.get('error_code')
+      if (hashError) {
+        if (hashError.includes('expired') || hashError === 'otp_expired') {
+          setErro('O link de recuperação expirou ou foi clicado duas vezes. Solicite um novo link abaixo.')
+        } else {
+          setErro('Link de recuperação inválido. Solicite um novo link abaixo.')
+        }
+      }
+    }
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
