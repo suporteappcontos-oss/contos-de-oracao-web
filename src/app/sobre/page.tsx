@@ -3,21 +3,25 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 import { 
   Heart, 
-  Sparkles, 
   BookOpen, 
-  Cross, 
   ShieldCheck, 
   Tv, 
   Mail, 
   ExternalLink,
-  Award,
   CheckCircle2,
   Users,
   Compass,
-  Star
+  Star,
+  Quote,
+  Sparkles
 } from "lucide-react";
 
-// Ícones SVG para redes sociais
+export const metadata = {
+  title: "Sobre o Contos de Oração — Nossa História e Fé",
+  description: "Conheça a história de Alexandre Mendes Fernandes e o propósito do Contos de Oração em evangelizar famílias através da arte, animação e tecnologia.",
+};
+
+// Ícones SVG customizados e leves
 const IconYoutube = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -36,326 +40,208 @@ const IconFacebook = () => (
   </svg>
 );
 
-export const metadata = {
-  title: "Sobre o Contos de Oração — Transforme Tempo de Tela em Tempo de Fé",
-  description: "Conheça a história, a missão e quem está por trás do Contos de Oração. Conteúdos católicos infantis e familiares produzidos com excelência artística e fidelidade à Igreja.",
-};
-
 export default function SobrePage() {
   const FONT = "'Outfit', sans-serif";
   const GOLD = "#D4AF37";
-  const BG_ROOT = "#090B10";
 
-  const missoes = [
-    "A Sagrada Escritura, do Gênesis ao Apocalipse",
-    "A vida de Jesus Cristo",
-    "A história de Nossa Senhora",
-    "A vida e o testemunho dos santos",
-    "A doutrina da Igreja Católica",
-    "O Catecismo e os Sacramentos",
-    "A Santa Missa e a Liturgia",
-    "As orações e devoções da Igreja",
-    "A história da Igreja",
-    "Os valores cristãos para a vida em família"
+  const pilaresConteudo = [
+    "A Sagrada Escritura (do Gênesis ao Apocalipse)",
+    "A Vida de Nosso Senhor Jesus Cristo",
+    "A Devoção a Nossa Senhora e os Santos",
+    "A Doutrina, o Catecismo e os Sacramentos",
+    "A Santa Missa, a Liturgia e as Orações",
+    "Valores Cristãos para o Cotidiano da Família"
   ];
 
-  const valores = [
-    { titulo: "Fidelidade ao Magistério", desc: "Conteúdos 100% alinhados com a doutrina da Igreja Católica Apostólica Romana.", icone: ShieldCheck },
-    { titulo: "Centralidade em Jesus", desc: "Cristo no centro de toda a nossa produção e evangelização.", icone: Cross },
-    { titulo: "Amor à Palavra de Deus", desc: "Respeito e transmissão fiel das Sagradas Escrituras.", icone: BookOpen },
-    { titulo: "Devoção a Nossa Senhora", desc: "Amor e veneração à Mãe de Deus e nossa Mãe Santíssima.", icone: Heart },
-    { titulo: "Testemunho dos Santos", desc: "Apresentar os grandes exemplos de santidade da História.", icone: Star },
-    { titulo: "Excelência Artística", desc: "Qualidade técnica, visual e sonora em cada animação e material.", icone: Award },
-    { titulo: "Uso Ético da I.A.", desc: "Inteligência artificial colocada com responsabilidade a serviço da fé.", icone: Sparkles },
-    { titulo: "Respeito às Famílias", desc: "Ambiente 100% seguro e protegido para crianças de todas as idades.", icone: Users },
-    { titulo: "Compromisso com a Fé", desc: "Dedicação integral a levar a esperança e o conhecimento de Deus aos lares.", icone: Compass }
+  const compromissos = [
+    { titulo: "Fidelidade à Igreja", desc: "Conteúdos 100% alinhados com o Magistério da Igreja Católica." },
+    { titulo: "Centralidade em Cristo", desc: "Jesus no centro de todas as histórias, animações e canções." },
+    { titulo: "Exemplo dos Santos", desc: "A vida dos santos como modelos reais de virtude e amor a Deus." },
+    { titulo: "Tecnologia com Propósito", desc: "Inteligência artificial e arte digital colocadas a serviço do Evangelho." },
+    { titulo: "Segurança para Filhos", desc: "Um refúgio digital onde pais podem confiar de olhos fechados." },
+    { titulo: "Qualidade Artística", desc: "Animações, revistas e sons produzidos com carinho e dedicação." }
   ];
 
   return (
-    <main style={{ backgroundColor: BG_ROOT, minHeight: "100vh", color: "#fff", display: "flex", flexDirection: "column" }}>
+    <main style={{ backgroundColor: "#080A0F", minHeight: "100vh", color: "#fff", fontFamily: FONT }}>
 
-      {/* ════════ HERO SECTION ════════ */}
-      <section 
-        className="w-full pt-[130px] pb-[70px] flex justify-center px-4 relative overflow-hidden"
-        style={{
-          background: 'radial-gradient(circle at top, #131e33 0%, #090B10 70%, #050608 100%)'
-        }}
-      >
-        {/* Glow de fundo */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#D4AF37] opacity-10 blur-[140px] rounded-full pointer-events-none" />
+      {/* ════════ HERO EDITORIAL ════════ */}
+      <section className="relative w-full pt-28 sm:pt-36 pb-12 sm:pb-20 px-4 sm:px-6 flex justify-center overflow-hidden">
+        {/* Luz suave de fundo */}
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[320px] sm:w-[600px] h-[320px] sm:h-[600px] bg-[#D4AF37] opacity-10 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="w-full max-w-[1140px] flex flex-col items-center text-center relative z-10">
+        <div className="w-full max-w-4xl flex flex-col items-center text-center relative z-10">
           
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 border"
-            style={{
-              background: 'rgba(212, 175, 55, 0.1)',
-              borderColor: 'rgba(212, 175, 55, 0.3)',
-              color: GOLD,
-              fontFamily: FONT,
-              fontSize: '0.75rem',
-              fontWeight: '800',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase'
-            }}
-          >
-            <Sparkles size={14} /> Nossa História e Missão
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs sm:text-sm font-bold tracking-wide mb-6">
+            <Sparkles size={15} />
+            <span>Nossa Fé & Nossa História</span>
           </div>
 
-          <h1
-            className="font-black text-white leading-tight mb-6"
-            style={{
-              fontSize: 'clamp(2.2rem, 4.5vw, 3.8rem)',
-              fontFamily: FONT,
-              textTransform: 'uppercase',
-              textShadow: '0 4px 25px rgba(0,0,0,0.8)'
-            }}
-          >
-            Sobre o <span style={{ color: GOLD }}>Contos de Oração</span>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight tracking-tight mb-6">
+            Transformando o tempo de tela em <span className="text-[#D4AF37] underline decoration-[#D4AF37]/40 underline-offset-8">tempo de fé</span>.
           </h1>
 
-          <p
-            className="text-white/80 font-medium max-w-3xl leading-relaxed text-base sm:text-lg md:text-xl"
-            style={{ fontFamily: FONT }}
-          >
-            O Contos de Oração nasceu do desejo de <span style={{ color: GOLD, fontWeight: '800' }}>transformar o tempo de tela em tempo de fé</span>.
+          <p className="text-white/80 text-base sm:text-xl leading-relaxed max-w-2xl font-normal">
+            Acreditamos que os dispositivos que hoje ocupam o dia a dia das famílias também podem ser pontes para aproximar crianças e adultos de Jesus Cristo.
           </p>
 
         </div>
       </section>
 
-
-      {/* ════════ VISÃO GERAL / INTRODUÇÃO ════════ */}
-      <section className="w-full py-12 px-4 flex justify-center">
-        <div className="w-full max-w-[1140px] grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* ════════ BIOGRAFIA DO CRIADOR (O ALEXANDRE) ════════ */}
+      <section className="w-full py-8 sm:py-16 px-4 sm:px-6 flex justify-center">
+        <div className="w-full max-w-4xl bg-gradient-to-b from-[#111622] to-[#0D1018] rounded-3xl border border-white/10 p-6 sm:p-12 relative overflow-hidden shadow-2xl">
           
-          <div 
-            className="rounded-3xl p-8 border border-white/10 flex flex-col justify-center"
-            style={{ background: 'linear-gradient(135deg, rgba(19, 30, 51, 0.5) 0%, rgba(9, 11, 16, 0.8) 100%)', backdropFilter: 'blur(10px)' }}
-          >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ background: 'rgba(212,175,55,0.15)', color: GOLD }}>
-              <Tv size={24} />
-            </div>
-            <h3 className="text-white font-extrabold text-xl md:text-2xl mb-4" style={{ fontFamily: FONT }}>
-              Evangelização na Era Digital
-            </h3>
-            <p className="text-white/70 leading-relaxed text-sm md:text-base">
-              Vivemos em uma época em que crianças, jovens e adultos passam cada vez mais tempo diante das telas. Acreditamos que esse tempo também pode ser uma oportunidade para conhecer Jesus Cristo, aprofundar a fé e descobrir a riqueza da Igreja Católica.
-            </p>
-          </div>
-
-          <div 
-            className="rounded-3xl p-8 border border-white/10 flex flex-col justify-center"
-            style={{ background: 'linear-gradient(135deg, rgba(19, 30, 51, 0.5) 0%, rgba(9, 11, 16, 0.8) 100%)', backdropFilter: 'blur(10px)' }}
-          >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6" style={{ background: 'rgba(212,175,55,0.15)', color: GOLD }}>
-              <Sparkles size={24} />
-            </div>
-            <h3 className="text-white font-extrabold text-xl md:text-2xl mb-4" style={{ fontFamily: FONT }}>
-              Conteúdos Ricos e Envolventes
-            </h3>
-            <p className="text-white/70 leading-relaxed text-sm md:text-base">
-              Por meio de animações, filmes, séries, músicas, revistas e materiais educativos, buscamos apresentar a beleza da Palavra de Deus, a vida de Nossa Senhora, o testemunho dos santos, a doutrina da Igreja e os valores cristãos de forma acessível, envolvente e fiel ao Magistério da Igreja Católica.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-
-      {/* ════════ QUEM ESTÁ POR TRÁS DO PROJETO ════════ */}
-      <section className="w-full py-16 px-4 flex justify-center relative">
-        <div 
-          className="w-full max-w-[1140px] rounded-[2.5rem] border border-[#D4AF37]/30 p-8 md:p-14 relative overflow-hidden"
-          style={{
-            background: 'linear-gradient(180deg, rgba(19, 30, 51, 0.7) 0%, rgba(9, 11, 16, 0.95) 100%)',
-            boxShadow: '0 20px 50px rgba(0,0,0,0.6)'
-          }}
-        >
-          {/* Brilho suave */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37] opacity-5 blur-[100px] pointer-events-none" />
-
-          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-14 relative z-10">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 sm:gap-12">
             
-            {/* Foto do Alexandre Mendes Fernandes */}
-            <div className="flex flex-col items-center shrink-0">
-              <div 
-                className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-full overflow-hidden border-4 p-1 shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-transform duration-500 hover:scale-105"
-                style={{ borderColor: GOLD, background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' }}
-              >
+            {/* Foto e Mini-cartão do Alexandre */}
+            <div className="flex flex-col items-center shrink-0 w-full sm:w-auto">
+              <div className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-2xl overflow-hidden border-2 border-[#D4AF37]/60 shadow-[0_10px_30px_rgba(212,175,55,0.2)] bg-[#182030]">
                 <Image 
                   src="/alexandre-mendes.png" 
-                  alt="Alexandre Mendes Fernandes — Criador do Contos de Oração" 
+                  alt="Alexandre Mendes Fernandes" 
                   fill 
                   className="object-cover object-top"
                   priority
                 />
               </div>
-              
+
               <div className="mt-4 text-center">
-                <h4 className="text-white font-black text-lg md:text-xl" style={{ fontFamily: FONT }}>
+                <h2 className="text-white font-extrabold text-lg sm:text-xl">
                   Alexandre Mendes Fernandes
-                </h4>
-                <p className="text-[#D4AF37] text-xs font-extrabold uppercase tracking-wider mt-0.5">
-                  Professor de Biologia & Produtor
+                </h2>
+                <p className="text-[#D4AF37] text-xs font-semibold uppercase tracking-wider mt-1">
+                  Professor & Idealizador
                 </p>
+              </div>
+
+              {/* Tags de Fé */}
+              <div className="flex flex-wrap justify-center gap-2 mt-4 max-w-[240px]">
+                <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] text-white/70">
+                  ✝️ Católico Praticante
+                </span>
+                <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] text-white/70">
+                  🧬 Prof. de Biologia
+                </span>
+                <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] text-[#D4AF37]">
+                  🙏 Consagrado a Maria
+                </span>
               </div>
             </div>
 
-            {/* Texto Biográfico */}
-            <div className="flex-1 text-left space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-black uppercase tracking-widest">
-                <Heart size={14} /> Quem está por trás do projeto?
-              </div>
+            {/* Texto Pessoal e Humano */}
+            <div className="flex-1 text-left space-y-5">
+              
+              <h3 className="text-white font-bold text-xl sm:text-2xl leading-snug">
+                Quem está por trás deste projeto?
+              </h3>
 
-              <h2 className="text-white font-black text-2xl sm:text-3xl md:text-4xl leading-tight" style={{ fontFamily: FONT }}>
-                Fé, Ciência e Tecnologia a Serviço de Deus
-              </h2>
-
-              <p className="text-white/80 leading-relaxed text-sm md:text-base">
-                Meu nome é <strong>Alexandre Mendes Fernandes</strong>. Sou professor de Biologia, formado em Ciências Biológicas, e produtor do Contos de Oração.
+              <p className="text-white/85 text-sm sm:text-base leading-relaxed">
+                Olá! Meu nome é <strong>Alexandre Mendes Fernandes</strong>. Tenho 45 anos, sou professor formado em Ciências Biológicas e o criador do Contos de Oração.
               </p>
 
-              <p className="text-white/80 leading-relaxed text-sm md:text-base">
-                Desde 2022, dedico-me ao estudo e à aplicação da inteligência artificial na produção de animações, roteiros, ilustrações, músicas, vídeos e materiais educativos, sempre buscando colocar a tecnologia a serviço da evangelização.
+              <p className="text-white/85 text-sm sm:text-base leading-relaxed">
+                Sou católico praticante, consagrado a Nossa Senhora pelo método de <em>São Luís Maria Grignion de Montfort</em> e também consagrado ao <em>Sagrado Coração de Jesus</em>.
               </p>
 
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-white/90 text-sm leading-relaxed space-y-2">
-                <p>
-                  ✝️ Tenho 45 anos, sou católico praticante, consagrado a Nossa Senhora pelo método de <strong>São Luís Maria Grignion de Montfort</strong> e também consagrado ao <strong>Sagrado Coração de Jesus</strong>.
-                </p>
-                <p className="italic text-[#D4AF37]/90 font-medium">
-                  "Acredito que Deus concede talentos para serem colocados a serviço do próximo. Por isso, utilizo a arte, a tecnologia e a criatividade para anunciar o Evangelho e contribuir para que crianças, jovens e adultos conheçam mais profundamente a fé católica."
+              <p className="text-white/85 text-sm sm:text-base leading-relaxed">
+                Desde 2022, venho me dedicando intensamente a aprender e utilizar ferramentas de inteligência artificial para produzir ilustrações, animações, roteiros, músicas e revistas digitais com um único propósito: <strong>colocar a tecnologia a serviço da evangelização</strong>.
+              </p>
+
+              {/* Citação Inspiradora */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#D4AF37]/10 border-l-4 border-[#D4AF37] my-4">
+                <p className="text-white/90 text-sm sm:text-base italic leading-relaxed">
+                  "Deus nos dá inteligência e talentos para servirmos ao próximo. Cada desenho, áudio e livrinho que fazemos nasce do desejo sincero de levar esperança, paz e conhecimento de Deus para dentro das famílias."
                 </p>
               </div>
 
               <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
-                Cada roteiro, personagem, animação, música e material produzido nasce desse propósito: levar esperança, conhecimento e fortalecer a vida espiritual das famílias.
+                Aqui no Contos de Oração, cuidamos de cada detalhe com respeito ao Magistério da Igreja Católica, trazendo um conteúdo belo, seguro e edficante para pais e filhos.
               </p>
+
             </div>
 
           </div>
+
         </div>
       </section>
 
-
-      {/* ════════ NOSSA MISSÃO ════════ */}
-      <section className="w-full py-16 px-4 flex justify-center">
-        <div className="w-full max-w-[1140px]">
+      {/* ════════ O QUE VOCÊ ENCONTRA NO CONTOS DE ORAÇÃO ════════ */}
+      <section className="w-full py-10 sm:py-16 px-4 sm:px-6 flex justify-center">
+        <div className="w-full max-w-4xl">
           
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-3">
-              <Cross size={14} /> Missão Evangelizadora
-            </div>
-            <h2 className="text-white font-black text-2xl sm:text-3xl md:text-4xl" style={{ fontFamily: FONT }}>
-              Nossa Missão
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-4xl font-black text-white">
+              O que transmitimos em nossos conteúdos
             </h2>
-            <p className="text-white/70 max-w-2xl mx-auto mt-2 text-sm sm:text-base">
-              Evangelizar utilizando a arte, a tecnologia e a criatividade como instrumentos a serviço de Deus.
+            <p className="text-white/60 text-xs sm:text-sm mt-2">
+              Conhecimento e amor à fé católica em formato acessível e envolvente
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            {missoes.map((item, idx) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+            {pilaresConteudo.map((item, index) => (
               <div 
-                key={idx}
-                className="flex items-center gap-3.5 p-4 rounded-2xl border border-white/10 transition-all duration-300 hover:border-[#D4AF37]/40 hover:bg-[#D4AF37]/5"
-                style={{ background: 'rgba(15, 23, 42, 0.6)' }}
+                key={index}
+                className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/10 hover:border-[#D4AF37]/40 transition-all"
               >
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(212, 175, 55, 0.15)', color: GOLD }}>
-                  <CheckCircle2 size={18} />
+                <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37] shrink-0">
+                  <CheckCircle2 size={16} />
                 </div>
-                <span className="text-white/90 text-sm font-semibold">{item}</span>
+                <span className="text-white/90 text-xs sm:text-sm font-medium">{item}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-center text-white/80 font-medium text-sm sm:text-base mt-8 max-w-3xl mx-auto">
-            Nosso propósito é ajudar crianças, jovens e adultos a conhecerem melhor a fé católica, fortalecerem sua vida de oração e viverem uma relação mais profunda com Deus.
-          </p>
-
         </div>
       </section>
 
-
-      {/* ════════ NOSSA VISÃO ════════ */}
-      <section className="w-full py-12 px-4 flex justify-center">
-        <div 
-          className="w-full max-w-[1140px] rounded-3xl p-8 md:p-12 border border-[#D4AF37]/20 text-center relative overflow-hidden"
-          style={{ background: 'radial-gradient(circle at center, #111a2c 0%, #090B10 100%)' }}
-        >
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(212,175,55,0.15)', color: GOLD }}>
-            <Compass size={28} />
-          </div>
-
-          <h2 className="text-white font-black text-2xl md:text-3xl mb-4" style={{ fontFamily: FONT }}>
-            Nossa Visão
-          </h2>
-
-          <p className="text-white/80 max-w-3xl mx-auto leading-relaxed text-sm md:text-base">
-            Ser uma <strong>referência para as famílias católicas na evangelização digital</strong>, oferecendo conteúdos seguros, fiéis à doutrina da Igreja e produzidos com excelência, para que pais e filhos cresçam juntos no conhecimento da Palavra de Deus, da tradição da Igreja e da vida cristã.
-          </p>
-
-          <p className="text-[#D4AF37] font-extrabold text-sm md:text-base mt-4">
-            Queremos contribuir para que cada lar encontre, por meio do Contos de Oração, um espaço de formação, inspiração e fortalecimento da fé.
-          </p>
-        </div>
-      </section>
-
-
-      {/* ════════ NOSSOS VALORES ════════ */}
-      <section className="w-full py-16 px-4 flex justify-center">
-        <div className="w-full max-w-[1140px]">
+      {/* ════════ NOSSOS COMPROMISSOS ════════ */}
+      <section className="w-full py-10 sm:py-16 px-4 sm:px-6 flex justify-center">
+        <div className="w-full max-w-4xl">
           
-          <div className="text-center mb-12">
-            <h2 className="text-white font-black text-2xl sm:text-3xl md:text-4xl" style={{ fontFamily: FONT }}>
-              Nossos <span style={{ color: GOLD }}>Valores</span>
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-4xl font-black text-white">
+              Nossos Compromissos
             </h2>
-            <p className="text-white/60 text-xs sm:text-sm mt-1">Os pilares que guiam toda a nossa produção</p>
+            <p className="text-white/60 text-xs sm:text-sm mt-2">
+              Os princípios que guiam cada animação e material publicado
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {valores.map((val, idx) => {
-              const IconeVal = val.icone;
-              return (
-                <div 
-                  key={idx}
-                  className="p-6 rounded-2xl border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:border-[#D4AF37]/50 flex flex-col justify-between"
-                  style={{ background: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(8px)' }}
-                >
-                  <div>
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: 'rgba(212,175,55,0.12)', color: GOLD }}>
-                      <IconeVal size={20} />
-                    </div>
-                    <h3 className="text-white font-extrabold text-base mb-2" style={{ fontFamily: FONT }}>
-                      {val.titulo}
-                    </h3>
-                    <p className="text-white/65 text-xs sm:text-sm leading-relaxed">
-                      {val.desc}
-                    </p>
-                  </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+            {compromissos.map((item, idx) => (
+              <div 
+                key={idx}
+                className="p-5 sm:p-6 rounded-2xl bg-[#0E131F] border border-white/10 flex flex-col justify-between hover:border-[#D4AF37]/30 transition-all"
+              >
+                <div>
+                  <h3 className="text-white font-bold text-base mb-2 text-[#D4AF37]">
+                    {item.titulo}
+                  </h3>
+                  <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
+                    {item.desc}
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
         </div>
       </section>
 
-
-      {/* ════════ ONDE NOS ENCONTRAR E CONTATO ════════ */}
-      <section className="w-full py-16 px-4 flex justify-center">
-        <div className="w-full max-w-[1140px] grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* ════════ REDES SOCIAIS & CONTATO ════════ */}
+      <section className="w-full py-12 sm:py-16 px-4 sm:px-6 flex justify-center">
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
           
-          {/* Redes Sociais */}
-          <div className="p-8 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-md flex flex-col justify-between">
+          {/* Siga Nossas Redes */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#0E131F] border border-white/10 flex flex-col justify-between">
             <div>
-              <h3 className="text-white font-black text-xl md:text-2xl mb-2" style={{ fontFamily: FONT }}>
-                Onde nos encontrar
+              <h3 className="text-white font-black text-lg sm:text-xl mb-2">
+                Nossos Canais Oficiais
               </h3>
-              <p className="text-white/70 text-xs sm:text-sm mb-6">
-                Acompanhe o Contos de Oração nas redes sociais e faça parte da nossa missão de evangelizar cada vez mais famílias.
+              <p className="text-white/60 text-xs sm:text-sm mb-6">
+                Acompanhe o Contos de Oração nas redes sociais e faça parte da nossa comunidade.
               </p>
 
               <div className="space-y-3">
@@ -363,9 +249,9 @@ export default function SobrePage() {
                   href="https://youtube.com/@contosdeoracao" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF0000]/10 hover:border-[#FF0000]/40 text-white transition-all text-sm font-bold no-underline"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-[#FF0000]/10 hover:border-[#FF0000]/30 text-white transition-all text-xs sm:text-sm font-semibold no-underline"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#FF0000]/20 flex items-center justify-center text-[#FF0000]">
+                  <div className="w-7 h-7 rounded-lg bg-[#FF0000]/20 flex items-center justify-center text-[#FF0000]">
                     <IconYoutube />
                   </div>
                   <span>YouTube Official</span>
@@ -376,9 +262,9 @@ export default function SobrePage() {
                   href="https://instagram.com/contosdeoracao" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-[#E1306C]/10 hover:border-[#E1306C]/40 text-white transition-all text-sm font-bold no-underline"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-[#E1306C]/10 hover:border-[#E1306C]/30 text-white transition-all text-xs sm:text-sm font-semibold no-underline"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#E1306C]/20 flex items-center justify-center text-[#E1306C]">
+                  <div className="w-7 h-7 rounded-lg bg-[#E1306C]/20 flex items-center justify-center text-[#E1306C]">
                     <IconInstagram />
                   </div>
                   <span>Instagram</span>
@@ -389,9 +275,9 @@ export default function SobrePage() {
                   href="https://facebook.com/contosdeoracao" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-[#1877F2]/10 hover:border-[#1877F2]/40 text-white transition-all text-sm font-bold no-underline"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-[#1877F2]/10 hover:border-[#1877F2]/30 text-white transition-all text-xs sm:text-sm font-semibold no-underline"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#1877F2]/20 flex items-center justify-center text-[#1877F2]">
+                  <div className="w-7 h-7 rounded-lg bg-[#1877F2]/20 flex items-center justify-center text-[#1877F2]">
                     <IconFacebook />
                   </div>
                   <span>Facebook</span>
@@ -401,36 +287,36 @@ export default function SobrePage() {
             </div>
           </div>
 
-          {/* Fale Conosco */}
-          <div className="p-8 rounded-3xl border border-[#D4AF37]/30 bg-[#D4AF37]/5 backdrop-blur-md flex flex-col justify-between">
+          {/* Fale Conosco Direct */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-[#161D2B] to-[#0E131F] border border-[#D4AF37]/30 flex flex-col justify-between">
             <div>
-              <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37] mb-4">
-                <Mail size={20} />
+              <div className="w-9 h-9 rounded-xl bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37] mb-4">
+                <Mail size={18} />
               </div>
-              
-              <h3 className="text-white font-black text-xl md:text-2xl mb-2" style={{ fontFamily: FONT }}>
-                Fale Conosco
+
+              <h3 className="text-white font-black text-lg sm:text-xl mb-2">
+                Fale Diretamente Conosco
               </h3>
               
               <p className="text-white/70 text-xs sm:text-sm mb-6">
-                Tem alguma dúvida, sugestão, testemunho ou deseja entrar em contato conosco?
+                Tem dúvidas, testemunhos ou sugestões? Envie uma mensagem para a nossa equipe!
               </p>
 
-              <div className="p-4 rounded-2xl bg-black/40 border border-white/10 flex items-center gap-3">
-                <Mail size={20} className="text-[#D4AF37]" />
-                <div>
-                  <div className="text-white/50 text-[10px] uppercase font-bold tracking-wider">E-mail de Contato</div>
-                  <a href="mailto:contato@contosdeoracao.com.br" className="text-white font-extrabold text-sm hover:text-[#D4AF37] transition-colors no-underline">
+              <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex items-center gap-3">
+                <Mail size={18} className="text-[#D4AF37] shrink-0" />
+                <div className="overflow-hidden">
+                  <div className="text-white/40 text-[10px] uppercase font-bold tracking-wider">E-mail de Contato</div>
+                  <a href="mailto:contato@contosdeoracao.com.br" className="text-white font-bold text-xs sm:text-sm hover:text-[#D4AF37] transition-colors truncate block no-underline">
                     contato@contosdeoracao.com.br
                   </a>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-white/10 text-center">
+            <div className="mt-6 pt-4 text-center">
               <Link 
                 href="/planos"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA820A] text-black font-black text-xs uppercase tracking-wider hover:scale-105 transition-all shadow-lg no-underline"
+                className="inline-flex items-center justify-center w-full py-3 rounded-xl bg-[#D4AF37] hover:bg-[#c4a02f] text-black font-black text-xs uppercase tracking-wider transition-all no-underline shadow-lg"
               >
                 Conhecer Nossos Planos
               </Link>

@@ -3,12 +3,12 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 
 const DEFAULTS = {
-    colors: ["#D4AF37", "#FFD700", "#FF8C00", "#FFFFFF"],
+    colors: ["#D4AF37", "#FFD700", "#FFFFFF"],
     colorShift: 1,
-    opacity: 60,
-    thickness: 2,
-    trails: 50,
-    trailLength: 28,
+    opacity: 40,
+    thickness: 1,
+    trails: 3,
+    trailLength: 8,
     label: false,
     labelText: "",
     labelColor: "#FFFFFF",
@@ -261,7 +261,7 @@ export default function RibbonCursor(props: Partial<LineCursorProps>) {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const count = Math.max(1, Math.round(trails));
+        const count = Math.min(3, Math.max(1, Math.round(trails)));
         const picked = (colors ?? []).filter(Boolean).slice(0, MAX_COLORS);
         const palette = picked.length ? picked : DEFAULTS.colors;
 
@@ -284,7 +284,7 @@ export default function RibbonCursor(props: Partial<LineCursorProps>) {
             friction: FRICTION,
             dampening: DAMPENING,
             tension: TENSION,
-            size: Math.max(2, Math.round(trailLength)),
+            size: Math.min(8, Math.max(2, Math.round(trailLength))),
             target,
         };
         let lines: Line[] = [];
