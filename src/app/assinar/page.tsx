@@ -40,7 +40,14 @@ export default function AssinarPage() {
   const [loadingAvatars, setLoadingAvatars] = useState(false)
 
   const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '')
+    const raw = e.target.value
+    // Se o preenchimento automático (Autofill/Password Manager) do navegador colocou um e-mail no campo de WhatsApp:
+    if (raw.includes('@')) {
+      setWhatsapp('')
+      return
+    }
+
+    let value = raw.replace(/\D/g, '')
     if (value.length > 11) value = value.slice(0, 11)
     
     if (value.length > 6) {
@@ -580,11 +587,11 @@ export default function AssinarPage() {
                 <div className="input-group">
                   <input
                     type="tel"
-                    name="user_whatsapp_number"
-                    id="user_whatsapp_number"
-                    autoComplete="off"
+                    name="tel"
+                    id="user_tel"
+                    autoComplete="tel"
+                    data-lpignore="true"
                     inputMode="numeric"
-                    pattern="[0-9]*"
                     value={whatsapp}
                     onChange={handleWhatsappChange}
                     placeholder=" "
@@ -601,6 +608,9 @@ export default function AssinarPage() {
                 <div className="input-group">
                   <input
                     type={mostrarSenha ? 'text' : 'password'}
+                    name="new-password"
+                    id="new_password_field"
+                    autoComplete="new-password"
                     value={senha}
                     onChange={e => { setSenha(e.target.value); setErros(p => ({ ...p, senha: undefined, confirmarSenha: undefined })) }}
                     placeholder=" "
@@ -632,6 +642,9 @@ export default function AssinarPage() {
                 <div className="input-group">
                   <input
                     type={mostrarConfirmar ? 'text' : 'password'}
+                    name="confirm-password"
+                    id="confirm_password_field"
+                    autoComplete="new-password"
                     value={confirmarSenha}
                     onChange={e => { setConfirmarSenha(e.target.value); setErros(p => ({ ...p, confirmarSenha: undefined })) }}
                     placeholder=" "
