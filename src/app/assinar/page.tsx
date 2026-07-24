@@ -41,24 +41,30 @@ export default function AssinarPage() {
 
   const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value
-    // Se o preenchimento automático (Autofill/Password Manager) do navegador colocou um e-mail no campo de WhatsApp:
+    // Se o preenchimento automático do navegador colocou um e-mail no campo de WhatsApp:
     if (raw.includes('@')) {
       setWhatsapp('')
       return
     }
 
-    let value = raw.replace(/\D/g, '')
-    if (value.length > 11) value = value.slice(0, 11)
+    const digits = raw.replace(/\D/g, '').slice(0, 11)
     
-    if (value.length > 6) {
-      value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`
-    } else if (value.length > 2) {
-      value = `(${value.slice(0, 2)}) ${value.slice(2)}`
-    } else if (value.length > 0) {
-      value = `(${value}`
+    if (digits.length === 0) {
+      setWhatsapp('')
+      setErros(p => ({ ...p, whatsapp: undefined }))
+      return
     }
-    
-    setWhatsapp(value)
+
+    let formatted = ''
+    if (digits.length <= 2) {
+      formatted = `(${digits}`
+    } else if (digits.length <= 7) {
+      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+    } else {
+      formatted = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+    }
+
+    setWhatsapp(formatted)
     setErros(p => ({ ...p, whatsapp: undefined }))
   }
 
