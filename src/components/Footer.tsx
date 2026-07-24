@@ -151,6 +151,7 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-wrap gap-x-6 gap-y-3">
+            <a href="/sobre" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Sobre nós</a>
             <a href="/faq" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Perguntas frequentes</a>
             <a href="/suporte" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Suporte</a>
             <a href="/termos" className="text-slate-300 hover:text-[#D4AF37] text-sm no-underline transition-colors">Termos de uso</a>
