@@ -686,14 +686,11 @@ export default function AssinarPage() {
                   className="pt-1 space-y-5"
                 >
                   <div>
-                    <h1 className="text-white text-xl font-black mb-1 tracking-tight flex items-center justify-between">
-                      <span>Escolha seu Santo Protetor</span>
-                      <span className="text-[9px] bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 font-black uppercase px-2 py-0.5 rounded-full tracking-wider">
-                        Padrão Definido
-                      </span>
+                    <h1 className="text-white text-xl font-black mb-1 tracking-tight">
+                      Escolha seu Santo Protetor
                     </h1>
                     <p className="text-white/40 text-xs">
-                      O avatar <strong className="text-[#D4AF37]">Contos de Oração</strong> já está selecionado para o seu perfil. Escolha outro se preferir!
+                      Selecione o avatar que representará seu perfil (você pode alterar depois)
                     </p>
                   </div>
 
@@ -767,18 +764,17 @@ export default function AssinarPage() {
                           </h3>
                         </div>
 
-                        {/* 📱 1. Sistema do Celular / Smartphone */}
+                        {/* 📱 1. Sistema do Celular / Smartphone (Android ou iPhone) */}
                         <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-2">
                           <label className="block text-white/70 text-[11px] font-extrabold flex items-center justify-between">
                             <span>📱 Qual o sistema do seu celular?</span>
-                            <span className="text-[#D4AF37] text-[9px] font-black uppercase">Android / iOS</span>
+                            <span className="text-white/30 text-[9px] font-normal italic">(opcional)</span>
                           </label>
 
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-2 gap-2.5">
                             {[
-                              { id: 'android', label: '🤖 Android', desc: 'Samsung, Xiaomi, Moto' },
-                              { id: 'ios', label: '🍎 iPhone', desc: 'Apple iOS' },
-                              { id: 'outro', label: '📱 Outro', desc: 'Outros modelos' },
+                              { id: 'android', label: '🤖 Android', desc: 'Samsung, Xiaomi, Motorola...' },
+                              { id: 'ios', label: '🍎 iPhone (iOS)', desc: 'Apple iOS' },
                             ].map((item) => {
                               const isSelected = dispositivoCelular === item.id;
                               return (
@@ -786,14 +782,20 @@ export default function AssinarPage() {
                                   key={item.id}
                                   type="button"
                                   onClick={() => {
-                                    setDispositivoCelular(item.id as any);
-                                    if (item.id === 'android') {
-                                      setTestadorAndroidCelular(true);
-                                    } else {
+                                    if (dispositivoCelular === item.id) {
+                                      // Desmarca se clicar de novo (opcional)
+                                      setDispositivoCelular('');
                                       setTestadorAndroidCelular(false);
+                                    } else {
+                                      setDispositivoCelular(item.id as any);
+                                      if (item.id === 'android') {
+                                        setTestadorAndroidCelular(true);
+                                      } else {
+                                        setTestadorAndroidCelular(false);
+                                      }
                                     }
                                   }}
-                                  className={`p-2.5 rounded-xl text-left transition-all border flex flex-col justify-between ${
+                                  className={`p-2.5 rounded-xl text-left transition-all border flex flex-col justify-between cursor-pointer ${
                                     isSelected
                                       ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-[0_0_15px_rgba(212,175,55,0.25)]'
                                       : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20 hover:text-white'
@@ -838,13 +840,11 @@ export default function AssinarPage() {
                             <span className="text-white/30 text-[9px] font-normal italic">(opcional)</span>
                           </label>
 
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          <div className="grid grid-cols-2 gap-2">
                             {[
                               'Android TV / Google TV',
-                              'Fire TV (Amazon)',
                               'Samsung (Tizen)',
                               'LG (webOS)',
-                              'Roku TV',
                               'Não possuo Smart TV',
                             ].map((marca) => {
                               const isSelected = modeloTv === marca;
@@ -853,15 +853,21 @@ export default function AssinarPage() {
                                   key={marca}
                                   type="button"
                                   onClick={() => {
-                                    setModeloTv(marca);
-                                    if (marca === 'Android TV / Google TV' || marca === 'Fire TV (Amazon)') {
-                                      setTestadorAndroidTv(true);
-                                    } else {
+                                    if (modeloTv === marca) {
+                                      setModeloTv('');
                                       setTestadorAndroidTv(false);
+                                      setTemTv(null);
+                                    } else {
+                                      setModeloTv(marca);
+                                      if (marca === 'Android TV / Google TV') {
+                                        setTestadorAndroidTv(true);
+                                      } else {
+                                        setTestadorAndroidTv(false);
+                                      }
+                                      setTemTv(marca !== 'Não possuo Smart TV');
                                     }
-                                    setTemTv(marca !== 'Não possuo Smart TV');
                                   }}
-                                  className={`py-2 px-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-left border ${
+                                  className={`py-2 px-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-left border cursor-pointer ${
                                     isSelected
                                       ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-[0_0_12px_rgba(212,175,55,0.25)] font-black'
                                       : 'border-white/5 bg-black/30 text-white/60 hover:border-white/20 hover:text-white'
@@ -871,10 +877,38 @@ export default function AssinarPage() {
                                 </button>
                               );
                             })}
+
+                            {/* Opção Outro modelo */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (['Android TV / Google TV', 'Samsung (Tizen)', 'LG (webOS)', 'Não possuo Smart TV'].includes(modeloTv)) {
+                                  setModeloTv('');
+                                }
+                              }}
+                              className={`py-2 px-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-left border cursor-pointer ${
+                                modeloTv !== '' && !['Android TV / Google TV', 'Samsung (Tizen)', 'LG (webOS)', 'Não possuo Smart TV'].includes(modeloTv)
+                                  ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-[0_0_12px_rgba(212,175,55,0.25)] font-black'
+                                  : 'border-white/5 bg-black/30 text-white/60 hover:border-white/20 hover:text-white'
+                              }`}
+                            >
+                              Outro modelo...
+                            </button>
                           </div>
 
+                          {/* Campo de texto livre se selecionou "Outro" */}
+                          {modeloTv !== '' && !['Android TV / Google TV', 'Samsung (Tizen)', 'LG (webOS)', 'Não possuo Smart TV'].includes(modeloTv) && (
+                            <input
+                              type="text"
+                              placeholder="Digite a marca/modelo da sua TV (Ex: AOC, Philips...)"
+                              value={modeloTv}
+                              onChange={(e) => setModeloTv(e.target.value)}
+                              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-white text-xs focus:border-[#D4AF37] focus:outline-none transition-colors mt-1"
+                            />
+                          )}
+
                           {/* Convite para Testador VIP TV */}
-                          {(modeloTv === 'Android TV / Google TV' || modeloTv === 'Fire TV (Amazon)') && (
+                          {modeloTv === 'Android TV / Google TV' && (
                             <motion.div
                               initial={{ opacity: 0, y: -4 }}
                               animate={{ opacity: 1, y: 0 }}
