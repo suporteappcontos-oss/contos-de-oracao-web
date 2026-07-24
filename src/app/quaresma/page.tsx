@@ -382,8 +382,8 @@ export default function QuaresmaCalendar() {
         const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).maybeSingle();
         const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com';
 
-        if (!isAdmin && !planoAtivo) {
-          window.location.href = "/planos";
+        if (!isAdmin) {
+          window.location.href = "/";
           return;
         }
 
