@@ -56,12 +56,6 @@ export default function TemporadaCard({
           style={{ background: 'linear-gradient(to top, rgba(9,11,16,0.95) 0%, rgba(9,11,16,0.2) 50%, transparent 100%)' }}
         />
 
-        {/* Badge TEMPORADA no topo esquerdo */}
-        <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded border text-[0.6rem] font-black uppercase tracking-wider bg-black/60 text-[#D4AF37] border-[#D4AF37]/30 backdrop-blur-sm z-10">
-          <Tv className="w-3 h-3" />
-          Temporada
-        </div>
-
         {/* Badge EM BREVE no topo direito (se aplicável) */}
         {(isEmBreve || episodiosCount === 0) && (
           <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded border text-[0.6rem] font-black uppercase tracking-wider bg-black/80 text-[#FFD700] border-[#FFD700]/50 backdrop-blur-sm z-10 shadow-md">

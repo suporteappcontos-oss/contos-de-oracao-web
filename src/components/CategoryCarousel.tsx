@@ -42,6 +42,7 @@ export default function CategoryCarousel({
     calcCardsPerRow()
     const el = scrollRef.current
     if (el) {
+      el.scrollLeft = 0
       setTimeout(checkScroll, 100)
       el.addEventListener('scroll', checkScroll, { passive: true })
     }

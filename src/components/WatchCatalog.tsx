@@ -84,12 +84,14 @@ export default function WatchCatalog({
 
       <div className="space-y-10">
 
-        {/* 2. CONTINUE ASSISTINDO (Se houver histórico) */}
+        {/* 2. CONTINUE ASSISTINDO (Se houver histórico - Max 3 no PC, Max 2 no Celular) */}
         {recentes.length > 0 && (
           <div>
-            <CategoryCarousel title="Continue Assistindo" count={recentes.length}>
-              {recentes.slice(0, 4).map((video: VideoData) => (
-                <VideoCard key={`hist-${video.id}`} video={video} />
+            <CategoryCarousel title="Continue Assistindo" count={Math.min(recentes.length, 3)}>
+              {recentes.slice(0, 3).map((video: VideoData, index: number) => (
+                <div key={`hist-${video.id}`} className={index >= 2 ? 'hidden sm:block' : 'block'}>
+                  <VideoCard video={video} />
+                </div>
               ))}
             </CategoryCarousel>
           </div>

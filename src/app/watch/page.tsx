@@ -115,6 +115,7 @@ export default async function WatchPage() {
 
   // Helper para extrair número da temporada para ordenação crescente
   function extrairNumeroTemporada(nome: string): number {
+    if (!nome) return 999
     const match = nome.match(/(?:temporada|temp|t)\s*(\d+)/i)
     if (match && match[1]) return parseInt(match[1], 10)
     const anyNum = nome.match(/\d+/)
@@ -130,12 +131,14 @@ export default async function WatchPage() {
     const serieMeta = todasSeries.find(s => s.titulo === nomeSerieDestaque)
 
     const temporadas: TemporadaGroup[] = Object.entries(temporadasMap).map(([nomeTemp, listaEps]) => {
-      // Filtra apenas episódios reais (remove placeholders de capas de temporada)
+      // Filtra apenas episódios reais ativos lançados (remove placeholders de capas de temporada e em_breve)
       const epsReais = listaEps.filter(v => 
+        v.ativo &&
+        !v.em_breve &&
+        v.episodio_numero !== null &&
         v.titulo && 
-        !v.titulo.includes('(Card da Temporada)') && 
-        !v.titulo.includes('Card da Temporada') &&
-        !v.titulo.includes('(Capa da Temporada)')
+        !v.titulo.toLowerCase().includes('card da temporada') && 
+        !v.titulo.toLowerCase().includes('capa da temporada')
       )
 
       epsReais.sort((a, b) => (a.episodio_numero ?? 0) - (b.episodio_numero ?? 0))
@@ -148,8 +151,13 @@ export default async function WatchPage() {
       }
     })
 
-    // Ordena temporadas de forma CRESCENTE (1, 2, 3...)
-    temporadas.sort((a, b) => extrairNumeroTemporada(a.nome) - extrairNumeroTemporada(b.nome))
+    // Ordena temporadas de forma estritamente CRESCENTE (Temporada 1, 2, 3, 4...)
+    temporadas.sort((a, b) => {
+      const numA = extrairNumeroTemporada(a.nome)
+      const numB = extrairNumeroTemporada(b.nome)
+      if (numA !== numB) return numA - numB
+      return a.nome.localeCompare(b.nome, 'pt-BR', { numeric: true })
+    })
 
     if (temporadas.length > 0) {
       serieDestaque = {
