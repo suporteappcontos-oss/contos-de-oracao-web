@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { plano, nome, email, senha, avatarUrl, pedidoSanto, whatsapp, modeloTv } = body
+    const { plano, nome, email, senha, avatarUrl, pedidoSanto, whatsapp, modeloTv, dispositivoCelular, testadorAndroidCelular, testadorAndroidTv } = body
 
     // Verifica se o usuário está logado
     const supabaseClient = await createClient()
@@ -34,15 +34,16 @@ export async function POST(request: NextRequest) {
 
       // Atualiza metadados do usuário existente se novos dados forem fornecidos
       const metadataAtual = existente.user_metadata || {}
-      if (whatsapp || modeloTv) {
-        await supabaseAdmin.auth.admin.updateUserById(userId, {
-          user_metadata: {
-            ...metadataAtual,
-            whatsapp: whatsapp || metadataAtual.whatsapp,
-            modelo_tv: modeloTv || metadataAtual.modelo_tv
-          }
-        })
-      }
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
+        user_metadata: {
+          ...metadataAtual,
+          whatsapp: whatsapp || metadataAtual.whatsapp,
+          modelo_tv: modeloTv || metadataAtual.modelo_tv,
+          dispositivo_celular: dispositivoCelular || metadataAtual.dispositivo_celular,
+          testador_android_celular: testadorAndroidCelular ?? metadataAtual.testador_android_celular,
+          testador_android_tv: testadorAndroidTv ?? metadataAtual.testador_android_tv
+        }
+      })
     } else {
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
@@ -53,7 +54,10 @@ export async function POST(request: NextRequest) {
           plano_ativo: false,
           avatar_url: avatarUrl || null,
           whatsapp: whatsapp || null,
-          modelo_tv: modeloTv || null
+          modelo_tv: modeloTv || null,
+          dispositivo_celular: dispositivoCelular || null,
+          testador_android_celular: !!testadorAndroidCelular,
+          testador_android_tv: !!testadorAndroidTv
         }
       })
       if (createError) {

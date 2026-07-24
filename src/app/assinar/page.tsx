@@ -28,11 +28,14 @@ export default function AssinarPage() {
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false)
   
-  // Estados para seleção do avatar de santo e Smart TV
+  // Estados para seleção do avatar de santo e pesquisa de dispositivos
   const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string | null>(null)
   const [pedidoSanto, setPedidoSanto] = useState('')
+  const [dispositivoCelular, setDispositivoCelular] = useState<'android' | 'ios' | 'outro' | ''>('')
+  const [testadorAndroidCelular, setTestadorAndroidCelular] = useState<boolean>(false)
   const [temTv, setTemTv] = useState<boolean | null>(null)
   const [modeloTv, setModeloTv] = useState('')
+  const [testadorAndroidTv, setTestadorAndroidTv] = useState<boolean>(false)
   const [avatarsDisponiveis, setAvatarsDisponiveis] = useState<any[]>([])
   const [loadingAvatars, setLoadingAvatars] = useState(false)
 
@@ -58,6 +61,29 @@ export default function AssinarPage() {
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [erroCheckout, setErroCheckout] = useState<{ msg: string; tipo: 'email_duplicado' | 'generico' } | null>(null)
   const [isLogged, setIsLogged] = useState(false)
+
+  // Carrega avatares e define 'Contos de Oração' como padrão
+  useEffect(() => {
+    setLoadingAvatars(true)
+    fetch('/api/avatars-santos')
+      .then(r => r.json())
+      .then(data => {
+        if (data.avatars && data.avatars.length > 0) {
+          setAvatarsDisponiveis(data.avatars)
+          // Pre-seleciona "Contos de Oração" por padrão se o usuário ainda não escolheu
+          setSelectedAvatarUrl(prevUrl => {
+            if (prevUrl) return prevUrl
+            const contosAvatar = data.avatars.find((a: any) => 
+              a.nome?.toLowerCase().includes('contos de oração') || 
+              a.nome?.toLowerCase().includes('contos')
+            ) || data.avatars[0]
+            return contosAvatar ? contosAvatar.avatar_url : data.avatars[0].avatar_url
+          })
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoadingAvatars(false))
+  }, [])
 
   // Busca preços reais ativos na montagem
   useEffect(() => {
@@ -92,19 +118,6 @@ export default function AssinarPage() {
       }
     })
   }, [])
-
-  useEffect(() => {
-    if (step === 2) {
-      setLoadingAvatars(true)
-      fetch('/api/avatars-santos')
-        .then(r => r.json())
-        .then(data => {
-          if (data.avatars) setAvatarsDisponiveis(data.avatars)
-        })
-        .catch(console.error)
-        .finally(() => setLoadingAvatars(false))
-    }
-  }, [step])
 
   function validarStep1() {
     const novosErros: { nome?: string; email?: string; senha?: string; confirmarSenha?: string; whatsapp?: string } = {}
@@ -163,7 +176,7 @@ export default function AssinarPage() {
   async function finalizarPagamento() {
     setLoadingCheckout(true)
     setErroCheckout(null)
-    const modeloTvFiltrado = verificarSeEhAndroid(modeloTv) ? modeloTv : ''
+    const modeloTvFiltrado = modeloTv
     try {
       const response = await fetch('/api/stripe/assinatura', {
         method: 'POST',
@@ -176,7 +189,10 @@ export default function AssinarPage() {
           avatarUrl: selectedAvatarUrl,
           pedidoSanto: pedidoSanto,
           whatsapp: whatsapp.replace(/\D/g, ''),
-          modeloTv: modeloTvFiltrado
+          modeloTv: modeloTvFiltrado,
+          dispositivoCelular,
+          testadorAndroidCelular,
+          testadorAndroidTv
         })
       })
       const data = await response.json()
@@ -202,7 +218,7 @@ export default function AssinarPage() {
     
     // Antes de ir para a Kiwify, vamos criar a conta do usuário no nosso banco com a SENHA QUE ELE DIGITOU!
     // Assim, quando o webhook da Kiwify confirmar o pagamento, a conta já existe e ele pode fazer login normalmente.
-    const modeloTvFiltrado = verificarSeEhAndroid(modeloTv) ? modeloTv : ''
+    const modeloTvFiltrado = modeloTv
     try {
       await fetch('/api/auth/criar-pre-checkout', {
         method: 'POST',
@@ -214,7 +230,10 @@ export default function AssinarPage() {
           avatarUrl: selectedAvatarUrl,
           pedidoSanto: pedidoSanto,
           whatsapp: whatsapp.replace(/\D/g, ''),
-          modeloTv: modeloTvFiltrado
+          modeloTv: modeloTvFiltrado,
+          dispositivoCelular,
+          testadorAndroidCelular,
+          testadorAndroidTv
         })
       })
       // Não precisamos nos preocupar com a resposta aqui. 
@@ -653,10 +672,10 @@ export default function AssinarPage() {
               Já tem uma conta?{' '}
               <Link href="/login" style={{ color: '#D4AF37' }} className="no-underline hover:underline font-bold">Fazer login</Link>
             </p>
-                </motion.div>
-              )}
+          </motion.div>
+        )}
 
-              {/* ── STEP 2: Seleção de Santo Avatar (Passo 1.5) ── */}
+        {/* ── STEP 2: Seleção de Santo Avatar e Pesquisa de Dispositivos ── */}
               {step === 2 && (
                 <motion.div 
                   key="step2-avatar"
@@ -664,19 +683,29 @@ export default function AssinarPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 30 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="pt-1"
+                  className="pt-1 space-y-5"
                 >
-                  <h1 className="text-white text-xl font-black mb-1 tracking-tight">Escolha seu Santo Protetor</h1>
-                  <p className="text-white/40 text-xs mb-5">Selecione o avatar que representará seu perfil (você pode alterar depois)</p>
+                  <div>
+                    <h1 className="text-white text-xl font-black mb-1 tracking-tight flex items-center justify-between">
+                      <span>Escolha seu Santo Protetor</span>
+                      <span className="text-[9px] bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30 font-black uppercase px-2 py-0.5 rounded-full tracking-wider">
+                        Padrão Definido
+                      </span>
+                    </h1>
+                    <p className="text-white/40 text-xs">
+                      O avatar <strong className="text-[#D4AF37]">Contos de Oração</strong> já está selecionado para o seu perfil. Escolha outro se preferir!
+                    </p>
+                  </div>
 
                   {loadingAvatars ? (
-                    <div className="flex flex-col items-center justify-center py-10">
-                      <Loader2 className="animate-spin text-[#D4AF37]" size={32} />
-                      <span className="text-white/40 text-xs mt-2">Carregando avatares...</span>
+                    <div className="flex flex-col items-center justify-center py-8 bg-black/20 rounded-2xl border border-white/5">
+                      <Loader2 className="animate-spin text-[#D4AF37]" size={28} />
+                      <span className="text-white/40 text-xs mt-2">Carregando avatares abençoados...</span>
                     </div>
                   ) : (
-                    <div className="space-y-6">
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 gap-5 max-h-[220px] overflow-y-auto pr-2 py-2">
+                    <div className="space-y-5">
+                      {/* Avatares Grid */}
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 max-h-[190px] overflow-y-auto pr-1.5 py-1.5">
                         {avatarsDisponiveis.map((a) => {
                           const isSelected = selectedAvatarUrl === a.avatar_url;
                           return (
@@ -684,26 +713,26 @@ export default function AssinarPage() {
                               key={a.id} 
                               onClick={() => {
                                 setSelectedAvatarUrl(a.avatar_url);
-                                setPedidoSanto(''); // Limpa o pedido personalizado se escolheu um da lista
+                                setPedidoSanto('');
                               }}
                               className="flex flex-col items-center gap-1.5 cursor-pointer group"
                             >
                               <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 transition-all duration-300 ${
                                 isSelected 
-                                  ? 'border-[#D4AF37] scale-105 shadow-[0_0_20px_rgba(212,175,55,0.6)]' 
+                                  ? 'border-[#D4AF37] scale-105 shadow-[0_0_20px_rgba(212,175,55,0.7)] ring-2 ring-[#D4AF37]/30' 
                                   : 'border-white/10 group-hover:border-white/30 group-hover:scale-102'
                               }`}>
                                 <div className="w-full h-full rounded-full overflow-hidden">
                                   <img src={a.avatar_url} alt={a.nome} className="w-full h-full object-cover" />
                                 </div>
                                 {isSelected && (
-                                  <div className="absolute -top-1 -right-1 bg-[#D4AF37] text-[#090B10] rounded-full p-1 shadow-md border border-[#090B10] z-10 flex items-center justify-center">
-                                    <Check size={10} strokeWidth={4} />
+                                  <div className="absolute -top-1 -right-1 bg-[#D4AF37] text-[#090B10] rounded-full p-1 shadow-lg border border-[#090B10] z-10 flex items-center justify-center">
+                                    <Check size={11} strokeWidth={4} />
                                   </div>
                                 )}
                               </div>
                               <span className={`text-[10px] sm:text-xs font-bold text-center transition-colors line-clamp-2 px-0.5 w-full ${
-                                isSelected ? 'text-[#D4AF37]' : 'text-white/60 group-hover:text-white'
+                                isSelected ? 'text-[#D4AF37] font-black' : 'text-white/60 group-hover:text-white'
                               }`}>
                                 {a.nome}
                               </span>
@@ -713,146 +742,190 @@ export default function AssinarPage() {
                       </div>
 
                       {/* Pedir Santo Personalizado */}
-                      <div className="pt-2 border-t border-white/5">
-                        <label className="block text-white/50 text-[10px] font-bold uppercase tracking-wider mb-2">Não encontrou seu santo protetor? Peça aqui:</label>
+                      <div className="pt-2.5 border-t border-white/10">
+                        <label className="block text-white/50 text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                          Não encontrou seu santo protetor? Peça aqui:
+                        </label>
                         <input
                           type="text"
                           placeholder="Ex: São Judas Tadeu, Santa Rita..."
                           value={pedidoSanto}
                           onChange={(e) => {
                             setPedidoSanto(e.target.value);
-                            setSelectedAvatarUrl(null); // Limpa o avatar selecionado se digitar
+                            setSelectedAvatarUrl(null);
                           }}
-                          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:border-[#D4AF37] focus:outline-none transition-colors"
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs focus:border-[#D4AF37] focus:outline-none transition-colors"
                         />
                       </div>
 
-                      {/* Pergunta sobre Smart TV */}
-                      <div className="pt-4 border-t border-white/5 space-y-3">
-                        <label className="block text-white/50 text-[10px] font-black uppercase tracking-widest mb-1 flex flex-wrap items-center gap-1.5">
-                          <span>Você possui Smart TV?</span>
-                          <span className="text-white/30 text-[9px] lowercase font-normal italic tracking-normal">(opcional)</span>
-                          <span className="text-[#D4AF37] font-black text-[9px] lowercase bg-[#D4AF37]/10 px-1.5 py-0.5 rounded tracking-normal">em breve: aplicativo para Smart TVs</span>
-                        </label>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setTemTv(true)
-                              if (modeloTv === 'Não possuo Smart TV') setModeloTv('')
-                            }}
-                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                              temTv === true
-                                ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]'
-                                : 'border-white/10 bg-black/20 text-white/60 hover:border-white/20'
-                            }`}
-                          >
-                            👍 Sim, possuo
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setTemTv(false)
-                              setModeloTv('Não possuo Smart TV')
-                            }}
-                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                              temTv === false
-                                ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]'
-                                : 'border-white/10 bg-black/20 text-white/60 hover:border-white/20'
-                            }`}
-                          >
-                            👎 Não possuo
-                          </button>
+                      {/* ── SEÇÃO DE DISPOSITIVOS (Android & TV) ── */}
+                      <div className="pt-3 border-t border-white/10 space-y-3.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
+                          <h3 className="text-white text-xs font-black uppercase tracking-wider">
+                            Pesquisa de Dispositivos (Testadores VIP)
+                          </h3>
                         </div>
 
-                        {/* Se tem TV, mostra as marcas/modelos */}
-                        {temTv === true && (
-                          <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="space-y-2 pt-1"
-                          >
-                            <label className="block text-white/40 text-[9px] font-bold uppercase tracking-wider">
-                              Qual o modelo/marca da sua Smart TV?
-                            </label>
-                            <div className="grid grid-cols-2 gap-2">
-                              {['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV'].map((marca) => {
-                                const isSelected = modeloTv === marca;
-                                return (
-                                  <button
-                                    key={marca}
-                                    type="button"
-                                    onClick={() => setModeloTv(marca)}
-                                    className={`py-2 px-3 rounded-lg text-[11px] font-bold transition-all text-left border ${
-                                      isSelected
-                                        ? 'border-[#D4AF37] bg-[#D4AF37]/5 text-white'
-                                        : 'border-white/5 bg-black/30 text-white/50 hover:border-white/15'
-                                    }`}
-                                  >
-                                    {marca}
-                                  </button>
-                                )
-                              })}
-                              {/* Opção Outro */}
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (!['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV'].includes(modeloTv)) {
-                                    // já é outra marca ou vazio
-                                  } else {
-                                    setModeloTv('')
-                                  }
-                                }}
-                                className={`py-2 px-3 rounded-lg text-[11px] font-bold transition-all text-left border ${
-                                  modeloTv !== '' && !['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV'].includes(modeloTv)
-                                    ? 'border-[#D4AF37] bg-[#D4AF37]/5 text-white'
-                                    : 'border-white/5 bg-black/30 text-white/50 hover:border-white/15'
-                                }`}
-                              >
-                                Outro modelo...
-                              </button>
-                            </div>
+                        {/* 📱 1. Sistema do Celular / Smartphone */}
+                        <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+                          <label className="block text-white/70 text-[11px] font-extrabold flex items-center justify-between">
+                            <span>📱 Qual o sistema do seu celular?</span>
+                            <span className="text-[#D4AF37] text-[9px] font-black uppercase">Android / iOS</span>
+                          </label>
 
-                            {/* Campo de texto livre se selecionou "Outro" ou se deseja detalhar */}
-                            {(!['Samsung (Tizen)', 'LG (webOS)', 'Android TV / Google TV', 'Fire TV (Amazon)', 'Roku TV', 'Não possuo Smart TV'].includes(modeloTv) || modeloTv === '') && (
+                          <div className="grid grid-cols-3 gap-2">
+                            {[
+                              { id: 'android', label: '🤖 Android', desc: 'Samsung, Xiaomi, Moto' },
+                              { id: 'ios', label: '🍎 iPhone', desc: 'Apple iOS' },
+                              { id: 'outro', label: '📱 Outro', desc: 'Outros modelos' },
+                            ].map((item) => {
+                              const isSelected = dispositivoCelular === item.id;
+                              return (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setDispositivoCelular(item.id as any);
+                                    if (item.id === 'android') {
+                                      setTestadorAndroidCelular(true);
+                                    } else {
+                                      setTestadorAndroidCelular(false);
+                                    }
+                                  }}
+                                  className={`p-2.5 rounded-xl text-left transition-all border flex flex-col justify-between ${
+                                    isSelected
+                                      ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-[0_0_15px_rgba(212,175,55,0.25)]'
+                                      : 'border-white/10 bg-white/5 text-white/60 hover:border-white/20 hover:text-white'
+                                  }`}
+                                >
+                                  <span className="text-xs font-black leading-tight">{item.label}</span>
+                                  <span className="text-[9px] text-white/40 mt-1">{item.desc}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Convite para Testador VIP Celular Android */}
+                          {dispositivoCelular === 'android' && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-2 p-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37]/15 to-amber-500/10 border border-[#D4AF37]/30 flex items-start gap-2 cursor-pointer"
+                              onClick={() => setTestadorAndroidCelular(!testadorAndroidCelular)}
+                            >
                               <input
-                                type="text"
-                                placeholder="Digite a marca/modelo da sua TV (Ex: AOC, Philips...)"
-                                value={modeloTv}
-                                onChange={(e) => setModeloTv(e.target.value)}
-                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs focus:border-[#D4AF37] focus:outline-none transition-colors mt-1"
+                                type="checkbox"
+                                id="chkTestadorCelular"
+                                checked={testadorAndroidCelular}
+                                onChange={(e) => setTestadorAndroidCelular(e.target.checked)}
+                                className="mt-0.5 accent-[#D4AF37] w-4 h-4 rounded cursor-pointer"
                               />
-                            )}
-                          </motion.div>
-                        )}
+                              <label htmlFor="chkTestadorCelular" className="text-xs text-white cursor-pointer leading-tight">
+                                <span className="font-black text-[#D4AF37]">🚀 Quero ser Testador VIP no Android!</span>
+                                <p className="text-[10px] text-white/70 mt-0.5">
+                                  Entraremos em contato pelo seu WhatsApp para liberar o aplicativo de celular em primeira mão.
+                                </p>
+                              </label>
+                            </motion.div>
+                          )}
+                        </div>
+
+                        {/* 📺 2. Smart TV ou TV Box */}
+                        <div className="p-3 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+                          <label className="block text-white/70 text-[11px] font-extrabold flex items-center justify-between">
+                            <span>📺 Qual a marca/modelo da sua Smart TV?</span>
+                            <span className="text-white/30 text-[9px] font-normal italic">(opcional)</span>
+                          </label>
+
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {[
+                              'Android TV / Google TV',
+                              'Fire TV (Amazon)',
+                              'Samsung (Tizen)',
+                              'LG (webOS)',
+                              'Roku TV',
+                              'Não possuo Smart TV',
+                            ].map((marca) => {
+                              const isSelected = modeloTv === marca;
+                              return (
+                                <button
+                                  key={marca}
+                                  type="button"
+                                  onClick={() => {
+                                    setModeloTv(marca);
+                                    if (marca === 'Android TV / Google TV' || marca === 'Fire TV (Amazon)') {
+                                      setTestadorAndroidTv(true);
+                                    } else {
+                                      setTestadorAndroidTv(false);
+                                    }
+                                    setTemTv(marca !== 'Não possuo Smart TV');
+                                  }}
+                                  className={`py-2 px-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-left border ${
+                                    isSelected
+                                      ? 'border-[#D4AF37] bg-[#D4AF37]/15 text-white shadow-[0_0_12px_rgba(212,175,55,0.25)] font-black'
+                                      : 'border-white/5 bg-black/30 text-white/60 hover:border-white/20 hover:text-white'
+                                  }`}
+                                >
+                                  {marca}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Convite para Testador VIP TV */}
+                          {(modeloTv === 'Android TV / Google TV' || modeloTv === 'Fire TV (Amazon)') && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-2 p-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37]/15 to-amber-500/10 border border-[#D4AF37]/30 flex items-start gap-2 cursor-pointer"
+                              onClick={() => setTestadorAndroidTv(!testadorAndroidTv)}
+                            >
+                              <input
+                                type="checkbox"
+                                id="chkTestadorTv"
+                                checked={testadorAndroidTv}
+                                onChange={(e) => setTestadorAndroidTv(e.target.checked)}
+                                className="mt-0.5 accent-[#D4AF37] w-4 h-4 rounded cursor-pointer"
+                              />
+                              <label htmlFor="chkTestadorTv" className="text-xs text-white cursor-pointer leading-tight">
+                                <span className="font-black text-[#D4AF37]">📺 Quero testar o App de Smart TV em primeira mão!</span>
+                                <p className="text-[10px] text-white/70 mt-0.5">
+                                  Notificaremos você assim que a versão para Android TV e Google TV for disponibilizada.
+                                </p>
+                              </label>
+                            </motion.div>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="flex gap-3">
+                      {/* Botões de Ação */}
+                      <div className="flex gap-3 pt-1">
                         <button 
                           onClick={() => setStep(1)}
-                          className="flex-1 py-3 font-bold rounded-xl text-sm transition-all border border-white/10 hover:bg-white/5 cursor-pointer text-white/70"
+                          className="flex-1 py-3 font-bold rounded-xl text-xs sm:text-sm transition-all border border-white/10 hover:bg-white/5 cursor-pointer text-white/70"
                         >
                           Voltar
                         </button>
                         <button 
                           onClick={async () => {
-                          if (pedidoSanto && pedidoSanto.trim()) {
-                            try {
-                              const supabase = createClient();
-                              await supabase.from('pedidos_santos').insert({
-                                santo_nome: pedidoSanto.trim(),
-                                user_email: email || null
-                              });
-                            } catch (err) {
-                              console.error('Erro ao enviar pedido de santo:', err);
+                            if (pedidoSanto && pedidoSanto.trim()) {
+                              try {
+                                const supabase = createClient();
+                                await supabase.from('pedidos_santos').insert({
+                                  santo_nome: pedidoSanto.trim(),
+                                  user_email: email || null
+                                });
+                              } catch (err) {
+                                console.error('Erro ao enviar pedido de santo:', err);
+                              }
                             }
-                          }
-                          setStep(3);
-                        }}
-                          className="flex-1 py-3 font-extrabold rounded-xl text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-1.5"
+                            setStep(3);
+                          }}
+                          className="flex-1 py-3.5 font-extrabold rounded-xl text-xs sm:text-sm transition-all hover:brightness-110 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-1.5 shadow-[0_4px_20px_rgba(212,175,55,0.4)]"
                           style={{ background: '#D4AF37', color: '#090B10' }}
                         >
-                          Avançar <ChevronRight size={16} strokeWidth={3} />
+                          Avançar para Pagamento <ChevronRight size={16} strokeWidth={3} />
                         </button>
                       </div>
                     </div>

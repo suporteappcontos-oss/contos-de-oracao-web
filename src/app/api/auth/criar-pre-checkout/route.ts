@@ -3,7 +3,7 @@ import { supabaseAdmin, buscarUsuarioPorEmail } from '@/lib/supabase-admin'
 
 export async function POST(request: NextRequest) {
   try {
-    const { nome, email, senha, avatarUrl, pedidoSanto, whatsapp, modeloTv } = await request.json()
+    const { nome, email, senha, avatarUrl, pedidoSanto, whatsapp, modeloTv, dispositivoCelular, testadorAndroidCelular, testadorAndroidTv } = await request.json()
 
     if (!email || !senha) {
       return NextResponse.json({ error: 'E-mail e senha são obrigatórios' }, { status: 400 })
@@ -15,6 +15,17 @@ export async function POST(request: NextRequest) {
     if (existente) {
       // Usuário já existe, apenas prossegue para o checkout Kiwify
       userId = existente.id
+      // Atualiza metadados se fornecidos
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
+        user_metadata: {
+          ...(existente.user_metadata || {}),
+          whatsapp: whatsapp || existente.user_metadata?.whatsapp,
+          modelo_tv: modeloTv || existente.user_metadata?.modelo_tv,
+          dispositivo_celular: dispositivoCelular || existente.user_metadata?.dispositivo_celular,
+          testador_android_celular: testadorAndroidCelular ?? existente.user_metadata?.testador_android_celular,
+          testador_android_tv: testadorAndroidTv ?? existente.user_metadata?.testador_android_tv
+        }
+      })
     } else {
       // Cria o usuário com a senha escolhida antes de ir para Kiwify
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
@@ -26,7 +37,10 @@ export async function POST(request: NextRequest) {
           plano_ativo: false,
           avatar_url: avatarUrl || null,
           whatsapp: whatsapp || null,
-          modelo_tv: modeloTv || null
+          modelo_tv: modeloTv || null,
+          dispositivo_celular: dispositivoCelular || null,
+          testador_android_celular: !!testadorAndroidCelular,
+          testador_android_tv: !!testadorAndroidTv
         } // Inicia inativo, o webhook ativará
       })
 
