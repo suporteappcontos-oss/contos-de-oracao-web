@@ -93,7 +93,7 @@ const ParticlesBanner = ({ destaque }: { destaque: boolean }) => {
 type Ciclo = 'mensal' | 'semestral' | 'anual';
 
 export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo[] }) {
-  const [ciclo, setCiclo] = useState<Ciclo>('mensal');
+  const [ciclo, setCiclo] = useState<Ciclo>('anual');
 
   if (produtos.length === 0) {
     return (
@@ -266,24 +266,39 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 <p className="text-white/40 text-sm leading-relaxed">{plano.descricao}</p>
               </div>
 
-              {/* Preço */}
+              {/* Preço (Psicologia dos números: valor mensal proporcional em destaque grande e valor total em fonte menor) */}
               <div className="text-left mb-6">
-                <div className="flex items-baseline gap-0.5 flex-wrap">
-                  <span className="text-xl font-black text-white">R$</span>
-                  <span className="text-5xl font-black text-white tracking-tight">
-                    {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </span>
-                  <span className="text-white/40 text-base font-medium">/{labelPeriodo}</span>
-                </div>
-                {equivalenteMensal && (
-                  <div className="text-[#D4AF37] text-sm font-bold mt-2">
-                    Equivale a R$ {equivalenteMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} /mês
-                  </div>
-                )}
-                {ciclo === 'mensal' && plano.priceAnual && (
-                  <div className="text-[#22c55e] text-xs font-bold mt-1">
-                    💡 Economize escolhendo o plano anual
-                  </div>
+                {equivalenteMensal ? (
+                  <>
+                    <div className="flex items-baseline gap-1 flex-wrap">
+                      <span className="text-xl font-black text-[#D4AF37]">R$</span>
+                      <span className="text-5xl font-black text-white tracking-tight">
+                        {equivalenteMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                      <span className="text-[#D4AF37] text-lg font-bold">/mês</span>
+                    </div>
+                    <div className="text-white/50 text-sm font-semibold mt-1.5 flex items-center gap-1.5 flex-wrap">
+                      <span>R$ {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/{labelPeriodo}</span>
+                      <span className="text-xs text-white/35 font-normal">
+                        ({ciclo === 'anual' ? 'cobrado anualmente' : 'cobrado semestralmente'})
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-baseline gap-0.5 flex-wrap">
+                      <span className="text-xl font-black text-white">R$</span>
+                      <span className="text-5xl font-black text-white tracking-tight">
+                        {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </span>
+                      <span className="text-white/40 text-base font-medium">/{labelPeriodo}</span>
+                    </div>
+                    {plano.priceAnual && (
+                      <div className="text-[#D4AF37] text-xs font-bold mt-2">
+                        💡 No plano anual sai por apenas R$ {(plano.priceAnual.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
