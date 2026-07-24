@@ -342,21 +342,14 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
 
   // ── ESTADO: Em Breve ──
   if (emBreve) {
-    const bgUrl = thumbnailUrl || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1600&q=80';
     return (
       <div className="w-full relative px-0 md:px-6 lg:px-8 xl:px-12 pt-0 md:pt-6 pb-2 md:pb-6" style={{ background: '#090B10' }}>
         <div 
-          className="relative w-full aspect-video mx-auto flex items-center justify-center overflow-hidden bg-cover bg-center md:rounded-2xl border-y md:border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-          style={{ 
-            maxWidth: '1280px', 
-            backgroundImage: `url(${bgUrl})` 
-          }}
+          className="relative w-full aspect-video mx-auto flex items-center justify-center overflow-hidden bg-black md:rounded-2xl border-y md:border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+          style={{ maxWidth: '1280px' }}
         >
-          {/* Blur background overlay */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          
           {/* Card Central */}
-          <div className="relative z-10 text-center px-6 py-8 md:py-12 max-w-md bg-[#090B10]/80 backdrop-blur-md rounded-3xl border border-[#D4AF37]/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+          <div className="relative z-10 text-center px-6 py-8 md:py-12 max-w-md bg-[#090B10]/90 backdrop-blur-md rounded-3xl border border-[#D4AF37]/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             <span className="inline-block text-[#D4AF37] text-4xl mb-4 animate-bounce">⏳</span>
             <h2 className="text-white text-xl md:text-2xl font-black uppercase tracking-wider mb-2">Em Breve</h2>
             <p className="text-[#8197a4] text-xs md:text-sm leading-relaxed">
@@ -370,14 +363,12 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
 
   // ── ESTADO: Verificando ──
   if (status === 'verificando') {
-    const bgUrl = thumbnailUrl || 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=1600&q=80';
     return (
       <div className="w-full relative px-0 md:px-6 lg:px-8 xl:px-12 pt-0 md:pt-6 pb-2 md:pb-6" style={{ background: '#090B10' }}>
         <div
-          className="relative bg-black w-full flex items-center justify-center mx-auto md:rounded-2xl border-y md:border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden bg-cover bg-center"
-          style={{ aspectRatio: '16/9', maxWidth: '1280px', backgroundImage: `url(${bgUrl})` }}
+          className="relative bg-black w-full flex items-center justify-center mx-auto md:rounded-2xl border-y md:border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden"
+          style={{ aspectRatio: '16/9', maxWidth: '1280px' }}
         >
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
           <div className="relative z-10 flex flex-col items-center gap-5">
             <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-4 border-[#D4AF37]/20 animate-ping" />
