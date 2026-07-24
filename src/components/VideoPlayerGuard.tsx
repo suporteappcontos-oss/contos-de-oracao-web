@@ -283,7 +283,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
       if (document.visibilityState === 'hidden') encerrarSessao()
     })
 
-    // ── FIX PARA BUG DE TOQUE CONGELADO AO SAIR DA TELA CHEIA EM CELULARES (ANDROID/CAPACITOR) ──
+    // ── FIX PARA AUTO-ROTAÇÃO EM TELA CHEIA (LANDSCAPE NO CELULAR) E FOCO APÓS SAÍDA ──
     const handleFullscreenChange = () => {
       const isFullscreen = !!(
         document.fullscreenElement ||
@@ -292,8 +292,23 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
         (document as any).msFullscreenElement
       )
 
-      if (!isFullscreen) {
-        // Ao sair da tela cheia no Android, garante restauração imediata do toque e do foco da janela
+      if (isFullscreen) {
+        // Ao entrar em tela cheia no celular, solicita rotação automática para paisagem (Landscape)
+        try {
+          if (typeof screen !== 'undefined' && screen.orientation && typeof (screen.orientation as any).lock === 'function') {
+            (screen.orientation as any).lock('landscape').catch(() => {
+              (screen.orientation as any).lock('landscape-primary').catch(() => {})
+            })
+          }
+        } catch (e) {}
+      } else {
+        // Ao sair da tela cheia no Android/Mobile: desbloqueia a orientação e restaura o toque
+        try {
+          if (typeof screen !== 'undefined' && screen.orientation && typeof screen.orientation.unlock === 'function') {
+            screen.orientation.unlock()
+          }
+        } catch (e) {}
+
         document.body.style.pointerEvents = 'auto'
         document.body.style.overflow = 'auto'
         if (iframeRef.current) {

@@ -677,6 +677,21 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
   const [searchPhone, setSearchPhone] = useState('')
 
   // Helper para renderizar formatação do WhatsApp (*negrito*, _itálico_, links e mídias/anexos)
+// Função de saneamento de URLs para resolver os alertas de segurança do CodeQL (DOM text reinterpreted as HTML)
+function sanitizeSafeUrl(urlStr: string): string {
+  if (!urlStr || typeof urlStr !== 'string') return '#'
+  const clean = urlStr.trim()
+  if (clean.startsWith('http://') || clean.startsWith('https://')) {
+    try {
+      const parsed = new URL(clean)
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        return parsed.href
+      }
+    } catch {}
+  }
+  return '#'
+}
+
   const renderFormattedMessage = (text: string) => {
     if (!text) return null
 
@@ -714,10 +729,11 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
           return <code key={index} className="bg-white/10 px-1.5 py-0.5 rounded text-amber-300 font-mono text-xs">{part.slice(1, -1)}</code>
         }
         if (part.startsWith('http://') || part.startsWith('https://')) {
+          const safeLink = sanitizeSafeUrl(part)
           return (
             <a 
               key={index} 
-              href={part} 
+              href={safeLink} 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-[#4FC3F7] underline hover:text-[#81D4FA] font-semibold break-all inline-flex items-center gap-1 transition-colors"
@@ -730,16 +746,23 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
       })
     }
 
+    const safeImageUrl = imageUrlMatch ? sanitizeSafeUrl(imageUrlMatch[0]) : null
+    const safeAudioUrl = audioUrlMatch ? sanitizeSafeUrl(audioUrlMatch[0]) : null
+    const safeVideoUrl = videoUrlMatch ? sanitizeSafeUrl(videoUrlMatch[0]) : null
+    const safePdfUrl = pdfUrlMatch ? sanitizeSafeUrl(pdfUrlMatch[0]) : null
+
     return (
       <div className="flex flex-col gap-2">
         {/* Renderização de Imagem / Sticker */}
-        {imageUrlMatch && (
-          <div className="relative group my-1 overflow-hidden rounded-xl border border-white/10 bg-black/30 w-fit max-w-[280px]">
+        {safeImageUrl && safeImageUrl !== '#' && (
+          <div className="relative group my-1 overflow-hidden rounded-xl border border-[#D4AF37]/20 bg-black/30 w-fit max-w-[280px]">
             <img 
-              src={imageUrlMatch[0]} 
+              src={safeImageUrl} 
               alt="Mídia Anexa" 
               className="max-w-[280px] max-h-[300px] object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
-              onClick={() => window.open(imageUrlMatch[0], '_blank')}
+              onClick={() => {
+                if (safeImageUrl !== '#') window.open(safeImageUrl, '_blank', 'noopener,noreferrer')
+              }}
             />
             <span className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-md text-[0.6rem] text-white/80 px-2 py-0.5 rounded-full font-bold">
               📷 Imagem
@@ -748,23 +771,23 @@ export default function GerenciadorWhatsapp({ config, faq, chatHistory, automaco
         )}
 
         {/* Renderização de Áudio */}
-        {audioUrlMatch && (
+        {safeAudioUrl && safeAudioUrl !== '#' && (
           <div className="my-1 bg-white/5 p-2 rounded-xl border border-white/10">
-            <audio controls src={audioUrlMatch[0]} className="max-w-[260px] h-8" />
+            <audio controls src={safeAudioUrl} className="max-w-[260px] h-8" />
           </div>
         )}
 
         {/* Renderização de Vídeo */}
-        {videoUrlMatch && (
+        {safeVideoUrl && safeVideoUrl !== '#' && (
           <div className="my-1 rounded-xl overflow-hidden border border-white/10 max-w-[280px]">
-            <video controls src={videoUrlMatch[0]} className="max-w-[280px] max-h-[250px]" />
+            <video controls src={safeVideoUrl} className="max-w-[280px] max-h-[250px]" />
           </div>
         )}
 
         {/* Renderização de Documento / PDF */}
-        {pdfUrlMatch && (
+        {safePdfUrl && safePdfUrl !== '#' && (
           <a 
-            href={pdfUrlMatch[0]} 
+            href={safePdfUrl} 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-bold text-[#D4AF37] transition-all my-1 w-fit"
