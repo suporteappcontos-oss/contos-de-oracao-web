@@ -3,7 +3,7 @@
 export function WhatsAppButton() {
   return (
     <a
-      href="https://wa.me/5566997182760"
+      href="https://wa.me/556492994823?text=Olá,%20preciso%20de%20suporte%20no%20Contos%20de%20Oração"
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-[99] flex items-center justify-center w-[60px] h-[60px] bg-[#25D366] text-white rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.5)] hover:scale-110 hover:-translate-y-1 transition-transform duration-300 group"

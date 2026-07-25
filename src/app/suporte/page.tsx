@@ -49,7 +49,7 @@ export default function SuportePage() {
             
             {/* Botão WhatsApp */}
             <a 
-              href="https://wa.me/5564992994823?text=Olá,%20preciso%20de%20suporte%20no%20Contos%20de%20Oração" 
+              href="https://wa.me/556492994823?text=Olá,%20preciso%20de%20suporte%20no%20Contos%20de%20Oração" 
               target="_blank" 
               rel="noopener noreferrer"
               className="group flex flex-col justify-between p-8 rounded-2xl transition-all duration-300 relative overflow-hidden no-underline cursor-pointer"

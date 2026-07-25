@@ -243,7 +243,7 @@ export default async function PerfilPage() {
           </Link>
 
           {/* Box 3: Suporte */}
-          <a href="https://wa.me/5566997182760" target="_blank" rel="noopener noreferrer"
+          <a href="https://wa.me/556492994823?text=Olá,%20preciso%20de%20suporte%20no%20Contos%20de%20Oração" target="_blank" rel="noopener noreferrer"
             className="rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group transition-all hover:-translate-y-1 hover:shadow-xl"
             style={{ background: 'linear-gradient(135deg, rgba(37,211,102,0.05) 0%, rgba(37,211,102,0) 100%)', border: '1px solid rgba(37,211,102,0.15)' }}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#25D366]/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
