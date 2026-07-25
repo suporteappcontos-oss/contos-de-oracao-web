@@ -14,7 +14,7 @@ export default function FAQPage() {
     },
     {
       q: 'Funciona no celular e na TV?',
-      a: 'Sim! Temos aplicativos exclusivos para smartphones Android e para Smart TVs (Android TV, Google TV, Fire TV e TV Box). Para outros dispositivos (como iPhone, iPad e Smart TVs de outros sistemas), você pode acessar a plataforma diretamente pelo navegador web com total compatibilidade e alta qualidade.',
+      a: 'Sim! Nossos aplicativos dedicados para celulares e Smart TVs serão lançados em breve! Enquanto isso, você pode acessar 100% dos conteúdos em qualquer celular, computador, tablet ou Smart TV acessando o site oficial contosdeoracao.com.br diretamente pelo navegador de internet com total qualidade e compatibilidade.',
     },
     {
       q: 'O conteúdo é atualizado com frequência?',
