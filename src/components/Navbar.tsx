@@ -165,7 +165,7 @@ export default function Navbar() {
       <header
         className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-4 sm:px-6 md:px-8 transition-all duration-300"
         style={{
-          height: '72px',
+          height: '80px',
           background: isScrolled 
             ? 'rgba(9, 11, 16, 0.92)' 
             : 'linear-gradient(to bottom, rgba(9, 11, 16, 0.95) 0%, rgba(9, 11, 16, 0.5) 60%, transparent 100%)',
@@ -464,19 +464,27 @@ export default function Navbar() {
           </span>
         </button>
 
-        {/* Logo Centro — Posicionado de forma absoluta no centro físico da barra de navegação para evitar qualquer oscilação ou deslocamento quando o botão do menu é acionado */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 sm:gap-3.5 z-10">
-          <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(0,0,0,0.6)] border border-white/15">
-            <Image src="/logo.png" alt="Contos de Oração Club" width={52} height={52} className="object-cover w-full h-full" />
+        {/* Logo Centro — Layout Vertical Idêntico à Imagem (Logo no Topo > Título > Linha Dourada > Subtítulo) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-10 py-1 cursor-pointer" onClick={() => router.push('/')}>
+          {/* 1. Logo Redonda no Topo */}
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(212,175,55,0.3)] border border-[#D4AF37]/40 mb-0.5">
+            <Image src="/logo.png" alt="Contos de Oração Club" width={36} height={36} className="object-cover w-full h-full" />
           </div>
-          <div className="text-left hidden sm:block">
-            <div className="text-white font-black text-base sm:text-xl md:text-2xl leading-tight tracking-wide"
-              style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
+
+          {/* 2. Título: Contos de Oração (Branco) + Club (Dourado) */}
+          <div className="text-center flex flex-col items-center">
+            <div className="text-white font-black text-xs sm:text-sm md:text-base leading-none tracking-wide"
+              style={{ textShadow: '0 2px 10px rgba(0,0,0,0.95)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
-            <div className="text-[#D4AF37] text-[0.55rem] sm:text-[0.65rem] md:text-[0.7rem] font-black uppercase tracking-widest leading-none mt-1"
-              style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-              Transformando o Tempo de Tela em Tempo de Fé
+
+            {/* 3. Linha Divisória Dourada com Brilho Central (Glow Flare) */}
+            <div className="w-[140px] sm:w-[180px] md:w-[210px] h-[1px] my-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-90 shadow-[0_0_6px_#D4AF37]" />
+
+            {/* 4. Subtítulo Dourado em Caixa Alta */}
+            <div className="text-[#D4AF37] text-[0.42rem] sm:text-[0.5rem] md:text-[0.55rem] font-black uppercase tracking-widest leading-none"
+              style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}>
+              Transformando o Tempo de Tela em Tempo de Fé.
             </div>
           </div>
         </div>
