@@ -145,8 +145,8 @@ export default function Footer() {
           <div className="flex items-center gap-3">
             <Image src="/logo.png" alt="Contos de Oração Club" width={38} height={38} className="object-contain opacity-80" />
             <div>
-              <div className="text-white font-bold text-sm leading-tight">Contos de Oração Club</div>
-              <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest">Transforme Tempo de Tela em Tempo de Fé</div>
+              <div className="text-white font-bold text-sm leading-tight">Contos de Oração <span className="text-[#D4AF37]">Club</span></div>
+              <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest">Transformando o Tempo de Tela em Tempo de Fé</div>
             </div>
           </div>
 
