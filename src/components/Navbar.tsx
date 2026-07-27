@@ -482,10 +482,11 @@ export default function Navbar() {
             {/* Linha Divisória Dourada com Brilho (Glow Flare) */}
             <div className="w-full h-[1px] my-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-90 shadow-[0_0_5px_#D4AF37]" />
 
-            {/* Subtítulo Dourado Compacto em Caixa Alta */}
-            <div className="text-[#D4AF37] text-[0.42rem] sm:text-[0.5rem] md:text-[0.55rem] font-black uppercase tracking-widest leading-none"
+            {/* Subtítulo Dourado Compacto em Caixa Alta com quebra de linha apenas em Celulares/Tablets */}
+            <div className="text-[#D4AF37] text-[0.45rem] sm:text-[0.52rem] md:text-[0.55rem] font-black uppercase tracking-widest leading-tight text-center md:text-left"
               style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-              Transformando o Tempo de Tela em Tempo de Fé.
+              <span className="block md:inline">Transformando o Tempo de Tela</span>{' '}
+              <span className="block md:inline">em Tempo de Fé.</span>
             </div>
           </div>
         </div>

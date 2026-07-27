@@ -98,24 +98,54 @@ export default function AssinarPage() {
       .finally(() => setLoadingAvatars(false))
   }, [])
 
-  // Busca preços reais ativos na montagem
+  // Função para selecionar plano e sincronizar com URL e sessionStorage
+  const selecionarPlano = (planId: string) => {
+    if (!planId) return
+    setPlanoSelecionado(planId)
+    sessionStorage.setItem('cdo_plano_selecionado', planId)
+    try {
+      const url = new URL(window.location.href)
+      url.searchParams.set('plan', planId)
+      window.history.replaceState({}, '', url.toString())
+    } catch (e) {
+      console.error('Erro ao atualizar URL com plano:', e)
+    }
+  }
+
+  // Busca preços reais ativos na montagem e persiste a seleção do usuário
   useEffect(() => {
-    // Pega o parametro 'plan' e 'email' da url se existir
     const params = new URLSearchParams(window.location.search)
     const planParam = params.get('plan')
+    const savedPlan = sessionStorage.getItem('cdo_plano_selecionado')
     const emailParam = params.get('email')
 
-    if (planParam) setPlanoSelecionado(planParam)
     if (emailParam) setEmail(emailParam)
 
     fetch('/api/stripe/planos-publicos')
       .then(r => r.json())
       .then(data => {
-        if (data.planos) {
+        if (data.planos && data.planos.length > 0) {
           setPlanos(data.planos)
-          if (!planParam && data.planos.length > 0) {
-            setPlanoSelecionado(data.planos[0].id)
+          
+          // Prioridade da escolha do plano:
+          // 1. Se veio na URL (?plan=...)
+          // 2. Se estava salvo no sessionStorage de uma escolha anterior do usuário
+          // 3. Primeiro plano ativo retornado da API
+          let chosenPlan = planParam || savedPlan || data.planos[0].id
+          const existe = data.planos.some((p: any) => p.id === chosenPlan)
+          if (!existe) {
+            chosenPlan = data.planos[0].id
           }
+
+          setPlanoSelecionado(chosenPlan)
+          sessionStorage.setItem('cdo_plano_selecionado', chosenPlan)
+
+          // Atualiza a URL para refletir o plano correto sem recarregar a página
+          try {
+            const url = new URL(window.location.href)
+            url.searchParams.set('plan', chosenPlan)
+            window.history.replaceState({}, '', url.toString())
+          } catch (e) {}
         }
       })
       .catch(console.error)
@@ -1054,7 +1084,7 @@ export default function AssinarPage() {
                                 ✨ Mude para o plano Anual e economize R$ {(desconto / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano!
                               </p>
                               <button 
-                                onClick={() => setPlanoSelecionado(pAnual.id)}
+                                onClick={() => selecionarPlano(pAnual.id)}
                                 className="w-full py-2 rounded-lg text-xs font-bold text-[#090B10] transition-all hover:brightness-110 hover:scale-[1.01] shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                                 style={{ background: 'linear-gradient(to right, #D4AF37, #F9E596)' }}
                               >
