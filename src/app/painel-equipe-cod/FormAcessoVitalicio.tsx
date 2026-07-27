@@ -51,7 +51,7 @@ export function FormAcessoVitalicio() {
 
   function handleCopy() {
     if (!resultado) return
-    const texto = `✨ *Seu Acesso Vitalício - Contos de Oração* ✨\n\nOlá, *${resultado.nome}*!\nSeu acesso infinito à plataforma foi liberado. Aqui estão seus dados de acesso:\n\n📧 *E-mail:* ${resultado.email}\n🔑 *Senha Temporária:* ${resultado.senhaGerada}\n💎 *Plano:* ${resultado.plano}\n\n*Acesse agora:* https://contosdeoracao.com.br/login\n\n_Você poderá redefinir sua senha a qualquer momento acessando a página "Esqueci a Senha" ou no seu painel de perfil._`
+    const texto = `✨ *Seu Acesso Vitalício - Contos de Oração Club* ✨\n\nOlá, *${resultado.nome}*!\nSeu acesso infinito à plataforma foi liberado. Aqui estão seus dados de acesso:\n\n📧 *E-mail:* ${resultado.email}\n🔑 *Senha Temporária:* ${resultado.senhaGerada}\n💎 *Plano:* ${resultado.plano}\n\n*Acesse agora:* https://contosdeoracao.com.br/login\n\n_Você poderá redefinir sua senha a qualquer momento acessando a página "Esqueci a Senha" ou no seu painel de perfil._`
     
     navigator.clipboard.writeText(texto)
     setCopiado(true)

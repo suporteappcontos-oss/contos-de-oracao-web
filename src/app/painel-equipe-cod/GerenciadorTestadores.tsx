@@ -231,7 +231,7 @@ export function GerenciadorTestadores({ testadores: testadoresIniciais, linkWhat
     const senhaInfo = `🔑 *Senha Temporária:* ${senhaUsar}`
 
     const mensagem = `Salve Maria, *${testador.nome}*! 🙏✨\n\n` +
-      `Sua vaga como *Testador Voluntário Oficial* do aplicativo *Contos de Oração* foi aprovada!\n\n` +
+      `Sua vaga como *Testador Voluntário Oficial* do aplicativo *Contos de Oração Club* foi aprovada!\n\n` +
       `🎁 *Seu presente especial:* Você ganhou *1 ANO DE ACESSO GRATUITO E COMPLETO* à nossa plataforma no Celular e Web!\n\n` +
       `📌 *PASSO A PASSO PARA ATIVAR SEU ACESSO:*\n\n` +
       `1️⃣ *PASSO 1 - ACEITAR O CONVITE NO GMAIL / PLAY STORE:*\n` +

@@ -1336,7 +1336,7 @@ function sanitizeSafeUrl(urlStr: string): string {
                 rows={6}
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Ex: Você é o Lucas, atendente de vendas e suporte do Contos de Oração..."
+                placeholder="Ex: Você é o Lucas, atendente de vendas e suporte do Contos de Oração Club..."
                 className="w-full bg-[#0d1220] border border-white/5 focus:border-[#D4AF37]/50 rounded-2xl p-4 text-sm text-white focus:outline-none transition-all placeholder-white/20 leading-relaxed"
               />
             </div>

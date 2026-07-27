@@ -6,7 +6,7 @@ import Footer from '@/components/Footer'
 import VideosTematicosGaleria from './VideosTematicosGaleria'
 
 export const metadata: Metadata = {
-  title: 'Vídeos Instagram | Contos de Oração',
+  title: 'Vídeos Instagram | Contos de Oração Club',
   description: 'Conteúdo exclusivo em vídeo para assinantes.',
 }
 

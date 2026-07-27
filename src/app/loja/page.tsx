@@ -5,7 +5,7 @@ import LojaProductCard from "@/components/LojaProductCard";
 import { ShoppingBag } from "lucide-react";
 
 export const metadata = {
-  title: "Loja Oficial — Contos de Oração",
+  title: "Loja Oficial — Contos de Oração Club",
   description: "Nossa loja oficial com produtos, livros e materiais educativos selecionados para catequese e evangelização infantil. Compre pelo link de afiliado oficial.",
 };
 

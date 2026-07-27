@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Página não encontrada — Contos de Oração',
+  title: 'Página não encontrada — Contos de Oração Club',
   description: 'A página que você está procurando não existe ou foi removida.',
 }
 

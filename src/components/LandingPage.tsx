@@ -498,7 +498,7 @@ export default function LandingPage() {
             >
               📰 Revista do mês
             </div>
-            <h3 className="text-white font-black text-2xl md:text-3xl mb-3 leading-tight" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>Contos de Oração</h3>
+            <h3 className="text-white font-black text-2xl md:text-3xl mb-3 leading-tight" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>Contos de Oração Club</h3>
             <p className="text-white/70 text-sm md:text-base leading-relaxed mb-6 font-medium">
               Histórias, passatempos, formação e muito mais para toda a família!
             </p>
@@ -530,7 +530,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-center w-full h-full text-center px-4">
                 <div>
                   <div className="text-6xl mb-3 drop-shadow-lg">📖</div>
-                  <p className="text-black font-black text-sm md:text-base leading-tight">Contos de Oração</p>
+                  <p className="text-black font-black text-sm md:text-base leading-tight">Contos de Oração Club</p>
                   <p className="text-black/80 text-[11px] font-bold mt-1.5 uppercase tracking-wider">Edição de Maio</p>
                 </div>
               </div>
@@ -588,8 +588,8 @@ export default function LandingPage() {
             },
             {
               icon: <Download size={32} strokeWidth={1.5} />,
-              title: 'Leve o Contos de Oração com Você',
-              desc: 'Baixe os vídeos curtos do Contos de Oração para assistir offline, compartilhar e evangelizar onde estiver.',
+              title: 'Leve o Contos de Oração Club com Você',
+              desc: 'Baixe os vídeos curtos do Contos de Oração Club para assistir offline, compartilhar e evangelizar onde estiver.',
             },
             {
               icon: <Printer size={32} strokeWidth={1.5} />,

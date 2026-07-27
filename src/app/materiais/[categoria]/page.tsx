@@ -20,9 +20,9 @@ type Props = { params: Promise<{ categoria: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categoria } = await params
   const cat = CATEGORIAS[categoria]
-  if (!cat) return { title: 'Material Pedagógico | Contos de Oração' }
+  if (!cat) return { title: 'Material Pedagógico | Contos de Oração Club' }
   return {
-    title: `${cat.label} | Material Pedagógico | Contos de Oração`,
+    title: `${cat.label} | Material Pedagógico | Contos de Oração Club`,
     description: cat.descricao,
   }
 }

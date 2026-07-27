@@ -7,7 +7,7 @@ import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Histórias em Quadrinhos | Contos de Oração',
+  title: 'Histórias em Quadrinhos | Contos de Oração Club',
   description: 'Leia as HQs exclusivas da maior plataforma católica do Brasil.',
 }
 

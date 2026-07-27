@@ -6,7 +6,7 @@ import RibbonCursor from "@/components/RibbonCursor";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: 'Contos de Oração — Transforme Tempo de Tela em Tempo de Fé',
+  title: 'Contos de Oração Club — Transforme Tempo de Tela em Tempo de Fé',
   description: 'Universo católico infantil de forma divertida. Vídeos, jogos, HQs, atividades e conteúdos exclusivos para ensinar a fé católica às crianças.',
 };
 

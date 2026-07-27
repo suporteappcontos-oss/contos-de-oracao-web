@@ -52,7 +52,7 @@ export default function MfaSetupPage() {
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
-        issuer: 'Contos de Oração',
+        issuer: 'Contos de Oração Club',
         friendlyName: user?.email || 'Admin Contos'
       })
 

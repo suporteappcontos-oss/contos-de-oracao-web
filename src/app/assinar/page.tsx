@@ -75,7 +75,7 @@ export default function AssinarPage() {
   const [erroCheckout, setErroCheckout] = useState<{ msg: string; tipo: 'email_duplicado' | 'generico' } | null>(null)
   const [isLogged, setIsLogged] = useState(false)
 
-  // Carrega avatares e define 'Contos de Oração' como padrão
+  // Carrega avatares e define 'Contos de Oração Club' como padrão
   useEffect(() => {
     setLoadingAvatars(true)
     fetch('/api/avatars-santos')
@@ -83,7 +83,7 @@ export default function AssinarPage() {
       .then(data => {
         if (data.avatars && data.avatars.length > 0) {
           setAvatarsDisponiveis(data.avatars)
-          // Pre-seleciona "Contos de Oração" por padrão se o usuário ainda não escolheu
+          // Pre-seleciona "Contos de Oração Club" por padrão se o usuário ainda não escolheu
           setSelectedAvatarUrl(prevUrl => {
             if (prevUrl) return prevUrl
             const contosAvatar = data.avatars.find((a: any) => 
