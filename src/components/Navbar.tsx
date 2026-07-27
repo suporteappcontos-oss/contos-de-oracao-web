@@ -466,9 +466,9 @@ export default function Navbar() {
 
         {/* Logo Centro — Layout Horizontal 30% menor (Ícone à Esquerda + Texto à Direita compactos) */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 z-10 py-1 cursor-pointer" onClick={() => router.push('/')}>
-          {/* 1. Ícone da Logo à Esquerda (30% menor) */}
-          <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 shrink-0 drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]">
-            <Image src="/logo.png" alt="Contos de Oração Club" width={40} height={40} className="object-contain w-full h-full" />
+          {/* 1. Ícone da Logo à Esquerda (36px celular, 38px tablet, 44px PC) */}
+          <div className="w-[36px] h-[36px] sm:w-[38px] sm:h-[38px] md:w-[44px] md:h-[44px] shrink-0 drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]">
+            <Image src="/logo.png" alt="Contos de Oração Club" width={44} height={44} className="object-contain w-full h-full" />
           </div>
 
           {/* 2. Bloco de Texto à Direita (30% menor) */}
