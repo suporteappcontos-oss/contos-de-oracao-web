@@ -158,17 +158,34 @@ export default function AssinarPage() {
     if (validarStep1()) {
       setLoadingCheckout(true)
       try {
+        const supabase = createClient()
+        // 1. Tenta autenticar o usuário se ele já criou a conta anteriormente (ex: Lead retornando)
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email,
+          password: senha
+        })
+
+        if (!authError && authData.user) {
+          setIsLogged(true)
+          setStep(2) // Avança direto para o pagamento
+          return
+        }
+
+        // 2. Se a senha não logou, verifica o status da conta
         const res = await fetch('/api/auth/check-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
         })
         const data = await res.json()
-        if (data.existe) {
-          setErroCheckout({ msg: 'Este e-mail já possui uma conta cadastrada. Faça login para continuar.', tipo: 'email_duplicado' })
-          setStep(3) // Vai para o step 3 que já tem a UI de login preparada para erros
+
+        if (data.existe && data.planoAtivo) {
+          // Só bloqueia se o e-mail JÁ POSSUIR UMA ASSINATURA PAGA ATIVA!
+          setErroCheckout({ msg: 'Este e-mail já possui uma assinatura ativa no sistema. Faça login para acessar.', tipo: 'email_duplicado' })
+          setStep(3)
         } else {
-          setStep(2) // Vai para a escolha do avatar
+          // Se for conta nova ou LEAD (sem plano ativo), avança normalmente para o pagamento!
+          setStep(2)
         }
       } catch (e) {
         setStep(2)

@@ -619,12 +619,11 @@ export default function Navbar() {
           </svg>
         </button>
 
-        {/* Logo dentro da sidebar */}
+        {/* Logo dentro da sidebar — Apenas ícone e o nome Contos de Oração Club */}
         <div className="flex items-center gap-3 px-5 pt-6 pb-4 pr-12">
-          <Image src="/logo.png" alt="Contos de Oração Club" width={40} height={40} className="object-contain drop-shadow-lg" />
-          <div>
-            <div className="text-white font-black text-base leading-tight">Contos de Oração Club</div>
-            <div className="text-[#D4AF37] text-[0.55rem] font-bold uppercase tracking-widest mt-0.5">Transforme Tempo de Tela em Tempo de Fé</div>
+          <Image src="/logo.png" alt="Contos de Oração Club" width={40} height={40} className="object-contain drop-shadow-lg shrink-0" />
+          <div className="text-white font-black text-sm leading-snug">
+            Contos de Oração <span className="text-[#D4AF37]">Club</span>
           </div>
         </div>
 

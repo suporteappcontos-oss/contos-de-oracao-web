@@ -13,25 +13,30 @@ export async function POST(request: NextRequest) {
     let userId = ''
 
     if (existente) {
-      // Usuário já existe, apenas prossegue para o checkout Kiwify
+      // Usuário já existe (Lead ou Conta anterior) — atualiza os dados e a senha caso a pessoa tenha alterado no formulário
       userId = existente.id
-      // Atualiza metadados se fornecidos
-      await supabaseAdmin.auth.admin.updateUserById(userId, {
+      const updateData: any = {
         user_metadata: {
           ...(existente.user_metadata || {}),
+          nome: nome || existente.user_metadata?.nome,
           whatsapp: whatsapp || existente.user_metadata?.whatsapp,
+          avatar_url: avatarUrl || existente.user_metadata?.avatar_url,
           modelo_tv: modeloTv || existente.user_metadata?.modelo_tv,
           dispositivo_celular: dispositivoCelular || existente.user_metadata?.dispositivo_celular,
           testador_android_celular: testadorAndroidCelular ?? existente.user_metadata?.testador_android_celular,
           testador_android_tv: testadorAndroidTv ?? existente.user_metadata?.testador_android_tv
         }
-      })
+      }
+      if (senha) {
+        updateData.password = senha
+      }
+      await supabaseAdmin.auth.admin.updateUserById(userId, updateData)
     } else {
       // Cria o usuário com a senha escolhida antes de ir para Kiwify
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password: senha,
-        email_confirm: true, // Já confirma o e-mail para facilitar
+        email_confirm: true,
         user_metadata: { 
           nome, 
           plano_ativo: false,
@@ -41,7 +46,7 @@ export async function POST(request: NextRequest) {
           dispositivo_celular: dispositivoCelular || null,
           testador_android_celular: !!testadorAndroidCelular,
           testador_android_tv: !!testadorAndroidTv
-        } // Inicia inativo, o webhook ativará
+        }
       })
 
       if (createError) {
