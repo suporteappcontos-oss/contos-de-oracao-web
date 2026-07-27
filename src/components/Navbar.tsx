@@ -165,7 +165,7 @@ export default function Navbar() {
       <header
         className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-4 sm:px-6 md:px-8 transition-all duration-300"
         style={{
-          height: '80px',
+          height: '92px',
           background: isScrolled 
             ? 'rgba(9, 11, 16, 0.92)' 
             : 'linear-gradient(to bottom, rgba(9, 11, 16, 0.95) 0%, rgba(9, 11, 16, 0.5) 60%, transparent 100%)',
@@ -466,9 +466,9 @@ export default function Navbar() {
 
         {/* Logo Centro — Layout Vertical Idêntico à Imagem (Logo no Topo > Título > Linha Dourada > Subtítulo) */}
         <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center justify-center z-10 py-1 cursor-pointer" onClick={() => router.push('/')}>
-          {/* 1. Logo Redonda no Topo */}
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(212,175,55,0.3)] border border-[#D4AF37]/40 mb-0.5">
-            <Image src="/logo.png" alt="Contos de Oração Club" width={36} height={36} className="object-cover w-full h-full" />
+          {/* 1. Logo Principal no Topo (Sem círculo duplo, maior e destacada) */}
+          <div className="w-11 h-11 sm:w-13 sm:h-13 md:w-15 md:h-15 shrink-0 drop-shadow-[0_4px_15px_rgba(0,0,0,0.8)] mb-0.5">
+            <Image src="/logo.png" alt="Contos de Oração Club" width={60} height={60} className="object-contain w-full h-full" />
           </div>
 
           {/* 2. Título: Contos de Oração (Branco) + Club (Dourado) */}
