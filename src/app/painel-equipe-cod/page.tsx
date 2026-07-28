@@ -35,6 +35,7 @@ import GerenciadorAutomacoes from './GerenciadorAutomacoes'
 import GerenciadorEquipe from './GerenciadorEquipe'
 import VisualizadorLogs from './VisualizadorLogs'
 import GerenciadorWhatsapp from './GerenciadorWhatsapp'
+import CardMetricasAnalytics from './CardMetricasAnalytics'
 
 
 
@@ -386,7 +387,6 @@ export default async function AdminPage({
           ].map(s => (
             <div key={s.label} className="relative overflow-hidden bg-[#111827] border border-white/5 rounded-3xl p-6 group hover:border-white/10 transition-colors shadow-xl">
               <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${s.color} opacity-5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110`} />
-              
               <div className="flex items-start justify-between relative z-10">
                 <div>
                   <div className="text-white/50 text-[0.7rem] uppercase tracking-widest font-bold mb-2">{s.label}</div>
@@ -399,6 +399,9 @@ export default async function AdminPage({
             </div>
           ))}
         </div>
+
+        {/* --- CARDS DE METRICAS NATIVOS POSTHOG ANALYTICS --- */}
+        <CardMetricasAnalytics />
 
         {/* ══════════ ABA MARKETING ══════════ */}
         {activeTab === 'marketing' && (
