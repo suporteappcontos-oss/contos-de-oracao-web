@@ -10,9 +10,9 @@ export default function TelaCheia() {
     >
       {/* Logo */}
       <Link href="/watch" className="flex items-center gap-3 mb-12">
-        <Image src="/logo.png" alt="Contos de Oração Club" width={44} height={44} className="object-contain" />
+        <Image src="/logo.png" alt="Contos de Oração" width={44} height={44} className="object-contain" />
         <div className="text-left">
-          <div className="text-white font-black text-lg leading-tight">Contos de Oração Club</div>
+          <div className="text-white font-black text-lg leading-tight">Contos de Oração</div>
         </div>
       </Link>
 
@@ -63,7 +63,7 @@ export default function TelaCheia() {
 
       {/* Rodapé */}
       <p className="text-[#4a6373] text-xs mt-10">
-        © Contos de Oração Club · Todos os direitos reservados
+        © Contos de Oração · Todos os direitos reservados
       </p>
     </div>
   )

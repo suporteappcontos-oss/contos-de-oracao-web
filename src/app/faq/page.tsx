@@ -2,8 +2,8 @@ import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 
 export const metadata = {
-  title: "Perguntas Frequentes — Contos de Oração Club",
-  description: "Tire suas dúvidas sobre a plataforma Contos de Oração Club.",
+  title: "Perguntas Frequentes — Contos de Oração",
+  description: "Tire suas dúvidas sobre a plataforma Contos de Oração.",
 };
 
 export default function FAQPage() {

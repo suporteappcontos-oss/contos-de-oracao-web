@@ -26,36 +26,24 @@ export async function POST(request: NextRequest) {
     let userId = ''
 
     if (existente) {
-      const ehPlanoAtivo = existente.user_metadata?.plano_ativo === true
-      
-      // Só bloqueia a criação de sessão se o usuário JÁ TIVER um plano ativo pago E não estiver logado
-      if (ehPlanoAtivo && !isLogged) {
-         return NextResponse.json({ error: 'Este e-mail já possui uma assinatura ativa. Faça login para acessar.' }, { status: 400 })
+      if (!isLogged) {
+         // O email existe, mas a pessoa não está logada. Não podemos deixá-la avançar sem provar que é dona da conta.
+         return NextResponse.json({ error: 'Este e-mail já possui uma conta cadastrada. Faça login para continuar.' }, { status: 400 })
       }
-
       userId = existente.id
 
-      // Atualiza metadados do usuário (seja Lead ou usuário logado)
+      // Atualiza metadados do usuário existente se novos dados forem fornecidos
       const metadataAtual = existente.user_metadata || {}
-      const updateData: any = {
+      await supabaseAdmin.auth.admin.updateUserById(userId, {
         user_metadata: {
           ...metadataAtual,
-          nome: nome || metadataAtual.nome,
           whatsapp: whatsapp || metadataAtual.whatsapp,
-          avatar_url: avatarUrl || metadataAtual.avatar_url,
           modelo_tv: modeloTv || metadataAtual.modelo_tv,
           dispositivo_celular: dispositivoCelular || metadataAtual.dispositivo_celular,
           testador_android_celular: testadorAndroidCelular ?? metadataAtual.testador_android_celular,
           testador_android_tv: testadorAndroidTv ?? metadataAtual.testador_android_tv
         }
-      }
-
-      // Se a conta for de um Lead (plano inativo) e a pessoa digitou senha, atualiza a senha da conta
-      if (senha && !isLogged) {
-        updateData.password = senha
-      }
-
-      await supabaseAdmin.auth.admin.updateUserById(userId, updateData)
+      })
     } else {
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
@@ -113,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://contosdeoracao.com.br'
 
-    // Gera sessão de Checkout Embutida da Stripe
+    // Em vez de manipular faturas manualmente, usamos o novo "Checkout Embutido" do Stripe
     const stripeSession = await stripe.checkout.sessions.create({
       ui_mode: 'embedded_page' as any,
       mode: 'subscription',

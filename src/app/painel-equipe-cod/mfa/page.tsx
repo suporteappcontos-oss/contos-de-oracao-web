@@ -1,7 +1,5 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useEffect, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
@@ -54,7 +52,7 @@ export default function MfaSetupPage() {
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
-        issuer: 'Contos de Oração Club',
+        issuer: 'Contos de Oração',
         friendlyName: user?.email || 'Admin Contos'
       })
 

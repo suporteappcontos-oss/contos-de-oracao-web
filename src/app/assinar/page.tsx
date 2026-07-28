@@ -75,7 +75,7 @@ export default function AssinarPage() {
   const [erroCheckout, setErroCheckout] = useState<{ msg: string; tipo: 'email_duplicado' | 'generico' } | null>(null)
   const [isLogged, setIsLogged] = useState(false)
 
-  // Carrega avatares e define 'Contos de Oração Club' como padrão
+  // Carrega avatares e define 'Contos de Oração' como padrão
   useEffect(() => {
     setLoadingAvatars(true)
     fetch('/api/avatars-santos')
@@ -83,7 +83,7 @@ export default function AssinarPage() {
       .then(data => {
         if (data.avatars && data.avatars.length > 0) {
           setAvatarsDisponiveis(data.avatars)
-          // Pre-seleciona "Contos de Oração Club" por padrão se o usuário ainda não escolheu
+          // Pre-seleciona "Contos de Oração" por padrão se o usuário ainda não escolheu
           setSelectedAvatarUrl(prevUrl => {
             if (prevUrl) return prevUrl
             const contosAvatar = data.avatars.find((a: any) => 
@@ -98,54 +98,24 @@ export default function AssinarPage() {
       .finally(() => setLoadingAvatars(false))
   }, [])
 
-  // Função para selecionar plano e sincronizar com URL e sessionStorage
-  const selecionarPlano = (planId: string) => {
-    if (!planId) return
-    setPlanoSelecionado(planId)
-    sessionStorage.setItem('cdo_plano_selecionado', planId)
-    try {
-      const url = new URL(window.location.href)
-      url.searchParams.set('plan', planId)
-      window.history.replaceState({}, '', url.toString())
-    } catch (e) {
-      console.error('Erro ao atualizar URL com plano:', e)
-    }
-  }
-
-  // Busca preços reais ativos na montagem e persiste a seleção do usuário
+  // Busca preços reais ativos na montagem
   useEffect(() => {
+    // Pega o parametro 'plan' e 'email' da url se existir
     const params = new URLSearchParams(window.location.search)
     const planParam = params.get('plan')
-    const savedPlan = sessionStorage.getItem('cdo_plano_selecionado')
     const emailParam = params.get('email')
 
+    if (planParam) setPlanoSelecionado(planParam)
     if (emailParam) setEmail(emailParam)
 
     fetch('/api/stripe/planos-publicos')
       .then(r => r.json())
       .then(data => {
-        if (data.planos && data.planos.length > 0) {
+        if (data.planos) {
           setPlanos(data.planos)
-          
-          // Prioridade da escolha do plano:
-          // 1. Se veio na URL (?plan=...)
-          // 2. Se estava salvo no sessionStorage de uma escolha anterior do usuário
-          // 3. Primeiro plano ativo retornado da API
-          let chosenPlan = planParam || savedPlan || data.planos[0].id
-          const existe = data.planos.some((p: any) => p.id === chosenPlan)
-          if (!existe) {
-            chosenPlan = data.planos[0].id
+          if (!planParam && data.planos.length > 0) {
+            setPlanoSelecionado(data.planos[0].id)
           }
-
-          setPlanoSelecionado(chosenPlan)
-          sessionStorage.setItem('cdo_plano_selecionado', chosenPlan)
-
-          // Atualiza a URL para refletir o plano correto sem recarregar a página
-          try {
-            const url = new URL(window.location.href)
-            url.searchParams.set('plan', chosenPlan)
-            window.history.replaceState({}, '', url.toString())
-          } catch (e) {}
         }
       })
       .catch(console.error)
@@ -188,34 +158,17 @@ export default function AssinarPage() {
     if (validarStep1()) {
       setLoadingCheckout(true)
       try {
-        const supabase = createClient()
-        // 1. Tenta autenticar o usuário se ele já criou a conta anteriormente (ex: Lead retornando)
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password: senha
-        })
-
-        if (!authError && authData.user) {
-          setIsLogged(true)
-          setStep(2) // Avança direto para o pagamento
-          return
-        }
-
-        // 2. Se a senha não logou, verifica o status da conta
         const res = await fetch('/api/auth/check-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
         })
         const data = await res.json()
-
-        if (data.existe && data.planoAtivo) {
-          // Só bloqueia se o e-mail JÁ POSSUIR UMA ASSINATURA PAGA ATIVA!
-          setErroCheckout({ msg: 'Este e-mail já possui uma assinatura ativa no sistema. Faça login para acessar.', tipo: 'email_duplicado' })
-          setStep(3)
+        if (data.existe) {
+          setErroCheckout({ msg: 'Este e-mail já possui uma conta cadastrada. Faça login para continuar.', tipo: 'email_duplicado' })
+          setStep(3) // Vai para o step 3 que já tem a UI de login preparada para erros
         } else {
-          // Se for conta nova ou LEAD (sem plano ativo), avança normalmente para o pagamento!
-          setStep(2)
+          setStep(2) // Vai para a escolha do avatar
         }
       } catch (e) {
         setStep(2)
@@ -1084,7 +1037,7 @@ export default function AssinarPage() {
                                 ✨ Mude para o plano Anual e economize R$ {(desconto / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por ano!
                               </p>
                               <button 
-                                onClick={() => selecionarPlano(pAnual.id)}
+                                onClick={() => setPlanoSelecionado(pAnual.id)}
                                 className="w-full py-2 rounded-lg text-xs font-bold text-[#090B10] transition-all hover:brightness-110 hover:scale-[1.01] shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                                 style={{ background: 'linear-gradient(to right, #D4AF37, #F9E596)' }}
                               >

@@ -97,8 +97,8 @@ export default function TestadoresPage() {
       {/* Logo no topo */}
       <header className="absolute top-0 w-full py-4 px-[4%] z-30">
         <Link href="/" className="flex items-center gap-3 no-underline w-fit">
-          <Image src="/logo.png" alt="Contos de Oração Club" width={40} height={40} className="object-contain" />
-          <div className="text-white font-black text-base leading-tight">Contos de Oração Club</div>
+          <Image src="/logo.png" alt="Contos de Oração" width={40} height={40} className="object-contain" />
+          <div className="text-white font-black text-base leading-tight">Contos de Oração</div>
         </Link>
       </header>
 
@@ -122,11 +122,11 @@ export default function TestadoresPage() {
         <div className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)', lineHeight: '1.5' }}>
           {enviado ? (
             <p>
-              Cadastro efetuado com sucesso! Estamos recrutando os últimos voluntários para compor o **grupo fechado de testadores do app Contos de Oração Club** para homologar o aplicativo na Google Play Store.
+              Cadastro efetuado com sucesso! Estamos recrutando os últimos voluntários para compor o **grupo fechado de testadores do app Contos de Oração** para homologar o aplicativo na Google Play Store.
             </p>
           ) : (
             <p>
-              Estamos selecionando voluntários para o **grupo fechado de testadores do app Contos de Oração Club** e homologar nosso aplicativo na Google Play Store. Ajude-nos participando do teste por 20 dias!
+              Estamos selecionando voluntários para o **grupo fechado de testadores do app Contos de Oração** e homologar nosso aplicativo na Google Play Store. Ajude-nos participando do teste por 20 dias!
             </p>
           )}
         </div>

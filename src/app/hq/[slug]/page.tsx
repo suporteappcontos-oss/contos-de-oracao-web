@@ -13,8 +13,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { data: hq } = await supabase.from('hqs').select('titulo').eq('slug', slug).single()
   if (!hq) return { title: 'HQ não encontrada' }
   return {
-    title: `${hq.titulo} | HQ | Contos de Oração Club`,
-    description: `Leia a HQ "${hq.titulo}" na plataforma Contos de Oração Club.`,
+    title: `${hq.titulo} | HQ | Contos de Oração`,
+    description: `Leia a HQ "${hq.titulo}" na plataforma Contos de Oração.`,
   }
 }
 

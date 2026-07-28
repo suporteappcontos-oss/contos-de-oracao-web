@@ -142,7 +142,7 @@ export default function QRLogin() {
       {status === 'waiting' && (
         <>
           <p className="text-white/80 text-xs text-center max-w-[180px] leading-relaxed">
-            Abra o app Contos de Oração Club e escaneie este QR Code
+            Abra o app Contos de Oração e escaneie este QR Code
           </p>
           <span className="text-[#D4AF37] text-xs font-bold font-mono">{minutos}:{segundos}</span>
         </>

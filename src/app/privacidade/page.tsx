@@ -2,7 +2,7 @@ import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 
 export const metadata = {
-  title: "Política de Privacidade — Contos de Oração Club",
+  title: "Política de Privacidade — Contos de Oração",
 };
 
 export default function PrivacidadePage() {

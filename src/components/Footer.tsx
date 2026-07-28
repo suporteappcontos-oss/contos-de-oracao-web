@@ -143,10 +143,10 @@ export default function Footer() {
         {/* Esquerda: Logo + links */}
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Contos de Oração Club" width={38} height={38} className="object-contain opacity-80" />
+            <Image src="/logo.png" alt="Contos de Oração" width={38} height={38} className="object-contain opacity-80" />
             <div>
-              <div className="text-white font-bold text-sm leading-tight">Contos de Oração <span className="text-[#D4AF37]">Club</span></div>
-              <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest">Transformando o Tempo de Tela em Tempo de Fé</div>
+              <div className="text-white font-bold text-sm leading-tight">Contos de Oração</div>
+              <div className="text-[#D4AF37] text-[0.6rem] font-bold uppercase tracking-widest">Transforme Tempo de Tela em Tempo de Fé</div>
             </div>
           </div>
 
@@ -211,7 +211,7 @@ export default function Footer() {
         style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
       >
         <p className="text-slate-400 text-xs">
-          © 2026 Contos de Oração Club Brasil. Todos os direitos reservados.
+          © 2026 Contos de Oração Brasil. Todos os direitos reservados.
         </p>
         <p className="text-slate-400 text-xs">
           Desenvolvido por{' '}

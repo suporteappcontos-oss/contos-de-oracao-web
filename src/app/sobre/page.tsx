@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 
 export const metadata = {
-  title: "Sobre o Contos de Oração Club — Nossa História e Fé",
-  description: "Conheça a história de Alexandre Mendes Fernandes e o propósito do Contos de Oração Club em evangelizar famílias através da arte, animação e tecnologia.",
+  title: "Sobre o Contos de Oração — Nossa História e Fé",
+  description: "Conheça a história de Alexandre Mendes Fernandes e o propósito do Contos de Oração em evangelizar famílias através da arte, animação e tecnologia.",
 };
 
 // Ícones SVG customizados e leves
@@ -137,7 +137,7 @@ export default function SobrePage() {
               </h3>
 
               <p className="text-white/85 text-sm sm:text-base leading-relaxed">
-                Olá! Meu nome é <strong>Alexandre Mendes Fernandes</strong>. Tenho 45 anos, sou professor formado em Ciências Biológicas e o criador do Contos de Oração Club.
+                Olá! Meu nome é <strong>Alexandre Mendes Fernandes</strong>. Tenho 45 anos, sou professor formado em Ciências Biológicas e o criador do Contos de Oração.
               </p>
 
               <p className="text-white/85 text-sm sm:text-base leading-relaxed">
@@ -156,7 +156,7 @@ export default function SobrePage() {
               </div>
 
               <p className="text-white/70 text-xs sm:text-sm leading-relaxed">
-                Aqui no Contos de Oração Club, cuidamos de cada detalhe com respeito ao Magistério da Igreja Católica, trazendo um conteúdo belo, seguro e edficante para pais e filhos.
+                Aqui no Contos de Oração, cuidamos de cada detalhe com respeito ao Magistério da Igreja Católica, trazendo um conteúdo belo, seguro e edficante para pais e filhos.
               </p>
 
             </div>
@@ -241,7 +241,7 @@ export default function SobrePage() {
                 Nossos Canais Oficiais
               </h3>
               <p className="text-white/60 text-xs sm:text-sm mb-6">
-                Acompanhe o Contos de Oração Club nas redes sociais e faça parte da nossa comunidade.
+                Acompanhe o Contos de Oração nas redes sociais e faça parte da nossa comunidade.
               </p>
 
               <div className="space-y-3">

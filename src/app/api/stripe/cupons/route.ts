@@ -65,22 +65,16 @@ export async function POST(request: NextRequest) {
 
   const cupom = await stripe.coupons.create(params)
 
-  // Cria código promocional se informado (Sanitiza removendo símbolos inválidos como @, #, $, etc.)
+  // Cria código promocional se informado
   let promoCodigo = null
   if (codigo) {
-    const codigoLimpo = codigo.trim().replace(/[^a-zA-Z0-9\-_]/g, '').toUpperCase()
-
-    if (!codigoLimpo) {
-      return NextResponse.json({ error: 'O código do cupom deve conter apenas letras ou números (sem símbolos como @ ou #)' }, { status: 400 })
-    }
-
     promoCodigo = await stripe.promotionCodes.create({
       // A versão da API 2026-03-25.dahlia usa promotion.coupon
       promotion: {
         type: 'coupon',
         coupon: cupom.id,
       },
-      code: codigoLimpo,
+      code: codigo.toUpperCase(),
     } as any)
   }
 

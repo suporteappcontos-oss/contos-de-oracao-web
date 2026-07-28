@@ -7,7 +7,7 @@ import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Material Pedagógico | Contos de Oração Club',
+  title: 'Material Pedagógico | Contos de Oração',
   description: 'Materiais pedagógicos exclusivos para download: HQs, Jogos, Desenhos e Livros.',
 }
 

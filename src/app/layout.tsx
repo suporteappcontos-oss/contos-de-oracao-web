@@ -1,20 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import "./globals.css";
 import GlobalLoader from "@/components/GlobalLoader";
 import AuthHashHandler from "@/components/AuthHashHandler";
 import Navbar from "@/components/Navbar";
-import { PostHogProvider } from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
   title: {
-    default: 'Contos de Oração Club — Streaming Católico',
-    template: '%s | Contos de Oração Club',
+    default: 'Contos de Oração — Streaming Católico',
+    template: '%s | Contos de Oração',
   },
   description: 'A maior plataforma de streaming católico do Brasil. Assista orações, novenas, terços, histórias de santos e retiros espirituais onde quiser, quando quiser.',
   keywords: ['orações', 'novenas', 'católico', 'streaming', 'retiro espiritual', 'terço', 'santos', 'fé', 'contos de oração'],
-  authors: [{ name: 'Contos de Oração Club' }],
-  creator: 'Contos de Oração Club',
+  authors: [{ name: 'Contos de Oração' }],
+  creator: 'Contos de Oração',
   metadataBase: new URL('https://contosdeoracao.com.br'),
   alternates: { canonical: '/' },
   manifest: '/manifest.json',
@@ -25,17 +23,17 @@ export const metadata: Metadata = {
     shortcut: '/logo_stripe.png',
   },
   openGraph: {
-    title: 'Contos de Oração Club — Streaming Católico',
+    title: 'Contos de Oração — Streaming Católico',
     description: 'Orações, novenas, terços e histórias de santos. A maior plataforma de espiritualidade católica do Brasil.',
     url: 'https://contosdeoracao.com.br',
-    siteName: 'Contos de Oração Club',
-    images: [{ url: '/logo_stripe.png', width: 512, height: 512, alt: 'Contos de Oração Club' }],
+    siteName: 'Contos de Oração',
+    images: [{ url: '/logo_stripe.png', width: 512, height: 512, alt: 'Contos de Oração' }],
     locale: 'pt_BR',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contos de Oração Club — Streaming Católico',
+    title: 'Contos de Oração — Streaming Católico',
     description: 'Orações, novenas e histórias de santos. Assista onde quiser.',
     images: ['/logo_stripe.png'],
   },
@@ -53,6 +51,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
+
   return (
     <html lang="pt-BR" className="antialiased overflow-x-hidden">
       <head>
@@ -65,7 +64,7 @@ export default async function RootLayout({
                 {
                   "@type": "Organization",
                   "@id": "https://contosdeoracao.com.br/#organization",
-                  "name": "Contos de Oração Club",
+                  "name": "Contos de Oração",
                   "url": "https://contosdeoracao.com.br",
                   "logo": {
                     "@type": "ImageObject",
@@ -76,7 +75,7 @@ export default async function RootLayout({
                   "@type": "WebSite",
                   "@id": "https://contosdeoracao.com.br/#website",
                   "url": "https://contosdeoracao.com.br",
-                  "name": "Contos de Oração Club",
+                  "name": "Contos de Oração",
                   "publisher": {
                     "@id": "https://contosdeoracao.com.br/#organization"
                   },
@@ -92,30 +91,10 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
-        <PostHogProvider>
-          <GlobalLoader />
-          <AuthHashHandler />
-          <Navbar />
-          {children}
-        </PostHogProvider>
-
-        {/* Suporte Automático para Google Ads / Google Analytics (GTag) */}
-        {process.env.NEXT_PUBLIC_GOOGLE_ADS_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics-ads" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}');
-              `}
-            </Script>
-          </>
-        )}
+        <GlobalLoader />
+        <AuthHashHandler />
+        <Navbar />
+        {children}
       </body>
     </html>
   );

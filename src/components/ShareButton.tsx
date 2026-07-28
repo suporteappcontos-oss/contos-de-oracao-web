@@ -8,7 +8,7 @@ export default function ShareButton({ titulo }: { titulo: string }) {
       try {
         await navigator.share({
           title: titulo,
-          text: `Assista "${titulo}" no Contos de Oração Club`,
+          text: `Assista "${titulo}" no Contos de Oração`,
           url: window.location.href,
         })
       } catch (err) {

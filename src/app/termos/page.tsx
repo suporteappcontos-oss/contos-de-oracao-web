@@ -2,7 +2,7 @@ import Footer from "@/components/Footer";
 import DynamicBackground from "@/components/DynamicBackground";
 
 export const metadata = {
-  title: "Termos de Uso — Contos de Oração Club",
+  title: "Termos de Uso — Contos de Oração",
 };
 
 export default function TermosPage() {
@@ -27,12 +27,12 @@ export default function TermosPage() {
             
             <h2 className="text-2xl text-white font-bold mt-8 mb-4">1. Aceitação dos Termos</h2>
             <p className="mb-6 leading-relaxed">
-              Ao acessar e usar a plataforma Contos de Oração Club, você concorda em cumprir estes termos de serviço, todas as leis e regulamentos aplicáveis e concorda que é responsável pelo cumprimento de todas as leis locais aplicáveis.
+              Ao acessar e usar a plataforma Contos de Oração, você concorda em cumprir estes termos de serviço, todas as leis e regulamentos aplicáveis e concorda que é responsável pelo cumprimento de todas as leis locais aplicáveis.
             </p>
 
             <h2 className="text-2xl text-white font-bold mt-8 mb-4">2. Uso de Licença</h2>
             <p className="mb-6 leading-relaxed">
-              É concedida permissão para o acesso temporário aos materiais (vídeos e textos) na plataforma Contos de Oração Club, apenas para visualização transitória pessoal e não comercial. Esta é a concessão de uma licença, não uma transferência de título.
+              É concedida permissão para o acesso temporário aos materiais (vídeos e textos) na plataforma Contos de Oração, apenas para visualização transitória pessoal e não comercial. Esta é a concessão de uma licença, não uma transferência de título.
             </p>
 
             <h2 className="text-2xl text-white font-bold mt-8 mb-4">3. Assinaturas e Pagamentos</h2>
@@ -42,7 +42,7 @@ export default function TermosPage() {
 
             <h2 className="text-2xl text-white font-bold mt-8 mb-4">4. Limitações</h2>
             <p className="mb-6 leading-relaxed">
-              Em nenhum caso o Contos de Oração Club ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro, ou devido a interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais da plataforma.
+              Em nenhum caso o Contos de Oração ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro, ou devido a interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais da plataforma.
             </p>
           </div>
         </div>

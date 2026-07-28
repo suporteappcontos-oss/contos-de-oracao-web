@@ -11,7 +11,7 @@ export function CopyLeadsButton({ emails }: { emails: string[] }) {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    setMensagem(`Olá! Percebemos que você iniciou sua assinatura nos Contos de Oração Club mas não chegou a finalizar. Sabemos que o dia a dia é corrido!\n\nPara te ajudar a dar o primeiro passo e ter acesso imediato a todo o nosso acervo de filmes, pregações e documentários exclusivos, preparamos algo super especial:\n\nUse o cupom promocional abaixo e ganhe desconto na assinatura:\n[CUPOM]\n\nClique no link abaixo para finalizar seu cadastro agora mesmo:\nhttps://www.contosdeoracao.com.br/assinar\n\nTe esperamos do outro lado,\nEquipe Contos de Oração Club`)
+    setMensagem(`Olá! Percebemos que você iniciou sua assinatura nos Contos de Oração mas não chegou a finalizar. Sabemos que o dia a dia é corrido!\n\nPara te ajudar a dar o primeiro passo e ter acesso imediato a todo o nosso acervo de filmes, pregações e documentários exclusivos, preparamos algo super especial:\n\nUse o cupom promocional abaixo e ganhe desconto na assinatura:\n[CUPOM]\n\nClique no link abaixo para finalizar seu cadastro agora mesmo:\nhttps://www.contosdeoracao.com.br/assinar\n\nTe esperamos do outro lado,\nEquipe Contos de Oração`)
   }, [])
 
   // Troca a tag [CUPOM] pelo cupom real que o usuário digitou

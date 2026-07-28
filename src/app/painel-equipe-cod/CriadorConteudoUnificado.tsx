@@ -1278,7 +1278,7 @@ export default function CriadorConteudoUnificado({ temporadasExistentes = [], se
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-12">
               <label className={labelCls}>Título da Revista *</label>
-              <input name="titulo" required placeholder="Ex: Revista Contos de Oração Club - Edição 01" className={inputCls} />
+              <input name="titulo" required placeholder="Ex: Revista Contos de Oração - Edição 01" className={inputCls} />
             </div>
 
             <div className="md:col-span-12">

@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import HeroParticles from "@/components/HeroParticles";
 
 export const metadata = {
-  title: "Planos e Preços — Contos de Oração Club",
+  title: "Planos e Preços — Contos de Oração",
   description: "Escolha o plano ideal e tenha acesso ilimitado a toda a plataforma católica do Brasil. Assine agora e comece a assistir hoje mesmo.",
 };
 

@@ -5,7 +5,7 @@ import { Metadata } from 'next'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
-  title: 'Revistas | Contos de Oração Club',
+  title: 'Revistas | Contos de Oração',
   description: 'Biblioteca de revistas digitais católicas exclusivas para assinantes.',
 }
 
