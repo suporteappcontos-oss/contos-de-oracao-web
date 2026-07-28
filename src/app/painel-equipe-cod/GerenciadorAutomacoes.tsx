@@ -29,6 +29,7 @@ type Automacao = {
   resposta_5: string | null
   video_id: string | null
   link_vendas: string | null
+  texto_botao?: string | null
   ativo: boolean
   criado_em: string
 }
@@ -123,6 +124,7 @@ export default function GerenciadorAutomacoes({
   const [resposta5, setResposta5] = useState('')
   const [videoId, setVideoId] = useState('')
   const [linkVendas, setLinkVendas] = useState('')
+  const [textoBotao, setTextoBotao] = useState('Ver Conteúdo')
   const [erro, setErro] = useState('')
   const [isPending, startTransition] = useTransition()
 
@@ -139,6 +141,7 @@ export default function GerenciadorAutomacoes({
     setResposta5('')
     setVideoId('')
     setLinkVendas('')
+    setTextoBotao('Ver Conteúdo')
     setIsWhatsRedirect(true)
     setWhatsMsgPredefinida('')
     setErro('')
@@ -149,8 +152,6 @@ export default function GerenciadorAutomacoes({
     if (!palavraChave.trim()) { setErro('Palavra-chave é obrigatória.'); return }
     if (!resposta.trim()) { setErro('Resposta é obrigatória.'); return }
     setErro('')
-
-
 
     let finalLink = linkVendas.trim()
     if (isWhatsRedirect) {
@@ -170,6 +171,7 @@ export default function GerenciadorAutomacoes({
     fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
     fd.append('link_vendas', finalLink)
+    fd.append('texto_botao', textoBotao.trim() || 'Ver Conteúdo')
 
     startTransition(async () => {
       const res = await adicionarAutomacaoInstagram(fd)
@@ -187,8 +189,6 @@ export default function GerenciadorAutomacoes({
     if (!palavraChave.trim()) { setErro('Palavra-chave é obrigatória.'); return }
     if (!resposta.trim()) { setErro('Resposta é obrigatória.'); return }
     setErro('')
-
-
 
     let finalLink = linkVendas.trim()
     if (isWhatsRedirect) {
@@ -209,6 +209,7 @@ export default function GerenciadorAutomacoes({
     fd.append('resposta_5', resposta5.trim())
     fd.append('video_id', videoId.trim() || '')
     fd.append('link_vendas', finalLink)
+    fd.append('texto_botao', textoBotao.trim() || 'Ver Conteúdo')
 
     startTransition(async () => {
       const res = await editarAutomacaoInstagram(fd)
@@ -222,7 +223,8 @@ export default function GerenciadorAutomacoes({
           resposta_4: resposta4.trim(),
           resposta_5: resposta5.trim(),
           video_id: videoId.trim() || null,
-          link_vendas: finalLink || null
+          link_vendas: finalLink || null,
+          texto_botao: textoBotao.trim() || 'Ver Conteúdo'
         } : a))
         setModalEdicaoAberto(false)
         resetForm()
@@ -266,6 +268,7 @@ export default function GerenciadorAutomacoes({
     setResposta4(a.resposta_4 ?? '')
     setResposta5(a.resposta_5 ?? '')
     setVideoId(a.video_id ?? '')
+    setTextoBotao(a.texto_botao || 'Ver Conteúdo')
     
     const link = a.link_vendas ?? ''
     if (link.startsWith('https://wa.me/')) {
@@ -524,6 +527,18 @@ export default function GerenciadorAutomacoes({
                     />
                   </div>
                 )}
+
+                <div className="space-y-2 pt-1">
+                  <label className={labelCls}>Texto do Botão no Direct (Ex: Quero meu Presente 🎁)</label>
+                  <input
+                    type="text"
+                    value={textoBotao}
+                    onChange={e => setTextoBotao(e.target.value)}
+                    placeholder="Ex: Ver Conteúdo / Quero meu Presente 🎁"
+                    className={inputCls}
+                  />
+                  <p className="text-white/30 text-[0.65rem]">Texto curto que aparece dentro do botão clicável do Instagram Direct.</p>
+                </div>
               </div>
 
               {/* Respostas com variações */}
@@ -719,6 +734,18 @@ export default function GerenciadorAutomacoes({
                     />
                   </div>
                 )}
+
+                <div className="space-y-2 pt-1">
+                  <label className={labelCls}>Texto do Botão no Direct (Ex: Quero meu Presente 🎁)</label>
+                  <input
+                    type="text"
+                    value={textoBotao}
+                    onChange={e => setTextoBotao(e.target.value)}
+                    placeholder="Ex: Ver Conteúdo / Quero meu Presente 🎁"
+                    className={inputCls}
+                  />
+                  <p className="text-white/30 text-[0.65rem]">Texto curto que aparece dentro do botão clicável do Instagram Direct.</p>
+                </div>
               </div>
 
               {/* Respostas com variações (Edição) */}
