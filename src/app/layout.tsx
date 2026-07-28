@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import GlobalLoader from "@/components/GlobalLoader";
 import AuthHashHandler from "@/components/AuthHashHandler";
 import Navbar from "@/components/Navbar";
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -51,7 +53,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-
   return (
     <html lang="pt-BR" className="antialiased overflow-x-hidden">
       <head>
@@ -91,10 +92,30 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
-        <GlobalLoader />
-        <AuthHashHandler />
-        <Navbar />
-        {children}
+        <PostHogProvider>
+          <GlobalLoader />
+          <AuthHashHandler />
+          <Navbar />
+          {children}
+        </PostHogProvider>
+
+        {/* Suporte Automático para Google Ads / Google Analytics (GTag) */}
+        {process.env.NEXT_PUBLIC_GOOGLE_ADS_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics-ads" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}');
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );
