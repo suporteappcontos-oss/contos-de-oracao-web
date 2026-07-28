@@ -442,7 +442,8 @@ export default function Navbar() {
         {/* Menu Esquerdo (Hambúrguer + "MENU") com visibilidade controlada para evitar layout shift */}
         <button
           onClick={() => setSidebarOpen(true)}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95 animate-fade-in"
+          className="flex items-center gap-1.5 px-1.5 sm:px-3 py-1.5 rounded-xl transition-all duration-300 hover:bg-white/5 active:scale-95 animate-fade-in shrink-0 z-20"
+          aria-label="Abrir Menu"
           style={{
             border: 'none',
             background: 'transparent',
@@ -459,22 +460,22 @@ export default function Navbar() {
             <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
             <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
           </div>
-          <span className="text-xs font-black uppercase tracking-wider select-none text-white/90">
+          <span className="hidden sm:inline text-xs font-black uppercase tracking-wider select-none text-white/90">
             MENU
           </span>
         </button>
 
-        {/* Logo Centro — Layout Horizontal 30% menor (Ícone à Esquerda + Texto à Direita compactos) */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-2.5 z-10 py-1 cursor-pointer" onClick={() => router.push('/')}>
-          {/* 1. Ícone da Logo à Esquerda (36px celular, 38px tablet, 44px PC) */}
-          <div className="w-[36px] h-[36px] sm:w-[38px] sm:h-[38px] md:w-[44px] md:h-[44px] shrink-0 drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]">
+        {/* Logo Centro — Layout Horizontal Ultra-Adaptativo (Zero sobreposição no celular) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2.5 z-10 py-1 cursor-pointer max-w-[65%] sm:max-w-none justify-center" onClick={() => router.push('/')}>
+          {/* 1. Ícone da Logo à Esquerda (30px celular, 38px tablet, 44px PC) */}
+          <div className="w-[30px] h-[30px] sm:w-[38px] sm:h-[38px] md:w-[44px] md:h-[44px] shrink-0 drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]">
             <Image src="/logo.png" alt="Contos de Oração Club" width={44} height={44} className="object-contain w-full h-full" />
           </div>
 
-          {/* 2. Bloco de Texto à Direita (30% menor) */}
-          <div className="text-left flex flex-col justify-center">
+          {/* 2. Bloco de Texto à Direita (Ultra-ajustado para mobile) */}
+          <div className="text-left flex flex-col justify-center min-w-0 shrink">
             {/* Título Compacto: Contos de Oração (Branco) + Club (Dourado) */}
-            <div className="text-white font-black text-xs sm:text-sm md:text-base leading-none tracking-wide"
+            <div className="text-white font-black text-[11px] sm:text-sm md:text-base leading-none tracking-wide whitespace-nowrap"
               style={{ textShadow: '0 2px 8px rgba(0,0,0,0.95)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
@@ -482,8 +483,8 @@ export default function Navbar() {
             {/* Linha Divisória Dourada com Brilho (Glow Flare) */}
             <div className="w-full h-[1px] my-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-90 shadow-[0_0_5px_#D4AF37]" />
 
-            {/* Subtítulo Dourado Compacto em Caixa Alta com quebra de linha apenas em Celulares/Tablets */}
-            <div className="text-[#D4AF37] text-[0.45rem] sm:text-[0.52rem] md:text-[0.55rem] font-black uppercase tracking-widest leading-tight text-center md:text-left"
+            {/* Subtítulo Dourado Compacto em Caixa Alta */}
+            <div className="text-[#D4AF37] text-[0.38rem] sm:text-[0.5rem] md:text-[0.55rem] font-black uppercase tracking-widest leading-tight text-center md:text-left whitespace-nowrap"
               style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
               <span className="block md:inline">Transformando o Tempo de Tela</span>{' '}
               <span className="block md:inline">em Tempo de Fé.</span>
