@@ -199,6 +199,7 @@ export default async function VideoPlayerPage({ params }: Props) {
   // Filtro final estrito para eliminar qualquer card de capa da temporada
   relacionados = relacionados.filter(v => !isPlaceholder(v)).slice(0, 6)
 
+  const nome = user.user_metadata?.nome || user.email?.split('@')[0] || 'Assinante'
   const libraryId = video.bunny_library_id || process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID || process.env.BUNNY_LIBRARY_ID || '642831'
   let embedUrl = `https://iframe.mediadelivery.net/embed/${libraryId}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br&t=0`
   
