@@ -43,6 +43,7 @@
     "postcss": "^8.5.10",
     "websocket-driver": "^0.7.5",
     "brace-expansion": "^2.0.1",
-    "protobufjs": "^7.5.1"
+    "protobufjs": "^7.5.1",
+    "sharp": "^0.33.5"
   }
 }
