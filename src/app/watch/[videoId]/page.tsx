@@ -201,17 +201,7 @@ export default async function VideoPlayerPage({ params }: Props) {
 
   const nome = user.user_metadata?.nome || user.email?.split('@')[0] || 'Assinante'
   const libraryId = video.bunny_library_id || process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID || process.env.BUNNY_LIBRARY_ID || '642831'
-  let embedUrl = `https://iframe.mediadelivery.net/embed/${libraryId}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br&t=0`
-  
-  // Autenticação por Token (Protege e faz rodar no APK)
-  const securityKey = process.env.BUNNY_STREAM_TOKEN_KEY || process.env.NEXT_PUBLIC_BUNNY_STREAM_TOKEN_KEY || '278a7d66-fd8d-4a1d-b88e-6f2a7094a06c'
-  if (securityKey) {
-    // eslint-disable-next-line react-hooks/purity
-    const expires = Math.floor(Date.now() / 1000) + (3600 * 6) // Expira em 6 horas
-    const hashString = securityKey + video.bunny_video_id + expires
-    const token = crypto.createHash('sha256').update(hashString).digest('hex')
-    embedUrl += `&token=${token}&expires=${expires}`
-  }
+  const embedUrl = `https://iframe.mediadelivery.net/embed/${libraryId}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br&t=0`
 
   const FALLBACK = [
     'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=400&q=70',
