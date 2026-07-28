@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import GlobalLoader from "@/components/GlobalLoader";
 import AuthHashHandler from "@/components/AuthHashHandler";
 import Navbar from "@/components/Navbar";
+import PostHogProvider from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -50,7 +52,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
+  const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
 
   return (
     <html lang="pt-BR" className="antialiased overflow-x-hidden">
@@ -89,12 +91,32 @@ export default async function RootLayout({
             })
           }}
         />
+
+        {/* Google Ads / GTag Tag (Ativa automaticamente quando preenchida no Vercel/.env.local) */}
+        {googleAdsId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-ads-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAdsId}');
+              `}
+            </Script>
+          </>
+        )}
       </head>
       <body className="min-h-full flex flex-col scroll-smooth relative overflow-x-hidden" style={{ background: '#090B10' }}>
-        <GlobalLoader />
-        <AuthHashHandler />
-        <Navbar />
-        {children}
+        <PostHogProvider>
+          <GlobalLoader />
+          <AuthHashHandler />
+          <Navbar />
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );
