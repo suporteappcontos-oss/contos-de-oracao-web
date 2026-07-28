@@ -449,6 +449,7 @@ export default function VideoPlayerGuard({ videoId, embedUrl, proximoVideo, emBr
           src={embedUrl}
           className="absolute inset-0 w-full h-full border-none"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
+          referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen
         />
 
