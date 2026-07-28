@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
           line_items: [{ price: priceId, quantity: 1 }],
           metadata: { nome, email, plano },
           subscription_data: {
+            trial_period_days: 7,
             metadata: { nome, email, plano },
           },
           success_url: `${siteUrl}/sucesso`,

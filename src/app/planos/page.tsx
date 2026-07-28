@@ -59,7 +59,7 @@ export default function PlanosPage() {
                 position: 'relative'
               }}
             >
-              ✦ Assine e comece hoje
+              ✦ 7 Dias de Teste Grátis • Cancele quando quiser
             </p>
             <h1
               style={{

@@ -332,12 +332,15 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 href={`/assinar?plan=${precoExibido.id}`}
                 className={`flex items-center justify-center w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-95 ${
                   plano.destaque
-                    ? 'bg-[#D4AF37] text-black shadow-[0_5px_20px_rgba(212,175,55,0.3)] hover:brightness-110'
+                    ? 'bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-black shadow-[0_5px_20px_rgba(212,175,55,0.3)] hover:brightness-110'
                     : 'bg-white/10 text-white border border-white/10 hover:bg-white/20'
                 }`}
               >
-                Assinar Agora →
+                ✦ Testar 7 Dias Grátis →
               </a>
+              <p className="text-white/40 text-[0.65rem] text-center mt-2.5 font-medium">
+                🔒 R$ 0,00 cobrados hoje • Cobrança automática só após 7 dias
+              </p>
             </div>
           );
         })}
