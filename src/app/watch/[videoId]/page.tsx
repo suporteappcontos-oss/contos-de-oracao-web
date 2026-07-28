@@ -204,7 +204,7 @@ export default async function VideoPlayerPage({ params }: Props) {
   let embedUrl = `https://iframe.mediadelivery.net/embed/${libraryId}/${video.bunny_video_id}?autoplay=true&responsive=true&preload=true&background=000000&lang=pt-br&t=0`
   
   // Autenticação por Token (Protege e faz rodar no APK)
-  const securityKey = process.env.BUNNY_STREAM_TOKEN_KEY
+  const securityKey = process.env.BUNNY_STREAM_TOKEN_KEY || process.env.NEXT_PUBLIC_BUNNY_STREAM_TOKEN_KEY || '278a7d66-fd8d-4a1d-b88e-6f2a7094a06c'
   if (securityKey) {
     // eslint-disable-next-line react-hooks/purity
     const expires = Math.floor(Date.now() / 1000) + (3600 * 6) // Expira em 6 horas
