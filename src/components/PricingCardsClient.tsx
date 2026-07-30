@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Monitor, Check } from 'lucide-react';
+import { Monitor, Check, Sparkles } from 'lucide-react';
 
 type PriceInfo = { id: string; valor: number };
 
@@ -19,16 +19,13 @@ type ProdutoInfo = {
   destaque: boolean;
 };
 
-// Remove itens duplicados e filtra "perfis de usuário" e menções a "telas"
 function filtrarBeneficios(lista: string[]): string[] {
   const vistos = new Set<string>();
   return lista
     .map(b => b.replace('⭐', '').trim())
     .filter(b => {
       const chave = b.toLowerCase();
-      // remove menções a perfis de usuário (confunde clientes)
       if (chave.includes('perfis de usu')) return false;
-      // remove menções redundantes a telas simultâneas
       if (chave.includes('tela') || chave.includes('telas')) return false;
       if (vistos.has(chave)) return false;
       vistos.add(chave);
@@ -36,7 +33,7 @@ function filtrarBeneficios(lista: string[]): string[] {
     });
 }
 
-const ParticlesBanner = ({ destaque }: { destaque: boolean }) => {
+const ParticlesBanner = () => {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -49,32 +46,26 @@ const ParticlesBanner = ({ destaque }: { destaque: boolean }) => {
     { left: '85%', delay: '0.7s', duration: '2.6s', size: 2 },
   ];
 
-  const color = destaque ? '#D4AF37' : 'rgba(255,255,255,0.3)';
-
   return (
-    <div className="absolute top-0 left-0 w-full h-16 overflow-hidden rounded-t-[22px] pointer-events-none">
+    <div className="absolute top-0 left-0 w-full h-16 overflow-hidden rounded-t-[28px] pointer-events-none">
       <div
         style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
-          background: destaque
-            ? 'linear-gradient(90deg, transparent, #D4AF37, transparent)'
-            : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
+          position: 'absolute', top: 0, left: 0, right: 0, height: '1.5px',
+          background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
         }}
       />
       <div
         style={{
           position: 'absolute', top: '-20px', left: '50%', transform: 'translateX(-50%)',
           width: '80%', height: '60px', borderRadius: '50%',
-          background: destaque
-            ? 'radial-gradient(ellipse, rgba(212,175,55,0.12) 0%, transparent 70%)'
-            : 'radial-gradient(ellipse, rgba(255,255,255,0.04) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgba(212,175,55,0.15) 0%, transparent 70%)',
         }}
       />
       {mounted && particles.map((p, i) => (
         <div key={i} style={{
           position: 'absolute', left: p.left, bottom: '4px',
           width: `${p.size}px`, height: `${p.size}px`, borderRadius: '50%',
-          background: color, opacity: 0,
+          background: '#D4AF37', opacity: 0,
           animation: `floatUp ${p.duration} ${p.delay} infinite ease-in`,
         }} />
       ))}
@@ -114,107 +105,102 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
   });
 
   const opcoesCiclo = ([
-    { id: 'mensal'    as Ciclo, show: temPlanoMensal,    label: 'Mensal',    badge: null },
-    { id: 'semestral' as Ciclo, show: temPlanoSemestral, label: 'Semestral', badge: '+ Econômico' },
-    { id: 'anual'     as Ciclo, show: temPlanoAnual,     label: 'Anual',     badge: '🏆 Melhor Valor' },
+    { id: 'mensal'    as Ciclo, show: temPlanoMensal,    label: 'Mensal',    tag: null },
+    { id: 'semestral' as Ciclo, show: temPlanoSemestral, label: 'Semestral', tag: 'Flex' },
+    { id: 'anual'     as Ciclo, show: temPlanoAnual,     label: 'Anual',     tag: 'Melhor Valor' },
   ]).filter(c => c.show);
 
   const temMultiplosCiclos = opcoesCiclo.length > 1;
 
   return (
     <>
-      {/* ── Seletor de ciclo ── */}
+      {/* ── Seletor de Ciclo (Toggle Mensal vs Anual) ── */}
       {temMultiplosCiclos && (
         <div className="flex justify-center mb-10 px-4 w-full">
           <style dangerouslySetInnerHTML={{__html: `
-            .glass-radio-group {
-              --bg: rgba(255, 255, 255, 0.06);
-              --text: rgba(255, 255, 255, 0.5);
-              display: flex;
+            .cycle-toggle-container {
               position: relative;
-              background: var(--bg);
-              border-radius: 1.25rem;
-              backdrop-filter: blur(12px);
-              box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.1), inset -1px -1px 6px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3);
-              width: 100%;
-              max-width: 400px;
-              margin: 0 auto;
-            }
-            .glass-radio-group input {
-              display: none;
-            }
-            .glass-radio-group label {
-              flex: 1;
               display: flex;
-              flex-direction: column;
               align-items: center;
-              justify-content: center;
-              min-height: 64px;
-              font-size: 16px;
-              cursor: pointer;
-              font-weight: 900;
-              letter-spacing: 0.3px;
-              color: var(--text);
+              background: rgba(15, 21, 34, 0.85);
+              border: 1px solid rgba(212, 175, 55, 0.3);
+              border-radius: 1rem;
+              padding: 5px;
+              width: 100%;
+              max-width: 380px;
+              margin: 0 auto;
+              backdrop-filter: blur(12px);
+              box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+            }
+            .cycle-toggle-btn {
+              flex: 1;
               position: relative;
               z-index: 2;
-              transition: color 0.3s ease-in-out;
-              padding-bottom: 12px; /* Espaço para o badge não empurrar o texto */
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 6px;
+              height: 46px;
+              border: none;
+              background: transparent;
+              cursor: pointer;
+              font-family: 'Outfit', sans-serif;
+              font-size: 0.88rem;
+              font-weight: 800;
+              letter-spacing: 0.05em;
+              text-transform: uppercase;
+              color: rgba(255, 255, 255, 0.6);
+              transition: color 0.3s ease;
             }
-            .glass-radio-group label span.label-text {
-              margin-top: 12px; /* Empurra levemente para o centro visual */
+            .cycle-toggle-btn:hover {
+              color: #ffffff;
             }
-            .glass-radio-group label:hover {
-              color: white;
+            .cycle-toggle-btn.active {
+              color: #0A0C12;
             }
-            .glass-radio-group input:checked + label {
-              color: #000;
-            }
-            .glass-glider {
+            .cycle-glider {
               position: absolute;
-              top: 0;
-              bottom: 0;
-              border-radius: 1.25rem;
+              top: 5px;
+              bottom: 5px;
+              border-radius: 0.75rem;
               z-index: 1;
               background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
-              box-shadow: 0 0 18px rgba(212,175,55,0.4), 0 0 10px rgba(255,235,150,0.2) inset;
-              transition: transform 0.5s cubic-bezier(0.37, 1.95, 0.66, 0.56);
+              box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+              transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
-            .badge-unselected {
-              background: #22c55e;
-              color: #fff;
-              position: absolute;
-              bottom: 6px;
-            }
-            .glass-radio-group input:checked + label .badge-unselected {
-              background: rgba(0,0,0,0.25) !important;
-              color: #000 !important;
+            .tag-[#anual] {
+              font-size: 0.6rem;
+              font-weight: 900;
+              padding: 2px 6px;
+              border-radius: 6px;
+              letter-spacing: 0.03em;
             }
           `}} />
-          <div className="glass-radio-group">
-            {opcoesCiclo.map(({ id, label, badge }) => (
-              <React.Fragment key={id}>
-                <input
-                  type="radio"
-                  name="plan_cycle"
-                  id={`cycle-${id}`}
-                  checked={ciclo === id}
-                  onChange={() => setCiclo(id)}
-                />
-                <label htmlFor={`cycle-${id}`}>
-                  <span className="label-text">{label}</span>
-                  {badge && (
-                    <span className="badge-unselected text-[0.6rem] font-black px-2 py-0.5 rounded-full tracking-wider whitespace-nowrap transition-colors">
-                      {badge}
-                    </span>
-                  )}
-                </label>
-              </React.Fragment>
+
+          <div className="cycle-toggle-container">
+            {opcoesCiclo.map(({ id, label, tag }) => (
+              <button
+                key={id}
+                onClick={() => setCiclo(id)}
+                className={`cycle-toggle-btn ${ciclo === id ? 'active' : ''}`}
+              >
+                <span>{label}</span>
+                {tag && (
+                  <span className={`text-[0.6rem] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
+                    ciclo === id
+                      ? 'bg-black/20 text-[#0A0C12]'
+                      : 'bg-[#D4AF37]/20 text-[#D4AF37]'
+                  }`}>
+                    {tag}
+                  </span>
+                )}
+              </button>
             ))}
-            
-            <div 
-              className="glass-glider"
+
+            <div
+              className="cycle-glider"
               style={{
-                width: `${100 / opcoesCiclo.length}%`,
+                width: `calc((100% - 10px) / ${opcoesCiclo.length})`,
                 transform: `translateX(${opcoesCiclo.findIndex(c => c.id === ciclo) * 100}%)`
               }}
             />
@@ -222,8 +208,8 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
         </div>
       )}
 
-      {/* ── Cards ── */}
-      <div className={`grid grid-cols-1 ${produtosOrdenados.length === 1 ? 'max-w-[450px]' : 'md:grid-cols-2 max-w-4xl'} gap-8 w-full mx-auto`}>
+      {/* ── Card do Plano (Design VIP) ── */}
+      <div className={`grid grid-cols-1 ${produtosOrdenados.length === 1 ? 'max-w-[480px]' : 'md:grid-cols-2 max-w-4xl'} gap-8 w-full mx-auto`}>
         {produtosOrdenados.map((plano) => {
           let precoExibido: PriceInfo | null = null;
           if (ciclo === 'anual'     && plano.priceAnual)     precoExibido = plano.priceAnual;
@@ -243,102 +229,93 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
           return (
             <div
               key={plano.id}
-              className={`relative flex flex-col pt-12 px-8 pb-8 rounded-[24px] w-full transition-all duration-300 border-2 hover:-translate-y-1 ${
-                plano.destaque
-                  ? 'bg-gradient-to-b from-[#1a1a2e] to-[#0f1423] border-[#D4AF37] shadow-[0_15px_50px_rgba(212,175,55,0.15)] scale-[1.02] z-10'
-                  : 'bg-[#111827] border-white/5 hover:border-white/20'
-              }`}
+              className="relative flex flex-col pt-10 px-6 sm:px-9 pb-9 rounded-[28px] w-full transition-all duration-300 bg-gradient-to-b from-[#121828] via-[#0d121f] to-[#080b13] border-2 border-[#D4AF37]/60 shadow-[0_20px_60px_rgba(212,175,55,0.2)] hover:-translate-y-1 z-10"
             >
-              <ParticlesBanner destaque={plano.destaque} />
+              <ParticlesBanner />
 
-              {plano.badge && (
-                <div
-                  className="absolute -top-[14px] left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[0.75rem] font-bold tracking-[1px] uppercase whitespace-nowrap shadow-md"
-                  style={{ background: '#22c55e', color: '#fff' }}
-                >
-                  ✦ {plano.badge}
-                </div>
-              )}
-
-              {/* Nome e descrição */}
+              {/* Nome e Descrição */}
               <div className="text-left mb-6">
-                <h3 className={`text-2xl font-extrabold mb-1 ${plano.cor}`}>{plano.nome}</h3>
-                <p className="text-white/40 text-sm leading-relaxed">{plano.descricao}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-2xl sm:text-3xl font-black text-[#D4AF37] tracking-tight">
+                    Plano Contos de Oração <span className="text-white">Club</span>
+                  </h3>
+                </div>
+                <p className="text-white/60 text-xs sm:text-sm leading-relaxed">
+                  Acesso completo e ilimitado a filmes, histórias de santos, novenas e desenhos infantis católicos.
+                </p>
               </div>
 
-              {/* Preço (Psicologia dos números: valor mensal proporcional em destaque grande e valor total em fonte menor) */}
-              <div className="text-left mb-6">
+              {/* Exibição de Preço */}
+              <div className="text-left mb-6 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5">
                 {equivalenteMensal ? (
                   <>
                     <div className="flex items-baseline gap-1 flex-wrap">
-                      <span className="text-xl font-black text-[#D4AF37]">R$</span>
-                      <span className="text-5xl font-black text-white tracking-tight">
+                      <span className="text-lg font-black text-[#D4AF37]">R$</span>
+                      <span className="text-4xl sm:text-5xl font-black text-white tracking-tight">
                         {equivalenteMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
-                      <span className="text-[#D4AF37] text-lg font-bold">/mês</span>
+                      <span className="text-[#D4AF37] text-base sm:text-lg font-bold">/mês</span>
                     </div>
-                    <div className="text-white/50 text-sm font-semibold mt-1.5 flex items-center gap-1.5 flex-wrap">
+                    <div className="text-white/60 text-xs sm:text-sm font-medium mt-1.5 flex items-center gap-1.5 flex-wrap">
                       <span>R$ {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/{labelPeriodo}</span>
-                      <span className="text-xs text-white/35 font-normal">
-                        ({ciclo === 'anual' ? 'cobrado anualmente' : 'cobrado semestralmente'})
+                      <span className="text-[#00e676] text-xs font-bold bg-[#00e676]/10 px-2 py-0.5 rounded border border-[#00e676]/20">
+                        Economize 35%
                       </span>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="flex items-baseline gap-0.5 flex-wrap">
-                      <span className="text-xl font-black text-white">R$</span>
-                      <span className="text-5xl font-black text-white tracking-tight">
+                    <div className="flex items-baseline gap-1 flex-wrap">
+                      <span className="text-lg font-black text-[#D4AF37]">R$</span>
+                      <span className="text-4xl sm:text-5xl font-black text-white tracking-tight">
                         {precoExibido.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
-                      <span className="text-white/40 text-base font-medium">/{labelPeriodo}</span>
+                      <span className="text-white/60 text-base font-medium">/{labelPeriodo}</span>
                     </div>
                     {plano.priceAnual && (
-                      <div className="text-[#D4AF37] text-xs font-bold mt-2">
-                        💡 No plano anual sai por apenas R$ {(plano.priceAnual.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês
+                      <div className="text-[#D4AF37] text-xs font-bold mt-1.5 flex items-center gap-1">
+                        <Sparkles size={12} />
+                        No plano Anual você economiza 35% (apenas R$ {(plano.priceAnual.valor / 12).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês)
                       </div>
                     )}
                   </>
                 )}
               </div>
 
-              {/* Telas simultâneas em destaque */}
+              {/* Telas simultâneas */}
               <div className="flex items-center gap-2 mb-6">
                 <div
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl w-full"
-                  style={{ background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)' }}
+                  className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30"
                 >
-                  <Monitor size={16} style={{ color: '#D4AF37' }} />
-                  <span className="text-sm font-black uppercase tracking-wider" style={{ color: '#D4AF37' }}>
-                    {plano.maxTelas} tela{plano.maxTelas > 1 ? 's' : ''} simult{plano.maxTelas > 1 ? 'âneas' : 'ânea'}
+                  <Monitor size={18} className="text-[#D4AF37]" />
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#D4AF37]">
+                    5 Telas Simultâneas na Mesma Conta
                   </span>
                 </div>
               </div>
 
-              {/* Benefícios — todos visíveis, sem accordion */}
+              {/* Lista de Benefícios */}
               <div className="text-left mb-8 flex-1">
                 <ul className="space-y-3">
                   {beneficiosFiltrados.map((b, i) => (
-                    <li key={i} className="flex items-start gap-3 text-white/85 text-[0.9rem] leading-snug">
-                      <Check size={17} className="text-[#D4AF37] shrink-0 mt-0.5" />
+                    <li key={i} className="flex items-start gap-3 text-white/90 text-xs sm:text-sm leading-snug">
+                      <div className="w-5 h-5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check size={12} className="text-[#D4AF37]" />
+                      </div>
                       <span>{b}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* CTA */}
+              {/* Botão CTA Assinar */}
               <a
                 href={`/assinar?plan=${precoExibido.id}`}
-                className={`flex items-center justify-center w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all active:scale-95 ${
-                  plano.destaque
-                    ? 'bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-black shadow-[0_5px_20px_rgba(212,175,55,0.3)] hover:brightness-110'
-                    : 'bg-white/10 text-white border border-white/10 hover:bg-white/20'
-                }`}
+                className="flex items-center justify-center w-full py-4 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider bg-gradient-to-r from-[#FFD700] via-[#D4AF37] to-[#B8860B] text-[#0A0C12] shadow-[0_8px_25px_rgba(212,175,55,0.35)] hover:brightness-110 active:scale-95 transition-all cursor-pointer"
               >
                 ✦ Testar 7 Dias Grátis →
               </a>
-              <p className="text-white/40 text-[0.65rem] text-center mt-2.5 font-medium">
+              <p className="text-white/50 text-[0.68rem] text-center mt-3 font-medium">
                 🔒 R$ 0,00 cobrados hoje • Cobrança automática só após 7 dias
               </p>
             </div>
