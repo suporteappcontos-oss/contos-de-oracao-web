@@ -464,17 +464,28 @@ export default function Navbar() {
           </span>
         </button>
 
-        {/* Logo Centro — Posicionado de forma absoluta no centro físico da barra de navegação para evitar qualquer oscilação ou deslocamento quando o botão do menu é acionado */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 sm:gap-3.5 z-10">
-          <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(0,0,0,0.6)] border border-white/15">
-            <Image src="/logo.png" alt="Contos de Oração" width={52} height={52} className="object-cover w-full h-full" />
+        {/* Logo Centro — Auto-adaptável em celulares e desktop */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 min-[380px]:gap-2 sm:gap-3.5 z-10 max-w-[65vw] sm:max-w-none">
+          <div className="w-8 h-8 min-[380px]:w-9 min-[380px]:h-9 sm:w-12 sm:h-12 md:w-13 md:h-13 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(0,0,0,0.6)] border border-white/15">
+            <Image src="/logo.png" alt="Contos de Oração Club" width={52} height={52} className="object-cover w-full h-full" />
           </div>
-          <div className="text-left hidden sm:block">
-            <div className="text-white font-black text-base sm:text-xl md:text-2xl leading-none tracking-wide border-b border-[#D4AF37]/50 pb-1"
+          <div className="text-left flex flex-col justify-center shrink-0">
+            <div className="text-white font-black text-[0.7rem] min-[380px]:text-[0.82rem] sm:text-xl md:text-2xl leading-none tracking-wide"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
-            <div className="text-[#D4AF37] text-[0.55rem] sm:text-[0.65rem] md:text-[0.68rem] font-black uppercase tracking-widest leading-none mt-1"
+
+            {/* Linha Reluzente Dourada com Brilho (Golden Flare Line) */}
+            <div className="relative w-full h-[3px] flex items-center justify-center my-0.5 sm:my-1">
+              {/* Glow exterior de fundo */}
+              <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-90 blur-[1px]" />
+              {/* Núcleo de luz dourada intensa */}
+              <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_8px_#FFD700,0_0_4px_#FFA500]" />
+              {/* Linha base */}
+              <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+            </div>
+
+            <div className="text-[#D4AF37] text-[0.36rem] min-[380px]:text-[0.45rem] sm:text-[0.65rem] md:text-[0.68rem] font-black uppercase tracking-widest leading-none whitespace-nowrap"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
               TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
             </div>
@@ -614,11 +625,19 @@ export default function Navbar() {
         {/* Logo dentro da sidebar */}
         <div className="flex items-center gap-3 px-5 pt-6 pb-4 pr-12">
           <Image src="/logo.png" alt="Contos de Oração Club" width={40} height={40} className="object-contain drop-shadow-lg" />
-          <div>
-            <div className="text-white font-black text-base leading-none border-b border-[#D4AF37]/50 pb-1">
+          <div className="flex flex-col justify-center">
+            <div className="text-white font-black text-base leading-none">
               Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
-            <div className="text-[#D4AF37] text-[0.52rem] font-bold uppercase tracking-widest leading-snug mt-1">
+
+            {/* Linha Reluzente Dourada com Brilho (Golden Flare Line) */}
+            <div className="relative w-full h-[3px] flex items-center justify-center my-1">
+              <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-80 blur-[1px]" />
+              <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_10px_#FFD700,0_0_4px_#FFA500]" />
+              <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+            </div>
+
+            <div className="text-[#D4AF37] text-[0.48rem] font-bold uppercase tracking-widest leading-none">
               TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
             </div>
           </div>

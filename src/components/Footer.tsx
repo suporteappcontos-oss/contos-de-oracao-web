@@ -144,11 +144,19 @@ export default function Footer() {
         <div className="flex flex-col gap-5">
           <div className="flex items-center gap-3">
             <Image src="/logo.png" alt="Contos de Oração Club" width={38} height={38} className="object-contain opacity-90" />
-            <div>
-              <div className="text-white font-black text-sm leading-none border-b border-[#D4AF37]/50 pb-1">
+            <div className="flex flex-col justify-center">
+              <div className="text-white font-black text-sm leading-none">
                 Contos de Oração <span className="text-[#D4AF37]">Club</span>
               </div>
-              <div className="text-[#D4AF37] text-[0.55rem] font-bold uppercase tracking-widest leading-none mt-1">
+
+              {/* Linha Reluzente Dourada com Brilho (Golden Flare Line) */}
+              <div className="relative w-full h-[3px] flex items-center justify-center my-1">
+                <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-80 blur-[1px]" />
+                <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_10px_#FFD700,0_0_4px_#FFA500]" />
+                <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+              </div>
+
+              <div className="text-[#D4AF37] text-[0.52rem] font-bold uppercase tracking-widest leading-none">
                 TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
               </div>
             </div>
