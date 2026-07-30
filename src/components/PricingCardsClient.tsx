@@ -125,9 +125,9 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               background: rgba(15, 21, 34, 0.85);
               border: 1px solid rgba(212, 175, 55, 0.3);
               border-radius: 1rem;
-              padding: 5px;
+              padding: 4px;
               width: 100%;
-              max-width: 380px;
+              max-width: 360px;
               margin: 0 auto;
               backdrop-filter: blur(12px);
               box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
@@ -139,18 +139,17 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               display: flex;
               align-items: center;
               justify-content: center;
-              gap: 6px;
-              height: 46px;
+              gap: 5px;
+              height: 44px;
               border: none;
               background: transparent;
               cursor: pointer;
               font-family: 'Outfit', sans-serif;
-              font-size: 0.88rem;
-              font-weight: 800;
-              letter-spacing: 0.05em;
+              letter-spacing: 0.03em;
               text-transform: uppercase;
               color: rgba(255, 255, 255, 0.6);
               transition: color 0.3s ease;
+              padding: 0 8px;
             }
             .cycle-toggle-btn:hover {
               color: #ffffff;
@@ -160,20 +159,13 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
             }
             .cycle-glider {
               position: absolute;
-              top: 5px;
-              bottom: 5px;
+              top: 4px;
+              bottom: 4px;
               border-radius: 0.75rem;
               z-index: 1;
               background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
               box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
               transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            }
-            .tag-[#anual] {
-              font-size: 0.6rem;
-              font-weight: 900;
-              padding: 2px 6px;
-              border-radius: 6px;
-              letter-spacing: 0.03em;
             }
           `}} />
 
@@ -184,13 +176,9 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 onClick={() => setCiclo(id)}
                 className={`cycle-toggle-btn ${ciclo === id ? 'active' : ''}`}
               >
-                <span>{label}</span>
+                <span className="text-[0.75rem] sm:text-sm font-black">{label}</span>
                 {tag && (
-                  <span className={`text-[0.6rem] font-extrabold px-1.5 py-0.5 rounded-md transition-colors ${
-                    ciclo === id
-                      ? 'bg-black/20 text-[#0A0C12]'
-                      : 'bg-[#D4AF37]/20 text-[#D4AF37]'
-                  }`}>
+                  <span className="bg-[#00e676]/15 text-[#00e676] border border-[#00e676]/30 text-[0.55rem] sm:text-[0.62rem] font-black uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-md shadow-sm shrink-0 whitespace-nowrap">
                     {tag}
                   </span>
                 )}
