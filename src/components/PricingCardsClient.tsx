@@ -178,7 +178,11 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               >
                 <span className="text-[0.75rem] sm:text-sm font-black">{label}</span>
                 {tag && (
-                  <span className="bg-[#00e676]/15 text-[#00e676] border border-[#00e676]/30 text-[0.55rem] sm:text-[0.62rem] font-black uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-md shadow-sm shrink-0 whitespace-nowrap">
+                  <span className={`text-[0.55rem] sm:text-[0.62rem] font-black uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-md shadow-sm shrink-0 whitespace-nowrap transition-colors ${
+                    ciclo === id
+                      ? 'bg-[#062413] text-[#00e676] border border-[#00e676]/60 shadow-md'
+                      : 'bg-[#00e676]/15 text-[#00e676] border border-[#00e676]/30'
+                  }`}>
                     {tag}
                   </span>
                 )}

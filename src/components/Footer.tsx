@@ -27,8 +27,8 @@ export default function Footer() {
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes linePulseExpand {
           0%, 100% {
-            transform: scaleX(0.2);
-            opacity: 0.3;
+            transform: scaleX(0.35);
+            opacity: 0.35;
           }
           50% {
             transform: scaleX(1);
@@ -164,7 +164,7 @@ export default function Footer() {
                 <div
                   className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-90 blur-[1px]"
                   style={{
-                    animation: 'linePulseExpand 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                    animation: 'linePulseExpand 5.5s ease-in-out infinite',
                     transformOrigin: 'center'
                   }}
                 />
@@ -172,7 +172,7 @@ export default function Footer() {
                 <div
                   className="absolute w-full h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_12px_#FFD700,0_0_5px_#FFA500]"
                   style={{
-                    animation: 'linePulseExpand 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                    animation: 'linePulseExpand 5.5s ease-in-out infinite',
                     transformOrigin: 'center'
                   }}
                 />
