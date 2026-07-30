@@ -470,13 +470,13 @@ export default function Navbar() {
             <Image src="/logo.png" alt="Contos de Oração" width={52} height={52} className="object-cover w-full h-full" />
           </div>
           <div className="text-left hidden sm:block">
-            <div className="text-white font-black text-base sm:text-xl md:text-2xl leading-tight tracking-wide"
+            <div className="text-white font-black text-base sm:text-xl md:text-2xl leading-none tracking-wide border-b border-[#D4AF37]/50 pb-1"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
-              Contos de Oração Club
+              Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
-            <div className="text-[#D4AF37] text-[0.55rem] sm:text-[0.65rem] md:text-[0.7rem] font-black uppercase tracking-widest leading-none mt-1"
+            <div className="text-[#D4AF37] text-[0.55rem] sm:text-[0.65rem] md:text-[0.68rem] font-black uppercase tracking-widest leading-none mt-1"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-              Transforme Tempo de Tela em Tempo de Fé
+              TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
             </div>
           </div>
         </div>
@@ -615,7 +615,12 @@ export default function Navbar() {
         <div className="flex items-center gap-3 px-5 pt-6 pb-4 pr-12">
           <Image src="/logo.png" alt="Contos de Oração Club" width={40} height={40} className="object-contain drop-shadow-lg" />
           <div>
-            <div className="text-white font-black text-base leading-tight">Contos de Oração Club</div>
+            <div className="text-white font-black text-base leading-none border-b border-[#D4AF37]/50 pb-1">
+              Contos de Oração <span className="text-[#D4AF37]">Club</span>
+            </div>
+            <div className="text-[#D4AF37] text-[0.52rem] font-bold uppercase tracking-widest leading-snug mt-1">
+              TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
+            </div>
           </div>
         </div>
 
