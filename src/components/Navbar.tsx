@@ -459,18 +459,18 @@ export default function Navbar() {
             <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
             <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
           </div>
-          <span className="text-xs font-black uppercase tracking-wider select-none text-white/90">
+          <span className="hidden sm:inline text-xs font-black uppercase tracking-wider select-none text-white/90">
             MENU
           </span>
         </button>
 
         {/* Logo Centro — Auto-adaptável em celulares e desktop */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 min-[380px]:gap-2 sm:gap-3.5 z-10 max-w-[65vw] sm:max-w-none">
-          <div className="w-8 h-8 min-[380px]:w-9 min-[380px]:h-9 sm:w-12 sm:h-12 md:w-13 md:h-13 rounded-full overflow-hidden shrink-0 shadow-[0_3px_15px_rgba(0,0,0,0.6)] border border-white/15">
-            <Image src="/logo.png" alt="Contos de Oração Club" width={52} height={52} className="object-cover w-full h-full" />
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-3.5 z-10 max-w-[65vw] sm:max-w-none">
+          <div className="shrink-0">
+            <Image src="/logo.png" alt="Contos de Oração Club" width={48} height={48} className="w-8 h-8 min-[380px]:w-9 min-[380px]:h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 object-contain" />
           </div>
-          <div className="text-left flex flex-col justify-center shrink-0">
-            <div className="text-white font-black text-[0.7rem] min-[380px]:text-[0.82rem] sm:text-xl md:text-2xl leading-none tracking-wide"
+          <div className="text-center sm:text-left flex flex-col justify-center shrink-0">
+            <div className="text-white font-black text-[0.72rem] min-[380px]:text-[0.82rem] sm:text-xl md:text-2xl leading-none tracking-wide"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
@@ -480,14 +480,15 @@ export default function Navbar() {
               {/* Glow exterior de fundo */}
               <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-90 blur-[1px]" />
               {/* Núcleo de luz dourada intensa */}
-              <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_8px_#FFD700,0_0_4px_#FFA500]" />
+              <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_10px_#FFD700,0_0_4px_#FFA500]" />
               {/* Linha base */}
               <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
             </div>
 
-            <div className="text-[#D4AF37] text-[0.36rem] min-[380px]:text-[0.45rem] sm:text-[0.65rem] md:text-[0.68rem] font-black uppercase tracking-widest leading-none whitespace-nowrap"
+            <div className="text-[#D4AF37] text-[0.42rem] min-[380px]:text-[0.48rem] sm:text-[0.65rem] md:text-[0.68rem] font-black uppercase tracking-widest leading-tight"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-              TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
+              <span className="block sm:inline">TRANSFORMANDO O TEMPO DE TELA </span>
+              <span className="block sm:inline">EM TEMPO DE FÉ.</span>
             </div>
           </div>
         </div>
@@ -540,7 +541,7 @@ export default function Navbar() {
               {isAdmin && (
                 <Link
                   href="/painel-equipe-cod"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+                  className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-[0.65rem] sm:text-xs font-bold transition-all shrink-0"
                   style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)', textDecoration: 'none' }}
                 >
                   <span className="hidden sm:inline">Painel Admin</span>
@@ -548,15 +549,12 @@ export default function Navbar() {
                 </Link>
               )}
 
-              <Link href="/perfil" className="profile-btn" title="Perfil">
-                <div className="profile-sign">
-                  <img
-                    src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
-                    alt="Avatar"
-                    className="profile-avatar"
-                  />
-                </div>
-                <div className="profile-text">Perfil</div>
+              <Link href="/perfil" className="shrink-0 hover:opacity-90 active:scale-95 transition-all" title="Perfil">
+                <img
+                  src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
+                  alt="Perfil"
+                  className="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover shadow-md border border-[#D4AF37]/30"
+                />
               </Link>
 
               <button onClick={handleLogout} className="logout-btn" title="Sair">
@@ -637,8 +635,9 @@ export default function Navbar() {
               <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
             </div>
 
-            <div className="text-[#D4AF37] text-[0.48rem] font-bold uppercase tracking-widest leading-none">
-              TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
+            <div className="text-[#D4AF37] text-[0.48rem] font-bold uppercase tracking-widest leading-tight">
+              <span className="block">TRANSFORMANDO O TEMPO DE TELA </span>
+              <span className="block">EM TEMPO DE FÉ.</span>
             </div>
           </div>
         </div>
