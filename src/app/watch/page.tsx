@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import WatchCatalog, { VideoData, SerieDestaqueType, TemporadaGroup } from '@/components/WatchCatalog'
 import { SerieType } from '@/components/SerieCard'
+import BannerTestadorVIPAndroid from '@/components/BannerTestadorVIPAndroid'
 
 export default async function WatchPage() {
   const supabase = await createClient()
@@ -216,6 +217,12 @@ export default async function WatchPage() {
   return (
     <div className="min-h-screen text-white overflow-x-hidden" style={{ background: '#090B10', fontFamily: 'Outfit, sans-serif' }}>
       <main className="pt-[72px]">
+        {/* Banner VIP para Assinantes Android */}
+        <BannerTestadorVIPAndroid
+          userEmail={user.email}
+          userName={user.user_metadata?.nome || user.user_metadata?.name || ''}
+          isPlanoAtivo={planoAtivo}
+        />
 
         {/* Estado vazio */}
         {(!todosVideos || todosVideos.length === 0) ? (
