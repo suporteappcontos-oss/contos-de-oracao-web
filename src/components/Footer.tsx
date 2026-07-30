@@ -24,8 +24,17 @@ export default function Footer() {
       className="pt-14 pb-8 px-[4%] opacity-100 relative z-50"
       style={{ backgroundColor: '#090B10', borderTop: '1px solid rgba(255,255,255,0.06)', fontFamily: 'Outfit, sans-serif' }}
     >
-      {/* Estilos para a animação das redes sociais */}
       <style dangerouslySetInnerHTML={{__html: `
+        @keyframes linePulseExpand {
+          0%, 100% {
+            transform: scaleX(0.2);
+            opacity: 0.3;
+          }
+          50% {
+            transform: scaleX(1);
+            opacity: 1;
+          }
+        }
         /* --- Redes Sociais Animadas: Estilo Preenchimento --- */
         .social-wrapper {
           display: flex;
@@ -149,11 +158,26 @@ export default function Footer() {
                 Contos de Oração <span className="text-[#D4AF37]">Club</span>
               </div>
 
-              {/* Linha Reluzente Dourada com Brilho (Golden Flare Line) */}
-              <div className="relative w-full h-[3px] flex items-center justify-center my-1">
-                <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-80 blur-[1px]" />
-                <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_10px_#FFD700,0_0_4px_#FFA500]" />
-                <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+              {/* Linha Reluzente Dourada com Brilho Pulsante (Golden Flare Line) */}
+              <div className="relative w-full h-[3px] flex items-center justify-center my-1 overflow-hidden">
+                {/* Glow exterior de fundo que pulsa do centro para as pontas */}
+                <div
+                  className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-90 blur-[1px]"
+                  style={{
+                    animation: 'linePulseExpand 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                    transformOrigin: 'center'
+                  }}
+                />
+                {/* Núcleo de luz dourada intensa que expande do centro para as pontas */}
+                <div
+                  className="absolute w-full h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_12px_#FFD700,0_0_5px_#FFA500]"
+                  style={{
+                    animation: 'linePulseExpand 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                    transformOrigin: 'center'
+                  }}
+                />
+                {/* Linha base constante */}
+                <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent" />
               </div>
 
               <div className="text-[#D4AF37] text-[0.52rem] font-bold uppercase tracking-widest leading-none">
