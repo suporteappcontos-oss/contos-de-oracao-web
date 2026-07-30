@@ -165,7 +165,7 @@ export default function Navbar() {
       <header
         className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-4 sm:px-6 md:px-8 transition-all duration-300"
         style={{
-          height: '72px',
+          height: '60px',
           background: isScrolled 
             ? 'rgba(9, 11, 16, 0.92)' 
             : 'linear-gradient(to bottom, rgba(9, 11, 16, 0.95) 0%, rgba(9, 11, 16, 0.5) 60%, transparent 100%)',
@@ -482,10 +482,10 @@ export default function Navbar() {
             alt="Contos de Oração Club"
             width={52}
             height={52}
-            className="w-8 h-8 min-[380px]:w-9 min-[380px]:h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 object-contain shrink-0 drop-shadow-md"
+            className="w-7 h-7 min-[380px]:w-8 min-[380px]:h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain shrink-0 drop-shadow-md"
           />
           <div className="text-center sm:text-left flex flex-col justify-center shrink-0">
-            <div className="text-white font-black text-[0.7rem] min-[380px]:text-[0.82rem] sm:text-xl md:text-2xl leading-none tracking-wide"
+            <div className="text-white font-black text-[0.7rem] min-[380px]:text-[0.8rem] sm:text-lg md:text-xl leading-none tracking-wide"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
