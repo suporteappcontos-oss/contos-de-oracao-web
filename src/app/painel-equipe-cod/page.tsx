@@ -245,7 +245,13 @@ export default async function AdminPage({
           email: u.email || '',
           nome: u.user_metadata?.nome || u.user_metadata?.name || '—',
           plano_ativo: u.user_metadata?.plano_ativo === true,
-          plano_nome: u.user_metadata?.etiqueta_plano || 'Básico',
+          plano_nome: (() => {
+            const raw = (u.user_metadata?.etiqueta_plano || u.user_metadata?.plano_nome || '').toString()
+            if (raw.toLowerCase().includes('anual') || raw.toLowerCase().includes('year')) return 'Anual'
+            if (raw.toLowerCase().includes('testador')) return 'Testador'
+            if (raw.toLowerCase().includes('mensal') || raw.toLowerCase().includes('month') || raw.toUpperCase() === 'PREMIUM' || raw.toUpperCase() === 'BÁSICO' || !raw) return 'Mensal'
+            return raw
+          })(),
           vitalicio: u.user_metadata?.vitalicio === true,
           criado_em: u.created_at,
           ultimo_login: u.last_sign_in_at || null,
