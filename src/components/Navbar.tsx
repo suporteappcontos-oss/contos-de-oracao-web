@@ -252,18 +252,17 @@ export default function Navbar() {
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border: none;
             border-radius: 50%;
             cursor: pointer;
             position: relative;
             overflow: hidden;
             transition-duration: .3s;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
-            background-color: rgba(212, 175, 55, 0.15);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background-color: transparent;
             text-decoration: none;
+            shrink: 0;
           }
 
           .profile-sign {
@@ -272,16 +271,17 @@ export default function Navbar() {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2px;
+            padding: 0;
           }
 
           .profile-avatar {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            border: none;
             transition-duration: .3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
           }
 
           .profile-text {
@@ -290,14 +290,14 @@ export default function Navbar() {
             width: 0%;
             opacity: 0;
             color: #090b10;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
             transition-duration: .3s;
             white-space: nowrap;
           }
 
           .profile-btn:hover {
-            width: 95px;
+            width: 90px;
             border-radius: 40px;
             transition-duration: .3s;
             background-color: rgb(212, 175, 55);
@@ -306,22 +306,22 @@ export default function Navbar() {
           .profile-btn:hover .profile-sign {
             width: 35%;
             transition-duration: .3s;
-            padding-left: 8px;
+            padding-left: 4px;
           }
-          
+
           .profile-btn:hover .profile-avatar {
-            border-color: white;
+            box-shadow: none;
           }
 
           .profile-btn:hover .profile-text {
             opacity: 1;
             width: 65%;
             transition-duration: .3s;
-            padding-right: 12px;
+            padding-right: 10px;
           }
 
           .profile-btn:active {
-            transform: translate(2px, 2px);
+            transform: translate(1px, 1px);
           }
 
           /* --- Redes Sociais Animadas Navbar: Estilo Preenchimento --- */
@@ -459,18 +459,22 @@ export default function Navbar() {
             <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
             <span className="block w-full h-[2px] rounded-full bg-white transition-all duration-300" />
           </div>
-          <span className="hidden sm:inline text-xs font-black uppercase tracking-wider select-none text-white/90">
+          <span className="hidden sm:inline-block text-xs font-black uppercase tracking-wider select-none text-white/90">
             MENU
           </span>
         </button>
 
         {/* Logo Centro — Auto-adaptável em celulares e desktop */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-3.5 z-10 max-w-[65vw] sm:max-w-none">
-          <div className="shrink-0">
-            <Image src="/logo.png" alt="Contos de Oração Club" width={48} height={48} className="w-8 h-8 min-[380px]:w-9 min-[380px]:h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 object-contain" />
-          </div>
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-3 z-10 max-w-[65vw] sm:max-w-none">
+          <Image
+            src="/logo.png"
+            alt="Contos de Oração Club"
+            width={52}
+            height={52}
+            className="w-8 h-8 min-[380px]:w-9 min-[380px]:h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 object-contain shrink-0 drop-shadow-md"
+          />
           <div className="text-center sm:text-left flex flex-col justify-center shrink-0">
-            <div className="text-white font-black text-[0.72rem] min-[380px]:text-[0.82rem] sm:text-xl md:text-2xl leading-none tracking-wide"
+            <div className="text-white font-black text-[0.7rem] min-[380px]:text-[0.82rem] sm:text-xl md:text-2xl leading-none tracking-wide"
               style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)', fontFamily: 'Outfit, sans-serif' }}>
               Contos de Oração <span className="text-[#D4AF37]">Club</span>
             </div>
@@ -478,17 +482,23 @@ export default function Navbar() {
             {/* Linha Reluzente Dourada com Brilho (Golden Flare Line) */}
             <div className="relative w-full h-[3px] flex items-center justify-center my-0.5 sm:my-1">
               {/* Glow exterior de fundo */}
-              <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-90 blur-[1px]" />
+              <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-80 blur-[1px]" />
               {/* Núcleo de luz dourada intensa */}
               <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_10px_#FFD700,0_0_4px_#FFA500]" />
               {/* Linha base */}
               <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
             </div>
 
-            <div className="text-[#D4AF37] text-[0.42rem] min-[380px]:text-[0.48rem] sm:text-[0.65rem] md:text-[0.68rem] font-black uppercase tracking-widest leading-tight"
+            {/* Subtítulo em 2 linhas no Mobile */}
+            <div className="text-[#D4AF37] text-[0.38rem] min-[380px]:text-[0.45rem] font-black uppercase tracking-widest leading-tight text-center sm:hidden"
               style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-              <span className="block sm:inline">TRANSFORMANDO O TEMPO DE TELA </span>
-              <span className="block sm:inline">EM TEMPO DE FÉ.</span>
+              TRANSFORMANDO O TEMPO DE TELA<br />EM TEMPO DE FÉ.
+            </div>
+
+            {/* Subtítulo em 1 linha no Desktop */}
+            <div className="text-[#D4AF37] text-[0.62rem] md:text-[0.68rem] font-black uppercase tracking-widest leading-none hidden sm:block whitespace-nowrap"
+              style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
+              TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
             </div>
           </div>
         </div>
@@ -541,20 +551,22 @@ export default function Navbar() {
               {isAdmin && (
                 <Link
                   href="/painel-equipe-cod"
-                  className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-[0.65rem] sm:text-xs font-bold transition-all shrink-0"
+                  className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
                   style={{ background: 'rgba(212,175,55,0.1)', color: '#D4AF37', border: '1px solid rgba(212,175,55,0.2)', textDecoration: 'none' }}
                 >
-                  <span className="hidden sm:inline">Painel Admin</span>
-                  <span className="sm:hidden">Admin</span>
+                  <span>Painel Admin</span>
                 </Link>
               )}
 
-              <Link href="/perfil" className="shrink-0 hover:opacity-90 active:scale-95 transition-all" title="Perfil">
-                <img
-                  src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
-                  alt="Perfil"
-                  className="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover shadow-md border border-[#D4AF37]/30"
-                />
+              <Link href="/perfil" className="profile-btn" title="Perfil">
+                <div className="profile-sign">
+                  <img
+                    src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.user_metadata?.nome || user?.email?.split('@')[0] || 'User')}&background=111827&color=D4AF37&bold=true&size=128`}
+                    alt="Avatar"
+                    className="profile-avatar"
+                  />
+                </div>
+                <div className="profile-text">Perfil</div>
               </Link>
 
               <button onClick={handleLogout} className="logout-btn" title="Sair">
@@ -635,9 +647,8 @@ export default function Navbar() {
               <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
             </div>
 
-            <div className="text-[#D4AF37] text-[0.48rem] font-bold uppercase tracking-widest leading-tight">
-              <span className="block">TRANSFORMANDO O TEMPO DE TELA </span>
-              <span className="block">EM TEMPO DE FÉ.</span>
+            <div className="text-[#D4AF37] text-[0.48rem] font-bold uppercase tracking-widest leading-none">
+              TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
             </div>
           </div>
         </div>
