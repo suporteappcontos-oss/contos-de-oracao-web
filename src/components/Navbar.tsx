@@ -638,22 +638,9 @@ export default function Navbar() {
 
         {/* Logo dentro da sidebar */}
         <div className="flex items-center gap-3 px-5 pt-6 pb-4 pr-12">
-          <Image src="/logo.png" alt="Contos de Oração Club" width={40} height={40} className="object-contain drop-shadow-lg" />
-          <div className="flex flex-col justify-center">
-            <div className="text-white font-black text-base leading-none">
-              Contos de Oração <span className="text-[#D4AF37]">Club</span>
-            </div>
-
-            {/* Linha Reluzente Dourada com Brilho (Golden Flare Line) */}
-            <div className="relative w-full h-[3px] flex items-center justify-center my-1">
-              <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent opacity-80 blur-[1px]" />
-              <div className="absolute w-4/5 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFF5B8] to-transparent shadow-[0_0_10px_#FFD700,0_0_4px_#FFA500]" />
-              <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
-            </div>
-
-            <div className="text-[#D4AF37] text-[0.48rem] font-bold uppercase tracking-widest leading-none">
-              TRANSFORMANDO O TEMPO DE TELA EM TEMPO DE FÉ.
-            </div>
+          <Image src="/logo.png" alt="Contos de Oração Club" width={36} height={36} className="object-contain drop-shadow-lg shrink-0" />
+          <div className="text-white font-black text-base leading-snug">
+            Contos de Oração <span className="text-[#D4AF37]">Club</span>
           </div>
         </div>
 
