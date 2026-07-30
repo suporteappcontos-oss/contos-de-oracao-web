@@ -259,69 +259,73 @@ export default function Navbar() {
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            transition-duration: .3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background-color: transparent;
             text-decoration: none;
-            shrink: 0;
+            flex-shrink: 0;
           }
 
           .profile-sign {
-            width: 100%;
-            transition-duration: .3s;
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
+            transition: transform 0.3s ease;
           }
 
           .profile-avatar {
             width: 32px;
             height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            max-width: 32px;
+            max-height: 32px;
             border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
             border: none;
-            transition-duration: .3s;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.3s ease;
           }
 
           .profile-text {
             position: absolute;
-            right: 0%;
-            width: 0%;
+            left: 36px;
             opacity: 0;
             color: #090b10;
             font-size: 12px;
             font-weight: 800;
-            transition-duration: .3s;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(6px);
             white-space: nowrap;
           }
 
           .profile-btn:hover {
-            width: 90px;
+            width: 92px;
             border-radius: 40px;
-            transition-duration: .3s;
-            background-color: rgb(212, 175, 55);
+            background-color: #D4AF37;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
           }
 
           .profile-btn:hover .profile-sign {
-            width: 35%;
-            transition-duration: .3s;
-            padding-left: 4px;
+            width: 34px;
+            height: 34px;
+            padding-left: 2px;
           }
 
           .profile-btn:hover .profile-avatar {
-            box-shadow: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
           }
 
           .profile-btn:hover .profile-text {
             opacity: 1;
-            width: 65%;
-            transition-duration: .3s;
-            padding-right: 10px;
+            transform: translateX(0);
           }
 
           .profile-btn:active {
-            transform: translate(1px, 1px);
+            transform: scale(0.96);
           }
 
           /* --- Redes Sociais Animadas Navbar: Estilo Preenchimento --- */
