@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Smartphone, Sparkles, X, CheckCircle2, Send, ShieldCheck } from 'lucide-react'
+import { Sparkles, X, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 
 type Props = {
@@ -9,6 +9,16 @@ type Props = {
   userName?: string
   isPlanoAtivo?: boolean
 }
+
+/* ── SVG Oficial do Google Play Store ── */
+const GooglePlayLogoSVG = () => (
+  <svg width="24" height="24" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M325.8 256L88.5 24.3C83.2 29.5 80 36.8 80 45.2v421.6c0 8.4 3.2 15.7 8.5 20.9L325.8 256z" fill="#00E676" />
+    <path d="M407.7 176.4L325.8 256l81.9 79.6 48.7-27.7c13.9-7.9 23.2-22.7 23.2-39.5s-9.3-31.6-23.2-39.5l-48.7-27.7z" fill="#FFD54F" />
+    <path d="M88.5 487.7l237.3-231.7L407.7 335.6 136.6 490c-15 8.5-33.1 7.7-48.1-2.3z" fill="#FF3D00" />
+    <path d="M88.5 24.3C103.5 14.3 121.6 13.5 136.6 22l271.1 154.4-81.9 79.6L88.5 24.3z" fill="#00B0FF" />
+  </svg>
+)
 
 export default function BannerTestadorVIPAndroid({ userEmail = '', userName = '', isPlanoAtivo = false }: Props) {
   const [isAndroid, setIsAndroid] = useState(false)
@@ -23,12 +33,11 @@ export default function BannerTestadorVIPAndroid({ userEmail = '', userName = ''
   const [erro, setErro] = useState('')
 
   useEffect(() => {
-    // Exibe apenas se o usuário for assinante ativo e não tiver dispensado o aviso nesta sessão
     const jaCadastrouOuDispensou = localStorage.getItem('testador_vip_android_registrado')
     if (jaCadastrouOuDispensou) return
 
     const ua = navigator.userAgent.toLowerCase()
-    const isAndroidDev = ua.includes('android') || true // Exibe para Android (e no PC para assinantes)
+    const isAndroidDev = ua.includes('android') || true
 
     if (isPlanoAtivo && isAndroidDev) {
       setIsAndroid(true)
@@ -59,13 +68,13 @@ export default function BannerTestadorVIPAndroid({ userEmail = '', userName = ''
     e.preventDefault()
     const cleanEmail = gmail.trim().toLowerCase()
 
-    if (!cleanEmail || !cleanEmail.endsWith('@gmail.com') && !cleanEmail.endsWith('@googlemail.com')) {
+    if (!cleanEmail || (!cleanEmail.endsWith('@gmail.com') && !cleanEmail.endsWith('@googlemail.com'))) {
       setErro('A Google Play Store exige obrigatoriamente um e-mail do Gmail (@gmail.com).')
       return
     }
 
     if (!whatsapp.trim() || whatsapp.replace(/\D/g, '').length < 10) {
-      setErro('Por favor, digite seu WhatsApp com DDD para entrarmos em contato.')
+      setErro('Por favor, digite seu WhatsApp com DDD para envio do link.')
       return
     }
 
@@ -86,7 +95,6 @@ export default function BannerTestadorVIPAndroid({ userEmail = '', userName = ''
       ])
 
       if (error && error.code === '23505') {
-        // Já cadastrado
         setSucesso(true)
         localStorage.setItem('testador_vip_android_registrado', 'true')
       } else if (error) {
@@ -112,40 +120,49 @@ export default function BannerTestadorVIPAndroid({ userEmail = '', userName = ''
 
   return (
     <>
-      {/* Banner Superior Dourado VIP */}
-      <div className="w-full bg-gradient-to-r from-[#111827] via-[#1a2234] to-[#111827] border-y border-[#D4AF37]/40 py-3.5 px-4 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-80 h-full bg-[#D4AF37]/10 blur-2xl pointer-events-none" />
-        
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      {/* Banner Profissional Estilo Google Play Store */}
+      <div className="w-full bg-[#0a0f18] border-b border-white/10 py-3 px-4 relative overflow-hidden shadow-2xl">
+        {/* Glow sutil */}
+        <div className="absolute top-0 right-1/4 w-96 h-full bg-[#01875f]/10 blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
           
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FFD700] to-[#D4AF37] text-black flex items-center justify-center font-bold shrink-0 shadow-lg shadow-[#D4AF37]/20">
-              <Smartphone size={20} />
+          <div className="flex items-center gap-3.5">
+            {/* Ícone Play Store Container */}
+            <div className="w-11 h-11 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 shadow-md">
+              <GooglePlayLogoSVG />
             </div>
+
             <div>
-              <div className="flex items-center gap-2 justify-center sm:justify-start">
-                <span className="text-[#D4AF37] font-black text-xs uppercase tracking-wider flex items-center gap-1">
-                  <Sparkles size={12} /> Exclusivo para Assinantes Android
+              <div className="flex items-center gap-2 justify-center md:justify-start">
+                <span className="text-[#00e676] font-bold text-[0.65rem] uppercase tracking-widest bg-[#00e676]/10 px-2 py-0.5 rounded-md border border-[#00e676]/20">
+                  Google Play Beta VIP
                 </span>
+                <span className="text-white/40 text-[0.65rem]">• Exclusivo Assinantes</span>
               </div>
-              <p className="text-white text-xs md:text-sm font-bold">
-                Seja um Testador VIP do aplicativo nativo na Google Play Store! 🚀
+              <p className="text-white text-xs md:text-sm font-semibold mt-0.5">
+                Baixe o aplicativo nativo para Android direto na Play Store antes do lançamento! 📱
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {/* Botão Badge Oficial Google Play Style */}
             <button
               onClick={() => setModalOpen(true)}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-black text-xs font-black uppercase tracking-wider hover:brightness-110 transition-all shadow-md active:scale-95 flex items-center gap-1.5"
+              className="group relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#01875f] to-[#00b0ff] text-white font-bold text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg active:scale-95 cursor-pointer"
             >
-              <Send size={14} />
-              <span>Garantir Vaga VIP</span>
+              <GooglePlayLogoSVG />
+              <div className="text-left leading-none">
+                <div className="text-[0.55rem] text-white/80 font-medium lowercase">disponível no</div>
+                <div className="text-xs font-black tracking-tight uppercase">Google Play</div>
+              </div>
+              <ArrowRight size={14} className="ml-1 group-hover:translate-x-1 transition-transform text-white/80" />
             </button>
 
             <button
               onClick={handleDismiss}
-              className="p-2 text-white/30 hover:text-white transition-colors"
+              className="p-2 text-white/30 hover:text-white transition-colors cursor-pointer"
               title="Dispensar aviso"
             >
               <X size={18} />
@@ -155,47 +172,57 @@ export default function BannerTestadorVIPAndroid({ userEmail = '', userName = ''
         </div>
       </div>
 
-      {/* Modal de Cadastro VIP */}
+      {/* Modal de Inscrição Profissional */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-md bg-[#0d131f] border-2 border-[#D4AF37]/50 rounded-3xl p-6 md:p-8 shadow-[0_0_50px_rgba(212,175,55,0.2)] text-left">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-md bg-[#0c121e] border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl text-left">
             
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-4 right-4 text-white/40 hover:text-white p-2"
+              className="absolute top-4 right-4 text-white/40 hover:text-white p-2 cursor-pointer"
             >
               <X size={20} />
             </button>
 
             {sucesso ? (
               <div className="text-center py-4 space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#10b981]/20 text-[#10b981] flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-[#00e676]/10 text-[#00e676] flex items-center justify-center border border-[#00e676]/20">
                   <CheckCircle2 size={36} />
                 </div>
-                <h3 className="text-white text-xl font-black">Vaga VIP Confirmada! 🎉</h3>
+                <h3 className="text-white text-xl font-extrabold">Acesso Beta VIP Liberado! 🎉</h3>
                 <p className="text-white/70 text-xs leading-relaxed">
-                  Cadastramos o seu Gmail na nossa lista antecipada do Google Play Console. Em breve enviaremos o link de download do App no seu WhatsApp!
+                  Cadastramos o seu Gmail no programa exclusivo da Google Play Store. Enviaremos o link oficial de download diretamente no seu WhatsApp!
                 </p>
                 <button
                   onClick={() => {
                     setModalOpen(false)
                     setDismissed(true)
                   }}
-                  className="w-full py-3 rounded-xl bg-[#D4AF37] text-black font-bold text-xs uppercase"
+                  className="w-full py-3.5 rounded-xl bg-[#01875f] text-white font-bold text-xs uppercase tracking-wider hover:brightness-110 transition-all cursor-pointer"
                 >
-                  Ok, Entendido
+                  Concluído
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 text-[#D4AF37] flex items-center justify-center">
-                    <ShieldCheck size={22} />
+                <div className="flex items-center gap-3.5 mb-2">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                    <GooglePlayLogoSVG />
                   </div>
                   <div>
-                    <h3 className="text-white font-black text-lg">Inscrição Testador VIP Android</h3>
-                    <p className="text-white/40 text-xs">Liberação antecipada na Google Play Store</p>
+                    <h3 className="text-white font-black text-lg tracking-tight">App Contos de Oração Club</h3>
+                    <p className="text-[#00e676] text-xs font-bold uppercase tracking-wider">Acesso Antecipado Android</p>
                   </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 text-xs text-white/70 space-y-1">
+                  <div className="font-bold text-white flex items-center gap-1.5">
+                    <ShieldCheck size={14} className="text-[#00e676]" />
+                    Como funciona o teste Beta VIP?
+                  </div>
+                  <p className="text-white/50 text-[0.7rem] leading-relaxed">
+                    Cadastramos seu Gmail no Google Play Console. Você receberá o convite oficial da Google Play no seu WhatsApp para instalar o app nativo no celular.
+                  </p>
                 </div>
 
                 {erro && (
@@ -205,22 +232,22 @@ export default function BannerTestadorVIPAndroid({ userEmail = '', userName = ''
                 )}
 
                 <div>
-                  <label className="block text-white/60 text-xs font-bold uppercase tracking-wider mb-1">
-                    Gmail da Google Play Store *
+                  <label className="block text-white/70 text-xs font-bold uppercase tracking-wider mb-1.5">
+                    Seu Gmail da Google Play Store *
                   </label>
                   <input
                     type="email"
                     required
                     value={gmail}
                     onChange={e => setGmail(e.target.value)}
-                    placeholder="seuemail@gmail.com"
-                    className="w-full bg-[#151c2c] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white text-sm focus:outline-none"
+                    placeholder="exemplo@gmail.com"
+                    className="w-full bg-[#141b29] border border-white/10 focus:border-[#01875f] rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-all placeholder-white/20"
                   />
-                  <p className="text-white/30 text-[0.65rem] mt-1">Deve ser a mesma conta do Gmail configurada na Play Store do seu celular.</p>
+                  <p className="text-white/30 text-[0.65rem] mt-1">Informe a conta do Gmail usada na loja de aplicativos do seu Android.</p>
                 </div>
 
                 <div>
-                  <label className="block text-white/60 text-xs font-bold uppercase tracking-wider mb-1">
+                  <label className="block text-white/70 text-xs font-bold uppercase tracking-wider mb-1.5">
                     WhatsApp com DDD *
                   </label>
                   <input
@@ -229,16 +256,16 @@ export default function BannerTestadorVIPAndroid({ userEmail = '', userName = ''
                     value={whatsapp}
                     onChange={handleWhatsappChange}
                     placeholder="(11) 99999-9999"
-                    className="w-full bg-[#151c2c] border border-white/10 focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white text-sm focus:outline-none"
+                    className="w-full bg-[#141b29] border border-white/10 focus:border-[#01875f] rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-all placeholder-white/20"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#FFD700] to-[#D4AF37] text-black font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg shadow-[#D4AF37]/20 disabled:opacity-50"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#01875f] to-[#00b0ff] text-white font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
-                  {loading ? 'Cadastrando...' : 'Confirmar minha Vaga VIP Android →'}
+                  {loading ? 'Cadastrando...' : 'Garantir Acesso Beta na Play Store →'}
                 </button>
               </form>
             )}

@@ -8,13 +8,13 @@ import PostHogProvider from "@/components/PostHogProvider";
 
 export const metadata: Metadata = {
   title: {
-    default: 'Contos de Oração — Streaming Católico',
-    template: '%s | Contos de Oração',
+    default: 'Contos de Oração Club — Streaming Católico',
+    template: '%s | Contos de Oração Club',
   },
   description: 'A maior plataforma de streaming católico do Brasil. Assista orações, novenas, terços, histórias de santos e retiros espirituais onde quiser, quando quiser.',
-  keywords: ['orações', 'novenas', 'católico', 'streaming', 'retiro espiritual', 'terço', 'santos', 'fé', 'contos de oração'],
-  authors: [{ name: 'Contos de Oração' }],
-  creator: 'Contos de Oração',
+  keywords: ['orações', 'novenas', 'católico', 'streaming', 'retiro espiritual', 'terço', 'santos', 'fé', 'contos de oração', 'contos de oração club'],
+  authors: [{ name: 'Contos de Oração Club' }],
+  creator: 'Contos de Oração Club',
   metadataBase: new URL('https://contosdeoracao.com.br'),
   alternates: { canonical: '/' },
   manifest: '/manifest.json',
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     shortcut: '/logo_stripe.png',
   },
   openGraph: {
-    title: 'Contos de Oração — Streaming Católico',
+    title: 'Contos de Oração Club — Streaming Católico',
     description: 'Orações, novenas, terços e histórias de santos. A maior plataforma de espiritualidade católica do Brasil.',
     url: 'https://contosdeoracao.com.br',
-    siteName: 'Contos de Oração',
+    siteName: 'Contos de Oração Club',
     images: [{ url: '/logo_stripe.png', width: 512, height: 512, alt: 'Contos de Oração' }],
     locale: 'pt_BR',
     type: 'website',
