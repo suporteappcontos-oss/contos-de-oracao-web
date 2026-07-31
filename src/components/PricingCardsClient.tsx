@@ -276,29 +276,30 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
                 <div
                   className="flex items-center justify-center gap-2.5 px-3 sm:px-4 py-3 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 shadow-[0_4px_20px_rgba(212,175,55,0.08)]"
                 >
-                  {/* Ícone Triplo Multi-Dispositivos: TV + PC/Notebook + Celular */}
+                  {/* Ícone Triplo Multi-Dispositivos Fiel ao Modelo ChatGPT (TV + Laptop + Smartphone) */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 28 20"
+                    viewBox="0 0 29 20"
                     fill="none"
                     stroke="#D4AF37"
-                    strokeWidth="1.6"
+                    strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-7 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
+                    className="w-8 h-6 shrink-0 drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
                   >
-                    {/* 1. Smart TV (Esquerda) */}
-                    <rect x="1" y="2" width="11" height="8" rx="1.2" />
-                    <line x1="6.5" y1="10" x2="6.5" y2="12" />
-                    <line x1="3.5" y1="12" x2="9.5" y2="12" />
+                    {/* 1. Smart TV / Monitor (Esquerda Fundo) */}
+                    <rect x="1" y="1" width="15" height="10.5" rx="1" />
+                    <line x1="8.5" y1="11.5" x2="8.5" y2="13.5" />
+                    <line x1="5.5" y1="13.5" x2="11.5" y2="13.5" />
 
-                    {/* 2. PC / Computador (Centro) */}
-                    <rect x="10.5" y="4.5" width="10" height="7" rx="1" />
-                    <path d="M9 11.5h13" />
+                    {/* 2. Laptop / Notebook (Centro Frente) */}
+                    <rect x="9.5" y="5.5" width="11" height="7.5" rx="1" />
+                    <circle cx="15" cy="6.8" r="0.4" fill="#D4AF37" />
+                    <path d="M8 13h14" />
 
-                    {/* 3. Smartphone / Celular (Direita) */}
-                    <rect x="21" y="6.5" width="6" height="11.5" rx="1.4" />
-                    <line x1="23" y1="15" x2="25" y2="15" />
+                    {/* 3. Smartphone com Notch (Direita Frente) */}
+                    <rect x="21" y="6" width="6.5" height="12.5" rx="1.4" />
+                    <path d="M23 7.5h2.5" />
                   </svg>
 
                   <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#D4AF37]">
