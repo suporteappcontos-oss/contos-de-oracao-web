@@ -274,33 +274,14 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               {/* Telas simultâneas */}
               <div className="flex items-center gap-2 mb-6">
                 <div
-                  className="flex items-center justify-center gap-2.5 px-3 sm:px-4 py-3 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 shadow-[0_4px_20px_rgba(212,175,55,0.08)]"
+                  className="flex items-center justify-center gap-2.5 px-3 sm:px-4 py-2.5 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 shadow-[0_4px_20px_rgba(212,175,55,0.08)]"
                 >
-                  {/* Ícone Triplo Multi-Dispositivos Fiel ao Modelo ChatGPT (TV + Laptop + Smartphone) */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 29 20"
-                    fill="none"
-                    stroke="#D4AF37"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-8 h-6 shrink-0 drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
-                  >
-                    {/* 1. Smart TV / Monitor (Esquerda Fundo) */}
-                    <rect x="1" y="1" width="15" height="10.5" rx="1" />
-                    <line x1="8.5" y1="11.5" x2="8.5" y2="13.5" />
-                    <line x1="5.5" y1="13.5" x2="11.5" y2="13.5" />
-
-                    {/* 2. Laptop / Notebook (Centro Frente) */}
-                    <rect x="9.5" y="5.5" width="11" height="7.5" rx="1" />
-                    <circle cx="15" cy="6.8" r="0.4" fill="#D4AF37" />
-                    <path d="M8 13h14" />
-
-                    {/* 3. Smartphone com Notch (Direita Frente) */}
-                    <rect x="21" y="6" width="6.5" height="12.5" rx="1.4" />
-                    <path d="M23 7.5h2.5" />
-                  </svg>
+                  {/* Ícone Gerado no ChatGPT: TV + PC + Celular */}
+                  <img
+                    src="/telas-icon.png"
+                    alt="TV, Notebook e Celular"
+                    className="w-11 h-7 object-contain shrink-0 mix-blend-multiply filter contrast-125 brightness-110 drop-shadow-md"
+                  />
 
                   <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#D4AF37]">
                     5 Telas Simultâneas na Mesma Conta
