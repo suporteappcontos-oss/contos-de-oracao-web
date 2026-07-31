@@ -274,13 +274,13 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               {/* Telas simultâneas */}
               <div className="flex items-center gap-2 mb-6">
                 <div
-                  className="flex items-center justify-center gap-2.5 px-3 sm:px-4 py-2.5 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 shadow-[0_4px_20px_rgba(212,175,55,0.08)]"
+                  className="flex items-center justify-center gap-3 px-3 sm:px-4 py-3 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 shadow-[0_4px_20px_rgba(212,175,55,0.08)]"
                 >
-                  {/* Ícone Gerado no ChatGPT: TV + PC + Celular */}
+                  {/* Ícone Gerado no ChatGPT (TV, Notebook e Celular em Ouro e Branco) */}
                   <img
-                    src="/telas-icon.png"
-                    alt="TV, Notebook e Celular"
-                    className="w-11 h-7 object-contain shrink-0 mix-blend-multiply filter contrast-125 brightness-110 drop-shadow-md"
+                    src="/telas-icon-perfeito.png"
+                    alt="5 Telas (TV, PC e Celular)"
+                    className="w-12 sm:w-16 h-8 sm:h-9 object-contain shrink-0 drop-shadow-[0_2px_12px_rgba(212,175,55,0.5)]"
                   />
 
                   <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#D4AF37]">
