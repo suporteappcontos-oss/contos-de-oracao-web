@@ -116,7 +116,7 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
     <>
       {/* ── Seletor de Ciclo (Toggle Mensal vs Anual) ── */}
       {temMultiplosCiclos && (
-        <div className="flex justify-center mb-10 px-4 w-full">
+        <div className="flex justify-center mt-3 sm:mt-4 mb-10 px-4 w-full">
           <style dangerouslySetInnerHTML={{__html: `
             .cycle-toggle-container {
               position: relative;
@@ -169,20 +169,17 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
             }
           `}} />
 
-          <div className="cycle-toggle-container">
+          <div className="cycle-toggle-container relative">
             {opcoesCiclo.map(({ id, label, tag }) => (
               <button
                 key={id}
                 onClick={() => setCiclo(id)}
                 className={`cycle-toggle-btn ${ciclo === id ? 'active' : ''}`}
+                style={{ width: `${100 / opcoesCiclo.length}%`, flex: `0 0 ${100 / opcoesCiclo.length}%` }}
               >
-                <span className="text-[0.75rem] sm:text-sm font-black">{label}</span>
+                <span className="text-xs sm:text-sm font-black tracking-wider">{label}</span>
                 {tag && (
-                  <span className={`text-[0.55rem] sm:text-[0.62rem] font-black uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-md shadow-sm shrink-0 whitespace-nowrap transition-colors ${
-                    ciclo === id
-                      ? 'bg-[#062413] text-[#00e676] border border-[#00e676]/60 shadow-md'
-                      : 'bg-[#00e676]/15 text-[#00e676] border border-[#00e676]/30'
-                  }`}>
+                  <span className="absolute -top-3 right-2 sm:right-4 bg-[#062413] text-[#00e676] border border-[#00e676]/60 text-[0.55rem] sm:text-[0.62rem] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-lg z-20 pointer-events-none whitespace-nowrap">
                     {tag}
                   </span>
                 )}
@@ -192,7 +189,7 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
             <div
               className="cycle-glider"
               style={{
-                width: `calc((100% - 10px) / ${opcoesCiclo.length})`,
+                width: `calc((100% - 8px) / ${opcoesCiclo.length})`,
                 transform: `translateX(${opcoesCiclo.findIndex(c => c.id === ciclo) * 100}%)`
               }}
             />
