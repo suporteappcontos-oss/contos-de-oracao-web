@@ -274,9 +274,33 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
               {/* Telas simultâneas */}
               <div className="flex items-center gap-2 mb-6">
                 <div
-                  className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30"
+                  className="flex items-center justify-center gap-2.5 px-3 sm:px-4 py-3 rounded-2xl w-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 shadow-[0_4px_20px_rgba(212,175,55,0.08)]"
                 >
-                  <Monitor size={18} className="text-[#D4AF37]" />
+                  {/* Ícone Triplo Multi-Dispositivos: TV + PC/Notebook + Celular */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 28 20"
+                    fill="none"
+                    stroke="#D4AF37"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-7 h-5 shrink-0 drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
+                  >
+                    {/* 1. Smart TV (Esquerda) */}
+                    <rect x="1" y="2" width="11" height="8" rx="1.2" />
+                    <line x1="6.5" y1="10" x2="6.5" y2="12" />
+                    <line x1="3.5" y1="12" x2="9.5" y2="12" />
+
+                    {/* 2. PC / Computador (Centro) */}
+                    <rect x="10.5" y="4.5" width="10" height="7" rx="1" />
+                    <path d="M9 11.5h13" />
+
+                    {/* 3. Smartphone / Celular (Direita) */}
+                    <rect x="21" y="6.5" width="6" height="11.5" rx="1.4" />
+                    <line x1="23" y1="15" x2="25" y2="15" />
+                  </svg>
+
                   <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-[#D4AF37]">
                     5 Telas Simultâneas na Mesma Conta
                   </span>
