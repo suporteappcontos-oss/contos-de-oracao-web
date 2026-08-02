@@ -143,11 +143,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const emTeste = statusStripe === 'em período de teste' || metadata.em_teste === true
+
     return NextResponse.json({
       encontrado: true,
       nome,
       email: usuario.email,
       plano_ativo: planoAtivo,
+      em_teste: emTeste,
       etiqueta_plano: etiquetaPlano,
       status_stripe: statusStripe,
       proxima_cobranca: proximaCobranca,

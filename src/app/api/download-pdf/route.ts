@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@/utils/supabase/server'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -6,6 +7,26 @@ export async function GET(request: Request) {
 
   if (!fileUrl) {
     return new NextResponse('URL não fornecida', { status: 400 })
+  }
+
+  // Verifica se o usuário está em período de teste de 7 dias
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const isTrial = user.user_metadata?.em_teste === true || user.user_metadata?.status_stripe === 'trialing'
+      const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).maybeSingle()
+      const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
+
+      if (isTrial && !isAdmin) {
+        return new NextResponse(
+          'Downloads de PDFs são liberados apenas após a confirmação da assinatura (fim do teste de 7 dias).',
+          { status: 403 }
+        )
+      }
+    }
+  } catch (e) {
+    // Continua se falhar autenticação pontual
   }
 
   let validUrl: URL;

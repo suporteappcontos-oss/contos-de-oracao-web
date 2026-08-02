@@ -60,6 +60,8 @@ export default async function VideosTematicosPage() {
 
   const lista: VideoTematico[] = videos ?? []
 
+  const isTrialing = !isAdmin && (user.user_metadata?.em_teste === true || user.user_metadata?.status_stripe === 'trialing')
+
   return (
     <main className="min-h-screen text-white overflow-x-hidden relative" style={{ backgroundColor: '#0A0D14' }}>
 
@@ -94,7 +96,7 @@ export default async function VideosTematicosPage() {
 
       {/* Grade de Vídeos (Galeria Dinâmica) */}
       <div className="relative z-10 max-w-[1600px] mx-auto px-4 pb-20">
-        <VideosTematicosGaleria videos={lista} />
+        <VideosTematicosGaleria videos={lista} isTrialing={isTrialing} />
       </div>
 
       <Footer />

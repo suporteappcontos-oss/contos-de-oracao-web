@@ -16,16 +16,17 @@ async function criarOuAtivarUsuario(
   nome: string,
   maxTelas: number = 1,
   productId: string = '',
-  etiquetaPlano: string = ''
+  etiquetaPlano: string = '',
+  emTeste: boolean = true
 ) {
   const existente = await buscarUsuarioPorEmail(email)
-  const metaAtualizado = { plano_ativo: true, nome, max_telas: maxTelas, stripe_product_id: productId, etiqueta_plano: etiquetaPlano }
+  const metaAtualizado = { plano_ativo: true, em_teste: emTeste, nome, max_telas: maxTelas, stripe_product_id: productId, etiqueta_plano: etiquetaPlano }
 
   if (existente) {
     await supabaseAdmin.auth.admin.updateUserById(existente.id, {
       user_metadata: metaAtualizado,
     })
-    console.log(`🔄 Plano Stripe reativado: ${email} | max_telas: ${maxTelas}`)
+    console.log(`🔄 Plano Stripe reativado: ${email} | max_telas: ${maxTelas} | em_teste: ${emTeste}`)
     return
   }
 
@@ -44,7 +45,7 @@ async function criarOuAtivarUsuario(
   await supabaseAdmin.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/atualizar-senha`,
   })
-  console.log(`🎉 Usuário Stripe criado: ${email} | max_telas: ${maxTelas}`)
+  console.log(`🎉 Usuário Stripe criado: ${email} | max_telas: ${maxTelas} | em_teste: ${emTeste}`)
 }
 
 // Importante: o Stripe envia o body como raw text para validar a assinatura HMAC
@@ -114,9 +115,16 @@ export async function POST(request: NextRequest) {
         } catch (e) { console.warn('Erro ao buscar metadados do plano') }
 
         await supabaseAdmin.auth.admin.updateUserById(usuario.id, {
-          user_metadata: { plano_ativo: true, max_telas: maxTelas, stripe_product_id: productId, etiqueta_plano: etiquetaPlano },
+          user_metadata: {
+            ...usuario.user_metadata,
+            plano_ativo: true,
+            em_teste: false,
+            max_telas: maxTelas,
+            stripe_product_id: productId,
+            etiqueta_plano: etiquetaPlano,
+          },
         })
-        console.log(`✅ Pagamento Stripe confirmado (Acesso Liberado): ${email}`)
+        console.log(`✅ Pagamento Stripe confirmado (Acesso Total + Downloads Liberados): ${email}`)
       }
     }
   }

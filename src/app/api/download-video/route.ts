@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/utils/supabase/server'
 
 // Rota de download direto — busca o vídeo no CDN do Bunny e serve com header de download
 // Funciona igual ao PDF: um clique → baixa direto no dispositivo
@@ -9,6 +10,26 @@ export async function GET(request: NextRequest) {
 
   if (!videoId || !/^[a-zA-Z0-9-]+$/.test(videoId)) {
     return new NextResponse('Video ID inválido ou obrigatório', { status: 400 })
+  }
+
+  // Verifica se o usuário está em período de teste de 7 dias
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const isTrial = user.user_metadata?.em_teste === true || user.user_metadata?.status_stripe === 'trialing'
+      const { data: perfil } = await supabase.from('perfis').select('role').eq('id', user.id).maybeSingle()
+      const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
+
+      if (isTrial && !isAdmin) {
+        return new NextResponse(
+          'Downloads de vídeos são liberados apenas após a confirmação da assinatura (fim do teste de 7 dias).',
+          { status: 403 }
+        )
+      }
+    }
+  } catch (e) {
+    // Continua se falhar verificação pontual
   }
 
   const cdnHostname = process.env.BUNNY_INSTAGRAM_CDN_URL || 'vz-f8cf772c-1bd.b-cdn.net'

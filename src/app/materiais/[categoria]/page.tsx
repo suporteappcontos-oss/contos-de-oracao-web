@@ -42,6 +42,8 @@ export default async function CategoriaPage({ params }: Props) {
   const isAdmin = perfil?.role === 'admin' || user.email === 'suporte.appcontos@gmail.com'
   if (!isAdmin && !planoAtivo) redirect('/?acesso=expirado')
 
+  const isTrialing = !isAdmin && (user.user_metadata?.em_teste === true || user.user_metadata?.status_stripe === 'trialing')
+
   const { data: itens } = await supabase
     .from('materiais').select('*')
     .eq('ativo', true).eq('categoria', categoria)
@@ -167,6 +169,7 @@ export default async function CategoriaPage({ params }: Props) {
                         linkPdf={item.link_pdf}
                         titulo={item.titulo}
                         color={cat.color}
+                        isTrialing={isTrialing}
                       />
                     ) : (
                       <div className="flex items-center justify-center py-2.5 rounded-xl text-xs font-bold text-white/18 border border-white/5">

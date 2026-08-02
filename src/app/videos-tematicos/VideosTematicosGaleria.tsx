@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Download, Play, SkipForward } from 'lucide-react'
+import { X, Download, Play, SkipForward, Lock } from 'lucide-react'
+import { ModalAnteciparTeste } from '@/components/ModalAnteciparTeste'
 
 // O ícone do Instagram
 function IgIcon({ size = 10 }: { size?: number }) {
@@ -27,9 +28,16 @@ function extrairVideoId(embedUrl: string): string | null {
   return partes[partes.length - 1] || null
 }
 
-export default function VideosTematicosGaleria({ videos }: { videos: VideoTematico[] }) {
+export default function VideosTematicosGaleria({
+  videos,
+  isTrialing = false,
+}: {
+  videos: VideoTematico[]
+  isTrialing?: boolean
+}) {
   const [videoAtualIndex, setVideoAtualIndex] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
+  const [modalAnteciparAberto, setModalAnteciparAberto] = useState(false)
 
   // Estado para o contador do próximo vídeo
   const [mostrarProximo, setMostrarProximo] = useState(false)
@@ -200,16 +208,28 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
                       <Play size={13} fill="white" />
                       Assistir
                     </button>
-                    <a
-                      href={`/api/download-video?videoId=${extrairVideoId(video.video_url)}&titulo=${encodeURIComponent(video.titulo)}`}
-                      download
-                      title="Baixar vídeo"
-                      className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03]"
-                      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
-                    >
-                      <Download size={14} />
-                      Baixar
-                    </a>
+                    {isTrialing ? (
+                      <button
+                        onClick={() => setModalAnteciparAberto(true)}
+                        title="Baixar vídeo (7 dias grátis)"
+                        className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03]"
+                        style={{ background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37' }}
+                      >
+                        <Lock size={14} />
+                        Baixar
+                      </button>
+                    ) : (
+                      <a
+                        href={`/api/download-video?videoId=${extrairVideoId(video.video_url)}&titulo=${encodeURIComponent(video.titulo)}`}
+                        download
+                        title="Baixar vídeo"
+                        className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-xs font-black transition-all hover:scale-[1.03]"
+                        style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                      >
+                        <Download size={14} />
+                        Baixar
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -327,15 +347,26 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
 
                 {/* Ações / Footer da esquerda */}
                 <div className="mt-10 pt-8 flex flex-wrap gap-4 shrink-0">
-                  <a
-                    href={`/api/download-video?videoId=${extrairVideoId(videoAtivo.video_url)}&titulo=${encodeURIComponent(videoAtivo.titulo)}`}
-                    download
-                    className="flex items-center justify-center gap-2 px-8 py-4 rounded-[18px] text-sm font-black transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(225,48,108,0.5)] w-full sm:w-auto"
-                    style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
-                  >
-                    <Download size={20} />
-                    Fazer Download
-                  </a>
+                  {isTrialing ? (
+                    <button
+                      onClick={() => setModalAnteciparAberto(true)}
+                      className="flex items-center justify-center gap-2 px-8 py-4 rounded-[18px] text-sm font-black transition-all hover:scale-[1.03] w-full sm:w-auto"
+                      style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.2) 0%, rgba(212,175,55,0.05) 100%)', border: '1px solid rgba(212,175,55,0.4)', color: '#D4AF37' }}
+                    >
+                      <Lock size={20} />
+                      Liberar Download (7 Dias Grátis)
+                    </button>
+                  ) : (
+                    <a
+                      href={`/api/download-video?videoId=${extrairVideoId(videoAtivo.video_url)}&titulo=${encodeURIComponent(videoAtivo.titulo)}`}
+                      download
+                      className="flex items-center justify-center gap-2 px-8 py-4 rounded-[18px] text-sm font-black transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(225,48,108,0.5)] w-full sm:w-auto"
+                      style={{ background: 'linear-gradient(135deg,#833AB4,#E1306C,#F77737)', color: '#fff' }}
+                    >
+                      <Download size={20} />
+                      Fazer Download
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
@@ -359,6 +390,12 @@ export default function VideosTematicosGaleria({ videos }: { videos: VideoTemati
           </div>
         </div>
       , document.body)}
+
+      <ModalAnteciparTeste
+        isOpen={modalAnteciparAberto}
+        onClose={() => setModalAnteciparAberto(false)}
+        onSuccess={() => setModalAnteciparAberto(false)}
+      />
     </>
   )
 }
