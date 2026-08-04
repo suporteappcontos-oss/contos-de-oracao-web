@@ -82,12 +82,13 @@ export async function POST(request: NextRequest) {
       if (priceId && priceId.startsWith('price_')) {
         const price = await stripe.prices.retrieve(priceId, { expand: ['product'] })
         const product = price.product as import('stripe').Stripe.Product
-        maxTelas = Number(product.metadata?.max_telas || 1)
+        maxTelas = Number(product.metadata?.max_telas || 5)
         productId = product.id
-        etiquetaPlano = product.metadata?.etiqueta || product.name || ''
+        const isAnual = price.recurring?.interval === 'year' || product.name.toLowerCase().includes('anual')
+        etiquetaPlano = isAnual ? 'Plano Anual' : 'Plano Mensal'
       }
     } catch (e) {
-      console.warn('⚠️ Não foi possível buscar max_telas, usando 1 como padrão.')
+      console.warn('⚠️ Não foi possível buscar metadados do plano, usando padrão.')
     }
 
     if (email) await criarOuAtivarUsuario(email, formatarNomeCurto(nomeRaw), maxTelas, productId, etiquetaPlano)
@@ -100,17 +101,18 @@ export async function POST(request: NextRequest) {
     if (email) {
       const usuario = await buscarUsuarioPorEmail(email)
       if (usuario) {
-        let maxTelas = 1;
+        let maxTelas = 5;
         let productId = '';
-        let etiquetaPlano = '';
+        let etiquetaPlano = 'Plano Mensal';
         try {
           const priceId = (invoice.lines?.data?.[0] as any)?.price?.id;
           if (priceId) {
             const price = await stripe.prices.retrieve(priceId, { expand: ['product'] });
             const product = price.product as import('stripe').Stripe.Product;
-            maxTelas = Number(product.metadata?.max_telas || 1);
+            maxTelas = Number(product.metadata?.max_telas || 5);
             productId = product.id;
-            etiquetaPlano = product.metadata?.etiqueta || product.name || '';
+            const isAnual = price.recurring?.interval === 'year' || product.name.toLowerCase().includes('anual');
+            etiquetaPlano = isAnual ? 'Plano Anual' : 'Plano Mensal';
           }
         } catch (e) { console.warn('Erro ao buscar metadados do plano') }
 

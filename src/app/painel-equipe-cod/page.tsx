@@ -246,11 +246,10 @@ export default async function AdminPage({
           nome: u.user_metadata?.nome || u.user_metadata?.name || '—',
           plano_ativo: u.user_metadata?.plano_ativo === true,
           plano_nome: (() => {
-            const raw = (u.user_metadata?.etiqueta_plano || u.user_metadata?.plano_nome || '').toString()
-            if (raw.toLowerCase().includes('anual') || raw.toLowerCase().includes('year')) return 'Anual'
-            if (raw.toLowerCase().includes('testador')) return 'Testador'
-            if (raw.toLowerCase().includes('mensal') || raw.toLowerCase().includes('month') || raw.toUpperCase() === 'PREMIUM' || raw.toUpperCase() === 'BÁSICO' || !raw) return 'Mensal'
-            return raw
+            const raw = (u.user_metadata?.etiqueta_plano || u.user_metadata?.plano_nome || '').toString().toLowerCase()
+            if (raw.includes('anual') || raw.includes('year')) return 'Plano Anual'
+            if (raw.includes('testador')) return 'Testador 🧪'
+            return 'Plano Mensal'
           })(),
           vitalicio: u.user_metadata?.vitalicio === true,
           criado_em: u.created_at,

@@ -79,47 +79,20 @@ export async function GET(request: NextRequest) {
           // Status ativos: active e trialing
           planoAtivo = ['active', 'trialing'].includes(assinatura.status)
 
-          // Nome do plano vindo do produto Stripe
+          // Nome do plano vindo do produto/preço Stripe
           const priceItem = assinatura.items.data[0]
           const produto = priceItem?.price?.product
-          if (produto && typeof produto === 'object' && 'name' in produto) {
-            etiquetaPlano = (produto as { name: string }).name
-          } else {
-            etiquetaPlano = metadata.etiqueta_plano || 'Plano Ativo'
-          }
-
-          // Data de fim do período atual
-          if (assinatura.current_period_end) {
-            const dataFim = new Date(assinatura.current_period_end * 1000)
-            const dia = String(dataFim.getDate()).padStart(2, '0')
-            const mes = String(dataFim.getMonth() + 1).padStart(2, '0')
-            const ano = dataFim.getFullYear()
-            venceEm = `${dia}/${mes}/${ano}`
-
-            // Próxima cobrança só se não estiver cancelada
-            if (!assinatura.cancel_at_period_end) {
-              proximaCobranca = venceEm
-            }
-          }
-
-          // Status em português para o Lucas usar
-          const statusMap: Record<string, string> = {
-            active: 'ativo',
-            trialing: 'em período de teste',
-            past_due: 'com pagamento em atraso',
-            canceled: 'cancelado',
-            unpaid: 'com pagamento pendente',
-            incomplete: 'pendente de confirmação',
-            incomplete_expired: 'expirado'
-          }
-          statusStripe = statusMap[assinatura.status] || assinatura.status
+          const interval = priceItem?.price?.recurring?.interval
+          const isAnual = interval === 'year' || (produto && typeof produto === 'object' && 'name' in produto && (produto as any).name.toLowerCase().includes('anual'))
+          etiquetaPlano = isAnual ? 'Plano Anual' : 'Plano Mensal'
         }
       }
     } catch (stripeErr: any) {
       // Se o Stripe falhar, usa o fallback do Supabase para não quebrar o fluxo
       console.error('Aviso: Stripe indisponível, usando fallback Supabase:', stripeErr.message)
       planoAtivo = metadata.plano_ativo === true
-      etiquetaPlano = metadata.etiqueta_plano || 'Plano Básico'
+      const rawEt = (metadata.etiqueta_plano || '').toString().toLowerCase()
+      etiquetaPlano = rawEt.includes('anual') ? 'Plano Anual' : (rawEt.includes('testador') ? 'Testador 🧪' : 'Plano Mensal')
       statusStripe = planoAtivo ? 'ativo (fallback)' : 'inativo (fallback)'
     }
 

@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     } else if (etiquetaPlano.toLowerCase().includes('mensal')) {
       etiquetaPlano = 'Plano Mensal'
     } else {
-      etiquetaPlano = 'Plano Premium' // Fica mais bonito que o nome original do produto na Kiwify
+      etiquetaPlano = 'Plano Mensal'
     }
 
     if (!email) {
