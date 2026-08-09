@@ -406,7 +406,12 @@ export default async function AdminPage({
         </div>
 
         {/* --- CARDS DE METRICAS NATIVOS POSTHOG ANALYTICS --- */}
-        <CardMetricasAnalytics />
+        <CardMetricasAnalytics
+          totalViews={views.length}
+          views7Dias={views7Days.length}
+          acessosSite={usuarios.reduce((sum, u) => sum + (u.acessos_site || 0), 0)}
+          acessosApp={usuarios.reduce((sum, u) => sum + (u.acessos_app || 0), 0)}
+        />
 
         {/* ══════════ ABA MARKETING ══════════ */}
         {activeTab === 'marketing' && (

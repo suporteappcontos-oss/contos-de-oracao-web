@@ -1,4 +1,5 @@
-﻿import { redirect } from "next/navigation";
-export default function OldQuaresmaRedirect() {
-  redirect("/quaresma");
+import { redirect } from 'next/navigation'
+
+export default function QuaresmaSaoMiguelPage() {
+  redirect('/')
 }
