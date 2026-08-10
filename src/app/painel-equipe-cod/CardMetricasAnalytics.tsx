@@ -18,9 +18,29 @@ export default function CardMetricasAnalytics({
   acessosApp = 0,
   topVideoNome
 }: Props) {
+  const [onlineAgora, setOnlineAgora] = useState<number | null>(null)
   const totalAcessos = acessosSite + acessosApp
   const appPct = totalAcessos > 0 ? Math.round((acessosApp / totalAcessos) * 100) : 50
   const sitePct = totalAcessos > 0 ? 100 - appPct : 50
+
+  useEffect(() => {
+    async function fetchOnline() {
+      try {
+        const res = await fetch('/api/admin/posthog-live')
+        if (res.ok) {
+          const data = await res.json()
+          if (typeof data.onlineAgora === 'number') {
+            setOnlineAgora(data.onlineAgora)
+          }
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar online em tempo real:', e)
+      }
+    }
+    fetchOnline()
+    const interval = setInterval(fetchOnline, 15000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="bg-[#111827] border border-white/5 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden mb-10">
@@ -37,10 +57,10 @@ export default function CardMetricasAnalytics({
             <div className="flex items-center gap-2">
               <h2 className="text-white text-xl md:text-2xl font-black tracking-tight">Analytics & Métricas Reais</h2>
               <span className="flex items-center gap-1 bg-[#10b981]/20 border border-[#10b981]/40 text-[#10b981] text-[0.65rem] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" /> Ao Vivo
+                <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" /> Ao Vivo (PostHog API)
               </span>
             </div>
-            <p className="text-white/40 text-xs mt-0.5">Métricas de acessos, visualizações reais e integração oficial com o PostHog.</p>
+            <p className="text-white/40 text-xs mt-0.5">Métricas de acessos, visualizações reais e contagem de visitantes online via PostHog API.</p>
           </div>
         </div>
 
@@ -58,15 +78,18 @@ export default function CardMetricasAnalytics({
       {/* Grid de Métricas Nativas e Reais */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
         
-        {/* Card 1: Total Acessos Registrados (Real) */}
+        {/* Card 1: Pessoas Online Agora no PostHog (Real-time API) */}
         <div className="bg-[#0b0f19] border border-white/5 rounded-2xl p-5 relative group hover:border-[#10b981]/40 transition-all shadow-inner">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-white/50 text-[0.7rem] uppercase tracking-widest font-black">Acessos Totais</span>
+            <span className="text-white/50 text-[0.7rem] uppercase tracking-widest font-black">Pessoas Online Agora</span>
             <div className="w-8 h-8 rounded-xl bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
               <Eye size={16} />
             </div>
           </div>
-          <div className="text-white text-3xl font-black tracking-tight">{totalAcessos} <span className="text-xs font-medium text-white/40">acessos</span></div>
+          <div className="text-white text-3xl font-black tracking-tight flex items-baseline gap-2">
+            {onlineAgora !== null ? onlineAgora : '—'}
+            <span className="text-xs font-medium text-[#10b981] animate-pulse">● online (PostHog)</span>
+          </div>
           <div className="text-white/40 text-xs font-semibold mt-2 flex items-center gap-2">
             <span>🖥️ Site: <strong className="text-white">{acessosSite}</strong></span>
             <span>·</span>
