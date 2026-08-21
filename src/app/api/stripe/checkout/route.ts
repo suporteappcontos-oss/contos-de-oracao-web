@@ -11,6 +11,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { plano, nome, email, senha } = body
 
+    if (process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS === 'true') {
+      return NextResponse.json({ error: 'As novas assinaturas estão temporariamente pausadas para reformulação dos planos. Em breve reabriremos!' }, { status: 400 })
+    }
+
     if (!plano || !email || !senha) {
       return NextResponse.json({ error: 'Todos os campos são obrigatórios' }, { status: 400 })
     }

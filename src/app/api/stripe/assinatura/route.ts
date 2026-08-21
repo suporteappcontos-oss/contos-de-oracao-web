@@ -13,6 +13,10 @@ export async function POST(request: NextRequest) {
     const { data: { session } } = await supabaseClient.auth.getSession()
     const isLogged = !!session
 
+    if (process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS === 'true') {
+      return NextResponse.json({ error: 'As novas assinaturas estão temporariamente pausadas para reformulação dos planos. Em breve reabriremos!' }, { status: 400 })
+    }
+
     if (!plano || !email) {
       return NextResponse.json({ error: 'Todos os campos são obrigatórios' }, { status: 400 })
     }

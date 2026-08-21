@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, ChevronRight, Shield, Play, Heart, Download, Monitor, Lock, Eye, EyeOff, Infinity as InfinityIcon, Loader2 } from 'lucide-react'
+import { Check, ChevronRight, Shield, Play, Heart, Download, Monitor, Lock, Eye, EyeOff, Infinity as InfinityIcon, Loader2, Sparkles } from 'lucide-react'
 import { loadStripe } from '@stripe/stripe-js'
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js'
 import { createClient } from '@/utils/supabase/client'
@@ -413,6 +413,27 @@ export default function AssinarPage() {
       `}} />
 
       {/* Layout Unificado (Esquerda: Info e Benefícios, Direita: Checkout) */}
+      {process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS === 'true' ? (
+        <div className="relative z-10 max-w-xl mx-auto w-full mb-16 mt-28 p-8 sm:p-10 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-[#D4AF37]/30 text-center" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
+          <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center mx-auto mb-4 text-[#D4AF37]">
+            <Sparkles size={32} />
+          </div>
+          <h1 className="text-2xl font-black text-white mb-2">Novas Assinaturas em Pausa</h1>
+          <p className="text-white/60 text-sm mb-6 leading-relaxed">
+            Estamos reformulando e aprimorando os planos do <strong className="text-white">Contos de Oração Club</strong> para uma nova fase!
+          </p>
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 text-left sm:text-center">
+            <p className="text-[#D4AF37] text-xs font-black uppercase tracking-wider mb-1">✦ Já é membro, Administrador ou Testador VIP?</p>
+            <p className="text-white/70 text-xs">Seu acesso continua 100% ativo! Faça login para assistir aos filmes e orações normalmente.</p>
+          </div>
+          <Link
+            href="/login"
+            className="inline-flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-sm bg-gradient-to-r from-[#FFD700] via-[#D4AF37] to-[#B8860B] text-[#090B10] shadow-[0_4px_20px_rgba(212,175,55,0.4)] hover:brightness-110 transition-all no-underline"
+          >
+            Fazer Login na Minha Conta →
+          </Link>
+        </div>
+      ) : (
       <div className="relative z-10 flex flex-col lg:flex-row max-w-4xl mx-auto w-full flex-1 mb-16 mt-24 lg:mt-28 rounded-[1.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/10" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
         
         {/* Lado Esquerdo - Info e Benefícios */}
@@ -1188,6 +1209,7 @@ export default function AssinarPage() {
           </div>
         </div>
       </div>
+      )}
     </div>
   )
 }
