@@ -77,10 +77,6 @@ export default function PlanosPage() {
                 Estamos preparando uma nova fase com grandes melhorias no catálogo e na plataforma.
                 As novas adesões públicas estão temporariamente pausadas.
               </p>
-              <div className="p-5 rounded-2xl bg-black/40 border border-white/10 mb-8 text-center backdrop-blur-md">
-                <p className="text-[#D4AF37] text-xs font-black uppercase tracking-wider mb-1.5">✦ Membros, Equipe e Testadores VIP</p>
-                <p className="text-white/70 text-xs leading-relaxed">Seu acesso continua 100% liberado! Faça login para assistir aos filmes, séries e orações normalmente.</p>
-              </div>
               <a
                 href="/login"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider bg-gradient-to-r from-[#FFD700] via-[#D4AF37] to-[#B8860B] text-[#090B10] shadow-[0_8px_25px_rgba(212,175,55,0.35)] hover:brightness-110 active:scale-95 transition-all no-underline"

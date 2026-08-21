@@ -97,10 +97,6 @@ export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo
           Estamos preparando uma nova fase com grandes atualizações no catálogo do <strong className="text-white">Contos de Oração Club</strong>.
           Novas assinaturas públicas estão temporariamente pausadas.
         </p>
-        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 text-left sm:text-center">
-          <p className="text-[#D4AF37] text-xs font-black uppercase tracking-wider mb-1">✦ Já é membro, Administrador ou Testador VIP?</p>
-          <p className="text-white/70 text-xs">Seu acesso continua 100% ativo! Faça login para assistir aos filmes e orações.</p>
-        </div>
         <a
           href="/login"
           className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-black text-sm bg-gradient-to-r from-[#FFD700] via-[#D4AF37] to-[#B8860B] text-[#090B10] shadow-[0_4px_20px_rgba(212,175,55,0.4)] hover:brightness-110 transition-all cursor-pointer"
