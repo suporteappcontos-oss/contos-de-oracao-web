@@ -11,7 +11,7 @@ export const metadata = {
 export const revalidate = 60; // ISR: Atualiza os planos a cada 60 segundos
 
 export default function PlanosPage() {
-  const isPausado = process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS === 'true';
+  const isPausado = process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS !== 'false';
 
   return (
     <main>

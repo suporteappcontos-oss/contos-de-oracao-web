@@ -413,7 +413,7 @@ export default function AssinarPage() {
       `}} />
 
       {/* Layout Unificado (Esquerda: Info e Benefícios, Direita: Checkout) */}
-      {process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS === 'true' ? (
+      {process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS !== 'false' ? (
         <div className="relative z-10 max-w-xl mx-auto w-full mb-16 mt-28 p-8 sm:p-10 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-[#D4AF37]/30 text-center" style={{ background: 'rgba(21,36,62,0.92)', backdropFilter: 'blur(20px)' }}>
           <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center mx-auto mb-4 text-[#D4AF37]">
             <Sparkles size={32} />

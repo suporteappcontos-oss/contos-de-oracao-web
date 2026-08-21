@@ -86,7 +86,7 @@ type Ciclo = 'mensal' | 'semestral' | 'anual';
 export default function PricingCardsClient({ produtos }: { produtos: ProdutoInfo[] }) {
   const [ciclo, setCiclo] = useState<Ciclo>('anual');
 
-  if (process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS === 'true') {
+  if (process.env.NEXT_PUBLIC_PAUSAR_ASSINATURAS !== 'false') {
     return (
       <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-[#111827]/90 border border-[#D4AF37]/30 shadow-2xl text-center backdrop-blur-md">
         <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center mx-auto mb-4 text-[#D4AF37]">
